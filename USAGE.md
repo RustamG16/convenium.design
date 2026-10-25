@@ -24,7 +24,7 @@ python library/tools/apollo.py attach <PROJECT_FOLDER>
 ```
 
 In Claude Code, also install the plugin once per machine (`/plugin marketplace add
-<this folder or RustamG16/Apollo>`, then `/plugin install apollo@apollo`) — or start the
+<this folder or RustamG16/convenium.design>`, then `/plugin install apollo@apollo`) — or start the
 session with `claude --add-dir <this folder>`.
 
 ## Kickoff — Claude Code

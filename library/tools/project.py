@@ -357,7 +357,7 @@ PLUGIN_VERSION = "0.4.0"
 def build_plugin(dry):
     """Claude Code plugin + single-plugin marketplace, rooted at the repo itself.
 
-    Install: `/plugin marketplace add <this folder | RustamG16/Apollo>` then
+    Install: `/plugin marketplace add <this folder | RustamG16/convenium.design>` then
     `/plugin install apollo@apollo`. Skills become `apollo:<id>`, agents `apollo:<name>`,
     so nothing collides with same-named personal or plugin skills. `agents` must list
     files (a directory is rejected); `skills` may be a directory.
@@ -368,7 +368,7 @@ def build_plugin(dry):
         "description": ("Gated design agency: a Brand DNA strategist, one Design Director and five "
                         "specialists that take a business from intake to a verified, built design."),
         "author": {"name": "Rustam Gurbanov"},
-        "repository": "https://github.com/RustamG16/Apollo",
+        "repository": "https://github.com/RustamG16/convenium.design",
         "license": "SEE LICENSE IN third-party/VERSIONS.md",
         "keywords": ["design", "website", "brand", "agents"],
         "skills": "./.claude/skills/",

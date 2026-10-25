@@ -64,7 +64,7 @@ folder) further reduces the risk.
 ### Clone and verify
 
 ```bash
-git clone https://github.com/RustamG16/Apollo.git
+git clone https://github.com/RustamG16/convenium.design.git
 cd Apollo
 ```
 
@@ -82,7 +82,7 @@ paths. It must report `verify clean` before you trust the clone.
 ### Install for Claude Code (recommended: as a plugin)
 
 ```text
-/plugin marketplace add RustamG16/Apollo        (or a local path to this folder)
+/plugin marketplace add RustamG16/convenium.design        (or a local path to this folder)
 /plugin install apollo@apollo
 ```
 
