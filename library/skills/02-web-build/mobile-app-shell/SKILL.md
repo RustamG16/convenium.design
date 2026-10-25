@@ -1,6 +1,6 @@
 ---
 name: mobile-app-shell
-description: Make a marketing or hospitality site's phone journey app-grade — per-page screen budgets, phone-sized scroll-scrub runways and frame sets, a thumb-zone tab bar, safe areas on all four sides, cheap phone motion, and the verification rules that catch what emulated tests miss. Use when a site must work as the primary phone experience (360–430 px wide), when phone pages feel too long, when scroll-driven video is soft or stutters on phones, or before sharing a concept that most visitors will open on a phone.
+description: Rebuild a site's phone experience when mobile pages are too long, unoptimized or below current standards. Owns per-page screen budgets, the 2026 standards floor (fluid type, container queries, svh/dvh, touch targets, INP), phone-sized scroll-scrub runways and frame sets, a thumb-zone tab bar, safe areas on all four sides, cheap phone motion, and the verification rules that catch what emulated tests miss. Use when asked to rebuild or optimize a site's mobile resolution, when a site must work as the primary phone experience (360–430 px wide), when scroll-driven video is soft or stutters on phones, or before sharing a concept most visitors will open on a phone.
 ---
 
 # Mobile app shell
@@ -11,8 +11,30 @@ primary layout, not a fallback, and judge it by numbers you can test.
 This skill owns the phone-specific decisions. It points out for the rest:
 the scrub pattern itself is `scroll-scrubbed-visual-sequence`; layout and safe-area rules are
 `better-layout`; touch gestures are `gesture-patterns`; native conventions are
-`mobile-ios-design` and `apple-design`; GSAP mechanics are the `gsap-*` skills. A project's
-committed design system (palette, type, corners, shadows) always overrides any example here.
+`mobile-ios-design` and `apple-design`; worked container-query and fluid-type patterns are in
+`responsive-design` (unrouted — load its references only when needed); GSAP mechanics are the
+`gsap-*` skills. A project's committed design system (palette, type, corners, shadows) always
+overrides any example here.
+
+## 0. Measure before touching anything
+
+Run per route at 390×844 (plus one 320-wide pass for overflow), in the console or the
+project's own QA scripts:
+
+```js
+(() => { const d = document.documentElement; return {
+  screens: +(d.scrollHeight / innerHeight).toFixed(1),
+  overflowX: d.scrollWidth > innerWidth,
+  under24: [...document.querySelectorAll('a,button,input,select,[role=button]')]
+    .filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && (r.width < 24 || r.height < 24); }).length,
+  smallInputs: [...document.querySelectorAll('input,select,textarea')]
+    .filter(e => parseFloat(getComputedStyle(e).fontSize) < 16).length } })()
+```
+
+Route from the numbers: pages over budget → §1; soft or stuttering scrub media → §2; no app
+shell → §3; janky motion → §4; everything else is the floor in §5. A dedicated retrofit pass
+on an existing site runs from `templates/prompts/mobile-app-grade-pass.md` with §6 as its
+measurement list.
 
 ## 1. Set a screen budget per page
 
@@ -80,7 +102,31 @@ Scroll-linked motion is the expensive kind; keep it for content that explains so
 - One smooth-scroll instance per page. Two instances fight for the same scroll.
 - Target 60 fps on a mid-range Android phone, not a flagship.
 
-## 5. Verify what emulation hides
+## 5. Hold the 2026 standards floor
+
+The norms a phone page is judged against now; each one is checkable, none is taste.
+
+- **Fluid type:** every ramp step is `clamp(min, fluid, max)` between the committed `DESIGN.md`
+  numbers; body ≥ 16 px. A heading that only changes size at breakpoints reads as a desktop
+  site squeezed down.
+- **Container queries** (`container-type: inline-size`) for any component that lives in more
+  than one column width; viewport media queries only for the page scaffold. Safe in every
+  evergreen browser since 2023.
+- **Viewport units by job:** first-screen hero `100svh` (no jump while the URL bar is up),
+  sticky stages `100dvh`, runways plain `vh` (§2).
+- **Touch targets:** primary controls ≥ 44×44 px; nothing interactive under 24×24 px
+  (WCAG 2.2 AA, 2.5.8) unless it has 8 px clearance on all sides; inputs at 16 px (§3).
+- **Responsiveness as a metric:** INP ≤ 200 ms on a mid-range Android phone — the Core Web
+  Vital for interaction since March 2024; long tasks during scroll are what break it.
+- **No horizontal overflow** at any width from 320 px up. Find the culprit with the §0
+  snippet; fix with `min-width: 0` on flex/grid children and `max-width: 100%` on media,
+  never with `overflow-x: hidden`.
+- **Image sharpness:** `srcset`/`sizes` matched to the rendered slot; ≥ 2 source pixels per
+  CSS pixel on hero media, computed from the delivered file, not `naturalWidth`.
+- **Text wrapping:** `text-wrap: balance` on headings, `text-wrap: pretty` on short body
+  blocks — free polish where supported, harmless where not.
+
+## 6. Verify what emulation hides
 
 Each of these has shipped a defect that a green test suite missed.
 
@@ -108,3 +154,7 @@ plus one WebKit iPhone pass. Re-check pinned runways at 390 and 1920 after any r
 | Backdrop blur over video | Solid plate |
 | Reduced-motion check uses `toBeVisible()` | Assert computed opacity |
 | Test server sends `no-cache` | Serve with production cache headers |
+| Tap target under 24×24 px | ≥ 44 px primary; 24 px hard floor with 8 px clearance |
+| Hero at `100vh` jumps on load | `100svh` first screen; `100dvh` sticky stages |
+| Fixed-px type that steps at breakpoints | `clamp()` between the committed ramp numbers |
+| Viewport query styling a component inside a variable column | Container query |

@@ -50,6 +50,12 @@ Abridged is not a shortcut, it is the correct shape when the plan *is* the brief
 produced the best result this system has made was abridged: a plan-mode creative brief, then
 implementation in a fresh session, then `05`–`10`.
 
+**A scoped repair request on an implemented site is abridged, not a redesign.** "Rebuild the
+mobile resolution", "the phone pages are too long", "optimize mobile" means: kick off from
+`templates/prompts/mobile-app-grade-pass.md`, load `mobile-app-shell` and only it at build
+(verification stays `visual-qa`), and leave direction, palette and the committed type ramp
+untouched. No intake round, no new concepts, no other skill bodies.
+
 Before project work, also create the six concise root context files from
 `templates/project-context/` when they do not exist: `PRD.md`, `ARCHITECTURE.md`,
 `ARCHITECTURE-ESSENTIALS.md`, `AGENTS.md`, `CODEX.md`, and

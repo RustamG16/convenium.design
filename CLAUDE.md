@@ -48,6 +48,10 @@ routing decision, one per phase.
   per-section media map. This is the locked workflow; see the build-plan rule in `AGENTS.md`.
 - **Read the brief as written.** Explicit creative freedom cancels the intake round. Do not
   ask questions a brief has already told you not to ask.
+- **"Rebuild/optimize the mobile resolution" on a built site is a retrofit, not a redesign.**
+  Kick off from `templates/prompts/mobile-app-grade-pass.md` on the abridged trail and load the
+  `mobile-app-shell` skill body alone (verification stays `visual-qa`). No intake, no other
+  skill bodies — the token budget of this pass is one digest read plus one skill.
 
 ## Do not
 

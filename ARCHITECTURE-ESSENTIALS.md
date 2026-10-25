@@ -34,7 +34,9 @@ Brand DNA (brand-strategist → .olympus/brand-dna.json + BRAND.md)
 - **Verification is two passes**: the author's, then an independent scored finish review.
 - **Trail may be `full` or `abridged`** — abridged collapses `00`–`04` into an approved plan
   when the user's instruction already fixes brief and direction. It never skips
-  `06-build-plan.md`, `DESIGN.md`, the finish review, or Gate C.
+  `06-build-plan.md`, `DESIGN.md`, the finish review, or Gate C. A scoped repair on a built
+  site ("rebuild the mobile resolution") is abridged: kickoff in
+  `templates/prompts/mobile-app-grade-pass.md`, one skill body (`mobile-app-shell`).
 - **`06-build-plan.md` is the design document**, not a task list — art direction, palette,
   type scale as numbers, a page sequence with a per-section media map. Written in plan mode
   where the host has one, and **implemented from in a fresh session**.

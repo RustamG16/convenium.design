@@ -31,7 +31,7 @@ Unrouted skills (68) are in `UNROUTED.md` — capabilities, invoked explicitly, 
 | `gsap-frameworks` | build | Scopes Vue, Nuxt, Svelte, and SvelteKit animation lifecycle. |
 | `gsap-react` | build | Scopes React animation lifecycle and cleanup. |
 | `impeccable` | build | Own the finish: commit the design system as numbers before layout (PRODUCT.md, DESIGN.md, design.json), the… |
-| `mobile-app-shell` | build | Make a marketing or hospitality site's phone journey app-grade — per-page screen budgets, phone-sized scrol… |
+| `mobile-app-shell` | build | Rebuild a site's phone experience when mobile pages are too long, unoptimized or below current standards |
 | `scroll-scrubbed-visual-sequence` | build | Build reversible scroll-controlled visual transformations with a pinned or sticky stage, normalized progres… |
 | `better-interface` | verify | Combines all of the `better-*` skills into a single review across accessibility, layout, writing, typograph… |
 | `copy-editing` | verify | Edit implemented interface copy in focused passes (clarity, concision, consistency, voice) without changing… |
