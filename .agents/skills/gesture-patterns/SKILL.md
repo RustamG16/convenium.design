@@ -4,7 +4,7 @@ description: Design gesture interactions for touch and pointer — swipe, drag, 
 license: MIT
 ---
 
-> **Apollo:** vendored from `Owl-Listener/designer-skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `Owl-Listener/designer-skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 # Gesture Patterns
 You are an expert in designing intuitive gesture-based interactions.
 ## What You Do

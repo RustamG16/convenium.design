@@ -18,7 +18,7 @@ rest attach without restructuring anything.
 
 ## 1. What exists today
 
-Apollo v2 is **one agency** — Design — and it is already whole:
+Convenium.Design v2 is **one agency** — Design — and it is already whole:
 
 | Piece | State |
 |---|---|
@@ -27,7 +27,7 @@ Apollo v2 is **one agency** — Design — and it is already whole:
 | Pipeline | intake -> 01 audit -> Gate A -> 02 direction -> 03 critique -> Gate B -> 05/06 -> implement -> 07/08 -> Gate C -> 09 handoff |
 | Registry | 84 skills, 31 routed, 53 unrouted |
 | Knowledge | `library/knowledge/` — 8 corpora |
-| Studio | `apollo-studio/` — MCP server + UI surface |
+| Studio | `convenium-design-studio/` — MCP server + UI surface |
 
 Unification completed 2026-09-02, Phases 0–8 all PASS. **Nothing here is being rebuilt.**
 
@@ -93,8 +93,8 @@ agents and doctrines, rebuild. No migration, no refactor, no touching Design.
 **`schemaVersion` from day one**, missing fields defaulted on load rather than a hard error.
 
 **`conductor` and `specialists` name the agents in `library/agents/`, and nothing else.** The
-repo also carries a five-name pantheon — Apollo, Athena, Calliope, Hephaestus, Hermes — in
-`apollo-studio/data/systems.json` and as `owner` in `slots.json`. It reads well and **no
+repo also carries a five-name pantheon — Convenium.Design, Athena, Calliope, Hephaestus, Hermes — in
+`convenium-design-studio/data/systems.json` and as `owner` in `slots.json`. It reads well and **no
 runtime has ever loaded it**; both `.claude/agents/` and `.codex/agents/` contain the same six.
 It is a console display model. `slots.json` now carries `runtimeOwner` alongside `owner` so the
 two can be joined without either being renamed. Agency #2 must not inherit this confusion:
@@ -109,7 +109,7 @@ gaps, in the order they cost you money:
 
 `SOURCE-ANALYSIS.md` §9. Eleven pipeline skills carried `hosts: ['codex','studio']`, so Claude
 ran a weaker loadout than Codex against the same repository for an unknown length of time. Two
-of the eleven were `defaultOn: true`, meaning Apollo's own defaults expected them active and
+of the eleven were `defaultOn: true`, meaning Convenium.Design's own defaults expected them active and
 they silently were not.
 
 `impeccable` is fixed. **The class is not.** Nothing in `project.py`, `verify.py` or the
@@ -163,13 +163,13 @@ and every other item in §4 is worth less while the hosts disagree about what is
 ### 4.1 Delegation discipline — *not* a multi-model worker lane
 
 **Scope decision, 2026-09-03: Hermes, GLM-5.2, Ollama Cloud and the gateway are out.**
-Apollo runs on the user's existing Claude and Codex subscriptions. No third-party model
+Convenium.Design runs on the user's existing Claude and Codex subscriptions. No third-party model
 lanes, no self-hosted gateway, no extra keys. That removes most of `SOURCE-ANALYSIS.md` §3.
 
 What survives is the part that was never about vendors — **the economics of delegation**
 (§2), which Claude Code's own subagents already support:
 
-| Rule | Apollo's version |
+| Rule | Convenium.Design's version |
 |---|---|
 | Expensive tokens plan, cheap tokens type | `design-director` decomposes and judges. It does not crawl, grep, draft or transcribe. |
 | IN ~600 / INSIDE 40K / OUT 1–2K | A subagent gets a bounded brief, explores freely, and returns **one page**. The exploration is disposable. |
@@ -236,7 +236,7 @@ human is genuinely deciding something.** Item 3 is not cancelled — it is demot
 "gates the drawer" to "fills the drawer", and the drawer can ship showing the activation
 block, which every agent now has.
 
-**Invariant across all of it:** the way Apollo is used does not change. Open Claude Code in
+**Invariant across all of it:** the way Convenium.Design is used does not change. Open Claude Code in
 a project folder — or create the project under `test_projects/` — and run it. No new install
 step, no service that must be up, no subscription beyond Claude and Codex.
 
@@ -246,7 +246,7 @@ step, no service that must be up, no subscription beyond Claude and Codex.
 > on the last pays the multiplier without earning it. Keep that on one thread.
 > — `SOURCE-ANALYSIS.md` §7
 
-Apollo's pipeline is **mostly sequential with gates**. Audit -> direction -> critique -> build
+Convenium.Design's pipeline is **mostly sequential with gates**. Audit -> direction -> critique -> build
 is a dependency chain, not independent lanes. So the worker lane pays off inside a phase
 (crawl a site, draft copy, refactor a stylesheet, transcribe evidence) and **not** across
 phases. Do not fan out the pipeline itself. That is the mistake this architecture invites.

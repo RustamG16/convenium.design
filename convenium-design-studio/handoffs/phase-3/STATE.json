@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "handoffId": "convenium-design-studio-phase3-resume-20260811",
+  "updatedAt": "2026-08-11T15:18:13.2705212+02:00",
+  "workspace": "D:/Analyst_Designer",
+  "appRoot": "D:/Analyst_Designer/Convenium.Design/convenium-design-studio",
+  "status": "paused-after-phase-2",
+  "completedPhases": [
+    {
+      "number": 1,
+      "title": "Design-system skill foundation",
+      "status": "complete",
+      "runId": "convenium-design-studio-foundation-20260811-codex"
+    },
+    {
+      "number": 2,
+      "title": "Product model, information architecture, and catalog repair",
+      "status": "complete",
+      "runId": "convenium-design-studio-phase2-20260811-codex"
+    }
+  ],
+  "currentGate": {
+    "id": "phase-3-ia-direction",
+    "status": "decision-required",
+    "question": "Which information-architecture direction should Phase 3 use?",
+    "options": [
+      {
+        "id": "A",
+        "name": "Oracle-first journey",
+        "recommended": true
+      },
+      {
+        "id": "B",
+        "name": "Studio desk",
+        "recommended": false
+      },
+      {
+        "id": "C",
+        "name": "Mission map",
+        "recommended": false
+      }
+    ],
+    "selected": null
+  },
+  "nextPhase": {
+    "number": 3,
+    "title": "Critical UX flows and Oracle content",
+    "authorized": false,
+    "implementationAuthorized": false
+  },
+  "skillIds": [
+    "taste-first-experience-design",
+    "ethical-gamification-systems",
+    "agent-identity-and-portfolio"
+  ],
+  "requiredArtifacts": [
+    "Convenium.Design/convenium-design-studio/PHASE-2-PRODUCT-MODEL.md",
+    "skills/taste-first-experience-design/SKILL.md",
+    "skills/ethical-gamification-systems/SKILL.md",
+    "skills/agent-identity-and-portfolio/SKILL.md"
+  ],
+  "runtimeSnapshot": {
+    "capturedAt": "2026-08-11T15:18:13.2705212+02:00",
+    "url": "http://127.0.0.1:4173",
+    "mode": "demo",
+    "health": "ok",
+    "skillCount": 22,
+    "enabledSkillCount": 22,
+    "watchModeDefault": true,
+    "expectedStateAfterHandoff": "stopped"
+  },
+  "validation": {
+    "npmCheck": "passed",
+    "desktopKnowledge": "passed",
+    "mobileKnowledge390x844": "passed",
+    "browserWarningsOrErrors": 0,
+    "requiredSkillsVisible": true
+  },
+  "tokenUsage": {
+    "status": "unavailable",
+    "exactHistoricalCount": null,
+    "estimated": false,
+    "reason": "The Codex host did not expose a trustworthy whole-run count to Convenium.Design."
+  },
+  "constraints": [
+    "Require explicit approval before Phase 3.",
+    "Require separate approval before broader visual design or implementation.",
+    "Do not install external skills, plugins, dependencies, or MCP connections.",
+    "Do not fabricate telemetry, research, evidence, achievements, or token counts.",
+    "Preserve existing files, conventions, and unrelated changes.",
+    "Keep work narrow because weekly usage is constrained."
+  ]
+}

@@ -1,4 +1,4 @@
-# Apollo notes: gesture-patterns
+# Convenium.Design notes: gesture-patterns
 
 Vendored 2026-10-19 from [`Owl-Listener/designer-skills`](https://github.com/Owl-Listener/designer-skills) (`interaction-design/skills/gesture-patterns`, commit `9a6930cf84a822eb458624bd11c61aac5bbdf224`), MIT.
 The licence is in `third-party/`. **Changes made:** a `license: MIT` frontmatter key and a one-line

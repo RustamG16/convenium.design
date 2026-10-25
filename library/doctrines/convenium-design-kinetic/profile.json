@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "profileId": "doctrine-default-convenium-design-kinetic",
+  "displayName": "Kinetic default",
+  "createdAt": "2026-08-28T00:00:00Z",
+  "updatedAt": "2026-08-28T00:00:00Z",
+  "source": "style-pick",
+  "doctrine": "convenium-design-kinetic",
+  "explicitPreferences": {
+    "color": ["dark ground with colour cast", "near-white figure", "one luminous accent for state changes"],
+    "type": ["high-contrast or wide grotesque display", "dramatic perfect-fifth scale", "viewport-relative display sizing"],
+    "density": "low in any single frame — full-bleed, viewport-height sections",
+    "motion": "primary carrier of the design — choreographed scroll narrative, one hero moment, continuity between sections",
+    "tone": "cinematic, immersive, premium launch energy"
+  },
+  "avoidList": ["uniform fade-up-on-scroll", "motion that delays reading", "autoplaying audio", "scroll-hijacking", "a second hero moment", "effects with no reduced-motion fallback"],
+  "references": [],
+  "confidence": { "overall": 1.0, "byField": { "color": 1.0, "type": 1.0, "density": 1.0, "motion": 1.0, "tone": 1.0 } },
+  "provenance": [{ "field": "all", "source": "doctrine-default:convenium-design-kinetic", "at": "2026-08-28T00:00:00Z" }]
+}

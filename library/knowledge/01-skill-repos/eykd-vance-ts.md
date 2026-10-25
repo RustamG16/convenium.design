@@ -28,6 +28,6 @@ endgame), L3 player types. It is the audit and strategy layer under `gamified-ui
 ## Caveats (observed)
 
 - Licence: ISC is stated only in `package.json`. That is the strongest grant available, but it
-  is not a LICENSE file. Re-check before redistributing Apollo publicly.
+  is not a LICENSE file. Re-check before redistributing Convenium.Design publicly.
 - The skills.rest listing mentions a `scripts` resource. The cloned folder has none, only
   `references/` (3 files, 526 lines).

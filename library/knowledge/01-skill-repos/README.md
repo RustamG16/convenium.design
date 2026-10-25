@@ -57,6 +57,6 @@ cloned and read; the directory listings were not relied on.
 | [mulosbron/gamification-skills](mulosbron-gamification-skills.md) | none | discard — no licence; conclusions only |
 
 None of the licensed sources covers web gamification mechanics (XP curves, streaks,
-achievements, celebration tiers). That gap is filled by the original Apollo skill
+achievements, celebration tiers). That gap is filled by the original Convenium.Design skill
 `library/skills/02-web-build/gamified-ui`. The closest unlicensed match is recorded in
 [../03-skill-briefs/ui-gamification.md](../03-skill-briefs/ui-gamification.md).

@@ -118,7 +118,7 @@ The structure maps onto what is already here with almost no translation:
 
 | Original | Yours |
 |---|---|
-| 7 departments | 7 agents — apollo, zeus, hephaestus, hermes, athena, calliope, themis |
+| 7 departments | 7 agents — convenium-design, zeus, hephaestus, hermes, athena, calliope, themis |
 | Central "company brain" particle cloud | `library/` + `.mnemosyne/` — the shared knowledge every agent reads |
 | Cluster hub node | The agent's `skill-index` catalog |
 | Branch/leaf nodes | Individual skills |

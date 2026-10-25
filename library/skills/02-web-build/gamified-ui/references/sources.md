@@ -12,5 +12,5 @@ from these sources.
 | Overjustification effect (rewards crowding out intrinsic motivation) | Deci, Koestner & Ryan, meta-analysis, *Psychological Bulletin* 125(6), 1999 | Ethics gate: rewards on intrinsic activities |
 | Points and badges with nothing underneath | Observed across the candidate skills reviewed on 2026-10-14 (see `library/knowledge/01-skill-repos/README.md`, 2026-10-14 section) | Opening principle |
 
-The XP exponent (`k = 1.5`) and the score-to-XP table are Apollo defaults chosen for tuning.
+The XP exponent (`k = 1.5`) and the score-to-XP table are Convenium.Design defaults chosen for tuning.
 They are not research findings.

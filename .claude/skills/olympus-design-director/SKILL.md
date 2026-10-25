@@ -27,8 +27,8 @@ Own one interpretation of the brief and route work through explicit gates. Never
 - Write durable findings to `.olympus/01-audit.md`.
 - Resolve the direction block in `00-brief.md` from `.olympus/brand-dna.json` (business,
   taste, doctrine match), the intake answers and the references. If taste is still
-  unresolved, have the strategist run `$apollo-taste-interview` or `$apollo-style-picker`;
-  the result goes into `brand-dna.json → taste`, never into the Apollo folder.
+  unresolved, have the strategist run `$convenium-design-taste-interview` or `$convenium-design-style-picker`;
+  the result goes into `brand-dna.json → taste`, never into the Convenium.Design folder.
 - Confirm `neededProducts` with the user at Gate A: it decides what this run makes.
 - Stop for Gate A. Do not generate the direction or edit production code before approval.
 

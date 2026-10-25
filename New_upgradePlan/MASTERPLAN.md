@@ -1,4 +1,4 @@
-# Apollo — output quality first
+# Convenium.Design — output quality first
 
 > **2026-09-15 product decision:** [PRODUCT-ARCHITECTURE.md](PRODUCT-ARCHITECTURE.md) now defines the approved product center and prototype. Oracle-led intake, Projects/Plan, Playground and Results are primary. Atlas/Node Control is an advanced System surface, not the default experience. [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md) supersedes the delivery order below where they conflict.
 
@@ -6,7 +6,7 @@ Research and plan revision: 2026-09-07. Status: proposal for discussion, not imp
 
 ## Decision in one paragraph
 
-Keep Apollo as a local, artifact-driven design workflow with one director and bounded specialists, and expose it through an Oracle-first product modeled on the task simplicity of Manus. Oracle asks the questions, the director produces an editable master plan, Playground makes routing changes safe and understandable, implementation remains the last gated stage, and Results proves quality. Node Control explains and configures the system for advanced users; it is not the home page. CrewAI remains optional future infrastructure, not a prototype dependency.
+Keep Convenium.Design as a local, artifact-driven design workflow with one director and bounded specialists, and expose it through an Oracle-first product modeled on the task simplicity of Manus. Oracle asks the questions, the director produces an editable master plan, Playground makes routing changes safe and understandable, implementation remains the last gated stage, and Results proves quality. Node Control explains and configures the system for advanced users; it is not the home page. CrewAI remains optional future infrastructure, not a prototype dependency.
 
 This document supersedes conflicting recommendations in the September 3–4 specs. Their historical approvals are recorded history, not authorization to implement now. The current request authorizes research and plan changes. It does not ask for the kickoff prompt's blanket commit or runtime implementation.
 
@@ -19,13 +19,13 @@ See [SAVRA-VERIFICATION.md](SAVRA-VERIFICATION.md) for the source comparison and
 - Savra's private repository was accessible using authenticated GitHub CLI. Its design file and CSS agree on the desktop 25vw display scale. Its run records 93/100 and Gate C pending. Its build plan is clearly an art-direction document.
 - An exact originating setup cannot be recovered from the delivered website alone. Host/model settings, loaded skill versions, original prompts and approval history are not established by the files inspected.
 - The two-run comparison is an observational case comparison with several variables changing together. It cannot isolate host parity, fresh sessions or typography as the causal explanation for the score difference.
-- Apollo Studio currently has a different, explicit doctrine: Workbench v2.1, system sans, dark surfaces and a 32px display size. That may suit dense controls; it does not by itself deliver the editorial character requested here. Any new console design must reconcile that document, not quietly override it in CSS.
+- Convenium.Design Studio currently has a different, explicit doctrine: Workbench v2.1, system sans, dark surfaces and a 32px display size. That may suit dense controls; it does not by itself deliver the editorial character requested here. Any new console design must reconcile that document, not quietly override it in CSS.
 
 Preserve the Savra method: one project-specific thesis, confident hierarchy, exact media assignments, varied compositions, motion tied to the story, and independent review. Do not turn Savra's serif, palette, portals or 25vw title into defaults for every output.
 
 ## 2. Why output can still feel generic
 
-These are design and workflow hypotheses, not findings from a new browser audit of Apollo Studio.
+These are design and workflow hypotheses, not findings from a new browser audit of Convenium.Design Studio.
 
 1. A capability inventory specifies what can run, not what a particular design should express.
 2. Generic inputs produce generic compositions even when every accessibility check passes.
@@ -50,20 +50,20 @@ Apply a substitution review: if another company's name and stock image could rep
 
 Use one taste authority per project. Proposed precedence: explicit brief → approved project direction → committed project design system → relevant doctrine → skill advice. A doctrine is a starting range, not an absolute demand for enormous type regardless of language or screen size. Record and approve exceptions.
 
-Before any external asset generation, inventory what the user can provide: brand files, licensed fonts, original photographs/video, product images and approved factual copy. For Apollo's console, use actual project thumbnails and artifacts first. No generated avatars or decorative particle media are needed for the first slice.
+Before any external asset generation, inventory what the user can provide: brand files, licensed fonts, original photographs/video, product images and approved factual copy. For Convenium.Design's console, use actual project thumbnails and artifacts first. No generated avatars or decorative particle media are needed for the first slice.
 
 ## 3. Closest systems and the CrewAI decision
 
-The closest match depends on the layer; none is a replacement for Apollo's design judgment.
+The closest match depends on the layer; none is a replacement for Convenium.Design's design judgment.
 
 | System | Relevant similarity | Recommendation |
 |---|---|---|
 | CrewAI | Roles/tasks plus explicit Flows around agent work | Closest conceptual fit; first optional runtime experiment |
 | LangGraph | Stateful execution with persistence and human intervention | Consider when complex resumability/control outweighs simplicity |
 | Langflow | Visual composition of AI application flows, agents and MCP | Useful if nondevelopers must author workflows; unnecessary for a read-only map |
-| AutoGen | Multi-agent conversation and orchestration | Do not select for a new Apollo runtime: official repository says maintenance mode and points to Microsoft Agent Framework |
+| AutoGen | Multi-agent conversation and orchestration | Do not select for a new Convenium.Design runtime: official repository says maintenance mode and points to Microsoft Agent Framework |
 | Rivet | Visual graphs for building/debugging AI applications | Inspect its execution visibility; not a design-quality engine |
-| FLORA / Krea | Creative outputs connected through visible workflows | Closest product/UI references; not proposed as Apollo's backend |
+| FLORA / Krea | Creative outputs connected through visible workflows | Closest product/UI references; not proposed as Convenium.Design's backend |
 
 Sources: [CrewAI production architecture](https://docs.crewai.com/en/concepts/production-architecture), [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview), [Langflow](https://docs.langflow.org/), [AutoGen status](https://github.com/microsoft/autogen), [Rivet](https://rivet.ironcladapp.com/), [FLORA](https://flora.ai/), [Krea Nodes](https://www.krea.ai/features/nodes).
 
@@ -111,7 +111,7 @@ Evaluate against at least 30 labeled routing/retrieval tasks including no-match,
 
 ## 5. One editorial node view
 
-The recommended direction is **Apollo Atlas**: an editorial work map. The active project or selected output is the focal object; connected references, decisions, artifacts and review evidence explain how it was made. Roles and tools are metadata revealed on selection, not decorative outer rings.
+The recommended direction is **Convenium.Design Atlas**: an editorial work map. The active project or selected output is the focal object; connected references, decisions, artifacts and review evidence explain how it was made. Roles and tools are metadata revealed on selection, not decorative outer rings.
 
 Keep the screenshot's sense of a navigable system, but abandon equal-sized orbiting icons and the unlabelled particle core. The composition should resemble a curator's annotated working table: deliberate whitespace, large project identity, media thumbnails, compact evidence annotations and a readable selected path.
 
@@ -119,7 +119,7 @@ See the rewritten [SPEC-03-CONSOLE-UI.md](SPEC-03-CONSOLE-UI.md) for the single-
 
 ## 6. Quality and reproducibility program
 
-Create a run receipt: Apollo commit, source/project commit, host/version, model/settings if exposed, skill IDs and content hashes, plugin/tool availability, brief/plan/design hashes, media manifest, dependency lockfile, approval provenance and evidence paths. Unknown fields remain unknown. Identical setup reduces drift; stochastic generation still prevents an exact output guarantee.
+Create a run receipt: Convenium.Design commit, source/project commit, host/version, model/settings if exposed, skill IDs and content hashes, plugin/tool availability, brief/plan/design hashes, media manifest, dependency lockfile, approval provenance and evidence paths. Unknown fields remain unknown. Identical setup reduces drift; stochastic generation still prevents an exact output guarantee.
 
 Build three fixture briefs: Savra-style hospitality with supplied media, a content-heavy B2B service, and a functional dashboard. Start with the same fixture on both hosts, then repeat each configuration three times where budget allows. Use identical inputs and a fixed rubric; blind reviewers to host identity. Report the score distribution, hard failures, time to approval and human repair minutes. Change one workflow variable at a time when testing causality.
 

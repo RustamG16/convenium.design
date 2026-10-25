@@ -1,6 +1,6 @@
-# Apollo
+# Convenium.Design
 
-Apollo is a portable, gated design-orchestration system: one persistent **Design Director**
+Convenium.Design is a portable, gated design-orchestration system: one persistent **Design Director**
 routes an evidence-based website redesign through explicit approval gates, activating a skill
 or specialist only when its routing condition is true. It is deliberately not an "everything
 at once" swarm — implementation cannot begin until a human selects a concept, and every run
@@ -13,7 +13,7 @@ project-specific decisions or evidence; those belong in `<website-project>/.olym
 
 New to this repo (human or agent)? Read in this order:
 
-1. [`ARCHITECTURE-ESSENTIALS.md`](ARCHITECTURE-ESSENTIALS.md) — one screen: what Apollo is, the
+1. [`ARCHITECTURE-ESSENTIALS.md`](ARCHITECTURE-ESSENTIALS.md) — one screen: what Convenium.Design is, the
    run, where things live.
 2. [`AGENTS.md`](AGENTS.md) — the full operating doctrine. This is the single source of truth
    for both hosts; `CLAUDE.md` and `PROMPT.md` only add host-specific mechanics on top.
@@ -31,11 +31,11 @@ New to this repo (human or agent)? Read in this order:
 | Tool | Version | Used for |
 |---|---|---|
 | [Git](https://git-scm.com/) | any recent | cloning, version control |
-| [Node.js](https://nodejs.org/) | ≥ 20 | Apollo Studio (`apollo-studio/`) |
+| [Node.js](https://nodejs.org/) | ≥ 20 | Convenium.Design Studio (`convenium-design-studio/`) |
 | [Python](https://www.python.org/) | 3.9+ (stdlib only) | `library/tools/*.py` — projecting and verifying the skill library |
 | PowerShell | 5.1+ (Windows) or [PowerShell 7](https://github.com/PowerShell/PowerShell) (macOS/Linux) | `scripts/*.ps1` validators |
 
-No API keys are required to use the system itself. `apollo-studio` runs in demo mode without
+No API keys are required to use the system itself. `convenium-design-studio` runs in demo mode without
 credentials and switches to live mode only if `OPENAI_API_KEY` is set in its process
 environment — never commit that key.
 
@@ -58,14 +58,14 @@ New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
   -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
 ```
 
-Cloning to a short root path (e.g. `D:\Apollo` rather than a deeply nested `Documents`
+Cloning to a short root path (e.g. `D:\Convenium.Design` rather than a deeply nested `Documents`
 folder) further reduces the risk.
 
 ### Clone and verify
 
 ```bash
 git clone https://github.com/RustamG16/convenium.design.git
-cd Apollo
+cd Convenium.Design
 ```
 
 Check the clone and this machine — stdlib Python, no installs:
@@ -75,18 +75,18 @@ python library/tools/apollo.py doctor
 ```
 
 It runs `verify.py` (the single health check: library, registry, agents, generated trees,
-plugin manifest) and then warns about anything that makes Apollo behave differently here than
-elsewhere — personal skills with the same names as Apollo's, a retired global Apollo, absolute
+plugin manifest) and then warns about anything that makes Convenium.Design behave differently here than
+elsewhere — personal skills with the same names as Convenium.Design's, a retired global Convenium.Design, absolute
 paths. It must report `verify clean` before you trust the clone.
 
 ### Install for Claude Code (recommended: as a plugin)
 
 ```text
 /plugin marketplace add RustamG16/convenium.design        (or a local path to this folder)
-/plugin install apollo@apollo
+/plugin install convenium-design@convenium-design
 ```
 
-The plugin carries every Apollo skill and agent, namespaced (`apollo:gsap-core`,
+The plugin carries every Convenium.Design skill and agent, namespaced (`apollo:gsap-core`,
 `apollo:design-director`), so nothing collides with skills you have installed personally.
 Without the plugin, start Claude Code with `claude --add-dir <this folder>` instead.
 
@@ -96,15 +96,15 @@ Without the plugin, start Claude Code with `claude --add-dir <this folder>` inst
 python library/tools/apollo.py attach <your-project>
 ```
 
-This writes `.olympus/APOLLO.md` (where Apollo lives on this machine, what to read first) and a
-short pointer block in the project's `AGENTS.md`/`CLAUDE.md`. Apollo itself is never copied in.
+This writes `.olympus/APOLLO.md` (where Convenium.Design lives on this machine, what to read first) and a
+short pointer block in the project's `AGENTS.md`/`CLAUDE.md`. Convenium.Design itself is never copied in.
 `.olympus/` is gitignored by default so client research stays private; pass
 `--commit-olympus` to keep the run trail in the project's history. `detach` reverses it.
 
-### Optional: Apollo Studio (the local console)
+### Optional: Convenium.Design Studio (the local console)
 
 ```bash
-cd apollo-studio
+cd convenium-design-studio
 npm install
 npm start
 ```
@@ -114,7 +114,7 @@ scripts, and public JS) — run it after `npm install` to confirm the clone is h
 
 ### MCP wiring (optional)
 
-The Apollo Studio MCP server is off by default, so a session never depends on the optional
+The Convenium.Design Studio MCP server is off by default, so a session never depends on the optional
 console. To turn it on in Claude Code, copy `.mcp.json.example` to `.mcp.json` (it uses
 `${CLAUDE_PROJECT_DIR}`, so no per-device edits). For Codex, copy the block from
 `.codex/config.example.toml` into `.codex/config.toml` and set the path.
@@ -125,10 +125,10 @@ console. To turn it on in Claude Code, copy `.mcp.json.example` to `.mcp.json` (
 |---|---|
 | `library/` | **Source of truth** — skills, agents, doctrines, registry, design DNA. Edit only here. |
 | `.claude/`, `.agents/`, `.codex/` | **Generated, disposable** projections of `library/` for each host. Never edit directly — rebuild with `python library/tools/project.py all`. |
-| `apollo-studio/` | Optional local control plane / same-prompt skill-comparison console (Node ≥ 20). |
+| `convenium-design-studio/` | Optional local control plane / same-prompt skill-comparison console (Node ≥ 20). |
 | `templates/` | Stable output contracts for every run (`00-brief.md` … `10-finish-review.md`, `run.json`). |
 | `config/MCP-SETUP.md` | Optional external MCP connections and their activation rules. |
-| `test_projects/` | Device-specific test/demo projects. **Gitignored** — each one is its own independent git repo, never tracked or pushed as part of Apollo. |
+| `test_projects/` | Device-specific test/demo projects. **Gitignored** — each one is its own independent git repo, never tracked or pushed as part of Convenium.Design. |
 | `scripts/` | Thin PowerShell wrappers around `library/tools/verify.py`, kept for existing habits. |
 | `unused/` | Retired plans, skills and experiments, kept instead of deleted. Nothing reads it; see `unused/README.md`. |
 
@@ -168,7 +168,7 @@ polished-but-wrong output.
 rebuild every generated tree and re-verify before committing:
 
 ```bash
-python library/tools/project.py all      # regenerate .claude/ .agents/ .codex/ .claude-plugin/ apollo-studio/knowledge/
+python library/tools/project.py all      # regenerate .claude/ .agents/ .codex/ .claude-plugin/ convenium-design-studio/knowledge/
 python library/tools/verify.py           # the single health check — exit 0 = clean
 python library/tools/build_index.py      # refresh library/INDEX.md
 ```

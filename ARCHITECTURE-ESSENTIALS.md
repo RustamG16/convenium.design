@@ -3,7 +3,7 @@
 One screen. Derived from `ARCHITECTURE.md` and `library/README.md` — do not add detail here;
 add it there and re-summarise.
 
-## What Apollo is
+## What Convenium.Design is
 
 One persistent Design Director takes a business from its Brand DNA to a verified, built
 design — today a website or a brand identity — through explicit gates, activating a skill or
@@ -44,7 +44,7 @@ Brand DNA (brand-strategist → .olympus/brand-dna.json + BRAND.md)
   ("no three directions") is a rejection to encode, not a request; "current"/"trending"/a
   named year opens a research lane that must cite live URLs. See `AGENTS.md`.
 - **Seven agents, one roster.** `library/agents/` is what both hosts run — the director, the
-  brand strategist and five specialists — and each states its own activation conditions. The console's five-name pantheon in `apollo-studio/data/`
+  brand strategist and five specialists — and each states its own activation conditions. The console's five-name pantheon in `convenium-design-studio/data/`
   is a display model; `slots.json` carries `runtimeOwner` to map between them.
 - **Greenfield**: no existing page → start at the questionnaire, `ux-evidence-audit` dormant,
   `reference-deconstruction` carries evidence.
@@ -61,7 +61,7 @@ Brand DNA (brand-strategist → .olympus/brand-dna.json + BRAND.md)
 | Registry | `library/registry/skills.registry.json` · `ROUTING-DIGEST.md` (route from this) |
 | Brand DNA (per client project) | `<project>/.olympus/brand-dna.json` · schema `library/schemas/brand-dna.schema.json` |
 | Doctrines | `library/doctrines/` — direction input to the questionnaire |
-| **Generated, disposable** | `.claude/` · `.agents/skills/` · `.codex/agents/` · `.claude-plugin/` · `apollo-studio/knowledge/` |
+| **Generated, disposable** | `.claude/` · `.agents/skills/` · `.codex/agents/` · `.claude-plugin/` · `convenium-design-studio/knowledge/` |
 | Rebuild the generated trees | `python library/tools/project.py all` |
 | Check the repo / this machine | `python library/tools/verify.py` · `python library/tools/apollo.py doctor` |
 | Connect a project | Claude plugin (`.claude-plugin/`) or `python library/tools/apollo.py attach <project>` |

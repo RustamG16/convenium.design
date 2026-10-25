@@ -1,0 +1,56 @@
+{
+  "system": "olympus-designer-system1",
+  "target_project": "sites/convenium",
+  "target_route": "/",
+  "mode": "concept-and-implementation",
+  "trail": "abridged",
+  "phase": "handoff",
+  "gate_a": "approved-in-plan",
+  "gate_b": "approved-in-plan",
+  "gate_c": "pending (user review of the pushed page)",
+  "approved_direction": "The Codex \u2014 a private universe for one inhabitant (doctrine: convenium-design-kinetic)",
+  "constraints": [
+    "static site, no bundler, no build step",
+    "media referenced by CDN url from assets/manifest.json",
+    "no invented facts: copy limited to PROFILE.md [F] facts and the profile's own proposals",
+    "generation budget <= 10 Higgsfield credits (target 0)",
+    "commit and push to claude/beautiful-meitner-23wvqh only; nothing edited outside sites/convenium"
+  ],
+  "references": [
+    "PROFILE.md",
+    "assets/manifest.json (observatory set, 14 images + 2 videos)"
+  ],
+  "assets": [
+    "see .olympus/05-asset-manifest.md"
+  ],
+  "design_system": {
+    "product_md": true,
+    "design_md": true,
+    "design_json": true,
+    "committed_before_build": true,
+    "hero_type_vw": 16,
+    "doctrine_display_range": "12-18vw (convenium-design-kinetic)",
+    "note": "impeccable craft-floor's generic 'display max 6rem' is overridden by the chosen doctrine's --display-max, as AGENTS.md's design-system rule provides (doctrine wins).",
+    "hero_type_px_at_1440": 234,
+    "mobile_hero_vw": 24
+  },
+  "qa_passes": 2,
+  "finish_verdict": "PASS WITH NOTES",
+  "finish_score": 84,
+  "credits_spent": 0,
+  "phase_counts": {
+    "intake": 1,
+    "audit": 0,
+    "direction": 1,
+    "critique": 0,
+    "prepare": 2,
+    "design_system": 1,
+    "build": 2,
+    "qa": 2,
+    "finish": 2,
+    "measurement": 1,
+    "handoff": 1
+  },
+  "last_updated": "2026-10-21",
+  "finish_score_round_one": 82
+}

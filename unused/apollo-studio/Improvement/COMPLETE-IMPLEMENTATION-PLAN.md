@@ -1,4 +1,4 @@
-# Apollo Studio — Complete One-Pass Improvement Plan
+# Convenium.Design Studio — Complete One-Pass Improvement Plan
 
 ## Delivery intent
 
@@ -9,7 +9,7 @@ The implementation task owns product code, tests, migration work, assets approve
 ## Locked product decisions
 
 - **Visual direction:** dark cinematic editorial operating system; tactile material depth, purposeful contrast, expressive typography, quiet control density, no generic dashboard-card wall.
-- **Primary system:** Olympus Web System is the visible active system with Apollo, Athena, Calliope, Hephaestus, and Hermes. The empty untitled system is preserved but archived/hidden—not deleted.
+- **Primary system:** Olympus Web System is the visible active system with Convenium.Design, Athena, Calliope, Hephaestus, and Hermes. The empty untitled system is preserved but archived/hidden—not deleted.
 - **Agent identity:** supplied god-character media is authorized for agent-profile use, subject to recorded provenance. Each agent gets a rich profile and editable operating configuration.
 - **Future extensibility:** the first release starts with the one system and five-agent cast, but supports later agent, skill, and system additions.
 - **Assistant:** project chat is available throughout Work, Systems, Library, Playground, Architecture, and Settings. Oracle is a distinct contextual assistant for explanations, drafts, proposals, approvals, progress, and recovery.
@@ -21,7 +21,7 @@ The implementation task owns product code, tests, migration work, assets approve
 
 ```text
 Native Windows frame
-└── Apollo Studio shell
+└── Convenium.Design Studio shell
     ├── Project sidebar
     │   ├── Search / command palette
     │   ├── Project groups
@@ -100,7 +100,7 @@ Library overview has category-first navigation—not one generic Knowledge page:
 
 ### Logo and brand system
 
-- Create a distinctive Apollo mark built from an abstract orbit/sun/arch construction, plus wordmark, small icon, monochrome mark, and application icon.
+- Create a distinctive Convenium.Design mark built from an abstract orbit/sun/arch construction, plus wordmark, small icon, monochrome mark, and application icon.
 - Produce a compact brand token sheet: color, material, spacing, radius, elevation, typography roles, icon rules, focus treatment, and motion durations.
 - Use the mark consistently in shell, onboarding, empty states, and media studio without turning operational pages into marketing pages.
 

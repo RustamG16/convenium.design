@@ -17,11 +17,11 @@
 
 ## 1. The problem, measured
 
-`apollo_get_context` ships **31 skills / 21,992 bytes** on every task (`PROGRESS.md`,
+`convenium_design_get_context` ships **31 skills / 21,992 bytes** on every task (`PROGRESS.md`,
 Phase 8). That is ~5.5K tokens spent before any work begins, on every request, whether or
 not the task needs any of it. `ROUTING-DIGEST.md` is likewise *loaded* in order to route.
 
-Apollo's own two-stage loading rule is correct — route from a digest, then load one body.
+Convenium.Design's own two-stage loading rule is correct — route from a digest, then load one body.
 The defect is that stage one is a **document read** rather than a **query**. Documents grow;
 queries don't.
 
@@ -118,8 +118,8 @@ can't express, the schema is wrong.
 - **Builder — Python.** `library/tools/kb.py build [--full]`. Joins the existing
   `library/tools/` chain (`project.py`, `verify.py`, `build_index.py`); `sqlite3` is stdlib.
   Walks `library/`, splits on `##`, hash-skips unchanged docs. Idempotent.
-- **Query — Node.** A tool on the **existing apollo-studio MCP server**, beside
-  `apollo_get_context`. Agents call it directly; no shell hop.
+- **Query — Node.** A tool on the **existing convenium-design-studio MCP server**, beside
+  `convenium_design_get_context`. Agents call it directly; no shell hop.
 - Both talk to the same file. Neither owns it.
 
 ## 6. Acceptance test
@@ -128,7 +128,7 @@ This is the whole justification, so it is a hard gate, not a hope:
 
 | Check | Target |
 |---|---|
-| `route()` replacing the `apollo_get_context` payload | **< 1K tokens** vs 21,992 bytes today (~5x) |
+| `route()` replacing the `convenium_design_get_context` payload | **< 1K tokens** vs 21,992 bytes today (~5x) |
 | A routing decision made from `route()` | identical skill selection to today's digest, on 10 sampled tasks |
 | `search()` return size | bounded by `limit x chars`, never unbounded |
 | `kb build` re-run with no changes | 0 writes (idempotent, hash-skipped) |

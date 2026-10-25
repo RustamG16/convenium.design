@@ -6,7 +6,7 @@ carries **only** the read order and the host-specific mechanics. All doctrine is
 
 ## Read order
 
-1. `ARCHITECTURE-ESSENTIALS.md` — one screen: what Apollo is, the run, where things live.
+1. `ARCHITECTURE-ESSENTIALS.md` — one screen: what Convenium.Design is, the run, where things live.
 2. `AGENTS.md` — the operating doctrine. Read in full.
 3. `START-HERE.md` — the gated workflow and the intake questions.
 4. Then only the file the current decision needs: `ARCHITECTURE.md` for the full routing
@@ -30,7 +30,7 @@ routing decision, one per phase.
   to `.agents/` (Codex) and this host fell back to a plugin copy that ships no scripts, which
   meant Claude ran a materially weaker loadout than Codex on the same repository.
 - **Every skill the pipeline needs is bundled** — `gsap-*`, `apple-design` and
-  `emil-design-eng` included. Use the `.claude/skills/` copy (or `apollo:<id>` when Apollo is
+  `emil-design-eng` included. Use the `.claude/skills/` copy (or `convenium-design:<id>` when Convenium.Design is
   installed as a plugin), never a same-named personal or plugin skill: those differ between
   machines.
 - **Tooling is stdlib Python and cross-platform.** `python library/tools/verify.py` is the one
@@ -56,9 +56,9 @@ routing decision, one per phase.
 ## Do not
 
 - Edit anything under `.claude/`, `.agents/skills/`, `.codex/agents/`, or
-  `apollo-studio/knowledge/skills/` — they are generated from `library/` and overwritten.
+  `convenium-design-studio/knowledge/skills/` — they are generated from `library/` and overwritten.
 - Write project evidence into this repo. It goes in `<website-project>/.olympus/`.
-- Touch `apollo-studio/data/`, `evidence/`, `handoffs/`, `public/media/`, or any `.olympus/`.
+- Touch `convenium-design-studio/data/`, `evidence/`, `handoffs/`, `public/media/`, or any `.olympus/`.
 - Read or route from `unused/` — it is retired material, indexed in `unused/README.md`.
 
 ## For humans

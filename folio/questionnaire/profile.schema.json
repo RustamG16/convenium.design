@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://folio.site/schema/profile/v1.json",
+  "title": "Folio profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "person", "intent", "role", "experience", "projects", "work", "education", "skills", "recognition", "testimonials", "links", "contact", "preferences"],
+  "$defs": {
+    "vis": { "type": "string", "enum": ["public", "private"], "default": "public" },
+    "ym": { "type": ["string", "null"], "pattern": "^\\d{4}(-\\d{2})?$|^present$" },
+    "year": { "type": ["integer", "null"], "minimum": 1900, "maximum": 2100 },
+    "url": { "type": ["string", "null"], "maxLength": 500 },
+    "short": { "type": ["string", "null"], "maxLength": 160 },
+    "summary": { "type": "string", "maxLength": 600 }
+  },
+  "properties": {
+    "meta": { "type": "object", "required": ["schemaVersion"], "properties": {
+      "schemaVersion": { "const": 1 }, "generatedBy": { "type": ["string", "null"], "maxLength": 80 },
+      "language": { "type": "string", "pattern": "^[a-z]{2}(-[A-Z]{2})?$", "default": "en" },
+      "createdAt": { "type": ["string", "null"] } } },
+    "person": { "type": "object", "required": ["name", "headline", "summary"], "properties": {
+      "name": { "type": "string", "minLength": 1, "maxLength": 80 }, "pronouns": { "$ref": "#/$defs/short" },
+      "headline": { "type": "string", "minLength": 1, "maxLength": 90 }, "summary": { "$ref": "#/$defs/summary" },
+      "location": { "$ref": "#/$defs/short" }, "languages": { "type": "array", "items": { "type": "string" }, "maxItems": 10 },
+      "availability": { "$ref": "#/$defs/short" }, "photoDescription": { "$ref": "#/$defs/short" } } },
+    "intent": { "type": "object", "required": ["goal", "audience"], "properties": {
+      "goal": { "type": "string", "enum": ["hired", "clients", "collaborators", "press", "academic", "personal"] },
+      "audience": { "type": "string", "maxLength": 200 }, "callToAction": { "$ref": "#/$defs/short" } } },
+    "role": { "type": "object", "required": ["primary"], "properties": {
+      "primary": { "type": "string", "enum": ["engineer", "designer", "visual", "writer", "founder", "consultant", "researcher", "student"] },
+      "secondary": { "type": ["string", "null"], "enum": ["engineer", "designer", "visual", "writer", "founder", "consultant", "researcher", "student", null] },
+      "selfDescribed": { "type": "string", "maxLength": 200 } } },
+    "experience": { "type": "array", "maxItems": 10, "items": { "type": "object", "required": ["organization", "title", "summary"], "properties": {
+      "organization": { "type": "string", "maxLength": 120 }, "title": { "type": "string", "maxLength": 120 },
+      "start": { "$ref": "#/$defs/ym" }, "end": { "$ref": "#/$defs/ym" }, "location": { "$ref": "#/$defs/short" },
+      "summary": { "$ref": "#/$defs/summary" }, "highlights": { "type": "array", "items": { "type": "string", "maxLength": 200 }, "maxItems": 5 },
+      "visibility": { "$ref": "#/$defs/vis" } } } },
+    "projects": { "type": "array", "maxItems": 12, "items": { "type": "object", "required": ["name", "summary"], "properties": {
+      "name": { "type": "string", "maxLength": 120 }, "role": { "$ref": "#/$defs/short" }, "year": { "$ref": "#/$defs/year" },
+      "summary": { "$ref": "#/$defs/summary" }, "outcome": { "type": ["string", "null"], "maxLength": 300 }, "url": { "$ref": "#/$defs/url" },
+      "tags": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "maxItems": 8 }, "mediaDescription": { "$ref": "#/$defs/short" },
+      "visibility": { "$ref": "#/$defs/vis" } } } },
+    "work": { "type": "array", "maxItems": 24, "items": { "type": "object", "required": ["title", "kind"], "properties": {
+      "title": { "type": "string", "maxLength": 120 }, "kind": { "type": "string", "enum": ["photo", "illustration", "3d", "motion", "film", "writing", "product", "other"] },
+      "year": { "$ref": "#/$defs/year" }, "caption": { "type": ["string", "null"], "maxLength": 300 }, "url": { "$ref": "#/$defs/url" },
+      "mediaDescription": { "$ref": "#/$defs/short" }, "visibility": { "$ref": "#/$defs/vis" } } } },
+    "education": { "type": "array", "maxItems": 6, "items": { "type": "object", "required": ["institution"], "properties": {
+      "institution": { "type": "string", "maxLength": 120 }, "degree": { "$ref": "#/$defs/short" }, "field": { "$ref": "#/$defs/short" },
+      "start": { "$ref": "#/$defs/year" }, "end": { "$ref": "#/$defs/year" }, "note": { "type": ["string", "null"], "maxLength": 300 },
+      "visibility": { "$ref": "#/$defs/vis" } } } },
+    "skills": { "type": "array", "maxItems": 8, "items": { "type": "object", "required": ["group", "items"], "properties": {
+      "group": { "type": "string", "maxLength": 60 }, "items": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "maxItems": 15 } } } },
+    "recognition": { "type": "object", "properties": {
+      "publications": { "type": "array", "maxItems": 20, "items": { "type": "object", "required": ["title"], "properties": { "title": { "type": "string", "maxLength": 200 }, "venue": { "$ref": "#/$defs/short" }, "year": { "$ref": "#/$defs/year" }, "url": { "$ref": "#/$defs/url" } } } },
+      "talks": { "type": "array", "maxItems": 20, "items": { "type": "object", "required": ["title"], "properties": { "title": { "type": "string", "maxLength": 200 }, "event": { "$ref": "#/$defs/short" }, "year": { "$ref": "#/$defs/year" }, "url": { "$ref": "#/$defs/url" } } } },
+      "awards": { "type": "array", "maxItems": 20, "items": { "type": "object", "required": ["title"], "properties": { "title": { "type": "string", "maxLength": 200 }, "by": { "$ref": "#/$defs/short" }, "year": { "$ref": "#/$defs/year" } } } } } },
+    "testimonials": { "type": "array", "maxItems": 6, "items": { "type": "object", "required": ["quote", "name"], "properties": {
+      "quote": { "type": "string", "maxLength": 300 }, "name": { "type": "string", "maxLength": 80 }, "role": { "$ref": "#/$defs/short" }, "visibility": { "$ref": "#/$defs/vis" } } } },
+    "links": { "type": "array", "maxItems": 12, "items": { "type": "object", "required": ["label", "url"], "properties": { "label": { "type": "string", "maxLength": 40 }, "url": { "type": "string", "maxLength": 500 } } } },
+    "contact": { "type": "object", "properties": { "email": { "type": ["string", "null"], "maxLength": 200 }, "showEmail": { "type": "boolean", "default": false }, "preferForm": { "type": "boolean", "default": true } } },
+    "preferences": { "type": "object", "required": ["vibe", "colorFeeling", "motionAppetite", "tone"], "properties": {
+      "vibe": { "type": "array", "items": { "type": "string", "maxLength": 30 }, "minItems": 1, "maxItems": 3 },
+      "references": { "type": "array", "items": { "type": "string", "maxLength": 80 }, "maxItems": 5 },
+      "avoid": { "type": "array", "items": { "type": "string", "maxLength": 80 }, "maxItems": 8 },
+      "colorFeeling": { "type": "string", "enum": ["dark", "light", "none"] },
+      "motionAppetite": { "type": "string", "enum": ["none", "calm", "lively"] },
+      "tone": { "type": "string", "enum": ["plain", "warm", "bold", "formal"] } } }
+  }
+}

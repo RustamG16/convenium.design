@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://folio.site/schema/dna/v1.json",
+  "title": "Folio design DNA v1",
+  "type": "object",
+  "required": ["version", "seed", "family", "ground", "palette", "type", "scale", "density", "rhythm", "motion", "hero", "media", "sliders", "sentences", "contrast"],
+  "properties": {
+    "version": { "const": 1 },
+    "seed": { "type": "string", "description": "hash(profileId); every choice derives from it" },
+    "family": { "type": "string", "enum": ["atelier", "kinetic", "instrument", "cyberpunk-athens", "editorial", "warm", "gallery"] },
+    "familyScores": { "type": "object", "additionalProperties": { "type": "number" } },
+    "ground": { "type": "string", "enum": ["dark", "light"] },
+    "palette": { "type": "object", "required": ["ground", "surface", "figure", "muted", "accent", "accentOn"], "properties": {
+      "ground": { "type": "string" }, "surface": { "type": "string" }, "figure": { "type": "string" }, "muted": { "type": "string" },
+      "accent": { "type": "string" }, "accentOn": { "type": "string" }, "accentHue": { "type": "number" }, "accentName": { "type": "string" } } },
+    "contrast": { "type": "object", "description": "measured ratios for every legal pairing", "additionalProperties": { "type": "number" } },
+    "type": { "type": "object", "required": ["pairing", "display", "text"], "properties": {
+      "pairing": { "type": "string" }, "display": { "type": "string" }, "text": { "type": "string" },
+      "hero": { "type": "object", "properties": { "fontSize": { "type": "string" }, "lineHeight": { "type": "number" }, "letterSpacing": { "type": "string" }, "fontWeight": { "type": "integer" } } } } },
+    "scale": { "type": "number" },
+    "density": { "type": "string", "enum": ["low", "medium", "high"] },
+    "rhythm": { "type": "string", "enum": ["flow", "viewport"] },
+    "motion": { "type": "object", "required": ["level"], "properties": { "level": { "type": "string", "enum": ["none", "calm", "lively"] }, "durations": { "type": "object", "properties": { "micro": { "type": "integer" }, "move": { "type": "integer" }, "scene": { "type": "integer" } } }, "easeOut": { "type": "string" } } },
+    "hero": { "type": "object", "required": ["variant"], "properties": { "variant": { "type": "string" } } },
+    "media": { "type": "object", "properties": { "treatment": { "type": "string" }, "scrimOwner": { "type": "string", "enum": ["type", "media"] } } },
+    "sliders": { "type": "object", "required": ["loud", "warm"], "properties": { "loud": { "type": "number", "minimum": -1, "maximum": 1 }, "warm": { "type": "number", "minimum": -1, "maximum": 1 } } },
+    "sentences": { "type": "array", "items": { "type": "string" }, "minItems": 3, "maxItems": 3 },
+    "notes": { "type": "array", "items": { "type": "string" }, "description": "overrides and nudges applied, for the evidence trail" }
+  }
+}

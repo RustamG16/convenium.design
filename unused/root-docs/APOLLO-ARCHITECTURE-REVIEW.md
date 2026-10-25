@@ -1,6 +1,6 @@
-# Apollo — architecture & orchestration review
+# Convenium.Design — architecture & orchestration review
 
-Reviewed: `D:\Analyst_Designer\Apollo` (Olympus context pack + `apollo-studio/`), 14 Aug 2026.
+Reviewed: `D:\Analyst_Designer\Convenium.Design` (Olympus context pack + `convenium-design-studio/`), 14 Aug 2026.
 Scope of this document: **architecture and orchestration only.** UI is reviewed separately.
 
 ---
@@ -11,7 +11,7 @@ The repo contains two different things that share a name and contradict each oth
 
 **Olympus** (`START-HERE.md`, `AGENTS.md`, `ARCHITECTURE.md`, `.agents/skills/`, `.codex/agents/`, `templates/`) is a *prompt/context pack*. The runtime is the host — Codex, Cursor, Claude Code. Its value is the gated workflow: intake → audit → Gate A → 3 concepts → Gate B → build → QA → Gate C. It is well written and internally coherent.
 
-**Apollo Studio** (`apollo-studio/`) is a *local Node app* that calls the OpenAI Responses API itself, with its own agent registry, its own skill catalog, its own event log, and its own planner. It re-implements the orchestration in code — badly, and with none of the gates.
+**Convenium.Design Studio** (`convenium-design-studio/`) is a *local Node app* that calls the OpenAI Responses API itself, with its own agent registry, its own skill catalog, its own event log, and its own planner. It re-implements the orchestration in code — badly, and with none of the gates.
 
 The consequence is that almost every concept exists twice, in two incompatible representations:
 
@@ -19,7 +19,7 @@ The consequence is that almost every concept exists twice, in two incompatible r
 |---|---|---|---|
 | Skills | `.agents/skills/*/SKILL.md` (rich, 2–25 KB, the real thing) | `skills.mjs` one-line `runtimePrompt` strings | Total. The studio never reads a single SKILL.md. |
 | Skills again | `skills.mjs` (21 built-ins) | `knowledge/index.json` custom skills (1) | Two registries merged at read time |
-| Skills a third time | `skills-lock.json` (8 Higgsfield skills, hashed) | not referenced by anything in `apollo-studio/` | Dead registry |
+| Skills a third time | `skills-lock.json` (8 Higgsfield skills, hashed) | not referenced by anything in `convenium-design-studio/` | Dead registry |
 | Agents | `agents.mjs → agentDefinitions` + `knowledge/agents.json` | `data/systems.json → system.agents` | **Only B affects planning. A is inert.** |
 | Workflow | Olympus Gates A/B/C | `plan.steps[].approval` boolean | Gates do not exist at runtime |
 | Phases | `START-HERE.md` sequence | `phaseByAgent` map in `systems.mjs` | Phases are labels, never enforced |
@@ -86,7 +86,7 @@ maxOutputTokens: Math.min(10_000, Math.max(1000, budget - plan.allocatedBudget))
 The server binds `127.0.0.1` (good) but has **no `Origin` check, no `Host` check, no token, and ignores `Content-Type`** (`readJson`, `server.mjs:26-35`, parses any body). Any web page the user has open can `fetch('http://127.0.0.1:4173/api/oracle/chat', {method:'POST', body:'…'})` with a simple content-type and trigger paid model calls, write files into `knowledge/`, create systems, or read `/api/config`. For a local tool holding an API key this is the one security issue I'd fix before anything else.
 
 ### S8 — arbitrary file read via `previewPath`
-`systems.mjs:211-222` resolves `output.previewPath` under the Apollo root and correctly blocks `..` — but then does `mime = ext === '.png' ? 'image/png' : 'image/jpeg'` with **no extension allowlist**. Any file under `D:\Analyst_Designer\Apollo` (a `.env`, a SKILL.md, a handoff) can be served over HTTP labelled as a JPEG. `previewPath` is settable via the unauthenticated `POST /api/systems/:id/outputs` and via the MCP tool `apollo_save_output`.
+`systems.mjs:211-222` resolves `output.previewPath` under the Convenium.Design root and correctly blocks `..` — but then does `mime = ext === '.png' ? 'image/png' : 'image/jpeg'` with **no extension allowlist**. Any file under `D:\Analyst_Designer\Convenium.Design` (a `.env`, a SKILL.md, a handoff) can be served over HTTP labelled as a JPEG. `previewPath` is settable via the unauthenticated `POST /api/systems/:id/outputs` and via the MCP tool `convenium_design_save_output`.
 
 ### S9 — no timeouts, no retries, no cancellation
 Every `fetch` to OpenAI (`server.mjs:52`, `65`) has no `AbortSignal`. A hung upstream hangs the HTTP handler indefinitely; the browser has no cancel button and no way to abandon a run. No backoff on 429/5xx — a rate limit surfaces as a failed specialist with a raw error string.
@@ -110,7 +110,7 @@ The top-level catch (`server.mjs:253`) returns HTTP 400 for internal failures, s
 `agents.mjs:56`. `"design"`, `"website"`, `"ui"` fire the Experience Designer on nearly every prompt. `"Please add no animation"` fires the Motion Engineer. `"generate"` fires the approval-gated Media Producer. There is no scoring, no threshold, no way for the planner to say "no specialist needed".
 
 ### S16 — zero commits, and runtime state is tracked
-`git log` → *"your current branch 'main' does not have any commits yet."* Every file in this review is uncommitted. `.gitignore` excludes only `apollo-studio/data/*.jsonl`, so `data/systems.json` (runtime state, seeded with a `Savra_Restraunt` demo output pointing at `test_projects/`), `knowledge/index.json`, and every generated `README.md` will land in the first commit as source.
+`git log` → *"your current branch 'main' does not have any commits yet."* Every file in this review is uncommitted. `.gitignore` excludes only `convenium-design-studio/data/*.jsonl`, so `data/systems.json` (runtime state, seeded with a `Savra_Restraunt` demo output pointing at `test_projects/`), `knowledge/index.json`, and every generated `README.md` will land in the first commit as source.
 
 ### S17 — no tests
 `npm run check` is `node --check` — syntax only. There is no test for `buildPlan`, no schema validation on any API body, and no fixture asserting that a given prompt produces a given route. The single most testable, highest-value unit in the system (the planner) is entirely unverified.
@@ -134,7 +134,7 @@ Worth preserving in any rewrite:
 
 The planner is the valuable part and it is deterministic and free. The specialist fan-out is the expensive part and it degrades the answer. Invert the current emphasis:
 
-**Apollo should plan, gate, and record. The host (Claude Code / Codex / Cursor) should execute.**
+**Convenium.Design should plan, gate, and record. The host (Claude Code / Codex / Cursor) should execute.**
 
 That means:
 - `buildPlan` becomes a real, tested, dependency-aware planner over a run state machine with Gates A/B/C as first-class, persisted states.

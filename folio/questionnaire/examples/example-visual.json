@@ -1,0 +1,23 @@
+{
+  "meta": { "schemaVersion": 1, "generatedBy": "example (hand-written fixture)", "language": "en", "createdAt": "2026-10-22" },
+  "person": { "name": "Lena Hartmann", "pronouns": "she/her", "headline": "Still-life and food photographer in Vienna", "summary": "I photograph food, objects and the people who make them for restaurants, small producers and magazines. Natural light where possible, a lot of patience, and sets I build myself.", "location": "Vienna, Austria", "languages": ["de", "en"], "availability": "Booking from January", "photoDescription": null },
+  "intent": { "goal": "clients", "audience": "Restaurants, food brands and magazine editors in Austria and Germany", "callToAction": "Book a shoot" },
+  "role": { "primary": "visual", "secondary": null, "selfDescribed": "photographer" },
+  "experience": [
+    { "organization": "Freelance", "title": "Photographer", "start": "2019-03", "end": "present", "location": "Vienna", "summary": "Editorial and commercial still-life and food photography.", "highlights": ["Regular contributor to Falstaff", "Campaign for a Styrian pumpkin-seed oil cooperative"], "visibility": "public" },
+    { "organization": "Studio Weiss", "title": "Assistant", "start": "2016-09", "end": "2019-02", "location": "Vienna", "summary": "Lighting and set assistant on product and food shoots.", "highlights": [], "visibility": "public" }
+  ],
+  "projects": [],
+  "work": [
+    { "title": "Bread, morning", "kind": "photo", "year": 2025, "caption": "Series for a bakery in the 7th district.", "url": null, "mediaDescription": "Loaves on a flour-dusted wooden table, side light", "visibility": "public" },
+    { "title": "Falstaff: Weinviertel", "kind": "photo", "year": 2024, "caption": "Magazine feature, 12 pages.", "url": null, "mediaDescription": "Glasses of white wine on stone, overcast light", "visibility": "public" },
+    { "title": "Pumpkin seed oil campaign", "kind": "photo", "year": 2024, "caption": "Packshots and lifestyle for a cooperative.", "url": null, "mediaDescription": "Dark green oil bottle on black slate", "visibility": "public" }
+  ],
+  "education": [ { "institution": "Prager Fotoschule", "degree": "Diploma", "field": "Photography", "start": 2014, "end": 2016, "note": null, "visibility": "public" } ],
+  "skills": [ { "group": "Photography", "items": ["Still life", "Food", "Natural light", "Set building"] }, { "group": "Post", "items": ["Capture One", "Retouching"] } ],
+  "recognition": { "publications": [], "talks": [], "awards": [ { "title": "Austrian Food Photography Award, shortlist", "by": null, "year": 2025 } ] },
+  "testimonials": [ { "quote": "Lena made our bread look the way it tastes.", "name": "Josef Brandl", "role": "Owner, Brandl Bäckerei", "visibility": "public" } ],
+  "links": [ { "label": "Instagram", "url": "https://instagram.com/example" } ],
+  "contact": { "email": null, "showEmail": false, "preferForm": true },
+  "preferences": { "vibe": ["quiet", "warm", "honest"], "references": ["Kinfolk", "Cereal magazine"], "avoid": ["stock photos", "neon", "pop-ups"], "colorFeeling": "light", "motionAppetite": "calm", "tone": "warm" }
+}

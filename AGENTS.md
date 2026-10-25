@@ -91,8 +91,8 @@ The Brand DNA is load-bearing. Every project gets one before Gate A: the `brand-
 specialist analyses the business (its site, socials, reviews, competitors and media, or an
 interview when there is no public presence) and writes `.olympus/brand-dna.json` plus
 `BRAND.md` in the project — business, audience, voice, taste, doctrine match and the ranked
-products it needs. The taste part comes from `$apollo-taste-interview` or
-`$apollo-style-picker` rather than guessing. Client DNA lives with the client project, never in
+products it needs. The taste part comes from `$convenium-design-taste-interview` or
+`$convenium-design-style-picker` rather than guessing. Client DNA lives with the client project, never in
 this repository; a user's personal default taste may live in `~/.apollo/taste.json`.
 
 Greenfield work has an entry: with no existing page the run starts at the questionnaire,
@@ -141,7 +141,7 @@ in `AGENTS.md`" rather than restating a number.
 
 Record per-run phase counts in `<website-project>/.olympus/run.json` under `phase_counts`
 (increment the phase key each time a phase runs, including repeats). This is the only place
-Apollo measures its own loop cost, so the bounds above can be tuned against real data.
+Convenium.Design measures its own loop cost, so the bounds above can be tuned against real data.
 
 ## Safety and quality
 

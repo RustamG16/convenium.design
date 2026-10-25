@@ -6,8 +6,8 @@
 
 | Skill | Phase | Status | Hosts | Purpose |
 |---|---|---|---|---|
-| `apollo-style-picker` | direct | active | c/c/s | Path B of the taste-profile system. Presents the built-in design doctrines, pre-fills a taste profile from the chosen one, then… |
-| `apollo-taste-interview` | direct | active | c/c/s | Path A of the taste-profile system. Runs a structured interview that is a 1:1 walk through taste-profile.schema.json's fields, … |
+| `convenium-design-style-picker` | direct | active | c/c/s | Path B of the taste-profile system. Presents the built-in design doctrines, pre-fills a taste profile from the chosen one, then… |
+| `convenium-design-taste-interview` | direct | active | c/c/s | Path A of the taste-profile system. Runs a structured interview that is a 1:1 walk through taste-profile.schema.json's fields, … |
 | `apple-design` | direct | active | c/c/s | Applies Apple-inspired purpose, agency, familiarity, simplicity, typography, material restraint, and fluid interaction principl… |
 | `awwwards-web-design` | build | active | c/c/s | Adds premium editorial craft after hierarchy is stable. |
 | `better-colors` | unrouted | active | c/c/s | Helps you build and check a color system for your project. It generates palettes, names semantic tokens, converts between forma… |

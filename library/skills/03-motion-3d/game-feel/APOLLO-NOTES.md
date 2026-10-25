@@ -1,4 +1,4 @@
-# Apollo notes: game-feel on the web
+# Convenium.Design notes: game-feel on the web
 
 Vendored 2026-10-14 from `gamedev-skills/awesome-gamedev-agent-skills`
 (`skills/disciplines/game-feel`, commit `0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd`), Apache-2.0.
@@ -11,7 +11,7 @@ layered feedback, transient exaggeration, and importance tiers. The APIs do not.
 
 ## Mapping
 
-| Upstream | Web equivalent | Owner skill in Apollo |
+| Upstream | Web equivalent | Owner skill in Convenium.Design |
 |---|---|---|
 | `Tween` with `TRANS_BACK` / overshoot | `gsap.to(el, { scale: 1, ease: "back.out(1.7)" })` or CSS `cubic-bezier(.34,1.56,.64,1)` | `gsap-core`, `animate` |
 | Ease-out "settle" | `power2.out` / `cubic-bezier(.22,1,.36,1)` | `gsap-core` |

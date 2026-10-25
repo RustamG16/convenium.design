@@ -1,7 +1,7 @@
 # WebGL implementation guardrails
 
 - Type: note
-- Origin: `apollo-studio/knowledge/index.json` `sources["three-js-implementation"]`, saved
+- Origin: `convenium-design-studio/knowledge/index.json` `sources["three-js-implementation"]`, saved
   2026-08-10. `three-js-implementation` was deleted in the unification (Phase 1); this note
   is kept because it still applies to `webgl-experience`.
 

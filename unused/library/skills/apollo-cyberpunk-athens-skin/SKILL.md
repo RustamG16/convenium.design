@@ -1,18 +1,18 @@
 ---
-name: apollo-cyberpunk-athens-skin
-description: Regenerate dashboard/css/tokens.cyberpunk-athens.css from the Cyberpunk Athens doctrine's token block, whenever the doctrine file changes. This is the mechanical derivation step CLAUDE.md's "Never hand-edit tokens.cyberpunk-athens.css directly" rule depends on. Trigger phrases - "regenerate the cyberpunk athens skin", "sync the dashboard css to the doctrine", "update the skin css". Do NOT use for - defining or changing the doctrine itself (that's the apollo-cyberpunk-athens agent's job; this skill only translates what's already decided there into CSS).
+name: convenium-design-cyberpunk-athens-skin
+description: Regenerate dashboard/css/tokens.cyberpunk-athens.css from the Cyberpunk Athens doctrine's token block, whenever the doctrine file changes. This is the mechanical derivation step CLAUDE.md's "Never hand-edit tokens.cyberpunk-athens.css directly" rule depends on. Trigger phrases - "regenerate the cyberpunk athens skin", "sync the dashboard css to the doctrine", "update the skin css". Do NOT use for - defining or changing the doctrine itself (that's the convenium-design-cyberpunk-athens agent's job; this skill only translates what's already decided there into CSS).
 ---
 
-# Apollo Cyberpunk Athens Skin
+# Convenium.Design Cyberpunk Athens Skin
 
 The dashboard's colour skin is derived, not hand-maintained — same discipline as
 `architecture-essentials.md` being derived from `architecture.md`. This skill is that
 derivation step. Run it after any edit to
-`.claude/agents/apollo-cyberpunk-athens.md`'s `## Tokens` section.
+`.claude/agents/convenium-design-cyberpunk-athens.md`'s `## Tokens` section.
 
 ## Procedure
 
-1. Read `.claude/agents/apollo-cyberpunk-athens.md`'s `## Tokens` block — the current
+1. Read `.claude/agents/convenium-design-cyberpunk-athens.md`'s `## Tokens` block — the current
    source values for `--marble`, `--crack-primary`, `--crack-gold`, `--env-magenta`,
    `--ground-black`, `--halo-ring`, `--type-display`, `--type-ui`, `--tracking`.
 2. Read `dashboard/css/tokens.cyberpunk-athens.css`'s current values. It is scoped
@@ -32,7 +32,7 @@ derivation step. Run it after any edit to
    If the doctrine file changed one of these, update the matching CSS custom property.
 4. Leave `tokens.base.css` untouched — it owns all structure (type scale, spacing,
    density, motion curves, focus ring, reduced-motion) and is itself derived from
-   `apollo-instrument.md`. This skill only owns this theme's palette and its one
+   `convenium-design-instrument.md`. This skill only owns this theme's palette and its one
    signature motion (`cpa-glow-pulse`), never structure (`architecture.md` §8).
 5. State which properties changed and why, so the change is traceable back to the
    doctrine edit that caused it.

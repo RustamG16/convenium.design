@@ -1,6 +1,6 @@
-# Apollo — product architecture (SaaS)
+# Convenium.Design — product architecture (SaaS)
 
-Target: turn the local Olympus/Apollo prototype into a hosted product.
+Target: turn the local Olympus/Convenium.Design prototype into a hosted product.
 Written 14 Aug 2026. Decisions below are **made, not asked** — override any of them and I'll re-cut the plan.
 
 ---
@@ -11,14 +11,14 @@ They are the same decision made twice. Build an **API-first hosted web product**
 
 What matters is the axis you actually have to choose on, which is **who pays for and performs the model work**:
 
-| | Apollo executes | Customer's agent executes |
+| | Convenium.Design executes | Customer's agent executes |
 |---|---|---|
 | Customer needs | Nothing. Sign up, get output. | Claude Code / Codex / Cursor installed |
 | Your cost | Inference is your COGS | ~zero marginal cost |
 | Market | Anyone with taste and a budget | Developers who already run agent CLIs |
 | Pricing | Subscription + metered credits | Flat seat price |
 
-**Decision: build "Apollo executes" as the product, and keep "customer's agent executes" as an interface, not a second product.** A paying non-technical customer must get a result without installing a CLI — that is the whole premise of the taste-first user in your own `handoffs/phase-3/START-HERE.md`. But execution sits behind one `Executor` interface with two implementations, so the BYO-agent tier is a plan flag rather than a rewrite. You need that interface anyway to test without spending money.
+**Decision: build "Convenium.Design executes" as the product, and keep "customer's agent executes" as an interface, not a second product.** A paying non-technical customer must get a result without installing a CLI — that is the whole premise of the taste-first user in your own `handoffs/phase-3/START-HERE.md`. But execution sits behind one `Executor` interface with two implementations, so the BYO-agent tier is a plan flag rather than a rewrite. You need that interface anyway to test without spending money.
 
 This reverses the recommendation I gave for the local tool, and it should: a control plane that delegates to the user's laptop cannot be sold to someone who doesn't have the laptop set up.
 
@@ -63,7 +63,7 @@ Chosen for a solo builder shipping a metered, long-running, human-gated AI produ
 
 ## 3. The run engine is the architecture
 
-An Apollo run is **long-lived, resumable, and blocks on a human** — potentially for days at Gate B. That is not a request/response, and it is not a cron job. Trying to hold it in an HTTP handler is precisely why the current `handleOracle` had to collapse the whole workflow into one synchronous fan-out.
+An Convenium.Design run is **long-lived, resumable, and blocks on a human** — potentially for days at Gate B. That is not a request/response, and it is not a cron job. Trying to hold it in an HTTP handler is precisely why the current `handleOracle` had to collapse the whole workflow into one synchronous fan-out.
 
 Durable execution engines exist for exactly this shape, and the human-approval case is a first-class primitive rather than something you assemble. In Inngest it is `step.waitForEvent`, which suspends the function — not a process, not a paid worker — until a matching event arrives or a timeout fires ([Inngest docs](https://www.inngest.com/docs/features/inngest-functions/steps-workflows/wait-for-event)). The category is well-populated as of 2026 (Temporal, Inngest, DBOS, Restate, Trigger.dev), and the trade-offs are documented ([Upstash comparison](https://upstash.com/blog/durable-workflow-engines-compared-every-major-option-in-2026), [Reactify on durable AI agents](https://www.reactify-solutions.com/articles/durable-ai-agents-2026)).
 
@@ -74,14 +74,14 @@ The Olympus workflow expressed directly:
 ```ts
 export const runOlympus = inngest.createFunction(
   { id: 'olympus-run', concurrency: { key: 'event.data.orgId', limit: 2 } },
-  { event: 'apollo/run.requested' },
+  { event: 'convenium-design/run.requested' },
   async ({ event, step }) => {
     const plan  = await step.run('plan', () => buildPlan(event.data))      // pure, free
     const audit = await step.run('audit', () => executor.run(plan.steps.audit))
 
     await step.run('request-gate-a', () => openGate(runId, 'A', audit))
     const gateA = await step.waitForEvent('gate-a', {                       // ← blocks. days if needed.
-      event: 'apollo/gate.resolved',
+      event: 'convenium-design/gate.resolved',
       match: 'data.runId',
       timeout: '14d'
     })
@@ -141,9 +141,9 @@ interface Executor {
 
 Three implementations:
 
-- `HostedExecutor` — real provider calls with Apollo's key. Loads the pinned `skill_version.body` (the **full** SKILL.md, not a one-line summary), the step's `inputs`, and the system instructions. Enforces a hard per-run credit ceiling *before* dispatch, and records usage after.
+- `HostedExecutor` — real provider calls with Convenium.Design's key. Loads the pinned `skill_version.body` (the **full** SKILL.md, not a one-line summary), the step's `inputs`, and the system instructions. Enforces a hard per-run credit ceiling *before* dispatch, and records usage after.
 - `MockExecutor` — deterministic fixtures. Every test and every CI run uses this. This is what "demo mode" should have been: a test seam, not a product mode.
-- `McpExecutor` — later, for the BYO-agent tier. Emits a step spec over MCP and waits for `apollo_submit_artifact`.
+- `McpExecutor` — later, for the BYO-agent tier. Emits a step spec over MCP and waits for `convenium_design_submit_artifact`.
 
 Rules that must hold at the interface: the executor never delegates (no nested spawning), never sees another org's data, and always writes usage even on failure.
 
@@ -204,7 +204,7 @@ Phase 3 is the proof point: if a fully gated run works end-to-end against `MockE
 | 6 — charts (usage/credits) | **`dataviz`** | Read before writing the first chart |
 | 7 — MCP tier | **`mcp-builder`** | Directly on point |
 
-Not applicable despite appearances: `awwwards-web-design` excludes dashboards and internal tools by its own description, and Apollo's console is one. The GSAP skills apply only if a marketing site justifies them — not the app.
+Not applicable despite appearances: `awwwards-web-design` excludes dashboards and internal tools by its own description, and Convenium.Design's console is one. The GSAP skills apply only if a marketing site justifies them — not the app.
 
 ---
 

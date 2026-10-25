@@ -105,7 +105,7 @@
     "items_per_primary_example": {
       "B1_Languages": ["TypeScript", "JavaScript (ES2024+)", "WebAssembly", "CSS / Sass"],
       "B2_Frameworks": ["React 19", "Next.js 15", "Vue 3", "Svelte 5", "Solid"],
-      "B3_State_Data": ["TanStack Query", "Zustand", "Jotai", "URQL / Apollo", "tRPC"],
+      "B3_State_Data": ["TanStack Query", "Zustand", "Jotai", "URQL / Convenium.Design", "tRPC"],
       "B4_Build_Tooling": ["Vite", "Turbopack", "Bun", "pnpm + Turborepo", "Biome"],
       "B5_Testing": ["Vitest", "Playwright", "Storybook", "MSW"],
       "B6_Performance": ["Core Web Vitals", "RUM", "Bundle analysis", "Image / Font opt"]

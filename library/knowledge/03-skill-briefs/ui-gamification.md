@@ -22,5 +22,5 @@ celebration intensity and anti-patterns.
 
 ## What replaced it
 
-`library/skills/02-web-build/gamified-ui`, an original Apollo skill covering the same ground. It
+`library/skills/02-web-build/gamified-ui`, an original Convenium.Design skill covering the same ground. It
 was written without access to this skill's text, so nothing was copied.

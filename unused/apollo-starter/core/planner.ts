@@ -1,5 +1,5 @@
 /**
- * Apollo planner — pure, deterministic, zero I/O, zero cost.
+ * Convenium.Design planner — pure, deterministic, zero I/O, zero cost.
  *
  * Replaces agents.mjs:buildPlan. Three deliberate differences:
  *   1. Scored activation instead of boolean keyword matching (fixes S15).

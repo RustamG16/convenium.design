@@ -5,7 +5,7 @@ description: Check and secure a domain through the GoDaddy connector, then size 
 
 # Domain + hosting plan
 
-Authored in Apollo 2026-10-19 for the ArkhEthos domain request. Pair with `06-ops-security/static-site-apache-deploy`
+Authored in Convenium.Design 2026-10-19 for the ArkhEthos domain request. Pair with `06-ops-security/static-site-apache-deploy`
 when the target is GoDaddy cPanel, and with the project's own `ARCHITECTURE.md` for its stack.
 
 ## Hard limits

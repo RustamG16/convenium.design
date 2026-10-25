@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Comp C2 — Work, and the transport with no run</title>
+<style>
+/* Second view in C2's skeleton. This exists because the critique made two things gate
+   conditions before build:
+     (a) the transport's no-run / stale-run contract - unproven in comp C, and the whole
+         margin of its victory;
+     (b) one non-Loadouts view drawn in the same skeleton, because P2's real test is the
+         other seven views and no comp carried one.
+   The answer to (a): the transport NEVER shows stale run state. With no run it collapses to
+   its header line - the locked route named inline, ~34px instead of ~148px. The invariant
+   stays visible; the staleness does not. */
+:root{
+  color-scheme:dark;
+  --bg:#050506; --surface:#101215; --surface-2:#17191d; --surface-3:#1f2227;
+  --line:#24272d; --line-strong:#6b7280;
+  --fg:#EEF0F3; --fg-muted:#A7AEB8; --fg-dim:#8B929C;
+  --accent:#5FA8F5; --accent-quiet:rgba(95,168,245,.12); --accent-line:rgba(95,168,245,.45);
+  --ok:#57C98A; --warn:#E0A64B; --focus:#9BD1FF;
+  --t-label:.8125rem; --t-meta:.875rem; --t-body:1rem; --t-title:1.125rem; --t-head:1.375rem;
+  --font:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --r:4px; --r2:8px; --control-h:2.25rem; --rail:240px;
+  --lab-col:186px;
+}
+*{box-sizing:border-box}
+body{margin:0;width:1440px;height:900px;overflow:hidden;background:var(--bg);color:var(--fg);
+  font:400 var(--t-body)/1.35 var(--font);-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+/* identical skeleton. only band 3 differs from Loadouts. */
+.app{display:grid;grid-template-rows:52px auto minmax(0,1fr) 32px;height:900px}
+
+.top{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;padding:0 14px;
+  border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:9px}
+.mark{width:22px;height:22px;display:grid;place-items:center;background:var(--accent);color:#050506;
+  font-weight:700;font-size:var(--t-label);border-radius:var(--r)}
+.brand b{font-size:var(--t-meta);font-weight:600}
+.tabs{display:flex;gap:2px;justify-self:center}
+.tabs a{display:flex;align-items:center;gap:8px;min-height:var(--control-h);padding:0 11px;
+  border-radius:var(--r);color:var(--fg-dim);text-decoration:none;font-size:var(--t-meta)}
+.tabs a.on{background:var(--surface-3);color:var(--fg)}
+.tabs kbd{font:500 var(--t-label)/1 var(--mono);color:var(--fg-dim)}
+.btn{min-height:var(--control-h);padding:0 12px;border-radius:var(--r);border:1px solid var(--line-strong);
+  background:var(--surface);color:var(--fg);font:500 var(--t-meta)/1 var(--font);cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#050506}
+/* .62 composites to 4.08:1 on the accent - under AA for 13px. .75 clears it. */
+.btn.primary kbd{color:rgba(5,5,6,.75)}
+
+/* ---- BAND 2, collapsed: no run, so no run state. ---- */
+.transport{border-bottom:1px solid var(--line);background:var(--surface)}
+.tp-h{display:flex;align-items:center;gap:14px;padding:8px 14px}
+.tp-h b{font-size:var(--t-label);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim)}
+.tp-h .meta{font-size:var(--t-label);color:var(--fg-dim);font-family:var(--mono)}
+.tp-h .route{font-size:var(--t-label);color:var(--fg-muted);font-family:var(--mono);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.tp-h .sep{flex:1;border-top:1px solid var(--line);height:0}
+.tp-h .none{font-size:var(--t-label);color:var(--fg-dim)}
+
+/* ---- BAND 3: same two-column shape, different content ---- */
+.work{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);min-height:0}
+.list{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.list-h{display:flex;align-items:center;justify-content:space-between;padding:7px 8px 7px 12px;
+  border-bottom:1px solid var(--line)}
+.list-h span{font-size:var(--t-label);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim)}
+.list-h button{min-height:var(--control-h);padding:0 8px;background:none;border:0;color:var(--accent);
+  font:500 var(--t-meta)/1 var(--font);cursor:pointer;border-radius:var(--r)}
+.rows{overflow:auto;padding:6px}
+/* the same .row as Loadouts, Library and Runs. one row shape in the product. */
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;min-height:44px;
+  padding:6px 8px;border-radius:var(--r);cursor:pointer;border:1px solid transparent}
+.row:hover{background:var(--surface)}
+.row.on{background:var(--surface-3);border-color:var(--accent-line)}
+.row b{grid-column:1;font-weight:500;font-size:var(--t-meta)}
+.row small{grid-column:1;color:var(--fg-dim);font-size:var(--t-label);display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+/* grid-column must be explicit: with only grid-row set, auto-placement put the tag in
+   column 1 row 1 and pushed the name down a line. It rendered ABOVE the row it labels. */
+.row .tag{grid-column:2;grid-row:1/3;align-self:center;justify-self:end;font-size:var(--t-label);color:var(--fg-dim);font-family:var(--mono)}
+.row.on .tag{color:var(--accent)}
+.rail-foot{margin-top:auto;padding:9px 12px;border-top:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;color:var(--fg-dim);font-size:var(--t-label)}
+.rail-foot i{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+
+.chat{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-width:0}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:11px 20px;border-bottom:1px solid var(--line)}
+.ch h1{margin:0;font-size:var(--t-title);font-weight:600;letter-spacing:-.01em}
+.ch p{margin:2px 0 0;color:var(--fg-dim);font-size:var(--t-label)}
+.ch .acts{display:flex;gap:8px;align-items:center;flex:none}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:var(--control-h);padding:0 11px;
+  border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);
+  font-size:var(--t-meta);color:var(--fg)}
+.pill i{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+.stream{overflow:auto;padding:18px 20px;display:grid;gap:14px;align-content:start}
+.msg{display:grid;grid-template-columns:var(--lab-col) minmax(0,1fr);gap:0 12px;max-width:none}
+.msg > .who{font-size:var(--t-label);letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim);padding-top:2px}
+.msg > .body{min-width:0}
+.msg p{margin:0 0 8px;font-size:var(--t-meta);line-height:1.55;max-width:74ch}
+.msg p:last-child{margin-bottom:0}
+.plan{border:1px solid var(--line);border-radius:var(--r2);background:var(--surface);overflow:hidden;max-width:74ch}
+.plan h3{margin:0;padding:7px 12px;border-bottom:1px solid var(--line);font-size:var(--t-label);
+  font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim)}
+.plan .step{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:baseline;
+  padding:7px 12px;border-bottom:1px solid var(--line);font-size:var(--t-meta)}
+.plan .step:last-child{border-bottom:0}
+.plan .n{font-family:var(--mono);font-size:var(--t-label);color:var(--fg-dim)}
+.plan .sk{font-family:var(--mono);font-size:var(--t-label);color:var(--fg-dim);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;min-width:0}
+.plan .tok{font-family:var(--mono);font-size:var(--t-label);color:var(--fg-dim)}
+
+.composer{border-top:1px solid var(--line);padding:12px 20px 14px}
+textarea{width:100%;min-height:72px;padding:9px 11px;border:1px solid var(--line-strong);
+  border-radius:var(--r);background:var(--surface-2);color:var(--fg);
+  font:400 var(--t-meta)/1.5 var(--font);resize:none}
+.cf{display:flex;align-items:center;gap:10px;margin-top:9px}
+.cf .grow{flex:1;font-size:var(--t-label);color:var(--fg-dim)}
+kbd{font:500 var(--t-label)/1 var(--mono);color:var(--fg-dim)}
+
+.status{display:flex;align-items:center;gap:16px;padding:0 14px;border-top:1px solid var(--line);
+  background:var(--surface);font-size:var(--t-label);color:var(--fg-dim)}
+.status .s{display:flex;align-items:center;gap:7px}
+.status i{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.status .push{margin-left:auto}
+.status kbd{color:var(--fg-muted)}
+</style></head><body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand"><span class="mark">A</span><b>Convenium.Design Studio</b></div>
+    <nav class="tabs">
+      <a href="#" class="on">Work<kbd>1</kbd></a><a href="#">Loadouts<kbd>2</kbd></a>
+      <a href="#">Library<kbd>3</kbd></a><a href="#">Playground<kbd>4</kbd></a><a href="#">Runs<kbd>5</kbd></a>
+    </nav>
+    <button class="btn">Run this loadout</button>
+  </header>
+
+  <!-- collapsed: 34px, not 148px. no run means no run state, not stale run state. -->
+  <section class="transport">
+    <div class="tp-h">
+      <b>Olympus pipeline</b><span class="meta">locked</span>
+      <span class="route">Convenium.Design &rarr; Athena &rarr; Calliope &rarr; Hephaestus &rarr; Hermes</span>
+      <span class="sep"></span>
+      <span class="none">No run yet in this project</span>
+    </div>
+  </section>
+
+  <div class="work">
+    <aside class="list">
+      <div class="list-h"><span>Projects</span><button>+ New</button></div>
+      <div class="rows">
+        <div class="row on"><b>WKO launch narrative</b><small>Brief, Launch page</small><span class="tag">2</span></div>
+        <div class="row"><b>Untitled project</b><small>New chat</small><span class="tag">1</span></div>
+      </div>
+      <div class="rail-foot"><i></i>Private by default</div>
+    </aside>
+
+    <main class="chat">
+      <div class="ch">
+        <div><h1>WKO launch narrative</h1><p>Brief &middot; 2 linked references</p></div>
+        <div class="acts">
+          <span class="pill"><i></i>Lean audit copy</span>
+          <button class="btn">Context</button>
+        </div>
+      </div>
+
+      <div class="stream">
+        <article class="msg">
+          <span class="who">You</span>
+          <div class="body"><p>Audit the current launch page and tell me what is costing us the signup. Do not redesign anything yet.</p></div>
+        </article>
+        <article class="msg">
+          <span class="who">Convenium.Design</span>
+          <div class="body">
+            <p>Demo mode, so nothing was sent to a model. This is the route your active loadout would take, with the budget each stage would get.</p>
+            <div class="plan">
+              <h3>Planned route &middot; Lean audit copy &middot; 30,000 tokens</h3>
+              <div class="step"><span class="n">01</span><span><b>Athena</b> <span class="sk">ux-evidence-audit, site-architecture</span></span><span class="tok">4,800</span></div>
+              <div class="step"><span class="n">02</span><span><b>Calliope</b> <span class="sk">concept-studio, copywriting</span></span><span class="tok">5,600</span></div>
+              <div class="step"><span class="n">03</span><span><b>Convenium.Design</b> <span class="sk">olympus-design-director</span></span><span class="tok">6,000</span></div>
+            </div>
+            <p style="margin-top:9px">Hephaestus and Hermes stay dormant: nothing in the request asks for build or delivery. Your brief and the Convenium.Design Instrument avoid-list are sent ahead of every stage.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="composer">
+        <textarea placeholder="Ask Convenium.Design to help with WKO launch narrative…"></textarea>
+        <div class="cf">
+          <button class="btn">Attach</button>
+          <span class="grow">Demo mode &middot; planning is local and free</span>
+          <button class="btn primary">Send <kbd>Enter</kbd></button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="status">
+    <span class="s"><i></i>Demo mode &middot; nothing leaves this machine</span>
+    <span class="s push"><kbd>Ctrl K</kbd> Oracle</span>
+    <span class="s"><kbd>Ctrl /</kbd> Search</span>
+  </footer>
+
+</div></body></html>

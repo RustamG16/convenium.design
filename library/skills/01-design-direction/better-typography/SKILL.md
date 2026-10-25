@@ -4,7 +4,7 @@ description: Sets and reviews how text renders in your product, from the type sc
 license: MIT
 ---
 
-> **Apollo:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 
 # Typography
 

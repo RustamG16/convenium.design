@@ -52,7 +52,7 @@ exactly.
 This is the finding that matters.
 
 - `~/.claude/skill-index/graphic-designer.md` lists
-  `anthropic-skills:awwwards-web-design` as **routing choice #1** for apollo — "new
+  `anthropic-skills:awwwards-web-design` as **routing choice #1** for convenium-design — "new
   high-end / reference-inspired site or landing page… owns visual and motion direction."
 - `skills-library/ROUTING.md` §1 makes it the **winner of the 6-way visual/web design
   precedence rule**.
@@ -66,7 +66,7 @@ Desktop/DigitalAgency_Saas/lab/005-agency/.claude/skills/awwwards-web-design   �
 skills-library/skills/_session-snapshot/anthropic-skills/awwwards-web-design   ← reference only, dead path
 ```
 
-**Consequence:** in any project that is not `005-agency` — including this one — apollo's
+**Consequence:** in any project that is not `005-agency` — including this one — convenium-design's
 primary design route silently fails and falls through to whatever matches next
 (`impeccable`, `web-design-pro`, `frontend-design`). The routing documents claim a
 decision that the runtime cannot honour.

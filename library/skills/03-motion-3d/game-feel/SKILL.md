@@ -12,7 +12,7 @@ license: Apache-2.0
 
 # Game feel (juice)
 
-> **Apollo:** for web interfaces (DOM, CSS, GSAP) read `APOLLO-NOTES.md` first. It maps the
+> **Convenium.Design:** for web interfaces (DOM, CSS, GSAP) read `APOLLO-NOTES.md` first. It maps the
 > engine examples below to web equivalents and lists what does not transfer.
 
 The difference between a mechanic that *works* and one that feels *good* is feedback: the

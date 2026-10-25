@@ -12,9 +12,9 @@ the same layout.
 
 | Setup | Doctrine | Reach for it when |
 |---|---|---|
-| [**atelier**](apollo-atelier.md) | Editorial restraint. Type carries everything. Motion is nearly absent. | Brand sites, editorial, portfolios, anything that should feel considered and expensive |
-| [**kinetic**](apollo-kinetic.md) | Motion-first cinema. The scroll is the narrative device. | Launches, campaigns, product stories, anything meant to be *experienced* |
-| [**instrument**](apollo-instrument.md) | Dense and systematic. Information per pixel is the metric. | Dashboards, maps, tools, docs — including the [system map](../04-ui-references/system-map-ui.md) |
+| [**atelier**](convenium-design-atelier.md) | Editorial restraint. Type carries everything. Motion is nearly absent. | Brand sites, editorial, portfolios, anything that should feel considered and expensive |
+| [**kinetic**](convenium-design-kinetic.md) | Motion-first cinema. The scroll is the narrative device. | Launches, campaigns, product stories, anything meant to be *experienced* |
+| [**instrument**](convenium-design-instrument.md) | Dense and systematic. Information per pixel is the metric. | Dashboards, maps, tools, docs — including the [system map](../04-ui-references/system-map-ui.md) |
 
 ## Why three and not one
 
@@ -33,13 +33,13 @@ The constraints are what make the outputs diverge.
 Invoke one by name:
 
 ```
-Use apollo-kinetic to design the landing page for X
+Use convenium-design-kinetic to design the landing page for X
 ```
 
 Or ask for all three when you want options:
 
 ```
-Design the landing page for X three ways — apollo-atelier, apollo-kinetic, apollo-instrument
+Design the landing page for X three ways — convenium-design-atelier, convenium-design-kinetic, convenium-design-instrument
 ```
 
 Each returns a static comp plus its token set. Then run `themis` over the results — the
@@ -60,12 +60,12 @@ Inherited from `~/.claude/skill-index/_common-design.md`:
 
 ## One thing to know before running these
 
-`anthropic-skills:awwwards-web-design` — apollo's documented routing choice #1 — **is not
+`anthropic-skills:awwwards-web-design` — convenium-design's documented routing choice #1 — **is not
 loaded outside the `005-agency` project**. None of these three setups route to it. They
 are built only on skills that are actually available. See
 [../06-health/installed-skills-check.md](../06-health/installed-skills-check.md).
 
 ## Installed
 
-All three are live in `~/.claude/agents/`. They are additive — `apollo` and `apollo-run`
+All three are live in `~/.claude/agents/`. They are additive — `convenium-design` and `convenium-design-run`
 are untouched.

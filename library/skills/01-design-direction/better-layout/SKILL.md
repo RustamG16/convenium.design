@@ -4,7 +4,7 @@ description: Helps with grouping, alignment, reading order, responsive structure
 license: MIT
 ---
 
-> **Apollo:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 
 # Layout
 

@@ -47,7 +47,7 @@ component list.
 
 ## Where it sits locally
 
-`anthropic-skills:canvas-design` is listed and available. It is apollo's tool for static
+`anthropic-skills:canvas-design` is listed and available. It is convenium-design's tool for static
 deliverables — posters, covers, one-page graphics — as distinct from `frontend-design`
 (app UI) and `web-design-pro` (site audit). The `design` skill covers multi-artboard
 canvases published as Artifacts; `canvas-design` covers single rendered pieces.

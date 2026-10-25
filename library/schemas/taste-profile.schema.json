@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "apollo-claude/taste-profile.schema.json",
-  "title": "Apollo_claude taste profile",
+  "$id": "convenium-design-claude/taste-profile.schema.json",
+  "title": "ConveniumDesign_claude taste profile",
   "type": "object",
   "schemaVersion": 1,
   "required": ["profileId", "displayName", "createdAt", "updatedAt", "source", "doctrine",
@@ -23,7 +23,7 @@
     },
     "doctrine": {
       "type": ["string", "null"],
-      "enum": ["apollo-atelier", "apollo-kinetic", "apollo-instrument", "apollo-cyberpunk-athens", "custom", null],
+      "enum": ["convenium-design-atelier", "convenium-design-kinetic", "convenium-design-instrument", "convenium-design-cyberpunk-athens", "custom", null],
       "description": "null when source is a pure bespoke interview with no doctrine anchor. 'custom' when the interview produced preferences that don't match any built-in doctrine closely enough to name one."
     },
     "explicitPreferences": {
@@ -75,7 +75,7 @@
         "required": ["field", "source", "at"],
         "properties": {
           "field": { "type": "string" },
-          "source": { "type": "string", "description": "e.g. 'interview:oracle', 'doctrine-default:apollo-atelier', 'user-edit'" },
+          "source": { "type": "string", "description": "e.g. 'interview:oracle', 'doctrine-default:convenium-design-atelier', 'user-edit'" },
           "at": { "type": "string", "format": "date-time" }
         }
       },

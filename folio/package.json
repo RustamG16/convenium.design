@@ -1,0 +1,14 @@
+{
+  "name": "folio",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Design-DNA portfolio sites from one LLM-filled profile file. Scaffold only; see README.md.",
+  "workspaces": ["apps/*", "packages/*", "workers/*"],
+  "scripts": {
+    "dev": "echo 'M3: pnpm --filter web dev'",
+    "test": "echo 'M1: engine + dna tests'",
+    "render:fixtures": "echo 'M2: render every questionnaire/examples/*.json through the QA gate'",
+    "db:migrate": "echo 'M3: drizzle-kit migrate'",
+    "build": "echo 'M3'"
+  }
+}

@@ -4,7 +4,7 @@ description: Build reversible scroll-controlled visual transformations with a pi
 license: MIT
 ---
 
-> **Apollo:** vendored from `MengTo/Skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `MengTo/Skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 
 # Scroll-Scrubbed Visual Sequence
 

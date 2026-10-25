@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Comp B</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#050506; --surface:#101215; --surface-2:#17191d; --surface-3:#1f2227;
+  --line:#24272d; --line-strong:#6b7280;
+  --fg:#EEF0F3; --fg-muted:#A7AEB8; --fg-dim:#8B929C;
+  --accent:#5FA8F5; --accent-quiet:rgba(95,168,245,.12); --accent-line:rgba(95,168,245,.45);
+  --ok:#57C98A; --warn:#E0A64B;
+  --t-label:.8125rem; --t-meta:.875rem; --t-body:1rem; --t-title:1.125rem; --t-head:1.375rem;
+  --font:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --r:4px; --r2:8px; --panel:360px;
+}
+*{box-sizing:border-box}
+body{margin:0;width:1440px;height:900px;overflow:hidden;background:var(--bg);color:var(--fg);
+  font:400 var(--t-body)/1.35 var(--font);-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-rows:48px minmax(0,1fr);height:900px}
+
+/* top chrome only. no left rail at all: the consequence gets the whole canvas. */
+.top{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px;
+  padding:0 16px;border-bottom:1px solid var(--line);background:var(--bg)}
+.brand{display:flex;align-items:center;gap:9px}
+.mark{width:20px;height:20px;display:grid;place-items:center;background:var(--accent);color:#050506;
+  font-weight:700;font-size:var(--t-label);border-radius:var(--r)}
+.brand b{font-size:var(--t-meta);font-weight:600}
+.tabs{display:flex;gap:2px;justify-self:center}
+.tabs a{padding:5px 11px;border-radius:var(--r);color:var(--fg-dim);text-decoration:none;font-size:var(--t-meta)}
+.tabs a.on{background:var(--surface-3);color:var(--fg)}
+.state{display:flex;align-items:center;gap:8px;font-size:var(--t-label);color:var(--fg-dim)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+
+.body{display:grid;grid-template-columns:minmax(0,1fr) var(--panel);min-height:0}
+
+/* ---- LEFT: the consequence. what this loadout makes the pipeline carry. ---- */
+.canvas{min-width:0;overflow:auto;padding:20px 24px}
+.ch{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:4px}
+.ch h1{margin:0;font-size:var(--t-head);font-weight:600;letter-spacing:-.02em}
+.ch p{margin:5px 0 0;color:var(--fg-muted);font-size:var(--t-meta);max-width:64ch}
+.pick{display:flex;gap:2px;margin:16px 0;padding:2px;border:1px solid var(--line);
+  border-radius:var(--r2);background:var(--surface);width:max-content}
+.pick button{padding:6px 12px;border:0;border-radius:var(--r);background:transparent;
+  color:var(--fg-dim);font:500 var(--t-meta)/1 var(--font);cursor:pointer;min-height:30px}
+.pick button.on{background:var(--surface-3);color:var(--fg)}
+.pick button .n{color:var(--fg-dim);font-weight:400;margin-left:7px}
+
+.lockline{display:flex;align-items:center;gap:10px;margin:0 0 10px;
+  font-size:var(--t-label);color:var(--fg-dim);letter-spacing:.06em;text-transform:uppercase}
+.lockline hr{flex:1;border:0;border-top:1px solid var(--line);margin:0}
+
+/* five agent columns = the pipeline, showing what each will actually run with */
+.agents{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:start}
+.agent{border:1px solid var(--line);border-radius:var(--r2);background:var(--surface);overflow:hidden;min-width:0}
+.agent-h{padding:11px 12px 10px;border-bottom:1px solid var(--line)}
+.agent-h span{font-size:var(--t-label);letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim)}
+.agent-h b{display:block;margin-top:4px;font-size:var(--t-title);font-weight:600;letter-spacing:-.01em}
+.agent-h em{display:block;margin-top:3px;font-style:normal;font-size:var(--t-label);color:var(--fg-dim);line-height:1.4}
+.carries{padding:9px 12px 11px;display:grid;gap:1px}
+.carries > span{font-size:var(--t-label);letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim);margin-bottom:5px}
+.sk{display:flex;align-items:center;gap:7px;min-height:26px;font-size:var(--t-meta);
+  font-family:var(--mono);color:var(--fg-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sk i{width:5px;height:5px;border-radius:50%;background:var(--line-strong);flex:none}
+.sk.from-slot{color:var(--fg)}
+.sk.from-slot i{background:var(--accent)}
+.agent-f{padding:8px 12px;border-top:1px solid var(--line);display:flex;
+  align-items:center;justify-content:space-between;font-size:var(--t-label);color:var(--fg-dim)}
+.pause{color:var(--warn)}
+
+.delta{margin-top:20px;border:1px solid var(--line);border-radius:var(--r2);background:var(--surface);overflow:hidden}
+.delta-h{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.delta-h b{font-size:var(--t-label);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim)}
+.delta table{width:100%;border-collapse:collapse;font-size:var(--t-meta)}
+.delta td,.delta th{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.delta tr:last-child td{border-bottom:0}
+.delta th{font-weight:500;color:var(--fg-dim);width:130px}
+.delta code{font-family:var(--mono);font-size:var(--t-label);color:var(--fg)}
+.delta small{display:block;color:var(--fg-dim);font-size:var(--t-label);margin-top:3px;line-height:1.4}
+.was{color:var(--fg-dim);text-decoration:line-through}
+
+/* ---- RIGHT: the parameter surface. one label/control grid, floor to ceiling. ---- */
+.panel{border-left:1px solid var(--line);background:var(--bg);display:flex;flex-direction:column;overflow:auto}
+.ph{padding:13px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.ph b{font-size:var(--t-meta);font-weight:600}
+.ph small{color:var(--accent);font-size:var(--t-label)}
+.grp{border-bottom:1px solid var(--line);padding:12px 14px}
+.grp > h2{margin:0 0 10px;font-size:var(--t-label);font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--fg-dim)}
+.f{display:grid;grid-template-columns:88px minmax(0,1fr);gap:8px;align-items:center;margin-bottom:7px}
+.f:last-child{margin-bottom:0}
+.f > label{font-size:var(--t-meta);color:var(--fg-muted);min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.f.changed > label{color:var(--fg)}
+.f.changed > label::after{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--accent);margin-left:6px;vertical-align:middle}
+select,input,textarea{width:100%;min-height:32px;padding:5px 8px;border:1px solid var(--line-strong);
+  border-radius:var(--r);background:var(--surface);color:var(--fg);
+  font:400 var(--t-meta)/1.3 var(--font)}
+textarea{min-height:70px;resize:none;line-height:1.45;grid-column:1/-1}
+.full{grid-template-columns:1fr}
+.hint{margin:6px 0 0;grid-column:1/-1;font-size:var(--t-label);color:var(--fg-dim);line-height:1.45}
+.chk{display:flex;align-items:center;gap:8px;min-height:30px;font-size:var(--t-meta);color:var(--fg-muted)}
+.chk input{width:15px;height:15px;min-height:0;accent-color:var(--accent)}
+.avoid{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:3px;grid-column:1/-1}
+.avoid li{font-size:var(--t-meta);padding-left:13px;position:relative;color:var(--fg)}
+.avoid li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:1px;background:var(--warn)}
+.pf{margin-top:auto;position:sticky;bottom:0;background:var(--bg);
+  padding:11px 14px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.pf small{flex:1;color:var(--fg-dim);font-size:var(--t-label)}
+.btn{min-height:32px;padding:0 12px;border-radius:var(--r);border:1px solid var(--line-strong);
+  background:var(--surface);color:var(--fg);font:500 var(--t-meta)/1 var(--font);cursor:pointer;
+  display:inline-flex;align-items:center}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#050506}
+</style></head><body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand"><span class="mark">A</span><b>Convenium.Design Studio</b></div>
+    <nav class="tabs"><a href="#">Work</a><a href="#" class="on">Loadouts</a><a href="#">Library</a><a href="#">Playground</a><a href="#">Runs</a></nav>
+    <div class="state"><span class="dot"></span>Demo mode &middot; local</div>
+  </header>
+
+  <div class="body">
+    <main class="canvas">
+      <div class="ch">
+        <div>
+          <h1>What this loadout makes the pipeline carry</h1>
+          <p>The route is locked. Change a decision on the right and the five agents below change what they run with — before a single token is spent.</p>
+        </div>
+        <button class="btn primary">Use this loadout</button>
+      </div>
+
+      <div class="pick">
+        <button>Lean audit</button>
+        <button>Concept lab<span class="n">2</span></button>
+        <button>Premium build<span class="n">4</span></button>
+        <button>Delivery QA<span class="n">3</span></button>
+        <button class="on">Lean audit copy<span class="n">1</span></button>
+      </div>
+
+      <div class="lockline"><span>Olympus pipeline &middot; locked</span><hr></div>
+
+      <div class="agents">
+        <section class="agent">
+          <div class="agent-h"><span>Orchestrate</span><b>Convenium.Design</b><em>Owns the brief, the gates and the answer</em></div>
+          <div class="carries"><span>Carries</span>
+            <div class="sk"><i></i>olympus-design-director</div>
+            <div class="sk"><i></i>taste-first-experience</div>
+          </div>
+          <div class="agent-f"><span>No slot</span><span>6,000</span></div>
+        </section>
+        <section class="agent">
+          <div class="agent-h"><span>Diagnose</span><b>Athena</b><em>Turns evidence into a defensible decision</em></div>
+          <div class="carries"><span>Carries</span>
+            <div class="sk from-slot"><i></i>ux-evidence-audit</div>
+            <div class="sk from-slot"><i></i>site-architecture</div>
+          </div>
+          <div class="agent-f"><span>Evidence &middot; Structure</span><span>4,800</span></div>
+        </section>
+        <section class="agent">
+          <div class="agent-h"><span>Direct</span><b>Calliope</b><em>Shapes narrative, hierarchy and direction</em></div>
+          <div class="carries"><span>Carries</span>
+            <div class="sk from-slot"><i></i>concept-studio</div>
+            <div class="sk from-slot"><i></i>copywriting</div>
+          </div>
+          <div class="agent-f"><span>Direction &middot; Copy</span><span>5,600</span></div>
+        </section>
+        <section class="agent">
+          <div class="agent-h"><span>Build</span><b>Hephaestus</b><em>Builds the approved direction</em></div>
+          <div class="carries"><span>Carries</span>
+            <div class="sk from-slot"><i></i>ui-ux</div>
+            <div class="sk from-slot"><i></i>gsap-core</div>
+            <div class="sk"><i></i>gsap-performance</div>
+          </div>
+          <div class="agent-f"><span>Craft &middot; Motion</span><span>6,500</span></div>
+        </section>
+        <section class="agent">
+          <div class="agent-h"><span>Verify</span><b>Hermes</b><em>Assets, verification and handoff</em></div>
+          <div class="carries"><span>Carries</span>
+            <div class="sk from-slot"><i></i>asset-director</div>
+            <div class="sk from-slot"><i></i>visual-qa</div>
+          </div>
+          <div class="agent-f"><span class="pause">Pauses for approval</span><span>4,800</span></div>
+        </section>
+      </div>
+
+      <section class="delta">
+        <div class="delta-h"><b>Changed from default</b><span style="font-size:var(--t-label);color:var(--fg-dim)">1 of 8</span></div>
+        <table>
+          <tr><th>Craft</th><td><code class="was">apple-design</code> &rarr; <code>ui-ux</code>
+            <small>Was: fluid, physical motion and interruptible gestures; restraint over ornament.<br>
+            Now: conventional, familiar patterns; the safest and the least distinctive.</small></td></tr>
+        </table>
+      </section>
+    </main>
+
+    <aside class="panel">
+      <div class="ph"><b>Lean audit copy</b><small>1 unsaved</small></div>
+
+      <div class="grp"><h2>Eight decisions</h2>
+        <div class="f changed"><label>Craft</label><select><option>ui-ux</option><option>apple-design</option><option>emil-design-eng</option><option>awwwards-web-design</option><option>impeccable</option></select></div>
+        <div class="f"><label>Direction</label><select><option>concept-studio</option><option>taste-first-experience-design</option><option>award-rubric</option></select></div>
+        <div class="f"><label>Evidence</label><select><option>ux-evidence-audit</option><option>reference-deconstruction</option><option>customer-research</option><option>design-analytics</option></select></div>
+        <div class="f"><label>Structure</label><select><option>site-architecture</option><option>pick-ui-library</option></select></div>
+        <div class="f"><label>Motion</label><select><option>gsap-core</option><option>gsap-timeline</option><option>gsap-scrolltrigger</option><option>webgl-experience</option></select></div>
+        <div class="f"><label>Media</label><select><option>asset-director</option><option>higgsfield-generate</option><option>garden-gpt-image-2</option></select></div>
+        <div class="f"><label>Copy</label><select><option>copywriting</option><option>copy-editing</option></select></div>
+        <div class="f"><label>Verify</label><select><option>visual-qa</option><option>award-rubric</option><option>gsap-performance</option></select></div>
+      </div>
+
+      <div class="grp"><h2>Design DNA</h2>
+        <div class="f"><label>Profile</label><select><option>Convenium.Design Instrument</option><option>Convenium.Design Atelier</option><option>None</option></select></div>
+        <p class="hint" style="margin-top:9px;color:var(--fg-muted)"><b style="color:var(--fg);font-weight:600">Never, in any run</b></p>
+        <ul class="avoid">
+          <li>Decorative gradients without state</li>
+          <li>Generated imagery as background</li>
+          <li>Tiny uppercase for ordinary text</li>
+        </ul>
+        <p class="hint">Unions across profiles, never overridden by a doctrine default. Sent as hard constraints.</p>
+      </div>
+
+      <div class="grp"><h2>Brief</h2>
+        <div class="f full"><textarea>Audit the existing marketing site and return measured defects ranked by impact. No redesign until the audit is approved.</textarea>
+        <p class="hint">Prepended verbatim to every agent's instructions.</p></div>
+      </div>
+
+      <div class="grp"><h2>Budget &amp; approval</h2>
+        <div class="f"><label>Ceiling</label><input type="number" value="30000"></div>
+        <p class="hint">~6,000 per agent across five stages.</p>
+        <label class="chk"><input type="checkbox" checked>Hermes pauses for approval</label>
+      </div>
+
+      <div class="pf"><small>1 unsaved change</small><button class="btn">Discard</button><button class="btn primary">Save</button></div>
+    </aside>
+  </div>
+
+</div></body></html>

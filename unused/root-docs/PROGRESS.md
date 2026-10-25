@@ -1,4 +1,4 @@
-# Apollo Unification — Progress Log
+# Convenium.Design Unification — Progress Log
 
 Executor: Claude Code, unattended. Plan: `PLAN-UNIFICATION.md` v3.
 Resume rule: read this file, find the last phase marked **PASS**, resume at the next phase.
@@ -22,20 +22,20 @@ Resume rule: read this file, find the last phase marked **PASS**, resume at the 
 | Store | Count |
 |---|---|
 | `.agents/skills/` (SKILL.md files) | 27 |
-| `apollo-studio/knowledge/skills/` (README.md leaf folders) | 25 |
-| `apollo-studio/skills.mjs` (`skills` array entries) | 24 |
+| `convenium-design-studio/knowledge/skills/` (README.md leaf folders) | 25 |
+| `convenium-design-studio/skills.mjs` (`skills` array entries) | 24 |
 | `~/.claude/skills/` (skill folders) | 71 |
 | `D:\KnowledgeFactory\library\skills\` (SKILL.md files) | 52 |
 
-- `npm.cmd run check` in `apollo-studio`: **EXIT 0 — PASSED.** This is the baseline;
+- `npm.cmd run check` in `convenium-design-studio`: **EXIT 0 — PASSED.** This is the baseline;
   later phases halt only on a *new* failure.
-- Notes: `apollo-studio/data/*.jsonl` and `node_modules/` gitignored — snapshot does not
+- Notes: `convenium-design-studio/data/*.jsonl` and `node_modules/` gitignored — snapshot does not
   cover run data (correct; `data/` protected by out-of-scope rule only).
 - `test_projects/EcoPowerTech` is itself a nested git repo; captured in the snapshot as a
   gitlink. Out of scope — not touched further.
 
 ### HALT CHECK — Phase 0
-- [x] Apollo repo clean after snapshot commit.
+- [x] Convenium.Design repo clean after snapshot commit.
 - [x] KnowledgeFactory: not a git repo — recorded, continuing (per plan).
 - [x] `unification` branch exists and is pushed to `origin`.
 - [x] `pre-unification` tag exists on `origin`.
@@ -49,11 +49,11 @@ Resume rule: read this file, find the last phase marked **PASS**, resume at the 
 
 ### Actions
 - Copied `D:\KnowledgeFactory\library\{skills,knowledge}` and `systems/schemas/taste-profile.schema.json`
-  into `Apollo\library\`. Did **not** copy `agents/`, `sources/`, `frames/`, `design-dna/`,
+  into `Convenium.Design\library\`. Did **not** copy `agents/`, `sources/`, `frames/`, `design-dna/`,
   `layout/`, `motion/`, `typography/`, `systems/` (loadouts/routing/pipelines/rules).
 - Created empty `library/design-dna/` (publish target for Phase 5).
 - Folded the 6 Studio-store skills:
-  - `ui-ux` — body from `apollo-studio/.../craft/ui-ux/sources/upstream/SKILL.md`; 01-design-direction, diagnose/Craft/defaultOn.
+  - `ui-ux` — body from `convenium-design-studio/.../craft/ui-ux/sources/upstream/SKILL.md`; 01-design-direction, diagnose/Craft/defaultOn.
   - `apple-design`, `emil-design-eng` — bodies from personal skills (byte-identical to the
     studio `sources/upstream` copies after newline normalisation; precedence keeps one folder).
     `hosts` excludes `claude` (decision 9). 01-design-direction, direct+build/Craft.
@@ -68,13 +68,13 @@ Resume rule: read this file, find the last phase marked **PASS**, resume at the 
   `pick-ui-library`, `prototype`, `review-animations` → `status: manual`, `disable-model-invocation`
   preserved (decision 11).
 - Deleted `three-js-implementation`: removed its `customSkills` entry from
-  `apollo-studio/knowledge/index.json` and deleted `apollo-studio/knowledge/skills/spatial/`.
+  `convenium-design-studio/knowledge/index.json` and deleted `convenium-design-studio/knowledge/skills/spatial/`.
   (`overrides` and `sources` left untouched per the plan; one now-dangling `sources` ref remains,
   which the plan explicitly forbids touching.)
-- Brought the 4 doctrines from `Apollo_claude\profiles\doctrines\` into `library/doctrines/`
-  as knowledge (`profile.json` + `design.md` each): apollo-atelier, apollo-cyberpunk-athens,
-  apollo-instrument, apollo-kinetic.
-- `apollo-taste-interview`, `apollo-style-picker`, `taste-profile.schema.json` already present
+- Brought the 4 doctrines from `ConveniumDesign_claude\profiles\doctrines\` into `library/doctrines/`
+  as knowledge (`profile.json` + `design.md` each): convenium-design-atelier, convenium-design-cyberpunk-athens,
+  convenium-design-instrument, convenium-design-kinetic.
+- `convenium-design-taste-interview`, `convenium-design-style-picker`, `taste-profile.schema.json` already present
   via the KF library copy / schemas copy. Taste skills routed `phase: direct`, group `Taste`.
 - Built `library/registry/skills.registry.json` — 127 records. Seeded phase/group/defaultOn/
   runtimePrompt/description/name from `skills.mjs` for the 18 KF∩mjs skills + 6 studio-six;
@@ -106,7 +106,7 @@ status: active 121 · manual 3 · stub 3.
 phase: always 1 · diagnose 3 · direct 7 · prepare 8 · build 5 · verify 3 · unrouted 100.
 
 ### Documented duplicates (decision 9)
-- `apple-design` — personal copy byte-identical to `apollo-studio/.../craft/apple-design/sources/upstream/SKILL.md` (normalised). One folder kept, body = personal, `hosts` excludes claude.
+- `apple-design` — personal copy byte-identical to `convenium-design-studio/.../craft/apple-design/sources/upstream/SKILL.md` (normalised). One folder kept, body = personal, `hosts` excludes claude.
 - `emil-design-eng` — same: personal copy byte-identical to the studio `sources/upstream` copy. One folder kept, `hosts` excludes claude.
 No case of "two different real bodies for one id" — no HALT.
 
@@ -170,8 +170,8 @@ No case of "two different real bodies for one id" — no HALT.
     NotebookEdit`. Body `$name` markers rewritten to "the *name* skill (Skill tool)".
   - `codex` → `.agents/skills/<id>/` + `.codex/agents/<name>.toml` (`name`, `description`,
     `sandbox_mode` only when read-only, `developer_instructions`). Body keeps `$name`.
-  - `studio` → `apollo-studio/knowledge/skills/<group>/<id>/README.md` (group lowercased) +
-    `apollo-studio/skills.registry.json` (`{skills,tools,plugins,presets}`, field shapes
+  - `studio` → `convenium-design-studio/knowledge/skills/<group>/<id>/README.md` (group lowercased) +
+    `convenium-design-studio/skills.registry.json` (`{skills,tools,plugins,presets}`, field shapes
     identical to `skills.mjs`). Studio projection writes README.md only and **never touches
     `sources/`** or `knowledge/index.json`.
   - `digest` → `library/registry/ROUTING-DIGEST.md`: id, phase, one line, for the 27
@@ -203,9 +203,9 @@ No case of "two different real bodies for one id" — no HALT.
   `.codex/agents/*.toml` (6). Ran `project.py claude` → `.claude/skills/` (112 folders) +
   `.claude/agents/*.md` (6). **This creates the paths Claude Code actually loads — fixes
   defects 1 and 2.** Ran `project.py digest` → `library/registry/ROUTING-DIGEST.md` (27
-  active skills). Ran `project.py studio` → 127 `README.md` + `apollo-studio/skills.registry.json`.
+  active skills). Ran `project.py studio` → 127 `README.md` + `convenium-design-studio/skills.registry.json`.
 - Every generated root now carries `GENERATED.md` + `MANIFEST.txt`.
-- Converted `apollo-studio/skills.mjs` from code to data: it now `readFileSync`s
+- Converted `convenium-design-studio/skills.mjs` from code to data: it now `readFileSync`s
   `../library/registry/{skills.registry,tools,plugins,presets}.json` and re-exports `skills`,
   `tools`, `plugins`, `presets` with the **same symbol names and field shapes**. `knowledge.mjs`,
   `server.mjs`, `mcp-server.mjs` unchanged (`git diff` confirms zero changes to all three).
@@ -225,13 +225,13 @@ No case of "two different real bodies for one id" — no HALT.
 
 ### HALT CHECK — Phase 4
 - [x] `validate-system.ps1` exits 0 — "124 skills, 6 agents, 30 required files, registry parity OK".
-- [x] `npm.cmd run check` in `apollo-studio` — EXIT 0 (Phase 0 baseline was EXIT 0; no worse).
+- [x] `npm.cmd run check` in `convenium-design-studio` — EXIT 0 (Phase 0 baseline was EXIT 0; no worse).
 - [x] `/api/health` responds `{"ok":true, "skillCount":127, "enabledSkillCount":127}`.
-- [x] `apollo_get_context` returns 127 skills ≥ 24 baseline.
+- [x] `convenium_design_get_context` returns 127 skills ≥ 24 baseline.
 - [x] `git diff` shows **zero** changes to `server.mjs`, `knowledge.mjs`, `mcp-server.mjs`,
-      `apollo-studio/data/`, `evidence/`, `handoffs/`, `public/media/`, any `.olympus/`.
+      `convenium-design-studio/data/`, `evidence/`, `handoffs/`, `public/media/`, any `.olympus/`.
 
-Note for Phase 7: `apollo_get_context` / `/api/health` now report 127 enabled skills vs 24
+Note for Phase 7: `convenium_design_get_context` / `/api/health` now report 127 enabled skills vs 24
 before. Payload is metadata only (~40 KB); flagged for token-discipline review in Phase 7.
 
 **Result: PASS. Proceeding to Phase 5.**
@@ -244,7 +244,7 @@ before. Payload is metadata only (~40 KB); flagged for token-discipline review i
 - **The direction rule** now lives in exactly one place: `AGENTS.md` → "## The direction rule"
   (default one direction; alternatives only on request with count + reason; taste profile is
   load-bearing; greenfield entry). Everything else references it.
-- Removed the fixed-three rule from every Apollo-authored location:
+- Removed the fixed-three rule from every Convenium.Design-authored location:
   - `AGENTS.md` ×2 (required-behavior line, token-controls line) → reference the rule.
   - `START-HERE.md` — section 2 rewritten ("Create the direction"); Gate A now resolves the
     direction block / runs the taste interview; section 1 gains the greenfield branch.
@@ -259,24 +259,24 @@ before. Payload is metadata only (~40 KB); flagged for token-discipline review i
   - `templates/02-concepts.md` — rewritten to one **Direction** section, repeatable on request.
   - `library/registry/skills.registry.json` — concept-studio / award-rubric descriptions +
     runtimePrompts; regenerated `skills.mjs` data, studio READMEs, ROUTING-DIGEST, host trees.
-  - `apollo-studio/CONTINUOUS-IMPROVEMENT-PLAN.md` — Phase 2 heading/line realigned (it applied
+  - `convenium-design-studio/CONTINUOUS-IMPROVEMENT-PLAN.md` — Phase 2 heading/line realigned (it applied
     the old rule to the Studio's own redesign).
 - **Direction block** added to `templates/00-brief.md` with all six fields: chosen doctrine
   (from `library/doctrines/`), structural posture, motion posture, type logic, colour logic,
   explicitly-ruled-out, alternatives-requested.
 - **Taste profile load-bearing**: `START-HERE.md` Gate A and `olympus-design-director` Direct
-  phase now run `$apollo-taste-interview` / `$apollo-style-picker` before Gate A when the
+  phase now run `$convenium-design-taste-interview` / `$convenium-design-style-picker` before Gate A when the
   references don't resolve the direction block, writing to `library/design-dna/`.
 - **Greenfield entry** (defect 10): `START-HERE.md` §1 + `AGENTS.md` rule + director SKILL —
   no existing page → start at the questionnaire, `ux-evidence-audit` dormant,
   `reference-deconstruction` carries evidence.
 
 ### HALT CHECK — Phase 5
-- [x] `grep -riE "exactly three|three concepts|three distinct"` — **zero** Apollo-authored
+- [x] `grep -riE "exactly three|three concepts|three distinct"` — **zero** Convenium.Design-authored
       matches. The 45 residual hits are all vendored third-party skills (`impeccable`
       "three concessions"/"three comps"; `higgsfield-brandkit` "three logo candidates") and
       their projections, plus out-of-scope `test_projects/` and `.olympus/` run artifacts —
-      none is a statement of Apollo's concept/direction rule. (Documented exclusions beyond
+      none is a statement of Convenium.Design's concept/direction rule. (Documented exclusions beyond
       the plan's literal list: the vendored skill trees, generated host projections of them,
       `test_projects/`, `.olympus/`.)
 - [x] The direction block exists in `templates/00-brief.md` with all six fields.
@@ -298,7 +298,7 @@ before. Payload is metadata only (~40 KB); flagged for token-discipline review i
   do-not list; pointer to `USAGE.md`. No doctrine prose duplicated from `AGENTS.md`.
 - **New `ARCHITECTURE-ESSENTIALS.md`** (49 lines): one-screen derived digest of `ARCHITECTURE.md`
   + `library/README.md` (the run, the direction rule, where things live, two-stage loading).
-  Created because the plan's `CLAUDE.md` read order names it and Apollo's root had none.
+  Created because the plan's `CLAUDE.md` read order names it and Convenium.Design's root had none.
 - **New `USAGE.md`** (71 lines): what the system does, the A/B/C gates in three sentences,
   full kickoff prompt for **both** hosts (Claude Code inline + Codex inline), follow-up
   commands, and the rebuild-the-projections steps. Studio note.
@@ -322,9 +322,9 @@ before. Payload is metadata only (~40 KB); flagged for token-discipline review i
 
 ### Actions
 - **Duplication check:** hashed every `SKILL.md` under `library/skills`, `.claude/skills`,
-  `.agents/skills`, `apollo-studio/knowledge/skills`. **127 distinct contents for 127 skills —
+  `.agents/skills`, `convenium-design-studio/knowledge/skills`. **127 distinct contents for 127 skills —
   0 unexpected cross-id duplicate pairs.** The only same-hash / different-basename cases are
-  the three `apollo-studio/knowledge/skills/craft/*/sources/upstream/SKILL.md` provenance
+  the three `convenium-design-studio/knowledge/skills/craft/*/sources/upstream/SKILL.md` provenance
   copies (`ui-ux`, `apple-design`, `emil-design-eng`), which are *meant* to equal the
   canonical body — the studio projector preserves `sources/`.
 - **Two-stage skill loading** — stated once, in `AGENTS.md` → "## Token control — two-stage
@@ -342,7 +342,7 @@ before. Payload is metadata only (~40 KB); flagged for token-discipline review i
   (mermaid loop labels), `ARCHITECTURE-ESSENTIALS.md`, `PROMPT.md`, `USAGE.md`,
   `library/agents/design-director.md`, `library/skills/.../olympus-design-director/SKILL.md`
   + `routing-contract.md`, `library/skills/.../visual-qa/SKILL.md` (+ registry desc/runtimePrompt),
-  `apollo-studio/CONTINUOUS-IMPROVEMENT-PLAN.md`.
+  `convenium-design-studio/CONTINUOUS-IMPROVEMENT-PLAN.md`.
 - **Cost feedback:** `AGENTS.md` → "## Cost feedback" tells the director to record per-run
   phase counts in `run.json` under `phase_counts`; `templates/run.json` gains that object
   (and `approved_concept` → `approved_direction`, unused elsewhere).
@@ -370,16 +370,16 @@ before. Payload is metadata only (~40 KB); flagged for token-discipline review i
 ## Phase 8 — archive and report — **PASS** (2026-09-02)
 
 ### Actions
-1. Confirmed **nothing under `Apollo\` references the path `D:\KnowledgeFactory\Apollo_claude`**.
+1. Confirmed **nothing under `Convenium.Design\` references the path `D:\KnowledgeFactory\ConveniumDesign_claude`**.
    Removed the one-time build scripts (`library/tools/_phase1_fold.py`,
    `_phase2_build_agents.py`) — they held the donor paths and their job is done (they live in
    the Phase 1 / Phase 2 commits). Rewrote `library/tools/origins.json` as a pure provenance
    note with no `D:\KnowledgeFactory` paths. `library/tools/` is now exactly
    `verify.py · build_index.py · project.py · origins.json`. Residual bare-string mentions of
-   "Apollo_claude" / "KnowledgeFactory" are in vendored skill content and descriptive prose,
+   "ConveniumDesign_claude" / "KnowledgeFactory" are in vendored skill content and descriptive prose,
    not path dependencies.
-2. Wrote `D:\KnowledgeFactory\Apollo_claude\README.md` marking it **ARCHIVED**, pointing at
-   `D:\Analyst_Designer\Apollo`, listing what moved and what deliberately did not. The repo
+2. Wrote `D:\KnowledgeFactory\ConveniumDesign_claude\README.md` marking it **ARCHIVED**, pointing at
+   `D:\Analyst_Designer\Convenium.Design`, listing what moved and what deliberately did not. The repo
    is **kept, not deleted** (dashboard + loadout reference value).
 3. Committed Phase 8; pushed `unification` to `origin`. Opening a PR is left to Rustam.
 
@@ -413,9 +413,9 @@ before. Payload is metadata only (~40 KB); flagged for token-discipline review i
 | ├ pipeline-active (in `ROUTING-DIGEST.md`) / unrouted | 27 / 100 |
 | Projected to `.claude/skills/` (claude-hosted, non-stub) | 112 |
 | Projected to `.agents/skills/` (codex-hosted, non-stub) | 124 |
-| Studio-hosted (registry + `apollo-studio/knowledge/skills/`) | 127 |
+| Studio-hosted (registry + `convenium-design-studio/knowledge/skills/`) | 127 |
 | Host-neutral agents (`library/agents/`) | 6 → `.claude/agents/*.md` + `.codex/agents/*.toml` |
-| `apollo_get_context` inventory | 127 (baseline was 24; ≥ satisfied) |
+| `convenium_design_get_context` inventory | 127 (baseline was 24; ≥ satisfied) |
 | `npm.cmd run check` | EXIT 0 (baseline EXIT 0) |
 | `validate-system.ps1` | EXIT 0 |
 | `library/tools/verify.py` | CLEAN |
@@ -458,7 +458,7 @@ none needed `99-unsorted`. The personal skills filled the previously-empty `05-c
 ## UNROUTED.md
 
 **100 skills** — projected to their hosts, invoked explicitly, excluded from the pipeline
-routing table (decision 13). This is by design: the Apollo redesign pipeline is small
+routing table (decision 13). This is by design: the Convenium.Design redesign pipeline is small
 (27 active skills across always/diagnose/direct/prepare/build/verify); everything else is an
 available capability. Breakdown by category:
 
@@ -475,8 +475,8 @@ available capability. Breakdown by category:
 - 08-qa-review (2): `superpowers-receiving-code-review`, `superpowers-requesting-code-review`
 - 09-engineering-workflow (12): all `superpowers-*` workflow skills + `project-scaffold`
 - 10-docs-deliverables (2): `garden-beautiful-article`, `garden-web-video-presentation`
-- 11-meta-system (6): `apollo-bootstrap`, `apollo-cyberpunk-athens-skin`,
-  `apollo-dashboard-sync`, `apollo-loadout-sync`, `garden-kb-retriever`,
+- 11-meta-system (6): `convenium-design-bootstrap`, `convenium-design-cyberpunk-athens-skin`,
+  `convenium-design-dashboard-sync`, `convenium-design-loadout-sync`, `garden-kb-retriever`,
   `superpowers-writing-skills`
 
 Full per-skill list with descriptions: `library/registry/UNROUTED.md`.
@@ -484,7 +484,7 @@ Full per-skill list with descriptions: `library/registry/UNROUTED.md`.
 ## Defects fixed (from the plan's audit)
 
 1. ✅ `.claude/skills` + `.claude/agents` now exist and are generated from `library/`.
-2. ✅ `CLAUDE.md` at the Apollo root.
+2. ✅ `CLAUDE.md` at the Convenium.Design root.
 3. ✅ Three disagreeing stores collapsed to one source of truth (`library/`) + generated projections.
 4. ✅ `gsap-utils` has a registry record (`phase: prepare`).
 5. ✅ `three-js-implementation` deleted (registry entry + folder).
@@ -503,7 +503,7 @@ that test: kick off per `USAGE.md`.
 
 ## Out-of-scope, confirmed untouched
 
-`server.mjs`, `knowledge.mjs`, `mcp-server.mjs`, `apollo-studio/data/`, `evidence/`,
+`server.mjs`, `knowledge.mjs`, `mcp-server.mjs`, `convenium-design-studio/data/`, `evidence/`,
 `handoffs/`, `public/media/`, every `.olympus/`, `~/.claude/skills`, `.skill-backups/`,
 `test_projects/`, `third-party/`, `main` branch. Every commit landed on `unification`.
 
@@ -512,17 +512,17 @@ that test: kick off per `USAGE.md`.
 
 # POST-UNIFICATION — scope narrowing + audit fixes — **DONE** (2026-09-03)
 
-Apollo is a design system only: a skill stays only if it serves designing and building an
+Convenium.Design is a design system only: a skill stays only if it serves designing and building an
 interface. Follow-up on top of the unification.
 
 ## A. Precondition — PASS
 All 43 skills marked for removal still exist in `C:\Users\Rustam Gurbanov\.claude\skills\` —
-the Apollo copy was never going to be the last one. Safe to remove.
+the Convenium.Design copy was never going to be the last one. Safe to remove.
 
-## B. Marketing removed from Apollo
+## B. Marketing removed from Convenium.Design
 
 - **43 skills deleted** from `library/skills/`, the registry, and every projection
-  (`.claude/skills/` -220 files, `.agents/skills/` -224 files, `apollo-studio/knowledge/skills/` -43):
+  (`.claude/skills/` -220 files, `.agents/skills/` -224 files, `convenium-design-studio/knowledge/skills/` -43):
   all 39 of `06-marketing-growth` except `site-architecture`; `content-strategy` +
   `sales-enablement` from `05-content-copy`; `analytics` + `competitor-profiling` from
   `07-research-intel`.
@@ -547,19 +547,19 @@ the Apollo copy was never going to be the last one. Safe to remove.
 
 1. **`enabled` on every registry record** — `true` where `phase != "unrouted"`, else `false`.
    `project.py` normalises it from phase before any projection emits it (studio README gains a
-   `- Routed:` line; `apollo-studio/skills.registry.json` carries the field); `skills.mjs`
-   passes it through so `mergeSkill` -> `apollo_get_context` filters on it.
-   **`apollo_get_context` payload: 84 skills / 55,225 bytes -> 31 skills / 21,992 bytes**
+   `- Routed:` line; `convenium-design-studio/skills.registry.json` carries the field); `skills.mjs`
+   passes it through so `mergeSkill` -> `convenium_design_get_context` filters on it.
+   **`convenium_design_get_context` payload: 84 skills / 55,225 bytes -> 31 skills / 21,992 bytes**
    (~60% smaller; pre-task with 127 skills it was ~83 KB). The 31 enabled = 27 previously
    routed + the 4 newly-routed above. *Note:* the 3 studio-only stubs
    (`taste-first-experience-design`, `ethical-gamification-systems`,
    `agent-identity-and-portfolio`) have `phase: direct|prepare` so the literal rule marks them
    `enabled: true` — they appear in the inventory. Flip to `status`-gated if that is unwanted.
-2. **runtimePrompts written** for the three routed-but-empty skills: `apollo-taste-interview`,
-   `apollo-style-picker`, `gsap-utils`. `verify.py` now fails if any routed skill has an empty
+2. **runtimePrompts written** for the three routed-but-empty skills: `convenium-design-taste-interview`,
+   `convenium-design-style-picker`, `gsap-utils`. `verify.py` now fails if any routed skill has an empty
    `runtimePrompt` or an `enabled` that disagrees with its phase.
 3. **Orphaned `sources["three-js-implementation"]`** deleted from
-   `apollo-studio/knowledge/index.json`. Its one substantive sentence (dispose GL resources,
+   `convenium-design-studio/knowledge/index.json`. Its one substantive sentence (dispose GL resources,
    cap pixel ratio, keep a DOM/poster fallback) was first saved to
    `library/knowledge/03-skill-briefs/webgl-implementation-guardrails.md`.
 
@@ -570,7 +570,7 @@ the Apollo copy was never going to be the last one. Safe to remove.
 | `project.py claude / codex / studio / digest` | ran; re-run dry-run = 0 writes / 0 deletes (idempotent) |
 | `library/tools/verify.py` | CLEAN — 84 skills / 84 records |
 | `scripts/validate-system.ps1` | EXIT 0 — "81 skills, 6 agents, 33 required files, registry parity OK" |
-| `npm.cmd run check` (apollo-studio) | EXIT 0 |
+| `npm.cmd run check` (convenium-design-studio) | EXIT 0 |
 | `external-skills.json` resolves | yes — parses; nothing it references was removed; `seo-audit` correctly moves back to plugin-only (comment updated) |
 | protected files (`server.mjs`, `knowledge.mjs`, `mcp-server.mjs`, `data/`, `evidence/`, `handoffs/`, `public/media/`, `.olympus/`) | 0 changes |
 

@@ -1,6 +1,6 @@
 ---
 name: ethical-gamification-systems
-description: Design ethical gamification for Apollo Studio and similar creative-work products. Use when defining missions, progression, rewards, mastery, collections, playbooks, creative milestones, token or credit spending, status signals, or retention loops, especially when safeguards are needed against coercion, dark patterns, excessive spend, misleading achievement claims, or accidental complexity.
+description: Design ethical gamification for Convenium.Design Studio and similar creative-work products. Use when defining missions, progression, rewards, mastery, collections, playbooks, creative milestones, token or credit spending, status signals, or retention loops, especially when safeguards are needed against coercion, dark patterns, excessive spend, misleading achievement claims, or accidental complexity.
 ---
 
 # Ethical Gamification Systems
@@ -104,6 +104,6 @@ Reject or redesign a mechanic that uses:
 - notification escalation after the user declines;
 - complexity whose main effect is hiding value or cost.
 
-## Apollo-specific standard
+## Convenium.Design-specific standard
 
 Treat a mission as a creative contract, a squad as editable configuration, a playbook as a reusable proven setup, and Creative DNA as user-owned preference evidence. Reward the quality of those artifacts and the user's informed decisions—not raw token consumption or agent count.

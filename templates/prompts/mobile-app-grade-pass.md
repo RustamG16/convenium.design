@@ -1,7 +1,7 @@
 # Prompt — app-grade mobile pass (reusable)
 
 For any client website whose phone experience must hold up as the primary one: hospitality,
-editorial, product launch. Paste the block below into a session opened on the project, with Apollo
+editorial, product launch. Paste the block below into a session opened on the project, with Convenium.Design
 attached (`python library/tools/apollo.py attach <PROJECT>`). Replace the angle-bracket fields.
 
 It assumes the direction is settled (abridged trail). This is an engineering and finish pass,
@@ -14,8 +14,8 @@ before/after table.
 
 ---
 
-> Read Apollo's `ARCHITECTURE-ESSENTIALS.md`, `AGENTS.md` and `START-HERE.md` completely before
-> acting, then the project's own `CLAUDE.md`/`AGENTS.md` and context documents. Act as the Apollo
+> Read Convenium.Design's `ARCHITECTURE-ESSENTIALS.md`, `AGENTS.md` and `START-HERE.md` completely before
+> acting, then the project's own `CLAUDE.md`/`AGENTS.md` and context documents. Act as the Convenium.Design
 > Design Director for `<BUSINESS / PROJECT>` on the **abridged trail**: the direction is fixed
 > (`<where the design system lives>`), so `00-brief.md` records it as director-resolved, and
 > `gate_a` / `gate_b` are `approved-in-plan`.

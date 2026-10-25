@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Comp A</title>
+<style>
+:root{
+  color-scheme:dark;
+  /* Canvas taken to near-black per REFERENCES.md P1. Ladder unchanged in shape. */
+  --bg:#050506; --surface:#101215; --surface-2:#17191d; --surface-3:#1f2227;
+  --line:#24272d; --line-strong:#6b7280;
+  --fg:#EEF0F3; --fg-muted:#A7AEB8; --fg-dim:#8B929C;
+  --accent:#5FA8F5; --accent-quiet:rgba(95,168,245,.12); --accent-line:rgba(95,168,245,.45);
+  --ok:#57C98A; --warn:#E0A64B;
+  --t-label:.8125rem; --t-meta:.875rem; --t-body:1rem; --t-title:1.125rem; --t-head:1.375rem;
+  --font:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --r:4px; --r2:8px;
+  /* One measure. Every rail in the product is this width. */
+  --rail:260px; --inspector:300px;
+}
+*{box-sizing:border-box}
+body{margin:0;width:1440px;height:900px;overflow:hidden;background:var(--bg);color:var(--fg);
+  font:400 var(--t-body)/1.35 var(--font);-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-columns:var(--rail) minmax(0,1fr) var(--inspector);height:900px}
+
+/* ---- the spine: one rail, always here, only its lower half changes ---- */
+.rail{display:flex;flex-direction:column;background:var(--bg);border-right:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;height:52px;padding:0 14px;border-bottom:1px solid var(--line)}
+.mark{width:22px;height:22px;display:grid;place-items:center;background:var(--accent);color:#050506;
+  font-weight:700;font-size:var(--t-label);border-radius:var(--r)}
+.brand b{font-size:var(--t-meta);font-weight:600;letter-spacing:-.01em}
+.nav{padding:8px;display:grid;gap:1px}
+.nav a{display:grid;grid-template-columns:16px 1fr auto;gap:10px;align-items:center;
+  min-height:32px;padding:0 8px;border-radius:var(--r);color:var(--fg-muted);
+  text-decoration:none;font-size:var(--t-meta)}
+.nav a i{width:6px;height:6px;border-radius:50%;background:var(--line-strong);justify-self:center}
+.nav a.on{background:var(--surface-3);color:var(--fg)}
+.nav a.on i{background:var(--accent)}
+.nav a kbd{font:500 var(--t-label)/1 var(--mono);color:var(--fg-dim)}
+.railhead{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 14px 8px;border-top:1px solid var(--line);margin-top:8px}
+.railhead span{font-size:var(--t-label);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim)}
+.railhead button{background:none;border:0;color:var(--accent);font:inherit;font-size:var(--t-meta);cursor:pointer;padding:2px 4px}
+.list{padding:0 8px;display:grid;gap:1px;overflow:auto}
+/* ONE row shape. Used here, in Library, in Runs, everywhere. */
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;
+  min-height:44px;padding:6px 8px;border-radius:var(--r);cursor:pointer;
+  border:1px solid transparent;background:transparent}
+.row:hover{background:var(--surface)}
+.row.on{background:var(--surface-3);border-color:var(--accent-line)}
+.row b{font-weight:500;font-size:var(--t-meta);grid-column:1}
+.row small{grid-column:1;color:var(--fg-dim);font-size:var(--t-label)}
+/* grid-column must be explicit: with only grid-row set, auto-placement put the tag in
+   column 1 row 1 and pushed the name down a line. It rendered ABOVE the row it labels. */
+.row .tag{grid-column:2;grid-row:1/3;align-self:center;justify-self:end;font-size:var(--t-label);color:var(--fg-dim)}
+.row.on .tag{color:var(--accent)}
+.railfoot{margin-top:auto;padding:12px 14px;border-top:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;color:var(--fg-dim);font-size:var(--t-label)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+
+/* ---- the one content column ---- */
+.main{min-width:0;overflow:auto;background:var(--bg)}
+.head{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line);
+  padding:16px 24px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
+.head h1{margin:0;font-size:var(--t-head);font-weight:600;letter-spacing:-.02em}
+.head p{margin:4px 0 0;color:var(--fg-muted);font-size:var(--t-meta);max-width:62ch}
+.acts{display:flex;gap:8px;flex:none}
+.btn{min-height:32px;padding:0 12px;border-radius:var(--r);border:1px solid var(--line-strong);
+  background:var(--surface);color:var(--fg);font:500 var(--t-meta)/1 var(--font);cursor:pointer;
+  display:inline-flex;align-items:center}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#050506}
+
+/* the locked pipeline, stated once, compactly */
+.pipe{margin:16px 24px;border:1px solid var(--line);border-radius:var(--r2);background:var(--surface);overflow:hidden}
+.pipe-h{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--line)}
+.pipe-h b{font-size:var(--t-label);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim)}
+.lock{display:inline-flex;align-items:center;gap:6px;font-size:var(--t-label);color:var(--fg-dim)}
+.lock i{width:5px;height:5px;border-radius:50%;background:var(--line-strong)}
+.stages{display:grid;grid-template-columns:repeat(5,1fr)}
+.stage{padding:10px 14px;border-right:1px solid var(--line);min-width:0}
+.stage:last-child{border-right:0}
+.stage span{font-size:var(--t-label);color:var(--fg-dim);text-transform:uppercase;letter-spacing:.06em}
+.stage b{display:block;margin-top:3px;font-size:var(--t-meta);font-weight:500}
+.stage em{display:block;margin-top:2px;font-style:normal;font-size:var(--t-label);color:var(--fg-dim);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* the parameter surface: ONE label/control grid, held from top to bottom */
+.sheet{margin:0 24px 24px}
+.sec{border-top:1px solid var(--line);padding:16px 0 4px}
+.sec:first-child{border-top:0}
+.sec > h2{margin:0 0 2px;font-size:var(--t-label);font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--fg-dim)}
+.sec > p{margin:0 0 12px;color:var(--fg-muted);font-size:var(--t-meta)}
+.grid{display:grid;grid-template-columns:186px minmax(0,1fr) 210px;gap:0}
+.f{display:contents}
+.f > .lab{padding:9px 12px 9px 0;border-bottom:1px solid var(--line);min-width:0}
+.f > .ctl{padding:7px 12px 7px 0;border-bottom:1px solid var(--line)}
+.f > .con{padding:9px 0;border-bottom:1px solid var(--line);color:var(--fg-dim);font-size:var(--t-label);line-height:1.4}
+.f:last-child > *{border-bottom:0}
+.lab b{display:block;font-weight:500;font-size:var(--t-meta)}
+.lab small{display:block;margin-top:2px;color:var(--fg-dim);font-size:var(--t-label)}
+.f.changed .lab b::after{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--accent);margin-left:7px;vertical-align:middle}
+select,input[type=text],input[type=number],textarea{width:100%;min-height:32px;padding:5px 9px;
+  border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);
+  color:var(--fg);font:400 var(--t-meta)/1.3 var(--font)}
+textarea{min-height:64px;resize:none;line-height:1.45}
+.chk{display:flex;align-items:center;gap:9px;min-height:32px;font-size:var(--t-meta);color:var(--fg-muted)}
+.chk input{accent-color:var(--accent);width:15px;height:15px}
+
+/* ---- inspector: the same rail measure, mirrored ---- */
+.insp{border-left:1px solid var(--line);background:var(--bg);display:flex;flex-direction:column;overflow:auto}
+.insp-h{padding:14px;border-bottom:1px solid var(--line)}
+.insp-h span{font-size:var(--t-label);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim)}
+.insp-h b{display:block;margin-top:3px;font-size:var(--t-meta);font-weight:500}
+.blk{padding:12px 14px;border-bottom:1px solid var(--line)}
+.blk h3{margin:0 0 8px;font-size:var(--t-label);font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--fg-dim)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:var(--t-meta)}
+.kv dt{color:var(--fg-dim);margin:0}
+.kv dd{margin:0;text-align:right}
+.avoid{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+.avoid li{font-size:var(--t-meta);color:var(--fg);padding-left:14px;position:relative}
+.avoid li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:1px;background:var(--warn)}
+.note{color:var(--fg-dim);font-size:var(--t-label);margin:6px 0 0;line-height:1.45}
+.save{margin-top:auto;padding:12px 14px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.save small{color:var(--fg-dim);font-size:var(--t-label);flex:1}
+</style></head><body>
+<div class="app">
+
+  <aside class="rail">
+    <div class="brand"><span class="mark">A</span><b>Convenium.Design Studio</b></div>
+    <nav class="nav">
+      <a href="#"><i></i>Work<kbd>1</kbd></a>
+      <a href="#" class="on"><i></i>Loadouts<kbd>2</kbd></a>
+      <a href="#"><i></i>Library<kbd>3</kbd></a>
+      <a href="#"><i></i>Playground<kbd>4</kbd></a>
+      <a href="#"><i></i>Runs<kbd>5</kbd></a>
+    </nav>
+    <div class="railhead"><span>Loadouts</span><button>+ New</button></div>
+    <div class="list">
+      <div class="row"><b>Lean audit</b><small>All eight at default</small><span class="tag"></span></div>
+      <div class="row"><b>Concept lab</b><small>2 of 8 changed</small><span class="tag"></span></div>
+      <div class="row"><b>Premium build</b><small>4 of 8 changed</small><span class="tag"></span></div>
+      <div class="row"><b>Delivery QA</b><small>3 of 8 changed</small><span class="tag"></span></div>
+      <div class="row on"><b>Lean audit copy</b><small>1 of 8 changed</small><span class="tag">Active</span></div>
+    </div>
+    <div class="railfoot"><span class="dot"></span>Private by default</div>
+  </aside>
+
+  <main class="main">
+    <div class="head">
+      <div>
+        <h1>Lean audit copy</h1>
+        <p>Eight decisions, a taste profile, a brief, tools and a budget. The pipeline above them is locked.</p>
+      </div>
+      <div class="acts"><button class="btn">Duplicate</button><button class="btn primary">Use this loadout</button></div>
+    </div>
+
+    <section class="pipe">
+      <div class="pipe-h"><b>Olympus pipeline</b><span class="lock"><i></i>Locked &middot; a run executes this and nothing else</span></div>
+      <div class="stages">
+        <div class="stage"><span>Orchestrate</span><b>Convenium.Design</b><em>Owns the answer</em></div>
+        <div class="stage"><span>Diagnose</span><b>Athena</b><em>Evidence, Structure</em></div>
+        <div class="stage"><span>Direct</span><b>Calliope</b><em>Direction, Copy</em></div>
+        <div class="stage"><span>Build</span><b>Hephaestus</b><em>Craft, Motion</em></div>
+        <div class="stage"><span>Verify</span><b>Hermes</b><em>Media, Verify</em></div>
+      </div>
+    </section>
+
+    <div class="sheet">
+      <section class="sec">
+        <h2>Eight decisions</h2>
+        <p>Each one changes what the run does. The third column is what changes if you switch it.</p>
+        <div class="grid">
+          <div class="f changed"><div class="lab"><b>Craft</b><small>Hephaestus</small></div>
+            <div class="ctl"><select><option>ui-ux</option><option>apple-design (default)</option><option>emil-design-eng</option><option>awwwards-web-design</option><option>impeccable</option></select></div>
+            <div class="con">Conventional, familiar patterns; the safest and the least distinctive.</div></div>
+          <div class="f"><div class="lab"><b>Direction</b><small>Calliope</small></div>
+            <div class="ctl"><select><option>concept-studio (default)</option><option>taste-first-experience-design</option><option>award-rubric</option></select></div>
+            <div class="con">One direction built from the brief's constraints and defended in writing.</div></div>
+          <div class="f"><div class="lab"><b>Evidence</b><small>Athena</small></div>
+            <div class="ctl"><select><option>ux-evidence-audit (default)</option><option>reference-deconstruction</option><option>customer-research</option><option>design-analytics</option></select></div>
+            <div class="con">The existing page is the evidence: computed styles, real behaviour, measured defects.</div></div>
+          <div class="f"><div class="lab"><b>Structure</b><small>Athena</small></div>
+            <div class="ctl"><select><option>site-architecture (default)</option><option>pick-ui-library</option></select></div>
+            <div class="con">Information architecture first; the component choice follows it.</div></div>
+          <div class="f"><div class="lab"><b>Motion</b><small>Hephaestus</small></div>
+            <div class="ctl"><select><option>gsap-core (default)</option><option>gsap-timeline</option><option>gsap-scrolltrigger</option><option>webgl-experience</option></select></div>
+            <div class="con">Core tweens only; timeline and scroll skills join if the brief asks for them.</div></div>
+          <div class="f"><div class="lab"><b>Media</b><small>Hermes</small></div>
+            <div class="ctl"><select><option>asset-director (default)</option><option>higgsfield-generate</option><option>garden-gpt-image-2</option></select></div>
+            <div class="con">Every asset is declared in a manifest and approved before generation.</div></div>
+          <div class="f"><div class="lab"><b>Copy</b><small>Calliope</small></div>
+            <div class="ctl"><select><option>copywriting (default)</option><option>copy-editing</option></select></div>
+            <div class="con">Words are written from the brief rather than edited from what exists.</div></div>
+          <div class="f"><div class="lab"><b>Verify</b><small>Hermes</small></div>
+            <div class="ctl"><select><option>visual-qa (default)</option><option>award-rubric</option><option>gsap-performance</option></select></div>
+            <div class="con">Laptop and desktop layouts, states, reduced motion and runtime health.</div></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2>Brief</h2>
+        <p>What every run of this loadout is trying to achieve. Carried into the plan.</p>
+        <div class="grid">
+          <div class="f"><div class="lab"><b>Outcome</b><small>Sent verbatim</small></div>
+            <div class="ctl"><textarea>Audit the existing marketing site and return measured defects ranked by impact. No redesign until the audit is approved.</textarea></div>
+            <div class="con">Prepended to every agent's instructions ahead of its capabilities.</div></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2>Budget &amp; approval</h2>
+        <p>The ceiling for one run, and which agents pause for a human first.</p>
+        <div class="grid">
+          <div class="f"><div class="lab"><b>Token ceiling</b><small>One run</small></div>
+            <div class="ctl"><input type="number" value="30000"></div>
+            <div class="con">~6,000 per agent across five stages, or about 40 pages of text.</div></div>
+          <div class="f"><div class="lab"><b>Pauses for approval</b><small>Before acting</small></div>
+            <div class="ctl"><label class="chk"><input type="checkbox" checked>Hermes &middot; media and delivery</label></div>
+            <div class="con">A paused agent is planned and budgeted but not executed.</div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <aside class="insp">
+    <div class="insp-h"><span>Design DNA</span><b>Convenium.Design Instrument</b></div>
+    <div class="blk">
+      <dl class="kv">
+        <dt>Doctrine</dt><dd>convenium-design-instrument</dd>
+        <dt>Source</dt><dd>doctrine</dd>
+        <dt>Confidence</dt><dd>82%</dd>
+      </dl>
+    </div>
+    <div class="blk">
+      <h3>Never, in any run</h3>
+      <ul class="avoid">
+        <li>Decorative gradients without state</li>
+        <li>Generated imagery as background</li>
+        <li>Tiny uppercase for ordinary text</li>
+        <li>Animation without feedback value</li>
+      </ul>
+      <p class="note">These union across profiles and are never overridden by a doctrine default. Sent as hard constraints.</p>
+    </div>
+    <div class="blk">
+      <h3>Tools</h3>
+      <dl class="kv">
+        <dt>Convenium.Design MCP</dt><dd style="color:var(--ok)">available</dd>
+        <dt>Web search</dt><dd style="color:var(--fg-dim)">demo mode</dd>
+        <dt>Image gen</dt><dd style="color:var(--fg-dim)">no key</dd>
+      </dl>
+    </div>
+    <div class="save"><small>1 unsaved change</small><button class="btn">Discard</button><button class="btn primary">Save</button></div>
+  </aside>
+
+</div></body></html>

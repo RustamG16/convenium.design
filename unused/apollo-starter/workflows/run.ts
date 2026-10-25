@@ -1,5 +1,5 @@
 /**
- * Apollo run workflow — Inngest.
+ * Convenium.Design run workflow — Inngest.
  *
  * This is the piece the current codebase has no equivalent of. handleOracle
  * (server.mjs:113) tried to express a gated, multi-day workflow inside one HTTP
@@ -20,14 +20,14 @@ const GATE_TIMEOUT = '14d'
 
 export const runOlympus = inngest.createFunction(
   {
-    id: 'apollo-run',
+    id: 'convenium-design-run',
     // Fair scheduling: one org cannot starve another.
     concurrency: [{ key: 'event.data.orgId', limit: 2 }],
     onFailure: async ({ event }) => {
       await store.failRun(event.data.event.data.runId, 'Workflow failed after retries.')
     }
   },
-  { event: 'apollo/run.requested' },
+  { event: 'convenium-design/run.requested' },
   async ({ event, step }) => {
     const { runId, orgId, userId } = event.data
 
@@ -64,7 +64,7 @@ export const runOlympus = inngest.createFunction(
           store.openGate(runId, orgId, gate, [...produced.values()].flat()))
 
         const resolved = await step.waitForEvent(`await-gate-${gate}`, {
-          event: 'apollo/gate.resolved',
+          event: 'convenium-design/gate.resolved',
           timeout: GATE_TIMEOUT,
           if: `async.data.runId == "${runId}" && async.data.gate == "${gate}"`
         })
@@ -105,7 +105,7 @@ export const runOlympus = inngest.createFunction(
       await step.run('open-gate-C', () =>
         store.openGate(runId, orgId, 'C', [...produced.values()].flat()))
       const resolved = await step.waitForEvent('await-gate-C', {
-        event: 'apollo/gate.resolved',
+        event: 'convenium-design/gate.resolved',
         timeout: GATE_TIMEOUT,
         if: `async.data.runId == "${runId}" && async.data.gate == "C"`
       })

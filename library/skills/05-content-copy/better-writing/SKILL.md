@@ -4,7 +4,7 @@ description: Writes and reviews your interface copy, from labels and errors to e
 license: MIT
 ---
 
-> **Apollo:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 
 # Writing
 

@@ -1,4 +1,4 @@
-# Apollo notes: responsive-design
+# Convenium.Design notes: responsive-design
 
 Vendored 2026-10-19 from [`wshobson/agents`](https://github.com/wshobson/agents) (`plugins/ui-design/skills/responsive-design`, commit `0874a27b17a22e2b7c2e2bcd725768e0803cad06`), MIT.
 The licence is in `third-party/`. **Changes made:** a `license: MIT` frontmatter key and a one-line

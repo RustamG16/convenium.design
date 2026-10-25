@@ -34,12 +34,12 @@
     "enabled": false
   },
   {
-    "id": "apollo-style-picker",
-    "name": "apollo-style-picker",
+    "id": "convenium-design-style-picker",
+    "name": "convenium-design-style-picker",
     "phase": "direct",
     "group": "Taste",
     "defaultOn": false,
-    "description": "Path B of the taste-profile system. Presents the built-in design doctrines, pre-fills a taste profile from the chosen one, then runs a short residual interview only for fields the doctrine can't answer (audience, avoid-list additions, project constraints). Trigger phrases - \"pick a style for me\", \"show me the design options\", \"which style should I use\". Do NOT use for building a fully bespoke profile from scratch - use apollo-taste-interview instead.",
+    "description": "Path B of the taste-profile system. Presents the built-in design doctrines, pre-fills a taste profile from the chosen one, then runs a short residual interview only for fields the doctrine can't answer (audience, avoid-list additions, project constraints). Trigger phrases - \"pick a style for me\", \"show me the design options\", \"which style should I use\". Do NOT use for building a fully bespoke profile from scratch - use convenium-design-taste-interview instead.",
     "runtimePrompt": "Present the built-in design doctrines, let the user pick one, pre-fill the taste profile from it, then resolve the few remaining fields with short residual questions. Write the profile to `library/design-dna/`.",
     "category": "01-design-direction",
     "hosts": [
@@ -51,12 +51,12 @@
     "enabled": true
   },
   {
-    "id": "apollo-taste-interview",
-    "name": "apollo-taste-interview",
+    "id": "convenium-design-taste-interview",
+    "name": "convenium-design-taste-interview",
     "phase": "direct",
     "group": "Taste",
     "defaultOn": false,
-    "description": "Path A of the taste-profile system. Runs a structured interview that is a 1:1 walk through taste-profile.schema.json's fields, producing a complete saved profile. Trigger phrases - \"build my taste profile\", \"interview me about design preferences\", \"let's figure out my style\". Do NOT use when a style is already picked - use apollo-style-picker instead, which runs a shorter residual version of this same question set.",
+    "description": "Path A of the taste-profile system. Runs a structured interview that is a 1:1 walk through taste-profile.schema.json's fields, producing a complete saved profile. Trigger phrases - \"build my taste profile\", \"interview me about design preferences\", \"let's figure out my style\". Do NOT use when a style is already picked - use convenium-design-style-picker instead, which runs a shorter residual version of this same question set.",
     "runtimePrompt": "Walk the user field by field through `taste-profile.schema.json`, producing a complete saved profile in `library/design-dna/`. Capture provenance and uncertainty; never infer a preference the user did not state.",
     "category": "01-design-direction",
     "hosts": [
@@ -74,7 +74,7 @@
     "group": "Craft",
     "defaultOn": true,
     "description": "Applies Apple-inspired purpose, agency, familiarity, simplicity, typography, material restraint, and fluid interaction principles to the cross-platform desktop experience.",
-    "runtimePrompt": "Treat Apollo as Apple-inspired rather than HIG-compliant. Prioritize purpose, agency, familiarity, simplicity, legible hierarchy, system typography, restrained materials, immediate feedback, spatial consistency, interruptible motion, reduced-motion and reduced-transparency alternatives, and platform-appropriate desktop behavior. Do not imitate proprietary Apple screens or assets.",
+    "runtimePrompt": "Treat Convenium.Design as Apple-inspired rather than HIG-compliant. Prioritize purpose, agency, familiarity, simplicity, legible hierarchy, system typography, restrained materials, immediate feedback, spatial consistency, interruptible motion, reduced-motion and reduced-transparency alternatives, and platform-appropriate desktop behavior. Do not imitate proprietary Apple screens or assets.",
     "category": "01-design-direction",
     "hosts": [
       "claude",
@@ -1453,7 +1453,7 @@
     "phase": "unrouted",
     "group": "Web Build",
     "defaultOn": false,
-    "description": "Design and build gamified web/app UI - XP and levels, streaks, achievements, progress, quests, leaderboards, celebration tiers - with every number committed to DESIGN.md before code, all states designed, and an ethics gate. Original Apollo skill, 2026-10-14.",
+    "description": "Design and build gamified web/app UI - XP and levels, streaks, achievements, progress, quests, leaderboards, celebration tiers - with every number committed to DESIGN.md before code, all states designed, and an ethics gate. Original Convenium.Design skill, 2026-10-14.",
     "runtimePrompt": "",
     "category": "02-web-build",
     "hosts": [

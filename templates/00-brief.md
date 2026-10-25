@@ -29,10 +29,10 @@
 ## Direction
 
 Resolved at intake from the answers above, the references, and `library/design-dna/`.
-If these do not resolve it, run `apollo-taste-interview` or `apollo-style-picker` before
+If these do not resolve it, run `convenium-design-taste-interview` or `convenium-design-style-picker` before
 Gate A and record the result here and in `library/design-dna/`.
 
-- Chosen doctrine: one of `library/doctrines/` (`apollo-atelier`, `apollo-cyberpunk-athens`, `apollo-instrument`, `apollo-kinetic`), or `none — derive from references`
+- Chosen doctrine: one of `library/doctrines/` (`convenium-design-atelier`, `convenium-design-cyberpunk-athens`, `convenium-design-instrument`, `convenium-design-kinetic`), or `none — derive from references`
 - Structural posture: editorial / dense-systematic / cinematic / conventional
 - Motion posture: none / state-feedback only / scroll-narrative
 - Type logic (one sentence):

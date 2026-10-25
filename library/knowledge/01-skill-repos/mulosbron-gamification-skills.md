@@ -16,7 +16,7 @@ verdict: discard — cannot be vendored
 
 The skills are for teachers: classroom games, Kahoot and Classcraft, semester-long XP arcs.
 Ideas from `digital-gamification` that also apply outside the classroom, and are already in
-`gamified-ui` in Apollo's own words:
+`gamified-ui` in Convenium.Design's own words:
 
 - Gamification is mostly motivational design. Points, badges and leaderboards on their own are
   the weakest form.

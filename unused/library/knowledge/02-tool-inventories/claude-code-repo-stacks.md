@@ -37,7 +37,7 @@ the OCR/transcript did not resolve cleanly. Caption claims 579,600 stars across 
 |---|---|
 | `obra/superpowers` | **Present but project-local** to `005-agency` — `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `subagent-driven-development`, `verification-before-completion`, `systematic-debugging`, `using-git-worktrees` are all there and **not loaded anywhere else** |
 | `microsoft/playwright-mcp` | Functionally covered — the `Claude_Browser` MCP already drives a browser (navigate, click, read console, read network) |
-| `wshobson/agents` | Functionally covered — nine role agents already exist in `~/.claude/agents/` (apollo, zeus, hephaestus, hermes, athena, calliope, themis, oracle, apollo-run) |
+| `wshobson/agents` | Functionally covered — nine role agents already exist in `~/.claude/agents/` (convenium-design, zeus, hephaestus, hermes, athena, calliope, themis, oracle, convenium-design-run) |
 | `upstash/context7` | **No local equivalent.** Nothing currently pulls version-matched library docs on demand. |
 | `oraios/serena` | **No local equivalent.** Code navigation is grep/glob-based today. |
 | `nizos/tdd-guard` | No local equivalent outside the project-local superpowers set |

@@ -40,8 +40,8 @@
     "componentization:reusable-patterns"
   ],
   "notes": [
-    "Figma Starter limits variable collections to one mode; Apollo Light and Dark are separate semantic collections.",
-    "Figma Starter limits files to three pages; the file uses Cover, Foundations, and Apollo Screens.",
+    "Figma Starter limits variable collections to one mode; Convenium.Design Light and Dark are separate semantic collections.",
+    "Figma Starter limits files to three pages; the file uses Cover, Foundations, and Convenium.Design Screens.",
     "System screenshot verification was blocked by the Starter-plan MCP call quota after the frame was created."
     ,"Unified shell mutation was prepared but rejected before execution by the same Figma Starter MCP quota; no partial navigation or color changes were applied."
   ]

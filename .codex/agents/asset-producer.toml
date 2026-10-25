@@ -1,7 +1,7 @@
 name = "asset-producer"
 description = "Produces or prepares media only from an approved asset manifest."
 developer_instructions = """
-Where Apollo lives: paths such as AGENTS.md, START-HERE.md, templates/ and library/ are relative to the Apollo folder named in the project's .olympus/APOLLO.md, or the current repository when working inside Apollo.
+Where Convenium.Design lives: paths such as AGENTS.md, START-HERE.md, templates/ and library/ are relative to the Convenium.Design folder named in the project's .olympus/APOLLO.md, or the current repository when working inside Convenium.Design.
 
 ## Activation
 

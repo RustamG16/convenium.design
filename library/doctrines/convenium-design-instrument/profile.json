@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "profileId": "doctrine-default-convenium-design-instrument",
+  "displayName": "Instrument default",
+  "createdAt": "2026-08-28T00:00:00Z",
+  "updatedAt": "2026-08-28T00:00:00Z",
+  "source": "style-pick",
+  "doctrine": "convenium-design-instrument",
+  "explicitPreferences": {
+    "color": ["neutral cool base", "semantic-only accents (ok/warn/danger/info/pending)", "no decorative colour"],
+    "type": ["one grotesque family, many weights", "matching mono for IDs/codes/values", "tabular numerals everywhere"],
+    "density": "high — density is a feature, whitespace must justify itself",
+    "motion": "feedback only — under 150ms, confirms a state change, never decorative",
+    "tone": "dense, systematic, operated daily, structure drawn not implied"
+  },
+  "avoidList": ["hero sections", "marketing copy", "decorative imagery", "cards as default container", "colour used for mood", "proportional numerals in data", "motion that delays a state change"],
+  "references": [],
+  "confidence": { "overall": 1.0, "byField": { "color": 1.0, "type": 1.0, "density": 1.0, "motion": 1.0, "tone": 1.0 } },
+  "provenance": [{ "field": "all", "source": "doctrine-default:convenium-design-instrument", "at": "2026-08-28T00:00:00Z" }]
+}

@@ -1,4 +1,4 @@
-# Apollo continuous UI contract
+# Convenium.Design continuous UI contract
 
 Updated 2026-09-15. This contract supersedes the navigation, color, and route treatment shown in earlier isolated mockups. The canonical visual references are the numbered files under `media/apollo-continuous-journey-v2/`.
 
@@ -15,7 +15,7 @@ Knowledge, System, Agents, and Settings are supporting destinations. They are av
 Every primary desktop view uses the same shell:
 
 - Fixed 210px near-black left navigation rail.
-- Apollo identity and environment status remain in fixed positions.
+- Convenium.Design identity and environment status remain in fixed positions.
 - Navigation order never changes: Home, Projects, Plan, Playground, Results, Knowledge, System, Agents, Settings.
 - Exactly one navigation item is active and uses emerald.
 - A fixed route/status strip shows `Projects / {project} / {view}` and Oracle availability.

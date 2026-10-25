@@ -2,5 +2,5 @@
 enabled = true
 max_concurrent_threads_per_session = 2
 
-# The Apollo Studio MCP server is optional and machine-specific. To enable it,
+# The Convenium.Design Studio MCP server is optional and machine-specific. To enable it,
 # copy the block from .codex/config.example.toml and set the absolute path.

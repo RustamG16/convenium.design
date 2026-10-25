@@ -1,4 +1,4 @@
-# Apollo notes — implementing-secret-scanning-with-gitleaks
+# Convenium.Design notes — implementing-secret-scanning-with-gitleaks
 
 - **Source:** https://github.com/mukul975/Anthropic-Cybersecurity-Skills, `skills/implementing-secret-scanning-with-gitleaks/` at commit `54a798831d2266a3ca61ce68a7acb80b81160d57` (author "mahipal"). Despite the repository name it is **not affiliated with Anthropic**.
 - **Licence:** Apache-2.0 (`LICENSE` in this folder).

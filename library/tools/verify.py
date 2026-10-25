@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The single health check for Apollo. stdlib only. Exit 0 = clean, 1 = problems.
+"""The single health check for Convenium.Design. stdlib only. Exit 0 = clean, 1 = problems.
 
     python library/tools/verify.py                    # library + system checks
     python library/tools/verify.py --project <path>   # a website project's six context files

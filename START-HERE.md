@@ -73,7 +73,7 @@ Deliver `01-audit.md` with screenshots/evidence, severity, affected users, and t
 
 ### Gate A — approve the brief
 
-Resolve the direction block in `00-brief.md` from `.olympus/brand-dna.json` (doctrine match, taste, voice, constraints), the intake answers and the supplied references. If taste is still unresolved, have the strategist run `$apollo-taste-interview` or `$apollo-style-picker` now; the result goes into `brand-dna.json → taste`. Then show the interpreted problem, audience, constraints, success signal, missing assets, and the frozen direction. Wait for approval or corrections.
+Resolve the direction block in `00-brief.md` from `.olympus/brand-dna.json` (doctrine match, taste, voice, constraints), the intake answers and the supplied references. If taste is still unresolved, have the strategist run `$convenium-design-taste-interview` or `$convenium-design-style-picker` now; the result goes into `brand-dna.json → taste`. Then show the interpreted problem, audience, constraints, success signal, missing assets, and the frozen direction. Wait for approval or corrections.
 
 ### 2. Create the direction
 

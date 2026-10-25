@@ -4,7 +4,7 @@ description: Create premium cinematic web motion systems with GSAP, ScrollTrigge
 license: MIT
 ---
 
-> **Apollo:** vendored from `MengTo/Skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `MengTo/Skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 
 # Cinematic GSAP Lenis Motion System
 

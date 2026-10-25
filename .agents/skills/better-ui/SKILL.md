@@ -4,7 +4,7 @@ description: Polishes the surfaces, icons and motion in your project with exact 
 license: MIT
 ---
 
-> **Apollo:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 
 # UI polish
 

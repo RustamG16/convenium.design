@@ -1,12 +1,12 @@
 {
-  "name": "apollo",
+  "name": "convenium-design",
   "owner": {
     "name": "Rustam Gurbanov"
   },
-  "description": "Apollo design system \u2014 one plugin, rooted at this repository.",
+  "description": "Convenium.Design design system \u2014 one plugin, rooted at this repository.",
   "plugins": [
     {
-      "name": "apollo",
+      "name": "convenium-design",
       "source": "./",
       "description": "Gated design agency: a Brand DNA strategist, one Design Director and five specialists that take a business from intake to a verified, built design."
     }

@@ -4,7 +4,7 @@ description: Master iOS Human Interface Guidelines and SwiftUI patterns for buil
 license: MIT
 ---
 
-> **Apollo:** vendored from `wshobson/agents` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `wshobson/agents` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 
 # iOS Mobile Design
 

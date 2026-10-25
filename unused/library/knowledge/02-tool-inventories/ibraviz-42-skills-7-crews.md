@@ -37,7 +37,7 @@ OCR; slide numbering jumps 05→07 and "operations" is inferred from an `OPERAT`
 entire marketing and social departments already exist locally (`seo-audit`, `ai-seo`,
 `ad-creative`, `cro`, `programmatic-seo`, `marketing-psychology`, `copywriting`, `social`,
 `content-strategy`, `video`, `emails`). Design is covered by `frontend-design`,
-`impeccable`, `web-design-pro` and apollo's own set.
+`impeccable`, `web-design-pro` and convenium-design's own set.
 
 ## What it is actually good for
 

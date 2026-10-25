@@ -1,6 +1,6 @@
-# Apollo continuous UI journey v2
+# Convenium.Design continuous UI journey v2
 
-This set is the canonical visual reference for the Apollo prototype. Read the PNG files in numeric order.
+This set is the canonical visual reference for the Convenium.Design prototype. Read the PNG files in numeric order.
 
 ## Primary user trip
 
@@ -10,8 +10,8 @@ This set is the canonical visual reference for the Apollo prototype. Read the PN
 |---:|---|---|---|
 | 00 | User journey map | The complete system and where control changes hands | Start with Oracle |
 | 01 | Home / Oracle | Active project, current stage, attention, next action | Describe a goal |
-| 02 | Oracle intake | Why Apollo is asking, what is answered, what remains | Confirm an answer |
-| 03 | Design DNA / Brief | What Apollo believes about the project and user preferences | Approve the brief |
+| 02 | Oracle intake | Why Convenium.Design is asking, what is answered, what remains | Confirm an answer |
+| 03 | Design DNA / Brief | What Convenium.Design believes about the project and user preferences | Approve the brief |
 | 04 | Master Plan | Stages, dependencies, gates, owners, unresolved decisions | Review the plan |
 | 05 | Configure workflow | Which agents, skills, tools, models, and permissions will affect the result | Test the configuration |
 | 06 | Playground | How Setup A and B differ in quality, clarity, speed, cost, and evidence | Apply a tested setup |

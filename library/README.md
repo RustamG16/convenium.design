@@ -1,7 +1,7 @@
-# library/ — Apollo's source of truth
+# library/ — Convenium.Design's source of truth
 
 Everything an agent needs is authored **here and only here**. The host trees
-(`.claude/`, `.agents/skills/`, `.codex/agents/`, `apollo-studio/knowledge/`) are
+(`.claude/`, `.agents/skills/`, `.codex/agents/`, `convenium-design-studio/knowledge/`) are
 **generated** from this directory by `tools/project.py` (added in Phase 3). Editing a
 generated tree is a defect; the generator overwrites it.
 
@@ -32,8 +32,8 @@ library/
   `sources/upstream/` copy → an Apollo_claude copy → a `runtimePrompt`-only entry (a stub).
 - **Bundle, don't depend.** Anything a pipeline phase or an agent's `skills:` list needs is a
   body here and is projected to every host. Host plugin sets change between sessions on the
-  same machine, so a route to a plugin skill works some days and not others. Skills Apollo
+  same machine, so a route to a plugin skill works some days and not others. Skills Convenium.Design
   only *mentions* and does not own (design:*, builtin document skills) are declared in
   `registry/external-skills.json`.
-- Name collisions with personal or plugin skills are resolved by installing Apollo as a
-  Claude Code plugin (skills become `apollo:<id>`), not by withholding the body.
+- Name collisions with personal or plugin skills are resolved by installing Convenium.Design as a
+  Claude Code plugin (skills become `convenium-design:<id>`), not by withholding the body.

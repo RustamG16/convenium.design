@@ -8,5 +8,5 @@ in `ARCHITECTURE-ESSENTIALS.md`.
 
 - Skills are `$name` tokens (e.g. `$ux-evidence-audit`); bodies live in `.agents/skills/<id>/`.
 - Specialists are `.codex/agents/<name>.toml`. `sandbox_mode = "read-only"` agents cannot write.
-- The Apollo Studio MCP server is opt-in for Codex: see `.codex/config.example.toml`.
+- The Convenium.Design Studio MCP server is opt-in for Codex: see `.codex/config.example.toml`.
 - Rebuild the projections after any `library/` edit: `python library/tools/project.py all`.

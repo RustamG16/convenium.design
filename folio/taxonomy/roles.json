@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "roles": {
+    "engineer":   { "label": "Software engineer", "proof": ["projects", "experience", "skills"], "required": ["hero", "proof-grid", "experience-timeline", "skills", "contact"], "optional": ["about", "recognition", "testimonials", "writing"], "minimumViable": { "projects": 2, "or": { "experience": 1 } }, "heroVariants": ["type-statement", "split-portrait", "code-ambient"], "narrativeOrder": ["hero", "proof-grid", "about", "experience-timeline", "skills", "recognition", "testimonials", "writing", "contact"] },
+    "designer":   { "label": "Designer", "proof": ["projects", "work", "experience"], "required": ["hero", "case-studies", "about", "contact"], "optional": ["experience-timeline", "skills", "testimonials", "recognition"], "minimumViable": { "projects": 2 }, "heroVariants": ["type-statement", "work-reveal", "split-portrait"], "narrativeOrder": ["hero", "case-studies", "about", "experience-timeline", "skills", "testimonials", "recognition", "contact"] },
+    "visual":     { "label": "Visual creative (photo, illustration, 3D, motion)", "proof": ["work"], "required": ["hero", "gallery", "about", "contact"], "optional": ["series", "clients", "recognition", "testimonials", "experience-timeline"], "minimumViable": { "work": 4 }, "heroVariants": ["work-reveal", "full-bleed-media", "type-statement"], "narrativeOrder": ["hero", "gallery", "series", "about", "clients", "recognition", "testimonials", "contact"] },
+    "writer":     { "label": "Writer or journalist", "proof": ["recognition.publications", "work"], "required": ["hero", "selected-writing", "about", "contact"], "optional": ["experience-timeline", "recognition", "testimonials", "topics"], "minimumViable": { "publications": 3, "or": { "work": 3 } }, "heroVariants": ["type-statement", "editorial-lead", "split-portrait"], "narrativeOrder": ["hero", "selected-writing", "topics", "about", "experience-timeline", "recognition", "testimonials", "contact"] },
+    "founder":    { "label": "Founder or operator", "proof": ["experience", "projects"], "required": ["hero", "ventures", "about", "contact"], "optional": ["experience-timeline", "recognition", "talks", "testimonials", "writing"], "minimumViable": { "experience": 1, "or": { "projects": 1 } }, "heroVariants": ["type-statement", "split-portrait", "ambient"], "narrativeOrder": ["hero", "ventures", "about", "talks", "recognition", "testimonials", "writing", "contact"] },
+    "consultant": { "label": "Consultant or coach", "proof": ["experience", "testimonials"], "required": ["hero", "offer", "about", "testimonials", "contact"], "optional": ["experience-timeline", "process", "recognition", "writing"], "minimumViable": { "experience": 1 }, "heroVariants": ["split-portrait", "type-statement", "ambient"], "narrativeOrder": ["hero", "offer", "process", "about", "testimonials", "experience-timeline", "recognition", "writing", "contact"] },
+    "researcher": { "label": "Researcher or academic", "proof": ["recognition.publications", "projects", "education"], "required": ["hero", "research", "publications", "contact"], "optional": ["about", "talks", "education", "recognition", "teaching"], "minimumViable": { "publications": 1, "or": { "projects": 1 } }, "heroVariants": ["type-statement", "editorial-lead", "split-portrait"], "narrativeOrder": ["hero", "research", "publications", "talks", "about", "education", "recognition", "contact"] },
+    "student":    { "label": "Student or early-career", "proof": ["projects", "education", "skills"], "required": ["hero", "projects", "education", "contact"], "optional": ["about", "skills", "experience-timeline", "recognition"], "minimumViable": { "projects": 1 }, "heroVariants": ["type-statement", "split-portrait", "ambient"], "narrativeOrder": ["hero", "projects", "about", "education", "skills", "experience-timeline", "recognition", "contact"] }
+  },
+  "sectionDataSources": {
+    "hero": ["person.name", "person.headline", "intent.callToAction"],
+    "about": ["person.summary", "person.location", "person.languages", "person.availability"],
+    "proof-grid": ["projects"], "case-studies": ["projects"], "projects": ["projects"], "ventures": ["experience", "projects"],
+    "gallery": ["work"], "series": ["work"], "work-reveal": ["work"],
+    "selected-writing": ["recognition.publications", "work[kind=writing]"], "topics": ["skills"],
+    "research": ["projects", "person.summary"], "publications": ["recognition.publications"], "talks": ["recognition.talks"],
+    "experience-timeline": ["experience"], "education": ["education"], "skills": ["skills"],
+    "offer": ["skills", "intent.callToAction"], "process": ["person.summary"],
+    "clients": ["experience.organization"], "recognition": ["recognition.awards"], "testimonials": ["testimonials"],
+    "writing": ["recognition.publications", "links[label~blog]"], "teaching": ["experience[title~lectur|teach]"],
+    "contact": ["contact", "links"]
+  },
+  "classificationHints": {
+    "engineer": { "skillsKeywords": ["typescript", "python", "react", "rust", "go", "kubernetes", "backend", "frontend", "api", "sql"], "populated": ["projects"] },
+    "designer": { "skillsKeywords": ["figma", "ux", "ui", "product design", "brand", "typography", "design system"], "populated": ["projects"] },
+    "visual": { "skillsKeywords": ["photography", "illustration", "blender", "cinema 4d", "houdini", "after effects", "motion", "film"], "populated": ["work"] },
+    "writer": { "skillsKeywords": ["journalism", "copywriting", "editing", "essay", "fiction", "reporting"], "populated": ["recognition.publications"] },
+    "founder": { "skillsKeywords": ["founder", "ceo", "co-founder", "startup", "fundraising", "operations"], "populated": ["experience"] },
+    "consultant": { "skillsKeywords": ["consulting", "coaching", "advisory", "strategy", "facilitation", "therapy"], "populated": ["testimonials"] },
+    "researcher": { "skillsKeywords": ["phd", "research", "paper", "lab", "postdoc", "thesis", "professor"], "populated": ["recognition.publications"] },
+    "student": { "skillsKeywords": ["student", "bachelor", "master", "intern", "graduate"], "populated": ["education"] }
+  }
+}

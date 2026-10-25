@@ -26,8 +26,8 @@ typography:
   # text zoom (WCAG 1.4.4).
   #
   # Check the hero against the chosen doctrine's --display-max before moving on:
-  #   apollo-kinetic  12-18vw       apollo-atelier  a fixed step from the scale, never fluid
-  #   apollo-instrument  11-28px    apollo-cyberpunk-athens  per that doctrine's tokens
+  #   convenium-design-kinetic  12-18vw       convenium-design-atelier  a fixed step from the scale, never fluid
+  #   convenium-design-instrument  11-28px    convenium-design-cyberpunk-athens  per that doctrine's tokens
   hero:
     fontFamily:
     fontSize:

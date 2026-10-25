@@ -11,7 +11,7 @@
 Compact reference so this is never re-derived. Two sources, one system.
 
 > **This file describes HIS system, not our plan.** §3 (model-per-seat) and the Hermes
-> worker pool in §1 were **cut on 2026-09-03** — Apollo runs on Claude + Codex only.
+> worker pool in §1 were **cut on 2026-09-03** — Convenium.Design runs on Claude + Codex only.
 > What we keep is §2 (the economics), §4 (context discipline), §5 (cache) and §6
 > (guardrails). See `SPEC-02` §4.1.
 
@@ -109,12 +109,12 @@ problem, not a pricing problem.*
 
 ---
 
-## 8. What Apollo already has, and what it doesn't
+## 8. What Convenium.Design already has, and what it doesn't
 
-Apollo v2 (`D:\Analyst_Designer\Apollo`) is one Design Director + 5 specialists running a
+Convenium.Design v2 (`D:\Analyst_Designer\Convenium.Design`) is one Design Director + 5 specialists running a
 gated pipeline. Structurally that is **already tiers 1 and 2** of the above.
 
-| Bennett's piece | Apollo today |
+| Bennett's piece | Convenium.Design today |
 |---|---|
 | Conductor | `design-director` — present |
 | Dept heads (6 crews) | 5 specialists, **one agency only** |
@@ -122,16 +122,16 @@ gated pipeline. Structurally that is **already tiers 1 and 2** of the above.
 | Model per seat | **Missing.** No lane routing anywhere. |
 | Token budget / depth cap / output truncation | **Missing.** No ceilings in `run.json`. |
 | Shared knowledge store | `library/` — present, but single-agency and not queryable |
-| Console UI | `apollo-studio/` — partial |
+| Console UI | `convenium-design-studio/` — partial |
 | SOP/ladder drawer content | **Missing.** See `operator-console-ui.md` §"detail drawer". |
 
-**The gap that matters most is the worker lane.** Without it, every Apollo run pays
+**The gap that matters most is the worker lane.** Without it, every Convenium.Design run pays
 conductor prices for typing work, which is exactly the failure the carousel is about.
 
-> **Amended 2026-09-04.** That claim was made from his architecture, not from Apollo's own
+> **Amended 2026-09-04.** That claim was made from his architecture, not from Convenium.Design's own
 > output. Two full runs have now been measured (§9) and **cost was not the failure mode in
 > either.** The worker lane remains a real efficiency gap; it is no longer the gap that most
-> affects what Apollo produces. Sequencing changed accordingly — `SPEC-02` §5.
+> affects what Convenium.Design produces. Sequencing changed accordingly — `SPEC-02` §5.
 
 ## 9. Measured evidence — two runs of the same brief, 2026-09-04
 

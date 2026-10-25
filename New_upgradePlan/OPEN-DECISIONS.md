@@ -4,7 +4,7 @@ Status: core product architecture approved for the local prototype. See PRODUCT-
 
 | Decision | Recommendation | What would change it |
 |---|---|---|
-| First buyer | Website clients buying an outcome; start with a narrow hospitality offer | Evidence that designers want to buy/run Apollo themselves |
+| First buyer | Website clients buying an outcome; start with a narrow hospitality offer | Evidence that designers want to buy/run Convenium.Design themselves |
 | CrewAI | Keep native hosts now; optional Flow-first pilot later | A demonstrated unattended/restart/queue requirement |
 | Product center | Oracle-led project formation, Plan, Playground and Results | Settled for prototype |
 | Node control | Advanced System view with run trace and accessible list equivalent | Settled for prototype |
@@ -20,7 +20,7 @@ Status: core product architecture approved for the local prototype. See PRODUCT-
 ## Settled by the current request
 
 - Improve the plan and prepare a fresh-chat implementation handoff; no runtime implementation in this planning task.
-- Manus is the category archetype; Apollo adds proactive intake and transparent design-workflow control.
+- Manus is the category archetype; Convenium.Design adds proactive intake and transparent design-workflow control.
 - Oracle is the single front door and persistent contextual assistant.
 - The complete product journey is intake → brief/Design DNA → master plan → configuration/test → approval → model/environment selection → implementation → evidence/review.
 - Node Control is an advanced surface, not the default interface.
@@ -30,4 +30,4 @@ Status: core product architecture approved for the local prototype. See PRODUCT-
 
 ## Important distinction
 
-Apollo Atlas's numeric palette/type suggestions are proposed values, not an approved replacement for Studio's existing DESIGN.md. The next design discussion should reconcile them before implementation. No need to repeat website-redesign intake for this system-planning task.
+Convenium.Design Atlas's numeric palette/type suggestions are proposed values, not an approved replacement for Studio's existing DESIGN.md. The next design discussion should reconcile them before implementation. No need to repeat website-redesign intake for this system-planning task.

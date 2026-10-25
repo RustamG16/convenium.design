@@ -1,0 +1,291 @@
+{
+  "generatedAt": "2026-09-03T17:10:46.598Z",
+  "durationMs": 293847,
+  "thresholds": {
+    "B1": {
+      "name": "Controls with no listener and no form owner",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "visible controls",
+      "detail": []
+    },
+    "B2": {
+      "name": "Clicks that change nothing observable",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "of 205 clicked (12 already in their target state, excluded)",
+      "detail": []
+    },
+    "B3": {
+      "name": "Label-truth rows failing their postcondition",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "45 of 45 command controls covered",
+      "detail": {
+        "failed": [],
+        "uncovered": []
+      }
+    },
+    "B4": {
+      "name": "Loadout decisions that do not change the request",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "of 12 decisions",
+      "detail": []
+    },
+    "B5": {
+      "name": "Client stores written and read by nothing",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "localStorage keys",
+      "detail": []
+    },
+    "B6": {
+      "name": "Runtime claims not backed by a verified capability",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "claims (mode demo)",
+      "detail": {
+        "checked": true,
+        "mode": "demo",
+        "modeDetail": "No OPENAI_API_KEY. Planning is local and free; nothing is sent.",
+        "models": [
+          "gpt-5.6-sol",
+          "gpt-5.6-terra",
+          "gpt-5.6-luna"
+        ],
+        "shown": {
+          "badge": "Demo mode",
+          "playground": "Demo mode validates routing without sending data or consuming API tokens.",
+          "oracle": "Demo execution. Plan-only is fully functional and consumes zero tokens."
+        },
+        "unbacked": []
+      }
+    },
+    "B7": {
+      "name": "Comparison runs that do not survive a reload",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "runs",
+      "detail": {
+        "ran": true,
+        "persisted": true,
+        "count": 1
+      }
+    },
+    "B8": {
+      "name": "Console errors and 4xx/5xx during the sweep",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "events",
+      "detail": {
+        "console": [],
+        "network": []
+      }
+    }
+  },
+  "controls": {
+    "total": 567,
+    "visible": 548,
+    "clicked": 205,
+    "skipped": 6
+  },
+  "unwired": [],
+  "noEffect": [],
+  "alreadyActiveNoEffect": [
+    {
+      "view": "work",
+      "selector": "div#project-list > button.project-item.is-active",
+      "label": "WKO launch narrativeLaunch planning"
+    },
+    {
+      "view": "work",
+      "selector": "div#project-tabs > button.project-tab.is-active",
+      "label": "Launch planning"
+    },
+    {
+      "view": "work",
+      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(1)",
+      "label": "Work1"
+    },
+    {
+      "view": "systems",
+      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(2)",
+      "label": "Loadouts2"
+    },
+    {
+      "view": "playground",
+      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(4)",
+      "label": "Playground4"
+    },
+    {
+      "view": "agents",
+      "selector": "section#agents > div.library-switcher:nth-of-type(2) > button.is-active:nth-of-type(1)",
+      "label": "Agents"
+    },
+    {
+      "view": "knowledge",
+      "selector": "section#knowledge > div.library-switcher:nth-of-type(2) > button.is-active:nth-of-type(2)",
+      "label": "Skills & knowledge"
+    },
+    {
+      "view": "knowledge",
+      "selector": "div#category-list > button.category-button.is-active:nth-of-type(1)",
+      "label": "Everything84"
+    },
+    {
+      "view": "knowledge",
+      "selector": "div#knowledge-skill-list > button.knowledge-skill.is-active:nth-of-type(1)",
+      "label": "Agent Identity and PortfolioAgents · prepareagent-identity-a"
+    },
+    {
+      "view": "knowledge",
+      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(3)",
+      "label": "Library3"
+    },
+    {
+      "view": "runs",
+      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(5)",
+      "label": "Runs5"
+    },
+    {
+      "view": "chrome",
+      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item:nth-of-type(1)",
+      "label": "Work1"
+    }
+  ],
+  "decisions": [
+    {
+      "field": "craft",
+      "kind": "slot",
+      "from": "ui-ux",
+      "to": "apple-design",
+      "differs": true
+    },
+    {
+      "field": "direction",
+      "kind": "slot",
+      "from": "concept-studio",
+      "to": "taste-first-experience-design",
+      "differs": true
+    },
+    {
+      "field": "evidence",
+      "kind": "slot",
+      "from": "ux-evidence-audit",
+      "to": "reference-deconstruction",
+      "differs": true
+    },
+    {
+      "field": "structure",
+      "kind": "slot",
+      "from": "site-architecture",
+      "to": "pick-ui-library",
+      "differs": true
+    },
+    {
+      "field": "motion",
+      "kind": "slot",
+      "from": "gsap-core",
+      "to": "gsap-timeline",
+      "differs": true
+    },
+    {
+      "field": "media",
+      "kind": "slot",
+      "from": "asset-director",
+      "to": "higgsfield-generate",
+      "differs": true
+    },
+    {
+      "field": "copy",
+      "kind": "slot",
+      "from": "copywriting",
+      "to": "copy-editing",
+      "differs": true
+    },
+    {
+      "field": "verify",
+      "kind": "slot",
+      "from": "visual-qa",
+      "to": "award-rubric",
+      "differs": true
+    },
+    {
+      "field": "brief",
+      "kind": "field",
+      "differs": true
+    },
+    {
+      "field": "designDna",
+      "kind": "field",
+      "differs": true
+    },
+    {
+      "field": "budget",
+      "kind": "field",
+      "differs": true
+    },
+    {
+      "field": "approvals",
+      "kind": "field",
+      "differs": true
+    }
+  ],
+  "stores": {
+    "written": [
+      "convenium-design-active-skills",
+      "convenium-design-active-skills-version",
+      "convenium-design-graph-copy",
+      "convenium-design-graph-edges",
+      "convenium-design-graph-phases",
+      "convenium-design-graph-positions",
+      "convenium-design-oracle-messages",
+      "convenium-design-oracle-plan"
+    ],
+    "read": [
+      "convenium-design-active-skills",
+      "convenium-design-active-skills-version",
+      "convenium-design-graph-copy",
+      "convenium-design-graph-edges",
+      "convenium-design-graph-phases",
+      "convenium-design-graph-positions",
+      "convenium-design-oracle-messages",
+      "convenium-design-oracle-plan"
+    ],
+    "orphans": []
+  },
+  "persistence": {
+    "ran": true,
+    "persisted": true,
+    "count": 1
+  },
+  "consoleEvents": [],
+  "networkFailures": [],
+  "diff": {
+    "firstRun": false,
+    "regressions": [],
+    "improvements": [
+      {
+        "id": "B2",
+        "name": "Clicks that change nothing observable",
+        "before": 1,
+        "after": 0
+      },
+      {
+        "id": "B3",
+        "name": "Label-truth rows failing their postcondition",
+        "before": 1,
+        "after": 0
+      }
+    ]
+  }
+}

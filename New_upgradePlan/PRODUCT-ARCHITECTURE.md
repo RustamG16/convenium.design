@@ -1,10 +1,10 @@
-# Apollo product architecture — Oracle-first design agency
+# Convenium.Design product architecture — Oracle-first design agency
 
-Updated 2026-09-15. This document supersedes the earlier assumption that an editorial node map is Apollo's primary product surface. It records the direction approved through the September 15 product discussion.
+Updated 2026-09-15. This document supersedes the earlier assumption that an editorial node map is Convenium.Design's primary product surface. It records the direction approved through the September 15 product discussion.
 
 ## Product definition
 
-Apollo is a proactive, adjustable design-agency operating system. It takes the task-first simplicity of Manus as its category archetype, then adds what general agent products hide: structured intake, Design DNA, an editable master plan, visible agent/skill/tool routing, safe experiments, approval gates, evidence, and model choice at the final implementation stage.
+Convenium.Design is a proactive, adjustable design-agency operating system. It takes the task-first simplicity of Manus as its category archetype, then adds what general agent products hide: structured intake, Design DNA, an editable master plan, visible agent/skill/tool routing, safe experiments, approval gates, evidence, and model choice at the final implementation stage.
 
 The prototype remains local-first and low-cost. The eventual product supports the same project and run contract in managed cloud and through a local desktop bridge.
 
@@ -12,11 +12,11 @@ The prototype remains local-first and low-cost. The eventual product supports th
 
 The first audience is a technically comfortable founder, designer, developer, or small agency operator who wants to turn an idea into a designed and implemented digital product without learning prompt engineering.
 
-Apollo's promise:
+Convenium.Design's promise:
 
-> Explain the goal in ordinary language. Oracle asks what matters, Apollo proposes a complete design workflow, and the user can understand, test, change, approve, and execute it from one place.
+> Explain the goal in ordinary language. Oracle asks what matters, Convenium.Design proposes a complete design workflow, and the user can understand, test, change, approve, and execute it from one place.
 
-The success test is not “the graph looks advanced.” A first-time user must be able to say, within five seconds: what project is active, what Apollo is doing, what needs attention, and what action is next.
+The success test is not “the graph looks advanced.” A first-time user must be able to say, within five seconds: what project is active, what Convenium.Design is doing, what needs attention, and what action is next.
 
 ## Product principles
 
@@ -40,7 +40,7 @@ The success test is not “the graph looks advanced.” A first-time user must b
 5. **Configure.** The user reviews the proposal in Plan. Advanced controls reveal agent assignments, skills, MCPs/plugins, models, permissions, and fallbacks.
 6. **Experiment.** Playground creates Setup A/B drafts, previews which capabilities change, runs isolated tests, compares quality/cost/time/evidence, and never changes production implicitly.
 7. **Approve.** The user accepts the plan and design contract. Approval is bound to the artifact hash and becomes invalid if the approved artifact changes materially.
-8. **Implement.** The user chooses the implementation model and local or cloud environment. Apollo executes bounded tasks and exposes progress, blockers, decisions, and evidence.
+8. **Implement.** The user chooses the implementation model and local or cloud environment. Convenium.Design executes bounded tasks and exposes progress, blockers, decisions, and evidence.
 9. **Review.** Results shows the artifact, versions, changes, desktop/mobile states, QA, independent review, provenance, and limitations.
 10. **Continue.** Oracle recommends the next meaningful action and can create reminders or quiet notifications for blockers, approvals, completion, or scheduled follow-up.
 
@@ -125,7 +125,7 @@ All routes share one continuous product shell. Knowledge and System may introduc
 
 ## Prototype boundary
 
-The first prototype is local and uses the existing Apollo Studio stack. It proves the complete experience with deterministic fixture data and existing project artifacts; it does not pretend to be a production cloud service.
+The first prototype is local and uses the existing Convenium.Design Studio stack. It proves the complete experience with deterministic fixture data and existing project artifacts; it does not pretend to be a production cloud service.
 
 Included:
 
@@ -152,7 +152,7 @@ Deferred behind explicit later plans:
 
 ## Acceptance criteria
 
-1. A new user can create a project and understand the next action without knowing Apollo terminology.
+1. A new user can create a project and understand the next action without knowing Convenium.Design terminology.
 2. Oracle asks only relevant unanswered questions and produces a reviewable brief.
 3. The plan displays every agent, skill, tool, dependency, gate, and unresolved decision with a reason.
 4. A user can compare two setups and understand how the change affects workflow and output.

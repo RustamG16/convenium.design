@@ -1,10 +1,10 @@
 {
-  "_comment": "library/ is the source of truth inside Apollo. The host trees (.claude, .agents, .codex, apollo-studio/knowledge) are GENERATED from it by tools/project.py — nothing here is read at runtime. This file only records provenance.",
+  "_comment": "library/ is the source of truth inside Convenium.Design. The host trees (.claude, .agents, .codex, convenium-design-studio/knowledge) are GENERATED from it by tools/project.py — nothing here is read at runtime. This file only records provenance.",
   "provenance": {
     "skills": "KnowledgeFactory library/skills (52) + the 6 Studio-store skills + 71 personal skills from the user's ~/.claude/skills, folded in Phase 1 of the unification (see git history / PROGRESS.md).",
-    "agents": "The 5 specialists were converted from .codex/agents/*.toml; design-director was written new. Apollo_claude's 12 agents were deliberately not ported (decision 4).",
+    "agents": "The 5 specialists were converted from .codex/agents/*.toml; design-director was written new. ConveniumDesign_claude's 12 agents were deliberately not ported (decision 4).",
     "knowledge": "Published from KnowledgeFactory's MNEMOSYNE (library/knowledge).",
-    "doctrines": "The 4 doctrines came from the now-archived Apollo_claude donor.",
+    "doctrines": "The 4 doctrines came from the now-archived ConveniumDesign_claude donor.",
     "personal_upstream": {
       "windows": "C:\\Users\\Rustam Gurbanov\\.claude\\skills",
       "env": "PERSONAL_SKILLS_DIR",
@@ -14,13 +14,13 @@
       "open-sourcing": "trailofbits/skills@82fe8226252622fa807643bdca1710901198553a plugins/open-sourcing — CC-BY-SA-4.0",
       "implementing-secret-scanning-with-gitleaks": "mukul975/Anthropic-Cybersecurity-Skills@54a798831d2266a3ca61ce68a7acb80b81160d57 skills/implementing-secret-scanning-with-gitleaks — Apache-2.0, .py scripts excluded",
       "rejected": "secondsky/claude-skills security-headers-configuration — ServerSignature in .htaccess (500 error), HSTS includeSubDomains+preload by default, deprecated X-XSS-Protection",
-      "static-site-apache-deploy": "Authored in Apollo 2026-10-09 from the Convenium Studio (005-agency) GoDaddy deploy; templates derived from its public/.htaccess and deploy-godaddy.yml",
-      "domain-and-hosting-plan": "Authored in Apollo 2026-10-19 for the ArkhEthos domain + hosting sizing request; GoDaddy MCP exposes availability/suggest only"
+      "static-site-apache-deploy": "Authored in Convenium.Design 2026-10-09 from the Convenium Studio (005-agency) GoDaddy deploy; templates derived from its public/.htaccess and deploy-godaddy.yml",
+      "domain-and-hosting-plan": "Authored in Convenium.Design 2026-10-19 for the ArkhEthos domain + hosting sizing request; GoDaddy MCP exposes availability/suggest only"
     },
     "vendored_2026_10_14": {
       "octalysis-gamification": "eykd/vance-ts@548afca81ea8ee7f0924d19b002968af1c6857af .claude/skills/octalysis-gamification - ISC (package.json; no LICENSE file)",
-      "game-feel": "gamedev-skills/awesome-gamedev-agent-skills@0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd skills/disciplines/game-feel - Apache-2.0; Apollo adds APOLLO-NOTES.md + a pointer line",
-      "gamified-ui": "Authored in Apollo 2026-10-14; original text, sources in references/sources.md",
+      "game-feel": "gamedev-skills/awesome-gamedev-agent-skills@0a70cfc64672d512c5b5b6006b5dcb5cf90dbdbd skills/disciplines/game-feel - Apache-2.0; Convenium.Design adds APOLLO-NOTES.md + a pointer line",
+      "gamified-ui": "Authored in Convenium.Design 2026-10-14; original text, sources in references/sources.md",
       "ethical-gamification-systems": "Owner-authored, copied 2026-10-15 from D:/Analyst_Designer/EXTERNAL_KNOWLEDGEBASE/skills/ethical-gamification-systems (SKILL.md + agents/openai.yaml); replaces the body-less stub in unused/library/skills/",
       "rejected": "mulosbron/gamification-skills (no licence); JimmyTranDev/dotfiles ui-gamification (unverifiable, flagged secret); jarrodmedrano game-feel/game-design-theory (parked)"
     }

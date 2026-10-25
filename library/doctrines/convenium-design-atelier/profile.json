@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "profileId": "doctrine-default-convenium-design-atelier",
+  "displayName": "Atelier default",
+  "createdAt": "2026-08-28T00:00:00Z",
+  "updatedAt": "2026-08-28T00:00:00Z",
+  "source": "style-pick",
+  "doctrine": "convenium-design-atelier",
+  "explicitPreferences": {
+    "color": ["near-monochrome", "warm off-white paper", "warm near-black ink", "one saturated accent, used rarely"],
+    "type": ["serif display", "neutral grotesque text", "major-third scale", "generous measure"],
+    "density": "low — whitespace is the primary material",
+    "motion": "near-absent — 120-200ms opacity/position only, stillness is the default",
+    "tone": "considered, quiet, expensive, editorial"
+  },
+  "avoidList": ["scroll choreography", "gradient meshes", "glassmorphism", "glow/neon", "heavy card shadows", "centred hero over full-bleed gradient", "more than two typefaces"],
+  "references": [],
+  "confidence": { "overall": 1.0, "byField": { "color": 1.0, "type": 1.0, "density": 1.0, "motion": 1.0, "tone": 1.0 } },
+  "provenance": [{ "field": "all", "source": "doctrine-default:convenium-design-atelier", "at": "2026-08-28T00:00:00Z" }]
+}

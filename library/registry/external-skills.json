@@ -1,5 +1,5 @@
 {
-  "_comment": "Skill ids referenced but NOT owned as bodies in this library: plugin = an installed host plugin, builtin = Anthropic-shipped. Apollo prefers bundling: since 2026-10-08 apple-design, emil-design-eng, impeccable and every gsap-* skill are bundled bodies projected to all hosts, because host plugin sets vary between sessions on the same machine. `seo-audit` is external (marketing, out of scope for the design library).",
+  "_comment": "Skill ids referenced but NOT owned as bodies in this library: plugin = an installed host plugin, builtin = Anthropic-shipped. Convenium.Design prefers bundling: since 2026-10-08 apple-design, emil-design-eng, impeccable and every gsap-* skill are bundled bodies projected to all hosts, because host plugin sets vary between sessions on the same machine. `seo-audit` is external (marketing, out of scope for the design library).",
   "plugin": [
     "design:accessibility-review",
     "design:design-critique",

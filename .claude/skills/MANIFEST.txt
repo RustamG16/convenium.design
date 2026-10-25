@@ -2,8 +2,6 @@ GENERATED.md
 MANIFEST.txt
 animate/RECIPES.md
 animate/SKILL.md
-apollo-style-picker/SKILL.md
-apollo-taste-interview/SKILL.md
 apple-design/SKILL.md
 asset-director/SKILL.md
 asset-director/agents/openai.yaml
@@ -23,6 +21,8 @@ competitor-profiling/references/tool-reference.md
 concept-studio/SKILL.md
 concept-studio/agents/openai.yaml
 concept-studio/references/distinction-test.md
+convenium-design-style-picker/SKILL.md
+convenium-design-taste-interview/SKILL.md
 copy-editing/SKILL.md
 copy-editing/evals/evals.json
 copy-editing/references/checklist.md

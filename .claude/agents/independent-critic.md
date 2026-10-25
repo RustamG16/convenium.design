@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, Bash, WebFetch
 skills: [award-rubric, visual-qa]
 ---
 
-> **Where Apollo lives.** Paths such as `AGENTS.md`, `START-HERE.md`, `templates/` and `library/` are relative to the Apollo folder: `${CLAUDE_PLUGIN_ROOT}` when Apollo is installed as a plugin, otherwise the folder named in the project's `.olympus/APOLLO.md`, or the current repository when you are working inside Apollo.
+> **Where Convenium.Design lives.** Paths such as `AGENTS.md`, `START-HERE.md`, `templates/` and `library/` are relative to the Convenium.Design folder: `${CLAUDE_PLUGIN_ROOT}` when Convenium.Design is installed as a plugin, otherwise the folder named in the project's `.olympus/APOLLO.md`, or the current repository when you are working inside Convenium.Design.
 
 ## Activation
 

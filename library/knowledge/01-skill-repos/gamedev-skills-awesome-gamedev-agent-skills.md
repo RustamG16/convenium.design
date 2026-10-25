@@ -26,7 +26,7 @@ is why it has the notes file.
 
 | Skill | Why |
 |---|---|
-| `game-ui-ux` | Engine HUDs, gamepad focus and safe areas. Revisit if Apollo builds a real game UI. |
+| `game-ui-ux` | Engine HUDs, gamepad focus and safe areas. Revisit if Convenium.Design builds a real game UI. |
 | `rpg`, `procedural-gen` | Stats, leveling and loot tables are game systems. `gamified-ui` carries the web version. |
 | `threejs-*`, `phaser-core`, `pixijs-rendering` | Already covered by `three-guide` and `webgl-experience`, or out of scope |
 

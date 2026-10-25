@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Rustam Codex</title>
+<meta name="description" content="A private universe made visible: six paths around one changing core, drawn as an ancient observatory with futuristic instruments.">
+<meta name="theme-color" content="#0b0908">
+<link rel="icon" href="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153651_9a6dea96-87c2-4fc7-b104-aa9693a4818c.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter+Tight:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>document.documentElement.classList.add('js');</script>
+<noscript><style>.curtain{display:none}.hero__eyebrow>*,.hero__sub,.hero__foot,.hero__img{opacity:1!important;transform:none!important}.hero__title .line__in{transform:none!important}.prologue{height:auto}.prologue__stage{position:relative;height:auto;padding:18vh 0}.stmt{grid-area:auto;opacity:1;filter:none;transform:none}</style></noscript>
+</head>
+<body>
+
+<!-- atmosphere layers -->
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="glow" id="glow" aria-hidden="true"></div>
+<div class="meridian" aria-hidden="true"><i id="meridian"></i></div>
+
+<!-- opening curtain -->
+<div class="curtain" id="curtain" aria-hidden="true">
+  <div class="curtain__bar curtain__bar--t"></div>
+  <div class="curtain__bar curtain__bar--b"></div>
+  <div class="curtain__mark"><span>Opening the observatory</span><i></i></div>
+</div>
+
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#top" aria-label="The Rustam Codex, top">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153651_9a6dea96-87c2-4fc7-b104-aa9693a4818c.png" alt="" width="34" height="34">
+    <span>Rustam&nbsp;Codex</span>
+  </a>
+  <nav class="nav__links" aria-label="Sections">
+    <a href="#prologue">Mission</a>
+    <a href="#paths">Six paths</a>
+    <a href="#campaigns">Campaigns</a>
+    <a href="#quests">Quests</a>
+    <a href="#order">Order</a>
+    <a href="#origin">Origin</a>
+  </nav>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="hero__media" data-hero>
+    <img class="hero__img" src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261020_235937_85d0bb32-3e09-47dc-8ccd-a9c344f3eee0.png" alt="A single cherry-red world edged by golden light in deep space" fetchpriority="high">
+  </div>
+  <div class="hero__shade"></div>
+  <div class="hero__stars" aria-hidden="true"><canvas id="stars"></canvas></div>
+
+  <div class="hero__copy">
+    <p class="eyebrow hero__eyebrow"><span>A private universe</span><span class="dot"></span><span>Version 1.0</span><span class="dot"></span><span>October 2026</span></p>
+    <h1 class="hero__title" aria-label="The Rustam Codex">
+      <span class="line"><span class="line__in">The Rustam</span></span>
+      <span class="line"><span class="line__in"><em>Codex</em></span></span>
+    </h1>
+    <p class="hero__sub">An evolving map of identity, mastery, creation, and contribution.</p>
+  </div>
+
+  <div class="hero__foot">
+    <p class="hero__note">Six paths surround a changing core.<br>Walk them in any order.</p>
+    <a class="scrollcue" href="#prologue"><span>Enter</span><i></i></a>
+  </div>
+</section>
+
+<!-- ============ PROLOGUE (pinned) ============ -->
+<section class="prologue" id="prologue" data-pin-statements>
+  <div class="prologue__stage">
+    <video class="bgvideo" muted loop playsinline preload="metadata" poster="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261014_000332_defb86d4-0d8d-4103-a5a2-369d1ad9f26a.png" data-autoplay>
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261014_000448_1a13dcc8-1999-45a3-90df-d26c9b5fc8a4.mp4" type="video/mp4">
+    </video>
+    <div class="prologue__shade"></div>
+
+    <p class="eyebrow prologue__tag">The mission</p>
+    <div class="prologue__count" aria-hidden="true"><span id="pCur">I</span><i></i><span>IV</span></div>
+
+    <div class="prologue__lines">
+      <p class="stmt is-on" data-n="I"><span>Understand</span> deeply.</p>
+      <p class="stmt" data-n="II"><span>Create</span> deliberately.</p>
+      <p class="stmt" data-n="III">Master yourself <span>through action.</span></p>
+      <p class="stmt" data-n="IV">Build systems that give others <span>greater freedom</span> and opportunity.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE QUESTION ============ -->
+<section class="question" id="question">
+  <div class="question__media">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153650_6016b6de-179a-45cc-9414-51ee70dcb02c.png" alt="A lone figure seen from behind before a tall dark mirror; the reflection is a silhouette of golden particles under a thin red moon" data-par="0.12" loading="lazy">
+  </div>
+  <div class="question__shade"></div>
+  <div class="question__copy">
+    <p class="eyebrow rv">The recurring question</p>
+    <blockquote class="question__q" data-split>Which part of me wants this, and&nbsp;why?</blockquote>
+    <p class="question__p rv">Not a slogan but a habit of attention: the origin of a desire, examined before it is obeyed. It is the thread running through the Alchemist, the Seeker, and every ambition below.</p>
+  </div>
+</section>
+
+<!-- ============ SIX PATHS ============ -->
+<section class="paths" id="paths" data-wheel>
+  <div class="paths__worlds" aria-hidden="true">
+    <img class="is-on" src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261012_222327_55e10115-4433-4606-944a-2e5100eb91d7.png" alt="" loading="lazy">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261012_222328_d7477897-8942-42c4-b641-8a9c5c00928a.png" alt="" loading="lazy">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261012_222327_a92e98e2-1a12-463c-ad4b-7ce4fdea30cc.png" alt="" loading="lazy">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261012_222328_f2b70133-ceb4-42b4-82e3-a601e3ce316d.png" alt="" loading="lazy">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261012_222328_c5e8aa6c-475c-4ab7-ae89-4b93e290268d.png" alt="" loading="lazy">
+    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261012_222327_e50f238f-8d70-4015-9aff-d7a492043452.png" alt="" loading="lazy">
+  </div>
+  <div class="paths__shade"></div>
+
+  <div class="paths__head">
+    <p class="eyebrow rv">The codex</p>
+    <h2 class="h2" data-split>Six paths around one changing&nbsp;core</h2>
+    <p class="lede rv">No rank, no supernatural levels. A path advances only when behaviour, reflection, relationships or decisions observably change.</p>
+  </div>
+
+  <div class="paths__body">
+    <div class="wheel" id="wheel" role="tablist" aria-label="The six paths">
+      <svg class="wheel__svg" viewBox="-300 -300 600 600" aria-hidden="true">
+        <circle class="ring ring--out" r="285"/>
+        <circle class="ring ring--ticks" r="270"/>
+        <circle class="ring ring--mid" r="215"/>
+        <circle class="ring ring--in" r="118"/>
+        <line class="spoke" data-i="0" x1="0" y1="0" x2="0.0" y2="-215.0"/>
+        <line class="spoke" data-i="1" x1="0" y1="0" x2="186.2" y2="-107.5"/>
+        <line class="spoke" data-i="2" x1="0" y1="0" x2="186.2" y2="107.5"/>
+        <line class="spoke" data-i="3" x1="0" y1="0" x2="0.0" y2="215.0"/>
+        <line class="spoke" data-i="4" x1="0" y1="0" x2="-186.2" y2="107.5"/>
+        <line class="spoke" data-i="5" x1="0" y1="0" x2="-186.2" y2="-107.5"/>
+      </svg>
+      <div class="wheel__core"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153651_9a6dea96-87c2-4fc7-b104-aa9693a4818c.png" alt=""></div>
+      <button class="node is-on" type="button" role="tab" aria-selected="true" data-i="0" data-side="t" style="left:50.00%;top:14.17%;--a:#7fd6b2"><span class="node__n">I</span><span class="node__l">Architect</span></button>
+      <button class="node" type="button" role="tab" aria-selected="false" data-i="1" data-side="r" style="left:81.03%;top:32.08%;--a:#7aa8ff"><span class="node__n">II</span><span class="node__l">Seeker</span></button>
+      <button class="node" type="button" role="tab" aria-selected="false" data-i="2" data-side="r" style="left:81.03%;top:67.92%;--a:#b293ff"><span class="node__n">III</span><span class="node__l">Creator</span></button>
+      <button class="node" type="button" role="tab" aria-selected="false" data-i="3" data-side="b" style="left:50.00%;top:85.83%;--a:#e09a5a"><span class="node__n">IV</span><span class="node__l">Builder</span></button>
+      <button class="node" type="button" role="tab" aria-selected="false" data-i="4" data-side="l" style="left:18.97%;top:67.92%;--a:#e8685c"><span class="node__n">V</span><span class="node__l">Alchemist</span></button>
+      <button class="node" type="button" role="tab" aria-selected="false" data-i="5" data-side="l" style="left:18.97%;top:32.08%;--a:#e6c068"><span class="node__n">VI</span><span class="node__l">Humanitarian</span></button>
+    </div>
+
+    <div class="pathtext">
+      <article class="ptxt is-on" data-i="0" style="--a:#7fd6b2">
+        <p class="ptxt__world">Systems Forge</p>
+        <h3>The Architect</h3>
+        <p>Interconnected systems: platforms, agents, workflows, operating systems for a business. Complexity met as structure, relationship and reusable framework, never as a pile of isolated tasks.</p>
+        <ul class="chips"><li>Systems design</li><li>Architecture</li><li>Automation</li><li>Engineering</li></ul>
+      </article>
+      <article class="ptxt" data-i="1" style="--a:#7aa8ff">
+        <p class="ptxt__world">The Underlying Order</p>
+        <h3>The Seeker</h3>
+        <p>Philosophy, physics, psychology, religion and mysticism read side by side, asking whether disconnected explanations of existence share a deeper order. Evidence is weighed, never simply inherited from an authority.</p>
+        <ul class="chips"><li>Research</li><li>Evidence evaluation</li><li>Philosophy</li><li>Scientific literacy</li></ul>
+      </article>
+      <article class="ptxt" data-i="2" style="--a:#b293ff">
+        <p class="ptxt__world">The Dream Foundry</p>
+        <h3>The Creator</h3>
+        <p>Design, storytelling, AI image and video, immersive 3D websites, branding. Making is how a complex mental model leaves the head and becomes something another person can walk into.</p>
+        <ul class="chips"><li>Visual art</li><li>3D &amp; motion</li><li>Storytelling</li><li>Design systems</li></ul>
+      </article>
+      <article class="ptxt" data-i="3" style="--a:#e09a5a">
+        <p class="ptxt__world">Convenium</p>
+        <h3>The Builder</h3>
+        <p>An agency made by hand: websites, branding, automation, outreach. Autonomy means converting an original vision into something functional and economically sustainable.</p>
+        <ul class="chips"><li>Business development</li><li>Shipping product</li><li>Sales</li><li>Leadership</li></ul>
+      </article>
+      <article class="ptxt" data-i="4" style="--a:#e8685c">
+        <p class="ptxt__world">The Inner Observatory</p>
+        <h3>The Alchemist</h3>
+        <p>Individuation, shadow, anima, dreams, meditation. Symbolic traditions used as languages for integrating the parts of a self, and judged by what changes in how one acts.</p>
+        <ul class="chips"><li>Reflection</li><li>Emotional regulation</li><li>Habits</li><li>Integration</li></ul>
+      </article>
+      <article class="ptxt" data-i="5" style="--a:#e6c068">
+        <p class="ptxt__world">The Aid Network</p>
+        <h3>The Humanitarian</h3>
+        <p>Clean water, electricity, food that would otherwise be wasted, redistributed. Success measured beyond wealth: useful action for someone else, without needing the applause.</p>
+        <ul class="chips"><li>Community building</li><li>Ethical impact</li><li>Resource distribution</li></ul>
+      </article>
+      <p class="pathtext__hint">Select a node, or let the wheel turn.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAMPAIGNS (horizontal pin) ============ -->
+<section class="campaigns" id="campaigns" data-hscroll>
+  <div class="campaigns__stage">
+    <div class="campaigns__track" id="cTrack">
+
+      <div class="cintro">
+        <p class="eyebrow">Main story</p>
+        <h2 class="h2">The <em>Integrated</em> Self</h2>
+        <p class="lede">A life where curiosity, creativity, independence, relationships, wellbeing and a commitment to others can coexist. Five campaigns carry it forward; each ends in a boss encounter that can actually be verified.</p>
+        <p class="cintro__hint"><span>Scroll</span><i></i></p>
+      </div>
+
+      <article class="ccard">
+        <div class="ccard__img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261018_122720_71c80948-f99c-4a84-9f6b-6086a158d28f.png" alt="A brass and stone signal tower still under construction, weaving threads of warm light over a sea of small lit windows" loading="lazy"></div>
+        <div class="ccard__body">
+          <p class="ccard__n">01 <span>Builder</span></p>
+          <h3>Convenium Studio</h3>
+          <p>Websites, branding, marketing, AI automation and field sales: first for hair and beauty, now widening across industries into a scalable agency and technology ecosystem.</p>
+          <p class="ccard__boss"><b>Boss encounter</b> First completed client deals</p>
+        </div>
+      </article>
+
+      <article class="ccard">
+        <div class="ccard__img">
+          <video muted loop playsinline preload="none" poster="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261014_000333_c1b524fc-de9e-4189-891e-736c4a7cb53e.png" data-autoplay><source src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261014_000448_48518947-2ada-4414-8d88-b22812adc774.mp4" type="video/mp4"></video>
+        </div>
+        <div class="ccard__body">
+          <p class="ccard__n">02 <span>Architect &middot; Alchemist</span></p>
+          <h3>Arkhetos</h3>
+          <p>An AI-assisted platform for identity, self-exploration and connection: an identity kernel, an adaptive companion, archetypal onboarding, the Nexus network. Deeply personal; never a generic chatbot, never shallow gamification.</p>
+          <p class="ccard__boss"><b>Boss encounter</b> Public release</p>
+        </div>
+      </article>
+
+      <article class="ccard">
+        <div class="ccard__img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153651_72430dbe-4fef-4923-8361-b18dfaa7d223.png" alt="A bronze astrolabe beside an open notebook linking physics, a Kabbalistic tree and Jungian symbols, with a glowing knowledge graph on a dark glass tablet" loading="lazy"></div>
+        <div class="ccard__body">
+          <p class="ccard__n">03 <span>Seeker</span></p>
+          <h3>The Underlying Order</h3>
+          <p>An endless canvas joining physics, consciousness, Jung, Theosophy, Kabbalah, world religions and myth. Agents for each tradition challenge and defend their view. The aim is comparison and synthesis, not collecting facts.</p>
+          <p class="ccard__boss"><b>Boss encounter</b> Yet to be named</p>
+        </div>
+      </article>
+
+      <article class="ccard">
+        <div class="ccard__img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20260807_075300_c438ac28-a7e1-4cb1-81e4-c5ccfa7fc94f.png" alt="Monochrome board-formed concrete shaft photographed looking upward toward a bright opening" loading="lazy"></div>
+        <div class="ccard__body">
+          <p class="ccard__n">04 <span>Architect &middot; Seeker</span></p>
+          <h3>Master&rsquo;s thesis</h3>
+          <p>Game Studies &amp; Engineering, University of Klagenfurt. Automated quality assurance of gamified tutorials in a quality-management web application, using LLM-driven end-to-end tests and mutation testing with Playwright and Stryker.</p>
+          <p class="ccard__boss"><b>Boss encounter</b> Thesis submission</p>
+        </div>
+      </article>
+
+      <article class="ccard">
+        <div class="ccard__img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261018_122511_bfd64ad9-0551-469a-b6e2-abde64a0439d.png" alt="A great circular meeting hall suspended in space where many small warm lanterns converge on a central brass dais" loading="lazy"></div>
+        <div class="ccard__body">
+          <p class="ccard__n">05 <span>Humanitarian</span></p>
+          <h3>The Aid Network</h3>
+          <p>Systems that reduce food waste, hunger and the barriers to water and electricity, with intelligent connections that match people by what they can offer and what they need.</p>
+          <p class="ccard__boss"><b>Boss encounter</b> Yet to be named</p>
+        </div>
+      </article>
+
+      <div class="cend"><p>Exploration is cheap.<br><em>Completion</em> is the rare thing.</p></div>
+    </div>
+    <div class="campaigns__bar" aria-hidden="true"><i id="cBar"></i></div>
+  </div>
+</section>
+
+<!-- ============ METHOD ============ -->
+<section class="method" id="method">
+  <div class="method__bg" aria-hidden="true"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261013_222653_8388ecf0-f25b-429e-838b-e8ec1dd57ca5.png" alt="" loading="lazy" data-par="0.08"></div>
+  <div class="wrap">
+    <p class="eyebrow rv">The working principle</p>
+    <div class="method__grid">
+      <div class="m rv"><span class="m__n">i</span><h3>Exploration</h3><p>generates possibilities.</p></div>
+      <div class="m rv"><span class="m__n">ii</span><h3>Discipline</h3><p>converts possibilities into reality.</p></div>
+      <div class="m rv"><span class="m__n">iii</span><h3>Reflection</h3><p>determines whether the result is worth pursuing.</p></div>
+    </div>
+    <p class="method__note rv">The central tension is a wide appetite for exploring against the practical need to finish. So the codex rewards narrowing as much as it rewards discovery.</p>
+  </div>
+</section>
+
+<!-- ============ QUESTS ============ -->
+<section class="quests" id="quests">
+  <div class="quests__bg" aria-hidden="true"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20260704_234744_2f56de08-0205-4975-8e8a-94213e033755.png" alt="" loading="lazy"></div>
+  <div class="wrap quests__wrap">
+    <div class="quests__side">
+      <p class="eyebrow rv">Daily quest board &middot; illustrative</p>
+      <h2 class="h2" data-split>Count what&nbsp;matters</h2>
+      <p class="lede rv">Light each quest as you complete it. The system rewards meaningful completion and sustainable habits, never limitless activity.</p>
+
+      <div class="gauge rv" id="gauge">
+        <svg viewBox="0 0 220 220" aria-hidden="true">
+          <circle class="gauge__track" cx="110" cy="110" r="96"/>
+          <circle class="gauge__fill" id="gaugeFill" cx="110" cy="110" r="96" pathLength="100"/>
+        </svg>
+        <div class="gauge__txt">
+          <b id="xp">0</b><span>/ 140 XP</span>
+          <small id="qcount">0 / 6 quests</small>
+        </div>
+      </div>
+      <button class="btn" id="qreset" type="button">Reset sample quests</button>
+      <p class="fine">An interactive example, not a saved or connected tracker. XP values are design placeholders, not a measure of anyone&rsquo;s worth.</p>
+    </div>
+
+    <ul class="qlist" id="qlist">
+      <li><button class="q" type="button" data-xp="30" aria-pressed="false"><i class="q__tick"></i><span class="q__t">Deep Work</span><span class="q__d">Complete one focused 60&ndash;90 minute session.</span><span class="q__x">+30 XP</span></button></li>
+      <li><button class="q" type="button" data-xp="20" aria-pressed="false"><i class="q__tick"></i><span class="q__t">Knowledge Integration</span><span class="q__d">Investigate one question; record the evidence and the competing explanations.</span><span class="q__x">+20 XP</span></button></li>
+      <li><button class="q" type="button" data-xp="15" aria-pressed="false"><i class="q__tick"></i><span class="q__t">Physical Foundation</span><span class="q__d">Planned movement, nutrition, or recovery.</span><span class="q__x">+15 XP</span></button></li>
+      <li><button class="q" type="button" data-xp="35" aria-pressed="false"><i class="q__tick"></i><span class="q__t">Creation</span><span class="q__d">Produce a concrete project deliverable.</span><span class="q__x">+35 XP</span></button></li>
+      <li><button class="q" type="button" data-xp="15" aria-pressed="false"><i class="q__tick"></i><span class="q__t">Individuation Journal</span><span class="q__d">Reflect on an emotional reaction, a motivation, or a dream.</span><span class="q__x">+15 XP</span></button></li>
+      <li><button class="q" type="button" data-xp="25" aria-pressed="false"><i class="q__tick"></i><span class="q__t">Service</span><span class="q__d">One useful action that benefits someone else.</span><span class="q__x">+25 XP</span></button></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ UNDERLYING ORDER ============ -->
+<section class="order" id="order">
+  <video class="bgvideo" muted loop playsinline preload="metadata" poster="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153651_8ca5918c-70fb-40ce-a045-141e32d672ce.png" data-autoplay>
+    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20260930_203822_559c5b2b-d056-4b35-9a0a-27adc0420b21.mp4" type="video/mp4">
+  </video>
+  <div class="order__shade"></div>
+  <div class="wrap order__wrap">
+    <div class="order__head">
+      <p class="eyebrow rv">The Seeker&rsquo;s discipline</p>
+      <h2 class="h2" data-split>A connection is not&nbsp;a&nbsp;proof</h2>
+      <p class="lede rv">Physics, Jung, Kabbalah, Theosophy and myth can sit on the same table. They stay in separate registers, so that a beautiful analogy is never mistaken for evidence.</p>
+    </div>
+    <ol class="strata">
+      <li class="rv"><span>01</span><h3>Scientific evidence</h3><p>Measured, tested, falsifiable. The Higgs field is a field, not a mind.</p></li>
+      <li class="rv"><span>02</span><h3>Philosophical argument</h3><p>Claims reasoned in the open, where each premise can be challenged.</p></li>
+      <li class="rv"><span>03</span><h3>Historical teaching</h3><p>What a tradition actually said, in its own words and its own time.</p></li>
+      <li class="rv"><span>04</span><h3>Subjective experience</h3><p>Dreams, meditation, altered states: real as experience, reported as such.</p></li>
+      <li class="rv"><span>05</span><h3>Symbolic analogy</h3><p>A resonance worth following, clearly marked as a metaphor.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ SYMBOLS ============ -->
+<section class="symbols" id="symbols">
+  <div class="wrap symbols__head">
+    <p class="eyebrow rv">Personal motifs</p>
+    <h2 class="h2" data-split>The atlas of&nbsp;symbols</h2>
+  </div>
+
+  <figure class="frame frame--a">
+    <div class="frame__img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153650_145d9ca5-be32-497e-8f75-5d35eac88aaf.png" alt="An ancient Tree of Life on a dark plain, its roots and branches mirrored as a glowing golden circuit network under an indigo sky" loading="lazy" data-par="0.06"></div>
+    <figcaption class="wrap"><span class="frame__n">I</span><h3>The Tree</h3><p>Roots and branches, mirrored as a circuit. A symbol and a systems diagram that happen to share a silhouette, offered as an analogy, not an argument.</p></figcaption>
+  </figure>
+
+  <figure class="frame frame--b">
+    <div class="frame__img frame__img--wide"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153650_32fc355a-a84e-4541-9fd8-ba3f4a51ffd4.png" alt="Two serpentine dragons, obsidian and bone-white, spiralling around a blood-red moon above jagged Caucasus mountains" loading="lazy" data-par="0.06"></div>
+    <figcaption class="wrap"><span class="frame__n">II</span><h3>Two dragons</h3><p>Obsidian and bone, held in one orbit around a red moon above the Caucasus. The same creature keeps watch over Klagenfurt&rsquo;s central square.</p></figcaption>
+  </figure>
+
+  <figure class="frame frame--c">
+    <div class="frame__img frame__img--wide"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153649_76b5d070-e710-4617-a021-d4cae1b4ad06.png" alt="A huge blood-red full moon rising over a still dark alpine lake with a single red path of light toward the viewer" loading="lazy" data-par="0.06"></div>
+    <figcaption class="wrap"><span class="frame__n">III</span><h3>The red moon</h3><p>Over the observatory, in the pool of the Inner Observatory, behind the lanterns of the meeting hall. Always far, always the same.</p></figcaption>
+  </figure>
+
+  <figure class="frame frame--d">
+    <div class="frame__img"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153651_8ca5918c-70fb-40ce-a045-141e32d672ce.png" alt="Floating nested spheres and a Flower-of-Life lattice in gold light inside a dark stone observatory with a futuristic console" loading="lazy" data-par="0.06"></div>
+    <figcaption class="wrap"><span class="frame__n">IV</span><h3>Layers of reality</h3><p>Nested shells, drawn as geometry before they are drawn as code. Every model starts as a picture.</p></figcaption>
+  </figure>
+</section>
+
+<!-- ============ ORIGIN ============ -->
+<section class="origin" id="origin">
+  <div class="origin__bg" aria-hidden="true"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261014_002538_f210e52e-4543-4240-ba5f-f67905bf7a48.png" alt="" loading="lazy" data-par="0.06"></div>
+  <div class="origin__shade"></div>
+  <div class="wrap origin__wrap">
+    <p class="eyebrow rv">Coordinates</p>
+    <h2 class="h2" data-split>From the Caucasus to the&nbsp;Alps</h2>
+
+    <div class="route">
+      <div class="route__pt rv"><b>Baku</b><span>40.41&deg; N &middot; 49.87&deg; E</span><p>Born 16 May 2000. Tsakhur heritage, with roots in the Caucasus and Dagestan.</p></div>
+      <div class="route__line" aria-hidden="true"><i></i></div>
+      <div class="route__pt rv"><b>Klagenfurt</b><span>46.62&deg; N &middot; 14.31&deg; E</span><p>Studies in Information Technologies, then Game Studies &amp; Engineering from 2021; work in enterprise digitalisation, and now independent building.</p></div>
+    </div>
+
+    <div class="origin__row">
+      <figure class="lind rv">
+        <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20260929_213037_aad82827-aba2-461f-98d4-78ef8b391676.png" alt="The Lindwurm dragon fountain on Neuer Platz in Klagenfurt at night" loading="lazy">
+        <figcaption>The Lindwurm, Neuer Platz</figcaption>
+      </figure>
+      <div class="langs rv">
+        <p class="eyebrow">Spoken in</p>
+        <ul>
+          <li>Azerbaijani</li><li>Russian</li><li>English</li><li>German</li><li>Turkish</li>
+        </ul>
+        <p class="langs__p">European technical education, Caucasian heritage, and symbols borrowed from many civilisations: one self-expression, assembled from all of them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REST ============ -->
+<section class="rest" id="rest">
+  <video class="bgvideo" muted loop playsinline preload="none" poster="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261014_003224_5d322974-53a1-4b9e-95a1-3e9e42933927.png" data-autoplay>
+    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261014_003316_a874da07-b233-41dc-96b0-95478fd34a1f.mp4" type="video/mp4">
+  </video>
+  <div class="rest__shade"></div>
+  <div class="rest__copy">
+    <p class="eyebrow rv">One rule of the system</p>
+    <h2 class="h2 h2--xl" data-split>Rest is protected.</h2>
+    <p class="lede rv">Health, relationships and stillness are never spent to buy more XP. A universe that burns its builder has failed at its own purpose.</p>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section class="finale" id="finale">
+  <div class="finale__media"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153649_76b5d070-e710-4617-a021-d4cae1b4ad06.png" alt="" loading="lazy" data-par="0.08"></div>
+  <div class="finale__shade"></div>
+  <div class="finale__copy">
+    <img class="finale__sigil rv" src="https://d8j0ntlcm91z4.cloudfront.net/user_3G0M7V2yz7lBGPuQMnkI2vjG7c5/hf_20261021_153651_9a6dea96-87c2-4fc7-b104-aa9693a4818c.png" alt="" width="120" height="120">
+    <p class="finale__big" data-split>If not now,&nbsp;<em>then when?</em></p>
+    <a class="btn btn--ghost rv" href="#top">Return to the surface</a>
+  </div>
+  <footer class="foot">
+    <p>The Rustam Codex &middot; version 1.0 &middot; October 2026</p>
+    <p>A living identity model. Facts, inferences and unknowns stay editable, and no archetype is an obligation. Imagery generated for this project.</p>
+  </footer>
+</section>
+
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>

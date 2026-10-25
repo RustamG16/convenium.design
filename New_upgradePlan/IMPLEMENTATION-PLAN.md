@@ -1,8 +1,8 @@
-# Apollo Oracle-First Prototype Implementation Plan
+# Convenium.Design Oracle-First Prototype Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Turn Apollo Studio into a coherent local prototype of the Oracle-first adjustable design agency defined in `PRODUCT-ARCHITECTURE.md`.
+**Goal:** Turn Convenium.Design Studio into a coherent local prototype of the Oracle-first adjustable design agency defined in `PRODUCT-ARCHITECTURE.md`.
 
 **Architecture:** Preserve the existing vanilla Node/HTML/CSS/JavaScript application and its canonical library/project files. Add a versioned product state contract, focused service modules, and task-oriented views. The UI projects canonical state; all mutations pass through a single state writer and proposal/approval boundary.
 
@@ -14,7 +14,7 @@
 
 ## Global constraints
 
-- Do not modify reusable Apollo agents, skills, registry, templates, or doctrines to make the prototype pass.
+- Do not modify reusable Convenium.Design agents, skills, registry, templates, or doctrines to make the prototype pass.
 - Preserve unrelated dirty files and current app behavior until its replacement is verified.
 - No React migration, CrewAI, WebGL, cloud runtime, billing, marketplace, or new external dependency.
 - Oracle is the default entry; advanced skill and node controls remain progressive disclosure.
@@ -53,7 +53,7 @@ Before implementation, the executing session must inspect the current source and
 ### Task 1: Freeze the build contract
 
 - [ ] Inspect current source, APIs, dirty files, tests, and `.olympus` cache.
-- [ ] Write `apollo-studio/.olympus/00-brief.md` as director-resolved from the approved discussion.
+- [ ] Write `convenium-design-studio/.olympus/00-brief.md` as director-resolved from the approved discussion.
 - [ ] Write the creative `06-build-plan.md`: hierarchy, exact tokens, screen grammar, media/data map, motion choreography, mobile transformations, states and acceptance criteria.
 - [ ] Reconcile `PRODUCT.md`, `DESIGN.md`, and `design.json` before layout code; remove every placeholder.
 - [ ] Update `run.json` with abridged trail, approved-in-plan Gates A/B, design-system values, phase counts and prototype scope.

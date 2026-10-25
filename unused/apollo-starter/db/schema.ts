@@ -1,5 +1,5 @@
 /**
- * Apollo — Drizzle schema (Postgres).
+ * Convenium.Design — Drizzle schema (Postgres).
  *
  * Design rules encoded here:
  *   - every tenant row carries orgId; nothing is global except skills
@@ -71,7 +71,7 @@ export const skillVersions = pgTable('skill_versions', {
 
 export const systems = pgTable('systems', {
   id: uuid('id').primaryKey().defaultRandom(),
-  orgId: uuid('org_id').references(() => organizations.id, { onDelete: 'cascade' }), // null = Apollo template
+  orgId: uuid('org_id').references(() => organizations.id, { onDelete: 'cascade' }), // null = Convenium.Design template
   name: text('name').notNull(),
   description: text('description').notNull().default(''),
   instructions: text('instructions').notNull().default(''),

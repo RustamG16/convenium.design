@@ -13,11 +13,11 @@ Unrouted skills (68) are in `UNROUTED.md` — capabilities, invoked explicitly, 
 | `site-architecture` | diagnose | Plan the page/route hierarchy, navigation model, URL structure, and internal linking so the redesign has a … |
 | `ui-ux` | diagnose | Establishes product cognition, task journeys, progressive disclosure, recovery states, mobile priorities, a… |
 | `ux-evidence-audit` | diagnose | Diagnoses source, browser, responsive, accessibility, and content evidence. |
-| `apollo-style-picker` | direct | Path B of the taste-profile system |
-| `apollo-taste-interview` | direct | Path A of the taste-profile system |
 | `apple-design` | direct | Applies Apple-inspired purpose, agency, familiarity, simplicity, typography, material restraint, and fluid … |
 | `award-rubric` | direct | Independently critique and score the single frozen website direction against an approved brief using design… |
 | `concept-studio` | direct | Produce the one website redesign direction the approved brief specifies — in full: layout, typography, medi… |
+| `convenium-design-style-picker` | direct | Path B of the taste-profile system |
+| `convenium-design-taste-interview` | direct | Path A of the taste-profile system |
 | `asset-director` | prepare | Plans required media, provenance, rights, and fallbacks. |
 | `gsap-core` | prepare | Adds responsive, reduced-motion-aware tweens. |
 | `gsap-plugins` | prepare | Routes approved plugin use such as Flip, Draggable, or SplitText. |

@@ -4,7 +4,7 @@ description: Reviews and fixes keyboard and focus behavior, ARIA, accessible nam
 license: MIT
 ---
 
-> **Apollo:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `jakubkrehel/skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 
 # Accessibility
 

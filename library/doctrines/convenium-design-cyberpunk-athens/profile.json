@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "profileId": "doctrine-default-convenium-design-cyberpunk-athens",
+  "displayName": "Cyberpunk Athens default",
+  "createdAt": "2026-08-28T00:00:00Z",
+  "updatedAt": "2026-08-28T00:00:00Z",
+  "source": "style-pick",
+  "doctrine": "convenium-design-cyberpunk-athens",
+  "explicitPreferences": {
+    "color": ["marble white base", "cyan primary glow", "warm gold secondary filigree", "magenta reserved for environment/signage accents only"],
+    "type": ["classical-leaning serif or carved-letterform display", "neutral grotesque for UI text", "wide tracking on department/identity labels"],
+    "density": "varies by context — identity/hero work is spacious, system UI work inherits convenium-design-instrument's density",
+    "motion": "glow pulses and crack-of-light reveals only — no generic neon flicker, no chrome/sci-fi motion tropes",
+    "tone": "ancient marble civilization with a neon-tech overlay — specifically not generic cyberpunk"
+  },
+  "avoidList": ["chrome/latex sci-fi tropes", "neon with no classical grounding", "literal weapon props on figures", "generic cyberpunk cliches disconnected from the Athens/marble register"],
+  "references": [
+    { "source": "media/gods/Convenium.Design", "verdict": "like", "note": "the material and halo standard every character must match" },
+    { "source": "media/hero/15-hero-bg-marble-cracks.png", "verdict": "like", "note": "the environment register: classical architecture, neon signage, contemporary pedestrians" }
+  ],
+  "confidence": { "overall": 1.0, "byField": { "color": 1.0, "type": 1.0, "density": 1.0, "motion": 1.0, "tone": 1.0 } },
+  "provenance": [{ "field": "all", "source": "doctrine-default:convenium-design-cyberpunk-athens", "at": "2026-08-28T00:00:00Z" }]
+}

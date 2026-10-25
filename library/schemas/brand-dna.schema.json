@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "apollo/brand-dna.schema.json",
-  "title": "Apollo Brand DNA",
-  "description": "One business's Design DNA: who it is, who it serves, how it should look and sound, and what it needs made. Written by the brand-strategist agent to <project>/.olympus/brand-dna.json (with a readable BRAND.md beside it) and read by design-director to resolve direction and derive DESIGN.md tokens. Lives with the client project, never in the Apollo repo.",
+  "title": "Convenium.Design Brand DNA",
+  "description": "One business's Design DNA: who it is, who it serves, how it should look and sound, and what it needs made. Written by the brand-strategist agent to <project>/.olympus/brand-dna.json (with a readable BRAND.md beside it) and read by design-director to resolve direction and derive DESIGN.md tokens. Lives with the client project, never in the Convenium.Design repo.",
   "type": "object",
   "schemaVersion": 1,
   "required": ["schemaVersion", "businessName", "createdAt", "updatedAt", "mode", "business", "taste", "doctrineMatch", "neededProducts", "openQuestions"],
@@ -95,14 +95,14 @@
       }
     },
     "taste": {
-      "description": "The visual taste profile. Same shape as taste-profile.schema.json (profileId, displayName, source, doctrine, explicitPreferences, avoidList, references, confidence, provenance), produced by apollo-taste-interview or apollo-style-picker.",
+      "description": "The visual taste profile. Same shape as taste-profile.schema.json (profileId, displayName, source, doctrine, explicitPreferences, avoidList, references, confidence, provenance), produced by convenium-design-taste-interview or convenium-design-style-picker.",
       "$ref": "taste-profile.schema.json"
     },
     "doctrineMatch": {
       "type": "object",
       "required": ["doctrine", "why"],
       "properties": {
-        "doctrine": { "type": "string", "enum": ["apollo-atelier", "apollo-kinetic", "apollo-instrument", "apollo-cyberpunk-athens", "custom"] },
+        "doctrine": { "type": "string", "enum": ["convenium-design-atelier", "convenium-design-kinetic", "convenium-design-instrument", "convenium-design-cyberpunk-athens", "custom"] },
         "why": { "type": "string", "description": "The evidence that points to this doctrine — business, audience and taste, not just taste." },
         "departures": { "type": "array", "items": { "type": "string" }, "default": [], "description": "Where this business should deviate from the doctrine's defaults, and why." }
       }

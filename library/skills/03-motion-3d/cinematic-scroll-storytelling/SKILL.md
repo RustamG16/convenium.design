@@ -4,7 +4,7 @@ description: Create cinematic scroll-driven landing pages with Lenis smooth scro
 license: MIT
 ---
 
-> **Apollo:** vendored from `MengTo/Skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
+> **Convenium.Design:** vendored from `MengTo/Skills` (MIT). Read `APOLLO-NOTES.md` for provenance and how this skill fits the Olympus pipeline.
 
 # Cinematic Scroll Storytelling
 

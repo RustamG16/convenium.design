@@ -1,4 +1,4 @@
-# Apollo upgrade plan — Oracle-first product revision
+# Convenium.Design upgrade plan — Oracle-first product revision
 
 Updated 2026-09-15. The architecture and implementation sequence are approved for a fresh implementation task. This planning task does not itself authorize runtime or UI edits outside `New_upgradePlan/`.
 

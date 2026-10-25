@@ -1,0 +1,1097 @@
+{
+  "generatedAt": "2026-09-16T18:33:22.236Z",
+  "durationMs": 28503,
+  "thresholds": {
+    "T1": {
+      "name": "Rendered text below 13px",
+      "value": 0,
+      "share": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "nodes (all viewports)"
+    },
+    "T2": {
+      "name": "Body text size",
+      "value": 16,
+      "target": 15,
+      "pass": true,
+      "unit": "px (computed on <body>)",
+      "higherIsBetter": true
+    },
+    "T3": {
+      "name": "Type in rem; UI holds at 200% text zoom",
+      "value": 100,
+      "target": 100,
+      "pass": true,
+      "unit": "% of font-size declarations in rem",
+      "higherIsBetter": true,
+      "detail": {
+        "bodyAt100": 16,
+        "bodyAt200": 32,
+        "scalesWithRoot": true,
+        "overflow": 0,
+        "perView": {
+          "work": {
+            "overflow": 0,
+            "clipped": [],
+            "clippedCount": 0
+          },
+          "architecture": {
+            "overflow": 0,
+            "clipped": [],
+            "clippedCount": 0
+          },
+          "systems": {
+            "overflow": 0,
+            "clipped": [],
+            "clippedCount": 0
+          },
+          "playground": {
+            "overflow": 0,
+            "clipped": [],
+            "clippedCount": 0
+          },
+          "agents": {
+            "overflow": 0,
+            "clipped": [],
+            "clippedCount": 0
+          },
+          "knowledge": {
+            "overflow": 0,
+            "clipped": [],
+            "clippedCount": 0
+          },
+          "oracle": {
+            "overflow": 0,
+            "clipped": [],
+            "clippedCount": 0
+          },
+          "runs": {
+            "overflow": 0,
+            "clipped": [],
+            "clippedCount": 0
+          }
+        },
+        "clippedAtZoom": [],
+        "overflowAtZoom": []
+      }
+    },
+    "T4": {
+      "name": "Contrast failures (WCAG AA + 1.4.11 boundaries)",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "text nodes + control boundaries under 3:1 (all viewports)",
+      "detail": {
+        "measuredFailures": 0,
+        "unverifiableOverImage": 0,
+        "boundaryFailures": 0,
+        "boundaryWorst": []
+      }
+    },
+    "T5": {
+      "name": "Controls under 36px desktop / 44px narrow",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "controls (all viewports)"
+    },
+    "T6": {
+      "name": "Distinct visual systems shipping",
+      "value": 1,
+      "target": 1,
+      "pass": true,
+      "unit": "distinct proportional font families (monospace excluded as a data type)",
+      "note": "Machine proxy for the two-worlds defect; confirmed by eye at each surface pass.",
+      "detail": {
+        "proportional": [
+          "Arial Narrow"
+        ],
+        "all": [
+          "Arial Narrow",
+          "monospace",
+          "ui-monospace"
+        ]
+      }
+    },
+    "T7": {
+      "name": "Non-semantic accent hues",
+      "value": 1,
+      "target": 1,
+      "pass": true,
+      "unit": "hue families outside ok/warn/danger",
+      "detail": [
+        "blue"
+      ]
+    },
+    "T8": {
+      "name": "Unique radii (and >=8 spacing tokens)",
+      "value": 1,
+      "target": 4,
+      "pass": true,
+      "unit": "unique border-radius values",
+      "detail": {
+        "radii": [
+          "0"
+        ],
+        "spacingTokens": 10
+      }
+    },
+    "T9": {
+      "name": "Views with an empty state and one primary action",
+      "value": 8,
+      "target": 8,
+      "pass": true,
+      "unit": "of 8 views",
+      "higherIsBetter": true,
+      "detail": {
+        "work": true,
+        "architecture": true,
+        "systems": true,
+        "playground": true,
+        "agents": true,
+        "knowledge": true,
+        "oracle": true,
+        "runs": true
+      }
+    },
+    "T10": {
+      "name": "Decorative media and ornament with no informational role",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "stylesheet references and decorative layers",
+      "detail": {
+        "mediaRefs": [],
+        "ornament": []
+      }
+    },
+    "T11": {
+      "name": "Destructive actions without undo",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "unit": "distinct controls",
+      "detail": []
+    }
+  },
+  "perViewport": {
+    "390x844": {
+      "textNodes": 1909,
+      "belowThirteen": 0,
+      "contrastFails": 0,
+      "contrastFailsUnverifiable": 0,
+      "boundaryFails": 0,
+      "boundaryWorst": [],
+      "targetsBelowFloor": 0,
+      "targetsBelow32": 0,
+      "unmeasuredControls": 213,
+      "controls": 431,
+      "targetFloor": 44,
+      "overflow": [],
+      "clipped": [],
+      "families": [
+        "Arial Narrow",
+        "monospace",
+        "ui-monospace"
+      ],
+      "perView": {
+        "work": {
+          "textNodes": 36,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 11,
+          "dominantSize": [
+            "16.0",
+            13
+          ]
+        },
+        "architecture": {
+          "textNodes": 636,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 125,
+          "dominantSize": [
+            "16.0",
+            415
+          ]
+        },
+        "systems": {
+          "textNodes": 225,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 2,
+          "dominantSize": [
+            "16.0",
+            138
+          ]
+        },
+        "playground": {
+          "textNodes": 406,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 3,
+          "dominantSize": [
+            "14.0",
+            247
+          ]
+        },
+        "agents": {
+          "textNodes": 122,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 26,
+          "dominantSize": [
+            "13.0",
+            53
+          ]
+        },
+        "knowledge": {
+          "textNodes": 399,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 28,
+          "dominantSize": [
+            "16.0",
+            222
+          ]
+        },
+        "oracle": {
+          "textNodes": 54,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 8,
+          "dominantSize": [
+            "14.0",
+            21
+          ]
+        },
+        "runs": {
+          "textNodes": 10,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 0,
+          "dominantSize": [
+            "16.0",
+            6
+          ]
+        },
+        "_chrome": {
+          "textNodes": 21,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 10,
+          "dominantSize": [
+            "14.0",
+            10
+          ]
+        }
+      }
+    },
+    "820x1180": {
+      "textNodes": 1927,
+      "belowThirteen": 0,
+      "contrastFails": 0,
+      "contrastFailsUnverifiable": 0,
+      "boundaryFails": 0,
+      "boundaryWorst": [],
+      "targetsBelowFloor": 0,
+      "targetsBelow32": 0,
+      "unmeasuredControls": 205,
+      "controls": 444,
+      "targetFloor": 44,
+      "overflow": [],
+      "clipped": [],
+      "families": [
+        "Arial Narrow",
+        "monospace",
+        "ui-monospace"
+      ],
+      "perView": {
+        "work": {
+          "textNodes": 54,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 13,
+          "dominantSize": [
+            "16.0",
+            22
+          ]
+        },
+        "architecture": {
+          "textNodes": 636,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 125,
+          "dominantSize": [
+            "16.0",
+            415
+          ]
+        },
+        "systems": {
+          "textNodes": 225,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 2,
+          "dominantSize": [
+            "16.0",
+            138
+          ]
+        },
+        "playground": {
+          "textNodes": 406,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 3,
+          "dominantSize": [
+            "14.0",
+            247
+          ]
+        },
+        "agents": {
+          "textNodes": 122,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 26,
+          "dominantSize": [
+            "13.0",
+            53
+          ]
+        },
+        "knowledge": {
+          "textNodes": 399,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 28,
+          "dominantSize": [
+            "16.0",
+            222
+          ]
+        },
+        "oracle": {
+          "textNodes": 54,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 8,
+          "dominantSize": [
+            "14.0",
+            21
+          ]
+        },
+        "runs": {
+          "textNodes": 10,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 0,
+          "dominantSize": [
+            "16.0",
+            6
+          ]
+        },
+        "_chrome": {
+          "textNodes": 21,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 0,
+          "dominantSize": [
+            "14.0",
+            10
+          ]
+        }
+      }
+    },
+    "1280x800": {
+      "textNodes": 1927,
+      "belowThirteen": 0,
+      "contrastFails": 0,
+      "contrastFailsUnverifiable": 0,
+      "boundaryFails": 0,
+      "boundaryWorst": [],
+      "targetsBelowFloor": 0,
+      "targetsBelow32": 0,
+      "unmeasuredControls": 197,
+      "controls": 452,
+      "targetFloor": 36,
+      "overflow": [],
+      "clipped": [],
+      "families": [
+        "Arial Narrow",
+        "monospace",
+        "ui-monospace"
+      ],
+      "perView": {
+        "work": {
+          "textNodes": 54,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 5,
+          "dominantSize": [
+            "16.0",
+            22
+          ]
+        },
+        "architecture": {
+          "textNodes": 636,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 125,
+          "dominantSize": [
+            "16.0",
+            415
+          ]
+        },
+        "systems": {
+          "textNodes": 225,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 2,
+          "dominantSize": [
+            "16.0",
+            138
+          ]
+        },
+        "playground": {
+          "textNodes": 406,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 3,
+          "dominantSize": [
+            "14.0",
+            247
+          ]
+        },
+        "agents": {
+          "textNodes": 122,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 26,
+          "dominantSize": [
+            "13.0",
+            53
+          ]
+        },
+        "knowledge": {
+          "textNodes": 399,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 28,
+          "dominantSize": [
+            "16.0",
+            222
+          ]
+        },
+        "oracle": {
+          "textNodes": 54,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 8,
+          "dominantSize": [
+            "14.0",
+            21
+          ]
+        },
+        "runs": {
+          "textNodes": 10,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 0,
+          "dominantSize": [
+            "16.0",
+            6
+          ]
+        },
+        "_chrome": {
+          "textNodes": 21,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 0,
+          "dominantSize": [
+            "14.0",
+            10
+          ]
+        }
+      }
+    },
+    "1440x900": {
+      "textNodes": 1927,
+      "belowThirteen": 0,
+      "contrastFails": 0,
+      "contrastFailsUnverifiable": 0,
+      "boundaryFails": 0,
+      "boundaryWorst": [],
+      "targetsBelowFloor": 0,
+      "targetsBelow32": 0,
+      "unmeasuredControls": 197,
+      "controls": 452,
+      "targetFloor": 36,
+      "overflow": [],
+      "clipped": [],
+      "families": [
+        "Arial Narrow",
+        "monospace",
+        "ui-monospace"
+      ],
+      "perView": {
+        "work": {
+          "textNodes": 54,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 5,
+          "dominantSize": [
+            "16.0",
+            22
+          ]
+        },
+        "architecture": {
+          "textNodes": 636,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 125,
+          "dominantSize": [
+            "16.0",
+            415
+          ]
+        },
+        "systems": {
+          "textNodes": 225,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 2,
+          "dominantSize": [
+            "16.0",
+            138
+          ]
+        },
+        "playground": {
+          "textNodes": 406,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 3,
+          "dominantSize": [
+            "14.0",
+            247
+          ]
+        },
+        "agents": {
+          "textNodes": 122,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 26,
+          "dominantSize": [
+            "13.0",
+            53
+          ]
+        },
+        "knowledge": {
+          "textNodes": 399,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 28,
+          "dominantSize": [
+            "16.0",
+            222
+          ]
+        },
+        "oracle": {
+          "textNodes": 54,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 8,
+          "dominantSize": [
+            "14.0",
+            21
+          ]
+        },
+        "runs": {
+          "textNodes": 10,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 0,
+          "dominantSize": [
+            "16.0",
+            6
+          ]
+        },
+        "_chrome": {
+          "textNodes": 21,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 0,
+          "dominantSize": [
+            "14.0",
+            10
+          ]
+        }
+      }
+    },
+    "1920x1080": {
+      "textNodes": 1927,
+      "belowThirteen": 0,
+      "contrastFails": 0,
+      "contrastFailsUnverifiable": 0,
+      "boundaryFails": 0,
+      "boundaryWorst": [],
+      "targetsBelowFloor": 0,
+      "targetsBelow32": 0,
+      "unmeasuredControls": 197,
+      "controls": 452,
+      "targetFloor": 36,
+      "overflow": [],
+      "clipped": [],
+      "families": [
+        "Arial Narrow",
+        "monospace",
+        "ui-monospace"
+      ],
+      "perView": {
+        "work": {
+          "textNodes": 54,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 5,
+          "dominantSize": [
+            "16.0",
+            22
+          ]
+        },
+        "architecture": {
+          "textNodes": 636,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 125,
+          "dominantSize": [
+            "16.0",
+            415
+          ]
+        },
+        "systems": {
+          "textNodes": 225,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 2,
+          "dominantSize": [
+            "16.0",
+            138
+          ]
+        },
+        "playground": {
+          "textNodes": 406,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 3,
+          "dominantSize": [
+            "14.0",
+            247
+          ]
+        },
+        "agents": {
+          "textNodes": 122,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 26,
+          "dominantSize": [
+            "13.0",
+            53
+          ]
+        },
+        "knowledge": {
+          "textNodes": 399,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 28,
+          "dominantSize": [
+            "16.0",
+            222
+          ]
+        },
+        "oracle": {
+          "textNodes": 54,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 8,
+          "dominantSize": [
+            "14.0",
+            21
+          ]
+        },
+        "runs": {
+          "textNodes": 10,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 0,
+          "dominantSize": [
+            "16.0",
+            6
+          ]
+        },
+        "_chrome": {
+          "textNodes": 21,
+          "belowThirteen": 0,
+          "contrastFails": 0,
+          "targetsBelowFloor": 0,
+          "targetsBelow32": 0,
+          "unmeasuredControls": 0,
+          "dominantSize": [
+            "14.0",
+            10
+          ]
+        }
+      }
+    }
+  },
+  "chrome": {
+    "textNodes": 21,
+    "belowThirteen": 0,
+    "contrastFails": 0,
+    "targetsBelow36": 0,
+    "unmeasuredControls": 0
+  },
+  "sizeHistogram": {
+    "13.0": 380,
+    "14.0": 458,
+    "16.0": 1002,
+    "18.7": 2,
+    "20.0": 21,
+    "24.0": 29,
+    "28.0": 14
+  },
+  "css": {
+    "files": [
+      {
+        "path": "D:\\Analyst_Designer\\Convenium.Design\\convenium-design-studio\\public\\styles.css",
+        "bytes": 123625,
+        "lines": 1636
+      }
+    ],
+    "fontSizeUnits": {
+      "total": 261,
+      "rem": 261,
+      "px": 0,
+      "em": 0,
+      "other": 0
+    },
+    "uniquePxFontSizes": [],
+    "radii": [
+      "0"
+    ],
+    "customPropertyCount": 77,
+    "tokenFamilies": {
+      "color": 38,
+      "space": 10,
+      "radius": 4,
+      "motion": 4,
+      "elevation": 7,
+      "type": 14
+    },
+    "hexLiterals": 0,
+    "rgbaLiterals": 0,
+    "hueBuckets": {
+      "blue": 5,
+      "green": 2,
+      "orange": 2,
+      "red": 2
+    },
+    "nonSemanticHues": [
+      "blue"
+    ],
+    "important": 3,
+    "transitionDeclarations": 12,
+    "transitionDurations": [
+      ".01ms",
+      "120ms",
+      "150ms"
+    ],
+    "zIndexSpellings": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "var(--z-dock)",
+      "var(--z-overlay)",
+      "var(--z-raised)",
+      "var(--z-sticky)",
+      "var(--z-toast)"
+    ],
+    "zIndexLiterals": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "spacingLiterals": 314,
+    "ornament": [],
+    "longMotion": [],
+    "decorativeMediaRefs": []
+  },
+  "consoleErrors": [],
+  "reducedMotion": {
+    "worstDurationMs": 0.01,
+    "offender": "HTML.",
+    "animatingUnderReduce": [],
+    "honoured": true
+  },
+  "scriptMotion": {
+    "durations": [
+      150,
+      150,
+      150,
+      120,
+      120,
+      150
+    ],
+    "overBudget": [],
+    "staggers": []
+  },
+  "worstContrast": [],
+  "unmeasuredControls": [
+    {
+      "view": "work",
+      "tag": "button",
+      "cls": "quiet-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "work",
+      "tag": "button",
+      "cls": "quiet-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "work",
+      "tag": "button",
+      "cls": "quiet-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "work",
+      "tag": "button",
+      "cls": "icon-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "work",
+      "tag": "button",
+      "cls": "quiet-action work-inspector-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "quiet-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "quiet-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "quiet-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "quiet-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "quiet-action",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "div",
+      "cls": "receipt-viewport",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "receipt-node",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "receipt-node",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "receipt-node",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "receipt-node",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "receipt-node",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "receipt-node",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "receipt-node",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "receipt-node",
+      "inDisclosure": false
+    },
+    {
+      "view": "architecture",
+      "tag": "button",
+      "cls": "receipt-node",
+      "inDisclosure": false
+    }
+  ],
+  "smallestTargets": [],
+  "standingRules": {
+    "motionBudget": {
+      "name": "No transition or animation over 150ms, in CSS or in script",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "detail": {
+        "css": [],
+        "scriptOverBudget": [],
+        "staggers": []
+      }
+    },
+    "spacingTokens": {
+      "name": "Spacing literals in rules (DESIGN.md Token Rule) - ratchet to 0",
+      "value": 314,
+      "target": 314,
+      "pass": true,
+      "met": false,
+      "remaining": 314,
+      "note": "Ratchet, not a gate. Met only at 0; 314 literals still in the sheet."
+    },
+    "clipping": {
+      "name": "Nothing clipped by its own container at any measured viewport",
+      "value": 0,
+      "target": 0,
+      "pass": true,
+      "detail": []
+    },
+    "specificity": {
+      "name": "No !important outside the reduced-motion reset",
+      "value": 0,
+      "target": 0,
+      "pass": true
+    }
+  },
+  "diff": {
+    "firstRun": false,
+    "regressions": [],
+    "improvements": []
+  }
+}

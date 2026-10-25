@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "families": {
+    "atelier": { "name": "Atelier", "from": "convenium-design-atelier", "oneLine": "editorial restraint, type-led, near-still", "ground": ["light", "dark"], "defaultGround": "light", "accentHueRange": [[0, 60], [180, 240]], "chroma": 0.25, "scale": 1.25, "heroVw": [7, 11], "density": "medium", "rhythm": "flow", "motionCeiling": "calm", "pairings": ["editorial-serif/neutral-grotesk", "didone/humanist-sans", "transitional-serif/mono-label"], "heroVariants": ["type-statement", "split-portrait", "editorial-lead"], "mediaTreatment": "contained, full strength, no type over media" },
+    "kinetic": { "name": "Kinetic", "from": "convenium-design-kinetic", "oneLine": "motion-first cinema, the scroll is the narrative", "ground": ["dark"], "defaultGround": "dark", "accentHueRange": [[0, 360]], "chroma": 0.9, "scale": 1.5, "heroVw": [12, 18], "density": "low", "rhythm": "viewport", "motionCeiling": "lively", "pairings": ["wide-grotesk/neutral-grotesk", "high-contrast-display/neutral-grotesk", "condensed-display/humanist-sans"], "heroVariants": ["type-statement", "full-bleed-media", "work-reveal", "ambient"], "mediaTreatment": "full bleed, scrim belongs to the type" },
+    "instrument": { "name": "Instrument", "from": "convenium-design-instrument", "oneLine": "dense and systematic, information per pixel", "ground": ["light", "dark"], "defaultGround": "light", "accentHueRange": [[200, 260]], "chroma": 0.6, "scale": 1.2, "heroVw": [4, 7], "density": "high", "rhythm": "flow", "motionCeiling": "calm", "pairings": ["neutral-grotesk/mono-label", "geometric-sans/mono-label", "humanist-sans/neutral-grotesk"], "heroVariants": ["type-statement", "code-ambient", "split-portrait"], "mediaTreatment": "contained, bordered, captions mandatory" },
+    "cyberpunk-athens": { "name": "Cyberpunk Athens", "from": "convenium-design-cyberpunk-athens", "oneLine": "marble carries the past, circuitry carries the present", "ground": ["dark"], "defaultGround": "dark", "accentHueRange": [[38, 46], [185, 195]], "chroma": 0.8, "scale": 1.333, "heroVw": [9, 14], "density": "medium", "rhythm": "viewport", "motionCeiling": "lively", "pairings": ["didone/neutral-grotesk", "inscriptional-serif/mono-label"], "heroVariants": ["type-statement", "ambient", "full-bleed-media"], "mediaTreatment": "full bleed with marble scrim" },
+    "editorial": { "name": "Editorial", "from": "new", "oneLine": "a magazine page, reading first, generous measure", "ground": ["light"], "defaultGround": "light", "accentHueRange": [[350, 380], [0, 20]], "chroma": 0.5, "scale": 1.333, "heroVw": [6, 10], "density": "medium", "rhythm": "flow", "motionCeiling": "calm", "pairings": ["transitional-serif/humanist-sans", "editorial-serif/neutral-grotesk", "slab/neutral-grotesk"], "heroVariants": ["editorial-lead", "type-statement", "split-portrait"], "mediaTreatment": "contained, captioned, never behind type", "status": "needs fixture before enable" },
+    "warm": { "name": "Warm", "from": "new", "oneLine": "human, friendly, soft surfaces, generous whitespace", "ground": ["light"], "defaultGround": "light", "accentHueRange": [[10, 50]], "chroma": 0.55, "scale": 1.25, "heroVw": [6, 9], "density": "medium", "rhythm": "flow", "motionCeiling": "calm", "pairings": ["rounded-sans/humanist-sans", "humanist-serif/humanist-sans", "geometric-sans/neutral-grotesk"], "heroVariants": ["split-portrait", "type-statement", "ambient"], "mediaTreatment": "contained, rounded, full strength", "status": "needs fixture before enable" },
+    "gallery": { "name": "Gallery", "from": "new", "oneLine": "the work is the page; chrome disappears", "ground": ["dark", "light"], "defaultGround": "dark", "accentHueRange": [[0, 0]], "chroma": 0.0, "scale": 1.414, "heroVw": [5, 9], "density": "low", "rhythm": "viewport", "motionCeiling": "lively", "pairings": ["neutral-grotesk/neutral-grotesk", "mono-label/neutral-grotesk", "didone/neutral-grotesk"], "heroVariants": ["work-reveal", "full-bleed-media", "type-statement"], "mediaTreatment": "full bleed, no scrim, type only in gutters", "status": "needs fixture before enable" }
+  },
+  "pairings": {
+    "editorial-serif/neutral-grotesk": { "display": "Newsreader", "text": "Inter" },
+    "didone/humanist-sans": { "display": "Bodoni Moda", "text": "Instrument Sans" },
+    "transitional-serif/mono-label": { "display": "Source Serif 4", "text": "JetBrains Mono" },
+    "wide-grotesk/neutral-grotesk": { "display": "Archivo Black", "text": "Inter" },
+    "high-contrast-display/neutral-grotesk": { "display": "Playfair Display", "text": "Inter" },
+    "condensed-display/humanist-sans": { "display": "Bebas Neue", "text": "Instrument Sans" },
+    "neutral-grotesk/mono-label": { "display": "Inter", "text": "JetBrains Mono" },
+    "geometric-sans/mono-label": { "display": "Space Grotesk", "text": "JetBrains Mono" },
+    "humanist-sans/neutral-grotesk": { "display": "Instrument Sans", "text": "Inter" },
+    "inscriptional-serif/mono-label": { "display": "Cinzel", "text": "JetBrains Mono" },
+    "transitional-serif/humanist-sans": { "display": "Source Serif 4", "text": "Instrument Sans" },
+    "slab/neutral-grotesk": { "display": "Zilla Slab", "text": "Inter" },
+    "rounded-sans/humanist-sans": { "display": "Nunito", "text": "Instrument Sans" },
+    "humanist-serif/humanist-sans": { "display": "Fraunces", "text": "Instrument Sans" },
+    "geometric-sans/neutral-grotesk": { "display": "Space Grotesk", "text": "Inter" },
+    "neutral-grotesk/neutral-grotesk": { "display": "Inter", "text": "Inter" },
+    "mono-label/neutral-grotesk": { "display": "JetBrains Mono", "text": "Inter" },
+    "didone/neutral-grotesk": { "display": "Bodoni Moda", "text": "Inter" }
+  },
+  "note": "All families are open-licence Google Fonts, self-hosted and subsetted. Four families inherit tokens from ../library/doctrines; the three marked 'needs fixture' are enabled only after a fixture site passes the QA gate (PLAN.md M4)."
+}
