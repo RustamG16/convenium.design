@@ -1,12 +1,14 @@
 # Routing digest
 
 One line per pipeline-active skill. Route from this table, then follow the two-stage skill-loading rule in `AGENTS.md`.
-Unrouted skills (53) are in `UNROUTED.md` — capabilities, invoked explicitly, not part of the pipeline.
+Unrouted skills (68) are in `UNROUTED.md` — capabilities, invoked explicitly, not part of the pipeline.
 
 | Skill | Phase | Line |
 |---|---|---|
 | `olympus-design-director` | always | Orchestrate an evidence-based redesign through intake, audit, one direction resolved at intake, human appro… |
+| `competitor-profiling` | diagnose | Profile a business's competitors from their URLs — offer, positioning, pricing, and how they present themse… |
 | `customer-research` | diagnose | Synthesise existing customer evidence (interviews, tickets, reviews, surveys) into the user, their primary … |
+| `product-marketing` | diagnose | Structure a business's offer, audience, ICP and positioning into a reusable context the Brand DNA is built on |
 | `reference-deconstruction` | diagnose | Extracts transferable visual logic without copying expression. |
 | `site-architecture` | diagnose | Plan the page/route hierarchy, navigation model, URL structure, and internal linking so the redesign has a … |
 | `ui-ux` | diagnose | Establishes product cognition, task journeys, progressive disclosure, recovery states, mobile priorities, a… |
@@ -16,9 +18,6 @@ Unrouted skills (53) are in `UNROUTED.md` — capabilities, invoked explicitly, 
 | `concept-studio` | direct | Produce the one website redesign direction the approved brief specifies — in full: layout, typography, medi… |
 | `convenium-design-style-picker` | direct | Path B of the taste-profile system |
 | `convenium-design-taste-interview` | direct | Path A of the taste-profile system |
-| `ethical-gamification-systems` | direct | Creates meaningful missions, mastery, rewards, and collections with explicit spend and anti-coercion safegu… |
-| `taste-first-experience-design` | direct | Turns visual preference evidence into editable Creative DNA, plain-language choices, and a bounded mission … |
-| `agent-identity-and-portfolio` | prepare | Defines consistent agent identities, transparent inventory, and evidence-backed marketplace portfolios. |
 | `asset-director` | prepare | Plans required media, provenance, rights, and fallbacks. |
 | `gsap-core` | prepare | Adds responsive, reduced-motion-aware tweens. |
 | `gsap-plugins` | prepare | Routes approved plugin use such as Flip, Draggable, or SplitText. |
@@ -32,6 +31,9 @@ Unrouted skills (53) are in `UNROUTED.md` — capabilities, invoked explicitly, 
 | `gsap-frameworks` | build | Scopes Vue, Nuxt, Svelte, and SvelteKit animation lifecycle. |
 | `gsap-react` | build | Scopes React animation lifecycle and cleanup. |
 | `impeccable` | build | Own the finish: commit the design system as numbers before layout (PRODUCT.md, DESIGN.md, design.json), the… |
+| `mobile-app-shell` | build | Rebuild a site's phone experience when mobile pages are too long, unoptimized or below current standards |
+| `scroll-scrubbed-visual-sequence` | build | Build reversible scroll-controlled visual transformations with a pinned or sticky stage, normalized progres… |
+| `better-interface` | verify | Combines all of the `better-*` skills into a single review across accessibility, layout, writing, typograph… |
 | `copy-editing` | verify | Edit implemented interface copy in focused passes (clarity, concision, consistency, voice) without changing… |
 | `design-analytics` | verify | Connects design hypotheses to a minimal event contract. |
 | `gsap-performance` | verify | Finds animation jank and layout-thrashing risk. |

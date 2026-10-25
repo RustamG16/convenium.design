@@ -31,6 +31,7 @@ heroes; more than two typefaces.
 --leading      : 1.55 body / 1.05 display / 1.35 UI
 --tracking     : display -0.02em / body 0 / small caps +0.08em
 --sizes        : 72 / 56 / 40 / 28 / 20 / 16 / 13 - pick one, never interpolate
+--display-max   : 72px (the largest step of --sizes; run.json design_system is checked against it)
 --paper        : warm off-white (never pure #fff)
 --ink          : near-black, warm-shifted (never pure #000)
 --ink-2        : 62% ink
@@ -49,8 +50,11 @@ tool (see Instrument).
 
 ## Who builds it
 
-The `convenium-design-atelier` agent owns the actual design work under this doctrine. This file is
-reference documentation, not an executable skill — read it, don't invoke it.
+No agent is named after a doctrine. The `design-director` selects this doctrine at intake
+(from the client's `.olympus/brand-dna.json` or the brief), commits its tokens as numbers in
+the project's `DESIGN.md`, and `design-engineer` builds from that. New media is planned by
+`asset-director` and produced by `asset-producer`. This file is reference documentation,
+not an executable skill — read it, don't invoke it.
 
 ## Related
 

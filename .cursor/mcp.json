@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "convenium-design": {
-      "command": "node",
-      "args": ["D:/Analyst_Designer/Convenium.Design/convenium-design-studio/mcp-server.mjs"]
-    }
-  }
-}

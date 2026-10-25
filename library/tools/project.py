@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """project.py — project library/ into the host trees. stdlib only.
 
-    python library/tools/project.py <claude|codex|studio|digest|all> [--dry-run]
+    python library/tools/project.py <claude|codex|studio|digest|plugin|all> [--dry-run]
 
 A generated tree is disposable: editing one is a defect; this overwrites it. Every generated
 root carries GENERATED.md (source + rebuild command) and MANIFEST.txt (every file written).
@@ -10,7 +10,7 @@ Delete budget: a file is deleted only if its exact path is in that root's previo
 MANIFEST.txt AND the root has a GENERATED.md. Anything else is a hard halt. On a first run
 (no MANIFEST.txt) the generator writes only and deletes nothing.
 """
-import json, os, re, shutil, sys
+import json, os, re, shutil, sys, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LIB = os.path.join(ROOT, "library")
@@ -121,8 +121,7 @@ class Plan:
         for rel, content in self.files.items():
             ap = os.path.join(self.root, rel)
             os.makedirs(os.path.dirname(ap), exist_ok=True)
-            with open(ap, "w", encoding="utf-8", newline="\n") as fh:
-                fh.write(content)
+            write_text(ap, content)
         for rel in deletes:
             os.remove(os.path.join(self.root, rel))
         # prune now-empty dirs
@@ -130,12 +129,25 @@ class Plan:
             if not os.listdir(dp) and dp != self.root:
                 os.rmdir(dp)
         man = sorted(self.files) + ["GENERATED.md", "MANIFEST.txt"]
-        open(os.path.join(self.root, "GENERATED.md"), "w", encoding="utf-8", newline="\n").write(
-            f"# GENERATED — do not edit\n\nSource: {self.source}\nRebuild: `{self.rebuild}`\n\n"
-            f"Every file listed in `MANIFEST.txt` is overwritten on each rebuild. Hand edits are lost.\n")
-        open(os.path.join(self.root, "MANIFEST.txt"), "w", encoding="utf-8", newline="\n").write(
-            "\n".join(sorted(set(man))) + "\n")
+        write_text(os.path.join(self.root, "GENERATED.md"),
+                   f"# GENERATED — do not edit\n\nSource: {self.source}\nRebuild: `{self.rebuild}`\n\n"
+                   f"Every file listed in `MANIFEST.txt` is overwritten on each rebuild. Hand edits are lost.\n")
+        write_text(os.path.join(self.root, "MANIFEST.txt"), "\n".join(sorted(set(man))) + "\n")
         return True
+
+
+def write_text(path, content, attempts=5):
+    """Write LF text. Retries briefly: on Windows a running host (e.g. a Claude Code
+    session watching .claude/skills) can hold a file open and fail the write with EINVAL."""
+    for i in range(attempts):
+        try:
+            with open(path, "w", encoding="utf-8", newline="\n") as fh:
+                fh.write(content)
+            return
+        except OSError:
+            if i == attempts - 1:
+                raise
+            time.sleep(0.5 * (i + 1))
 
 
 def copy_skill_body(sid):
@@ -154,11 +166,20 @@ def copy_skill_body(sid):
     return out
 
 
+CLAUDE_LOCATE = ("> **Where Convenium.Design lives.** Paths such as `AGENTS.md`, `START-HERE.md`, `templates/` "
+                 "and `library/` are relative to the Convenium.Design folder: `${CLAUDE_PLUGIN_ROOT}` when Convenium.Design "
+                 "is installed as a plugin, otherwise the folder named in the project's "
+                 "`.olympus/APOLLO.md`, or the current repository when you are working inside Convenium.Design.\n\n")
+CODEX_LOCATE = ("Where Convenium.Design lives: paths such as AGENTS.md, START-HERE.md, templates/ and library/ are "
+                "relative to the Convenium.Design folder named in the project's .olympus/APOLLO.md, or the current "
+                "repository when working inside Convenium.Design.\n\n")
+
+
 def claude_agent(name):
     a = AGENTS[name]
     ro = a["fm"].get("access") == "read-only"
-    body = re.sub(r"\$([a-z][a-z0-9-]+)",
-                  lambda m: f"the *{m.group(1)}* skill (Skill tool)", a["body"])
+    body = CLAUDE_LOCATE + re.sub(r"\$([a-z][a-z0-9-]+)",
+                                  lambda m: f"the *{m.group(1)}* skill (Skill tool)", a["body"])
     fm = ["---", f"name: {name}", f"description: {a['fm']['description']}",
           f"tools: {READONLY_TOOLS if ro else WRITE_TOOLS}"]
     if a["fm"].get("skills"):
@@ -173,7 +194,7 @@ def codex_agent(name):
     if a["fm"].get("access") == "read-only":
         lines.append('sandbox_mode = "read-only"')
     lines.append('developer_instructions = """')
-    lines.append(a["body"])
+    lines.append(CODEX_LOCATE + a["body"])
     lines.append('"""')
     return "\n".join(lines) + "\n\n"
 
@@ -197,9 +218,6 @@ MANUAL_CLAUDE_SKILLS = {
     "prototype",                    # multiple UI variants behind a picker
     "pick-ui-library",              # choose the right frontend library
     "garden-web-design-engineer",   # polished HTML/CSS/JS artifacts
-    "convenium-design-bootstrap",             # install / re-audit Convenium.Design in a project
-    "convenium-design-loadout-sync",          # THE write path for per-agent loadouts
-    "convenium-design-dashboard-sync",        # THE write path for dashboard state.json
 }
 
 
@@ -284,7 +302,7 @@ def build_studio(dry):
     if old != p.files_registry:
         print(f"{'[dry-run] ' if dry else ''}convenium-design-studio/skills.registry.json: 1 write")
         if not dry:
-            open(reg_target, "w", encoding="utf-8", newline="\n").write(p.files_registry)
+            write_text(reg_target, p.files_registry)
     return ok
 
 
@@ -305,15 +323,73 @@ def build_digest(dry):
             d = d[:107] + "…"
         lines.append(f"| `{r['id']}` | {r['phase']} | {d} |")
     content = "\n".join(lines) + "\n"
-    old = open(target, encoding="utf-8").read() if os.path.isfile(target) else None
-    n = 0 if old == content else 1
-    print(f"{'[dry-run] ' if dry else ''}library/registry/ROUTING-DIGEST.md: {n} write ({len(active)} active skills)")
-    if not dry and n:
-        open(target, "w", encoding="utf-8", newline="\n").write(content)
+    write_if_changed(target, content, dry, f"{len(active)} active skills")
+
+    unrouted = sorted((r for r in REG if r["phase"] == "unrouted"), key=lambda r: (r["category"], r["id"]))
+    lines = ["# Unrouted skills", "",
+             "Generated by `python library/tools/project.py digest` — do not edit. These skills are "
+             "in the library and projected to their hosts, but have no phase in Convenium.Design's pipeline. "
+             "They are capabilities, invoked explicitly, and are excluded from `ROUTING-DIGEST.md`.",
+             "", f"Count: {len(unrouted)}"]
+    cat = None
+    for r in unrouted:
+        if r["category"] != cat:
+            cat = r["category"]
+            lines += ["", f"## {cat}", ""]
+        d = " ".join(r["description"].split())
+        lines.append(f"- `{r['id']}` - {d[:140]}")
+    write_if_changed(os.path.join(LIB, "registry", "UNROUTED.md"), "\n".join(lines) + "\n", dry,
+                     f"{len(unrouted)} unrouted skills")
     return True
 
 
-TARGETS = {"claude": build_claude, "codex": build_codex, "studio": build_studio, "digest": build_digest}
+def write_if_changed(target, content, dry, note):
+    old = open(target, encoding="utf-8").read() if os.path.isfile(target) else None
+    n = 0 if old == content else 1
+    print(f"{'[dry-run] ' if dry else ''}{os.path.relpath(target, ROOT)}: {n} write ({note})")
+    if not dry and n:
+        write_text(target, content)
+
+
+PLUGIN_VERSION = "0.4.0"
+
+
+def build_plugin(dry):
+    """Claude Code plugin + single-plugin marketplace, rooted at the repo itself.
+
+    Install: `/plugin marketplace add <this folder | RustamG16/convenium.design>` then
+    `/plugin install convenium-design@convenium-design`. Skills become `convenium-design:<id>`, agents `convenium-design:<name>`,
+    so nothing collides with same-named personal or plugin skills. `agents` must list
+    files (a directory is rejected); `skills` may be a directory.
+    """
+    plugin = {
+        "name": "convenium-design",
+        "version": PLUGIN_VERSION,
+        "description": ("Gated design agency: a Brand DNA strategist, one Design Director and five "
+                        "specialists that take a business from intake to a verified, built design."),
+        "author": {"name": "Rustam Gurbanov"},
+        "repository": "https://github.com/RustamG16/convenium.design",
+        "license": "SEE LICENSE IN third-party/VERSIONS.md",
+        "keywords": ["design", "website", "brand", "agents"],
+        "skills": "./.claude/skills/",
+        "agents": [f"./.claude/agents/{n}.md" for n in AGENTS],
+    }
+    market = {
+        "name": "convenium-design",
+        "owner": {"name": "Rustam Gurbanov"},
+        "description": "Convenium.Design design system — one plugin, rooted at this repository.",
+        "plugins": [{"name": "convenium-design", "source": "./", "description": plugin["description"]}],
+    }
+    d = os.path.join(ROOT, ".claude-plugin")
+    if not dry:
+        os.makedirs(d, exist_ok=True)
+    write_if_changed(os.path.join(d, "plugin.json"), json.dumps(plugin, indent=2) + "\n", dry, "plugin manifest")
+    write_if_changed(os.path.join(d, "marketplace.json"), json.dumps(market, indent=2) + "\n", dry, "marketplace")
+    return True
+
+
+TARGETS = {"claude": build_claude, "codex": build_codex, "studio": build_studio,
+           "digest": build_digest, "plugin": build_plugin}
 
 
 def main(argv):

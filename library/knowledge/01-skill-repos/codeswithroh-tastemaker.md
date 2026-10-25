@@ -40,7 +40,7 @@ current state.
 
 "AI-slop defaults" — the observation that an unguided model converges on the same
 centred-hero, rounded-card, indigo-gradient look regardless of brief. This is the same
-problem the three-design-system setups in [../07-design-systems/](../07-design-systems/)
+problem the three-design-system setups in [../../doctrines/](../../doctrines/)
 are built to solve, approached from the opposite direction: tastemaker constrains toward
 *your* taste, the three setups constrain toward *three different* deliberate tastes.
 

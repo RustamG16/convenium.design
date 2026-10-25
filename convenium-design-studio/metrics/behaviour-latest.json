@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-03T17:31:16.107Z",
-  "durationMs": 293919,
+  "generatedAt": "2026-09-16T18:37:45.210Z",
+  "durationMs": 262909,
   "thresholds": {
     "B1": {
       "name": "Controls with no listener and no form owner",
@@ -15,7 +15,7 @@
       "value": 0,
       "target": 0,
       "pass": true,
-      "unit": "of 205 clicked (12 already in their target state, excluded)",
+      "unit": "of 175 clicked (6 already in their target state, excluded)",
       "detail": []
     },
     "B3": {
@@ -23,7 +23,7 @@
       "value": 0,
       "target": 0,
       "pass": true,
-      "unit": "45 of 45 command controls covered",
+      "unit": "73 of 73 command controls covered",
       "detail": {
         "failed": [],
         "uncovered": []
@@ -93,48 +93,33 @@
     }
   },
   "controls": {
-    "total": 567,
-    "visible": 548,
-    "clicked": 205,
-    "skipped": 6
+    "total": 734,
+    "visible": 535,
+    "clicked": 175,
+    "skipped": 4
   },
   "unwired": [],
   "noEffect": [],
   "alreadyActiveNoEffect": [
     {
-      "view": "work",
-      "selector": "div#project-list > button.project-item.is-active",
-      "label": "WKO launch narrativeLaunch planning"
-    },
-    {
-      "view": "work",
-      "selector": "div#project-tabs > button.project-tab.is-active",
-      "label": "Launch planning"
-    },
-    {
-      "view": "work",
-      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(1)",
-      "label": "Work1"
+      "view": "architecture",
+      "selector": "#phase-list-intake",
+      "label": "intake · design-director"
     },
     {
       "view": "systems",
-      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(2)",
-      "label": "Loadouts2"
-    },
-    {
-      "view": "playground",
-      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(4)",
-      "label": "Playground4"
+      "selector": "#configure-role-design-director",
+      "label": "Design Director · Required"
     },
     {
       "view": "agents",
-      "selector": "section#agents > div.library-switcher:nth-of-type(2) > button.is-active:nth-of-type(1)",
-      "label": "Agents"
+      "selector": "#configure-role-design-director",
+      "label": "Design Director · Required"
     },
     {
       "view": "knowledge",
-      "selector": "section#knowledge > div.library-switcher:nth-of-type(2) > button.is-active:nth-of-type(2)",
-      "label": "Skills & knowledge"
+      "selector": "#evidence-row-plan",
+      "label": ".olympus/06-build-plan.md · verified"
     },
     {
       "view": "knowledge",
@@ -145,21 +130,6 @@
       "view": "knowledge",
       "selector": "div#knowledge-skill-list > button.knowledge-skill.is-active:nth-of-type(1)",
       "label": "Agent Identity and PortfolioAgents · prepareagent-identity-a"
-    },
-    {
-      "view": "knowledge",
-      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(3)",
-      "label": "Library3"
-    },
-    {
-      "view": "runs",
-      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item.is-active:nth-of-type(5)",
-      "label": "Runs5"
-    },
-    {
-      "view": "chrome",
-      "selector": "body > div.app-shell > header.topbar > nav.primary-nav > button.nav-item:nth-of-type(1)",
-      "label": "Work1"
     }
   ],
   "decisions": [

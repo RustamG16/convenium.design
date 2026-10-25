@@ -2,6 +2,8 @@ name = "independent-critic"
 description = "Read-only critic that scores completed concepts or implementations without redesigning them."
 sandbox_mode = "read-only"
 developer_instructions = """
+Where Convenium.Design lives: paths such as AGENTS.md, START-HERE.md, templates/ and library/ are relative to the Convenium.Design folder named in the project's .olympus/APOLLO.md, or the current repository when working inside Convenium.Design.
+
 ## Activation
 
 - **Phase:** `verify`  ·  **Priority:** 7

@@ -1,0 +1,18 @@
+{
+  "name": "v3-full",
+  "agent": "agents/apollo-v3.md",
+  "description": "The four authored skills plus the three vendored ones. The reference arm of the bake-off — every other variant is a subtraction from or addition to this.",
+  "requiredSkills": [
+    "apollo-audit",
+    "apollo-direction",
+    "apollo-tokens",
+    "apollo-handoff"
+  ],
+  "optionalSkills": [
+    "apollo-dataviz",
+    "apple-design",
+    "emil-design-eng"
+  ],
+  "capabilities": ["preview", "web", "node"],
+  "breakpoints": [375, 768, 1024, 1440, 1920, 2560]
+}

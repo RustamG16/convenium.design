@@ -1,0 +1,769 @@
+<title>Apollo — pipeline composer</title>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    --paper:     #EDF0F2;
+    --surface:   #F8FAFB;
+    --surface-2: #E2E8EC;
+    --ink:       #16202B;
+    --ink-2:     #4A5A68;
+    --ink-3:     #7B8B98;
+    --line:      #CFD8DE;
+    --line-soft: #DDE4E9;
+    --accent:    #0F7A85;
+    --accent-in: #FFFFFF;
+    --accent-sf: rgba(15,122,133,.10);
+    --pass:      #2F7D4F;
+    --warn:      #8F5D0C;
+    --block:     #A83E36;
+    --pass-sf:   rgba(47,125,79,.10);
+    --warn-sf:   rgba(143,93,12,.10);
+    --block-sf:  rgba(168,62,54,.10);
+
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    --r: 5px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:     #101820;
+      --surface:   #17212B;
+      --surface-2: #1E2A36;
+      --ink:       #E6EDF2;
+      --ink-2:     #9FB0BD;
+      --ink-3:     #6E8090;
+      --line:      #2A3945;
+      --line-soft: #223140;
+      --accent:    #45C6D2;
+      --accent-in: #0B1219;
+      --accent-sf: rgba(69,198,210,.13);
+      --pass:      #5FBE84;
+      --warn:      #D9A441;
+      --block:     #E0736A;
+      --pass-sf:   rgba(95,190,132,.13);
+      --warn-sf:   rgba(217,164,65,.13);
+      --block-sf:  rgba(224,115,106,.13);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:     #101820;
+    --surface:   #17212B;
+    --surface-2: #1E2A36;
+    --ink:       #E6EDF2;
+    --ink-2:     #9FB0BD;
+    --ink-3:     #6E8090;
+    --line:      #2A3945;
+    --line-soft: #223140;
+    --accent:    #45C6D2;
+    --accent-in: #0B1219;
+    --accent-sf: rgba(69,198,210,.13);
+    --pass:      #5FBE84;
+    --warn:      #D9A441;
+    --block:     #E0736A;
+    --pass-sf:   rgba(95,190,132,.13);
+    --warn-sf:   rgba(217,164,65,.13);
+    --block-sf:  rgba(224,115,106,.13);
+  }
+
+  :root[data-theme="light"] {
+    --paper:     #EDF0F2;
+    --surface:   #F8FAFB;
+    --surface-2: #E2E8EC;
+    --ink:       #16202B;
+    --ink-2:     #4A5A68;
+    --ink-3:     #7B8B98;
+    --line:      #CFD8DE;
+    --line-soft: #DDE4E9;
+    --accent:    #0F7A85;
+    --accent-in: #FFFFFF;
+    --accent-sf: rgba(15,122,133,.10);
+    --pass:      #2F7D4F;
+    --warn:      #8F5D0C;
+    --block:     #A83E36;
+    --pass-sf:   rgba(47,125,79,.10);
+    --warn-sf:   rgba(143,93,12,.10);
+    --block-sf:  rgba(168,62,54,.10);
+  }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 28px 24px 72px; }
+
+  /* ---------- header ---------- */
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 28px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+  h1 { font-family: var(--mono); font-size: 19px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  h1 .dim { color: var(--ink-3); font-weight: 400; }
+  .lede { margin: 0; color: var(--ink-2); font-size: 13.5px; max-width: 62ch; }
+  .spacer { flex: 1 1 auto; }
+
+  .bp { display: flex; gap: 5px; align-items: center; font-family: var(--mono); font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .bp b { color: var(--ink); font-weight: 600; padding: 1px 5px; background: var(--accent-sf); border-radius: 3px; }
+
+  /* ---------- layout ---------- */
+  .cols { display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 26px; margin-top: 22px; align-items: start; }
+  @media (max-width: 980px) { .cols { grid-template-columns: minmax(0,1fr); } }
+
+  /* ---------- control rail ---------- */
+  .rail { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 18px; }
+  @media (max-width: 980px) { .rail { position: static; } }
+
+  .grp { border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); overflow: hidden; }
+  .grp > h2 {
+    font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--ink-3); margin: 0; padding: 9px 12px; border-bottom: 1px solid var(--line-soft); background: var(--surface-2);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .grp > h2 .n { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+  .grp-body { padding: 10px; display: flex; flex-direction: column; gap: 3px; }
+
+  /* segmented / preset buttons */
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 10px; }
+  .seg button, .presets button {
+    font-family: var(--mono); font-size: 11.5px; padding: 7px 8px; cursor: pointer;
+    background: transparent; color: var(--ink-2); border: 1px solid var(--line);
+    border-radius: 4px; text-align: left; transition: background .12s, border-color .12s, color .12s;
+  }
+  .seg button:hover, .presets button:hover { border-color: var(--accent); color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-in); font-weight: 600; }
+  .presets { display: flex; flex-direction: column; gap: 4px; padding: 10px; }
+  .presets button { display: flex; gap: 9px; align-items: baseline; }
+  .presets button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-sf); color: var(--ink); }
+  .presets .vid { color: var(--accent); font-weight: 600; flex: 0 0 auto; }
+  .presets .vdesc { color: var(--ink-3); font-size: 10.5px; font-family: var(--sans); }
+  .presets button[aria-pressed="true"] .vdesc { color: var(--ink-2); }
+
+  /* toggle rows */
+  .tog { display: flex; align-items: center; gap: 9px; padding: 6px 7px; border-radius: 4px; cursor: pointer; }
+  .tog:hover { background: var(--surface-2); }
+  .tog input { appearance: none; -webkit-appearance: none; margin: 0; flex: 0 0 auto;
+    width: 30px; height: 17px; border-radius: 9px; background: var(--surface-2);
+    border: 1px solid var(--line); position: relative; cursor: pointer; transition: background .14s, border-color .14s; }
+  .tog input::after { content: ""; position: absolute; top: 1px; left: 1px; width: 13px; height: 13px;
+    border-radius: 50%; background: var(--ink-3); transition: transform .14s, background .14s; }
+  .tog input:checked { background: var(--accent); border-color: var(--accent); }
+  .tog input:checked::after { transform: translateX(13px); background: var(--accent-in); }
+  .tog input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tog .nm { font-family: var(--mono); font-size: 11.5px; color: var(--ink); }
+  .tog .sub { font-size: 10.5px; color: var(--ink-3); display: block; font-family: var(--sans); line-height: 1.35; }
+  .tog input:not(:checked) ~ .lbl .nm { color: var(--ink-3); }
+  .tog .req { font-family: var(--mono); font-size: 9px; color: var(--block); border: 1px solid currentColor;
+    border-radius: 3px; padding: 0 3px; margin-left: 5px; vertical-align: 1px; }
+  .lbl { min-width: 0; }
+
+  /* ---------- pipeline ---------- */
+  .stage {
+    display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 0 14px;
+    position: relative;
+  }
+  .gutter { position: relative; display: flex; justify-content: center; padding-top: 14px; }
+  .gutter .num {
+    font-family: var(--mono); font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 600;
+    width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); z-index: 1;
+  }
+  .stage:not(:last-child) .gutter::after {
+    content: ""; position: absolute; top: 38px; bottom: -1px; left: 50%; width: 1px;
+    background: var(--line); transform: translateX(-50%);
+  }
+  .stage.skipped:not(:last-child) .gutter::after { background: repeating-linear-gradient(to bottom, var(--line) 0 3px, transparent 3px 7px); }
+  .stage.on .gutter .num { border-color: var(--accent); color: var(--accent); }
+  .stage.blocked .gutter .num { border-color: var(--block); color: var(--block); }
+  .stage.degraded .gutter .num { border-color: var(--warn); color: var(--warn); }
+
+  .card {
+    border: 1px solid var(--line); border-left-width: 3px; border-radius: var(--r);
+    background: var(--surface); padding: 11px 14px; margin-bottom: 8px;
+    border-left-color: var(--line);
+  }
+  .stage.on       .card { border-left-color: var(--accent); }
+  .stage.degraded .card { border-left-color: var(--warn);  background: var(--warn-sf); }
+  .stage.blocked  .card { border-left-color: var(--block); background: var(--block-sf); }
+  .stage.skipped  .card { border-style: dashed; border-left-style: dashed; background: transparent; opacity: .55; }
+
+  .card-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+  .card h3 { font-family: var(--mono); font-size: 13px; font-weight: 600; margin: 0; letter-spacing: -0.005em; }
+  .stage.skipped .card h3 { text-decoration: line-through; text-decoration-color: var(--ink-3); color: var(--ink-2); }
+  .card p { margin: 5px 0 0; font-size: 12.5px; color: var(--ink-2); max-width: 68ch; }
+
+  .state {
+    font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: .07em;
+    padding: 2px 6px; border-radius: 3px; font-weight: 600;
+  }
+  .state.on       { color: var(--pass);  background: var(--pass-sf); }
+  .state.degraded { color: var(--warn);  background: var(--warn-sf); }
+  .state.blocked  { color: var(--block); background: var(--block-sf); }
+  .state.skipped  { color: var(--ink-3); background: var(--surface-2); }
+
+  .out { font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); margin-left: auto; }
+  .out b { color: var(--ink-2); font-weight: 500; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .chip {
+    font-family: var(--mono); font-size: 10.5px; padding: 2px 6px; border-radius: 3px;
+    border: 1px solid var(--line); color: var(--ink-2); background: var(--paper);
+  }
+  .chip.live { border-color: var(--accent); color: var(--accent); background: var(--accent-sf); }
+  .chip.miss { border-color: var(--block); color: var(--block); background: transparent; text-decoration: line-through; }
+  .chip.cond { border-style: dashed; }
+  .chip .k { color: var(--ink-3); }
+
+  .note { margin-top: 7px; font-size: 11.5px; padding-left: 11px; border-left: 2px solid currentColor; }
+  .note.degraded { color: var(--warn); }
+  .note.blocked  { color: var(--block); }
+  .note span { color: var(--ink-2); }
+
+  /* ---------- panels ---------- */
+  .panel { border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); margin-top: 22px; overflow: hidden; }
+  .panel > h2 {
+    font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--ink-3); margin: 0; padding: 9px 14px; border-bottom: 1px solid var(--line-soft);
+    background: var(--surface-2); display: flex; align-items: center; gap: 10px;
+  }
+  .panel > h2 .count {
+    font-variant-numeric: tabular-nums; letter-spacing: 0; padding: 1px 6px; border-radius: 3px;
+    background: var(--paper); color: var(--ink-2); border: 1px solid var(--line);
+  }
+  .panel > h2 .count.bad  { color: var(--block); border-color: currentColor; }
+  .panel > h2 .count.warn { color: var(--warn);  border-color: currentColor; }
+  .panel > h2 .count.ok   { color: var(--pass);  border-color: currentColor; }
+  .panel-body { padding: 12px 14px; }
+
+  .diag { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .diag li { display: grid; grid-template-columns: 58px minmax(0,1fr); gap: 11px; align-items: start; font-size: 12.5px; }
+  .diag .sev {
+    font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: .06em;
+    padding: 2px 0; text-align: center; border-radius: 3px; font-weight: 600;
+  }
+  .diag .sev.blocked  { color: var(--block); background: var(--block-sf); }
+  .diag .sev.degraded { color: var(--warn);  background: var(--warn-sf); }
+  .diag .sev.note     { color: var(--ink-2); background: var(--surface-2); }
+  .diag code { font-family: var(--mono); font-size: 11.5px; background: var(--surface-2); padding: 0 4px; border-radius: 3px; }
+  .diag .why { color: var(--ink-2); display: block; margin-top: 2px; }
+  .clean { color: var(--pass); font-size: 12.5px; font-family: var(--mono); }
+
+  pre.manifest {
+    margin: 0; font-family: var(--mono); font-size: 11.5px; line-height: 1.6;
+    background: var(--paper); border: 1px solid var(--line-soft); border-radius: 4px;
+    padding: 11px 13px; overflow-x: auto; color: var(--ink);
+  }
+  .cmd { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin: 9px 0 0; overflow-x: auto; }
+  .cmd b { color: var(--ink-2); font-weight: 500; }
+
+  .btn {
+    font-family: var(--mono); font-size: 11px; padding: 5px 10px; cursor: pointer;
+    background: transparent; border: 1px solid var(--line); border-radius: 4px; color: var(--ink-2);
+    transition: border-color .12s, color .12s;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .push { margin-left: auto; }
+
+  footer { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--ink-3); max-width: 76ch; }
+  footer code { font-family: var(--mono); background: var(--surface-2); padding: 0 4px; border-radius: 3px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>apollo <span class="dim">/ pipeline composer</span></h1>
+      <p class="lede">
+        Toggle a variant's components and watch the eight stages respond. Export the result as a
+        manifest that <code style="font-family:var(--mono)">verify-catalog.ps1</code> can check.
+      </p>
+    </div>
+    <div class="spacer"></div>
+    <div class="bp">
+      <span>375</span><span>·</span><span>768</span><span>·</span><span>1024</span><span>·</span>
+      <span>1440</span><span>·</span><b>1920</b><span>·</span><span>2560</span>
+    </div>
+  </header>
+
+  <div class="cols">
+
+    <!-- ============ control rail ============ -->
+    <div class="rail">
+
+      <section class="grp">
+        <h2>Variant</h2>
+        <div class="presets" id="presets"></div>
+      </section>
+
+      <section class="grp">
+        <h2>Job type</h2>
+        <div class="seg" id="jobs"></div>
+      </section>
+
+      <section class="grp">
+        <h2>Skills <span class="n" id="skillCount"></span></h2>
+        <div class="grp-body" id="skills"></div>
+      </section>
+
+      <section class="grp">
+        <h2>Capabilities</h2>
+        <div class="grp-body" id="caps"></div>
+      </section>
+
+    </div>
+
+    <!-- ============ main ============ -->
+    <div>
+      <div id="pipeline"></div>
+
+      <section class="panel">
+        <h2>Diagnostics <span class="count" id="diagCount">0</span></h2>
+        <div class="panel-body"><ul class="diag" id="diag"></ul></div>
+      </section>
+
+      <section class="panel">
+        <h2>
+          Variant manifest
+          <button class="btn push" id="copyBtn" type="button">Copy</button>
+        </h2>
+        <div class="panel-body">
+          <pre class="manifest" id="manifest"></pre>
+          <p class="cmd">
+            Save as <b id="savePath">variants/v3-full.json</b>, then
+            <b>pwsh -File scripts/verify-catalog.ps1</b>
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        Stage coverage and diagnostics are derived from the skill files in <code>skills/</code>
+        and the rules in <code>MERGE-REPORT.md</code>. This page is a model of the system, not a
+        reading of it — if you change a skill's scope, update <code>STAGES</code> in this file too.
+      </footer>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- model ---------------- */
+  /* --8<-- pure:start — no DOM below this marker. ui/model.test.mjs slices this
+     block out of the HTML and runs it in node, so keep it free of document/window. */
+
+  var SKILLS = [
+    { id: "apollo-audit",     sub: "critique what exists",            authored: true },
+    { id: "apollo-direction", sub: "visual direction for new work",   authored: true },
+    { id: "apollo-tokens",    sub: "token system + contrast proof",   authored: true },
+    { id: "apollo-handoff",   sub: "the build spec you implement",    authored: true },
+    { id: "apollo-dataviz",   sub: "before any chart or stat tile",   authored: true },
+    { id: "apple-design",     sub: "gesture, spring, sheet",          authored: false },
+    { id: "emil-design-eng",  sub: "polish pass",                     authored: false }
+  ];
+
+  var CAPS = [
+    { id: "preview",    nm: "browser + preview", sub: "serve and screenshot at six widths" },
+    { id: "web",        nm: "web access",        sub: "check what is winning now" },
+    { id: "node",       nm: "node",              sub: "run contrast.mjs" },
+    { id: "figma",      nm: "figma mcp",         sub: "read design files (optional)" },
+    { id: "brainstorm", nm: "brainstorm phase",  sub: "ideation pass before direction" },
+    { id: "heavyshot",  nm: "heavy screenshots", sub: "external capture tooling" }
+  ];
+
+  var JOBS = [
+    { id: "AUDIT",  nm: "AUDIT",  need: ["apollo-audit", "apollo-handoff"] },
+    { id: "NEW",    nm: "NEW",    need: ["apollo-direction", "apollo-handoff"] },
+    { id: "SYSTEM", nm: "SYSTEM", need: ["apollo-tokens", "apollo-handoff"] },
+    { id: "ASSET",  nm: "ASSET",  need: ["apollo-direction", "apollo-handoff"] }
+  ];
+
+  // Stage -> which skills cover it per job type, what it outputs, what it needs.
+  var STAGES = [
+    { n: 0, nm: "Probe", out: ".apollo/env.json",
+      desc: "Read what this session actually has. The plugin skill set moves between sessions, so nothing is assumed.",
+      jobs: ["AUDIT","NEW","SYSTEM","ASSET"], skills: {}, needs: [] },
+
+    { n: 1, nm: "Intake", out: "job type",
+      desc: "Classify the brief into one of four types. The type picks a fixed pipeline — no routing is improvised at run time.",
+      jobs: ["AUDIT","NEW","SYSTEM","ASSET"], skills: {}, needs: [] },
+
+    { n: 2, nm: "Evidence", out: "_apollo/evidence/",
+      desc: "Never design from memory. Serve the target or the reference, screenshot every breakpoint, extract the real tokens.",
+      jobs: ["AUDIT","NEW","SYSTEM","ASSET"],
+      skills: { AUDIT: ["apollo-audit"], NEW: ["apollo-direction"], SYSTEM: ["apollo-tokens"], ASSET: ["apollo-direction"] },
+      needs: [
+        { cap: "preview", sev: "degraded", msg: "No browser: evidence drops from rendered to source-reading. Apollo must say so in its output." },
+        { cap: "web", sev: "degraded", job: ["AUDIT"], msg: "No web access: trend-currency calls cannot be verified and must be marked unverified." }
+      ] },
+
+    { n: 3, nm: "Direction", out: "2–3 options",
+      desc: "Two or three genuinely different directions, each with its concept, tokens, signature moment — and its costs. You pick.",
+      jobs: ["AUDIT","NEW","SYSTEM","ASSET"],
+      skills: { AUDIT: ["apollo-audit"], NEW: ["apollo-direction"], SYSTEM: ["apollo-tokens"], ASSET: ["apollo-direction"] },
+      cond: ["apollo-dataviz", "apple-design"], needs: [] },
+
+    { n: 4, nm: "Comp", out: "_apollo/comp/",
+      desc: "Build the chosen direction as a static comp — a thing to look at and measure, explicitly not production code.",
+      jobs: ["AUDIT","NEW"],
+      skills: { AUDIT: ["apollo-direction"], NEW: ["apollo-direction"] },
+      cond: ["emil-design-eng", "apple-design", "apollo-dataviz"],
+      needs: [ { cap: "preview", sev: "blocked", msg: "Cannot serve or screenshot the comp. Stage 4 has no verifiable output." } ] },
+
+    { n: 5, nm: "Self-check", out: "pass / fail",
+      desc: "Scripts, not opinion: contrast ratios, overflow at every width, console errors. Anything a script settles never costs a review round.",
+      jobs: ["AUDIT","NEW"], skills: {},
+      needs: [
+        { cap: "node", sev: "blocked", msg: "contrast.mjs cannot run — ratios would be asserted rather than computed, which the system forbids." },
+        { cap: "preview", sev: "degraded", msg: "No screenshots: overflow and console checks fall back to static inspection." }
+      ] },
+
+    { n: 6, nm: "Handoff", out: "HANDOFF.md",
+      desc: "The spec you feed to Claude Code — tokens, every state, all six breakpoints, and an ordered build sequence with acceptance criteria.",
+      jobs: ["AUDIT","NEW","SYSTEM","ASSET"],
+      skills: { AUDIT: ["apollo-handoff"], NEW: ["apollo-handoff"], SYSTEM: ["apollo-handoff"], ASSET: ["apollo-handoff"] },
+      needs: [] },
+
+    { n: 7, nm: "Stop", out: "one gate",
+      desc: "One review gate. Revisions re-enter at Direction or Comp, never from the top.",
+      jobs: ["AUDIT","NEW","SYSTEM","ASSET"], skills: {}, needs: [] }
+  ];
+
+  var PRESETS = [
+    { id: "V1", nm: "Minimal",   desc: "no skills — heuristics inlined", skills: [], caps: ["preview","web","node"] },
+    { id: "V2", nm: "Merged 4",  desc: "the authored core only",
+      skills: ["apollo-audit","apollo-direction","apollo-tokens","apollo-handoff"], caps: ["preview","web","node"] },
+    { id: "V3", nm: "Full 7",    desc: "authored + vendored",
+      skills: SKILLS.map(function (s) { return s.id; }), caps: ["preview","web","node"] },
+    { id: "V4", nm: "V3 + ideation", desc: "brainstorm phase first",
+      skills: SKILLS.map(function (s) { return s.id; }), caps: ["preview","web","node","brainstorm"] },
+    { id: "V5", nm: "V3 + Figma",    desc: "design files over screenshots",
+      skills: SKILLS.map(function (s) { return s.id; }), caps: ["preview","web","node","figma"] },
+    { id: "V6", nm: "V3 + capture",  desc: "external screenshot tooling",
+      skills: SKILLS.map(function (s) { return s.id; }), caps: ["preview","web","node","heavyshot"] }
+  ];
+
+  /* ---------------- state ---------------- */
+
+  var state = {
+    job: "AUDIT",
+    on: {},
+    caps: {},
+    preset: "V3"
+  };
+
+  function applyPreset(p) {
+    state.preset = p.id;
+    SKILLS.forEach(function (s) { state.on[s.id] = p.skills.indexOf(s.id) !== -1; });
+    CAPS.forEach(function (c) { state.caps[c.id] = p.caps.indexOf(c.id) !== -1; });
+  }
+  applyPreset(PRESETS[2]);
+
+  function activeSkills() {
+    return SKILLS.filter(function (s) { return state.on[s.id]; }).map(function (s) { return s.id; });
+  }
+  function job() {
+    for (var i = 0; i < JOBS.length; i++) { if (JOBS[i].id === state.job) return JOBS[i]; }
+    return JOBS[0];
+  }
+
+  /* ---------------- evaluation ---------------- */
+
+  function evalStage(st) {
+    if (st.jobs.indexOf(state.job) === -1) {
+      return { status: "skipped", label: "not in " + state.job, skills: [], notes: [] };
+    }
+
+    var want = (st.skills && st.skills[state.job]) || [];
+    var have = want.filter(function (id) { return state.on[id]; });
+    var missing = want.filter(function (id) { return !state.on[id]; });
+    var notes = [];
+    var status = "on";
+
+    if (missing.length) {
+      status = "blocked";
+      notes.push({ sev: "blocked", msg: "No skill covers this stage — " + missing.join(", ") + " is off." });
+    }
+
+    (st.needs || []).forEach(function (nd) {
+      if (nd.job && nd.job.indexOf(state.job) === -1) return;
+      if (state.caps[nd.cap]) return;
+      if (nd.cap === "preview" && state.caps.heavyshot) return; // external capture substitutes
+      notes.push({ sev: nd.sev, msg: nd.msg });
+      if (nd.sev === "blocked" && status !== "blocked") status = "blocked";
+      else if (nd.sev === "degraded" && status === "on") status = "degraded";
+    });
+
+    return { status: status, label: status, skills: have, missing: missing, notes: notes };
+  }
+
+  /* --8<-- pure:end */
+
+  /* ---------------- render ---------------- */
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function el(tag, cls, txt) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt !== undefined) n.textContent = txt;
+    return n;
+  }
+
+  function renderPresets() {
+    var box = $("presets");
+    box.innerHTML = "";
+    PRESETS.forEach(function (p) {
+      var b = el("button");
+      b.type = "button";
+      b.setAttribute("aria-pressed", state.preset === p.id ? "true" : "false");
+      b.appendChild(el("span", "vid", p.id));
+      var w = el("span");
+      w.appendChild(document.createTextNode(p.nm));
+      w.appendChild(el("span", "vdesc", p.desc));
+      b.appendChild(w);
+      b.addEventListener("click", function () { applyPreset(p); render(); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderJobs() {
+    var box = $("jobs");
+    box.innerHTML = "";
+    JOBS.forEach(function (j) {
+      var b = el("button", null, j.nm);
+      b.type = "button";
+      b.setAttribute("aria-pressed", state.job === j.id ? "true" : "false");
+      b.addEventListener("click", function () { state.job = j.id; render(); });
+      box.appendChild(b);
+    });
+  }
+
+  function toggleRow(id, nm, sub, checked, required, onChange) {
+    var lab = el("label", "tog");
+    var inp = document.createElement("input");
+    inp.type = "checkbox";
+    inp.checked = checked;
+    inp.addEventListener("change", function () { onChange(inp.checked); });
+    lab.appendChild(inp);
+    var wrap = el("span", "lbl");
+    var nmEl = el("span", "nm", nm);
+    if (required) {
+      var r = el("span", "req", "req");
+      r.title = "Required for " + state.job + " jobs";
+      nmEl.appendChild(r);
+    }
+    wrap.appendChild(nmEl);
+    wrap.appendChild(el("span", "sub", sub));
+    lab.appendChild(wrap);
+    return lab;
+  }
+
+  function renderSkills() {
+    var box = $("skills");
+    box.innerHTML = "";
+    var need = job().need;
+    SKILLS.forEach(function (s) {
+      box.appendChild(toggleRow(
+        s.id, s.id, s.sub, !!state.on[s.id], need.indexOf(s.id) !== -1,
+        function (v) { state.on[s.id] = v; state.preset = null; render(); }
+      ));
+    });
+    $("skillCount").textContent = activeSkills().length + " / " + SKILLS.length;
+  }
+
+  function renderCaps() {
+    var box = $("caps");
+    box.innerHTML = "";
+    CAPS.forEach(function (c) {
+      box.appendChild(toggleRow(
+        c.id, c.nm, c.sub, !!state.caps[c.id], false,
+        function (v) { state.caps[c.id] = v; state.preset = null; render(); }
+      ));
+    });
+  }
+
+  function renderPipeline() {
+    var box = $("pipeline");
+    box.innerHTML = "";
+    STAGES.forEach(function (st) {
+      var ev = evalStage(st);
+      var row = el("div", "stage " + ev.status);
+
+      var g = el("div", "gutter");
+      g.appendChild(el("span", "num", String(st.n)));
+      row.appendChild(g);
+
+      var card = el("div", "card");
+      var top = el("div", "card-top");
+      top.appendChild(el("h3", null, st.nm));
+      top.appendChild(el("span", "state " + ev.status, ev.status));
+      var out = el("span", "out");
+      out.appendChild(document.createTextNode("→ "));
+      out.appendChild(el("b", null, st.out));
+      top.appendChild(out);
+      card.appendChild(top);
+
+      card.appendChild(el("p", null, st.desc));
+
+      var want = (st.skills && st.skills[state.job]) || [];
+      var cond = st.cond || [];
+      if (want.length || cond.length) {
+        var chips = el("div", "chips");
+        want.forEach(function (id) {
+          chips.appendChild(el("span", "chip " + (state.on[id] ? "live" : "miss"), id));
+        });
+        cond.forEach(function (id) {
+          if (want.indexOf(id) !== -1) return;
+          if (!state.on[id]) return;
+          var c = el("span", "chip cond");
+          c.appendChild(el("span", "k", "if needed "));
+          c.appendChild(document.createTextNode(id));
+          chips.appendChild(c);
+        });
+        if (chips.childNodes.length) card.appendChild(chips);
+      }
+
+      ev.notes.forEach(function (nt) {
+        var n = el("div", "note " + nt.sev);
+        n.appendChild(el("span", null, nt.msg));
+        card.appendChild(n);
+      });
+
+      row.appendChild(card);
+      box.appendChild(row);
+    });
+  }
+
+  function renderDiagnostics() {
+    var list = $("diag");
+    var items = [];
+
+    STAGES.forEach(function (st) {
+      var ev = evalStage(st);
+      ev.notes.forEach(function (nt) {
+        items.push({ sev: nt.sev, where: "stage " + st.n, msg: nt.msg });
+      });
+    });
+
+    if (!state.on["apollo-dataviz"]) {
+      items.push({
+        sev: "note", where: "dataviz",
+        msg: "If the design contains a chart or stat tile, series colors will come from the brand palette — which does not satisfy categorical separation by accident."
+      });
+    }
+    if (activeSkills().length === 0) {
+      items.push({
+        sev: "note", where: "control",
+        msg: "No skills loaded. This is V1, the control arm — the agent file must carry the heuristics inline for the comparison to mean anything."
+      });
+    }
+    if (state.caps.heavyshot && !state.caps.preview) {
+      items.push({
+        sev: "note", where: "capture",
+        msg: "External capture is standing in for the built-in browser. Screenshot stages pass, but console-error checks do not run."
+      });
+    }
+    if (state.caps.figma) {
+      items.push({
+        sev: "note", where: "figma",
+        msg: "Figma MCP needs OAuth and is unauthorized in this environment — the probe will report it absent until you connect it."
+      });
+    }
+
+    var bad = items.filter(function (i) { return i.sev === "blocked"; }).length;
+    var warn = items.filter(function (i) { return i.sev === "degraded"; }).length;
+    var badge = $("diagCount");
+    badge.textContent = bad ? bad + " blocked" : (warn ? warn + " degraded" : "clean");
+    badge.className = "count " + (bad ? "bad" : warn ? "warn" : "ok");
+
+    list.innerHTML = "";
+    if (!items.length) {
+      var li = el("li");
+      li.style.gridTemplateColumns = "1fr";
+      li.appendChild(el("span", "clean", "Every stage runs. Nothing degraded."));
+      list.appendChild(li);
+      return;
+    }
+
+    items.sort(function (a, b) {
+      var rank = { blocked: 0, degraded: 1, note: 2 };
+      return rank[a.sev] - rank[b.sev];
+    });
+
+    items.forEach(function (i) {
+      var li = el("li");
+      li.appendChild(el("span", "sev " + i.sev, i.sev === "note" ? "note" : i.sev));
+      var body = el("span");
+      body.appendChild(el("code", null, i.where));
+      body.appendChild(el("span", "why", i.msg));
+      li.appendChild(body);
+      list.appendChild(li);
+    });
+  }
+
+  function renderManifest() {
+    var p = null;
+    for (var i = 0; i < PRESETS.length; i++) { if (PRESETS[i].id === state.preset) p = PRESETS[i]; }
+    var name = p ? (p.id.toLowerCase() + "-" + p.nm.toLowerCase().replace(/[^a-z0-9]+/g, "-")) : "custom";
+
+    var active = activeSkills();
+    var need = job().need.filter(function (id) { return state.on[id]; });
+    var optional = active.filter(function (id) { return need.indexOf(id) === -1; });
+
+    var obj = {
+      name: name,
+      jobType: state.job,
+      requiredSkills: need,
+      optionalSkills: optional,
+      capabilities: CAPS.filter(function (c) { return state.caps[c.id]; }).map(function (c) { return c.id; }),
+      breakpoints: [375, 768, 1024, 1440, 1920, 2560]
+    };
+
+    $("manifest").textContent = JSON.stringify(obj, null, 2);
+    $("savePath").textContent = "variants/" + name + ".json";
+  }
+
+  function render() {
+    renderPresets();
+    renderJobs();
+    renderSkills();
+    renderCaps();
+    renderPipeline();
+    renderDiagnostics();
+    renderManifest();
+  }
+
+  $("copyBtn").addEventListener("click", function () {
+    var btn = $("copyBtn");
+    var txt = $("manifest").textContent;
+    var done = function () {
+      btn.textContent = "Copied";
+      setTimeout(function () { btn.textContent = "Copy"; }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done, function () { btn.textContent = "Copy failed"; });
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = txt;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); done(); }
+      catch (e) { btn.textContent = "Copy failed"; }
+      document.body.removeChild(ta);
+    }
+  });
+
+  render();
+})();
+</script>

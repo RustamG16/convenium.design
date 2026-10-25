@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://apollo.local/tokens.schema.json",
+  "title": "Apollo brandspec",
+  "description": "A design token system with rules, not just values. Generalised from the brandspec.json shape used in 000-portfolio-russ. Every color token carries a written rule because a hex with no rule gets used everywhere within a week.",
+  "type": "object",
+  "required": ["specVersion", "name", "tokens", "breakpoints"],
+  "additionalProperties": true,
+
+  "properties": {
+    "specVersion": { "type": "string", "const": "1.0" },
+    "name": { "type": "string", "minLength": 1 },
+    "mood": { "type": "string", "description": "Adjective stack for the direction." },
+
+    "voice": {
+      "type": "object",
+      "properties": {
+        "tone": { "type": "string" },
+        "vocabulary": { "type": "array", "items": { "type": "string" } },
+        "neverSay": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+
+    "breakpoints": {
+      "type": "array",
+      "description": "1920 is a first-class target on this machine, not extrapolated from 1440.",
+      "items": { "type": "integer", "minimum": 240 },
+      "minItems": 2,
+      "default": [375, 768, 1024, 1440, 1920, 2560]
+    },
+
+    "tokens": {
+      "type": "object",
+      "required": ["color", "type", "space"],
+      "additionalProperties": false,
+      "properties": {
+
+        "color": {
+          "type": "object",
+          "description": "4-6 named tokens at the base layer. More than that is not a system.",
+          "minProperties": 2,
+          "additionalProperties": {
+            "type": "object",
+            "required": ["value", "role", "rule"],
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": "string",
+                "pattern": "^(#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})|rgba?\\([^)]+\\))$"
+              },
+              "role": { "type": "string", "minLength": 1 },
+              "rule": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Where this may appear AND where it may not. Both halves required."
+              }
+            }
+          }
+        },
+
+        "series": {
+          "type": "object",
+          "description": "Chart series colors. Deliberately separate from the brand palette - a brand palette does not satisfy categorical separation by accident. Validate with apollo-dataviz.",
+          "additionalProperties": { "type": "string" }
+        },
+
+        "type": {
+          "type": "object",
+          "required": ["display", "body", "scale"],
+          "additionalProperties": false,
+          "properties": {
+            "display": { "$ref": "#/$defs/typeRole" },
+            "body": { "$ref": "#/$defs/typeRole" },
+            "utility": { "$ref": "#/$defs/typeRole" },
+            "scale": {
+              "type": "object",
+              "required": ["ratio", "min", "max"],
+              "additionalProperties": false,
+              "properties": {
+                "ratio": { "type": "number", "minimum": 1 },
+                "min": { "type": "string", "description": "The 375 value - the bottom anchor of the clamp()." },
+                "max": { "type": "string", "description": "The 1920 value - the top anchor. Never an accident of vw." }
+              }
+            }
+          }
+        },
+
+        "space": {
+          "type": "object",
+          "required": ["scale"],
+          "additionalProperties": false,
+          "properties": {
+            "scale": {
+              "type": "array",
+              "description": "One scale. Every gap sits on it, or off it deliberately with a note.",
+              "items": { "type": "string" },
+              "minItems": 3
+            },
+            "notes": { "type": "string" }
+          }
+        },
+
+        "radius": { "type": "object", "additionalProperties": { "type": "string" } },
+        "elevation": { "type": "object", "additionalProperties": { "type": "string" } },
+
+        "motion": {
+          "type": "object",
+          "description": "Named by intent (enter/exit/emphasis), never by number.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["duration", "easing"],
+            "additionalProperties": false,
+            "properties": {
+              "duration": { "type": "string" },
+              "easing": { "type": "string" },
+              "reducedMotion": { "type": "string", "description": "What happens under prefers-reduced-motion: reduce." }
+            }
+          }
+        },
+
+        "texture": { "type": "string" }
+      }
+    },
+
+    "contrastPairs": {
+      "type": "array",
+      "description": "The foreground/background combinations that actually occur. These are ENFORCED by lib/contrast.mjs. Combinations absent from this list must be forbidden in a token's rule, not simply left untested.",
+      "items": {
+        "type": "object",
+        "required": ["fg", "bg", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "fg": { "type": "string", "description": "Token name or literal color." },
+          "bg": { "type": "string" },
+          "type": { "enum": ["normal", "large", "ui"] },
+          "where": { "type": "string" }
+        }
+      }
+    },
+
+    "contrast": {
+      "type": "object",
+      "description": "Written by lib/contrast.mjs --write. Never by hand: a hand-written ratio is a claim, a computed one is a fact.",
+      "required": ["checkedAt", "pairs"],
+      "properties": {
+        "checkedAt": { "type": "string", "format": "date-time" },
+        "standard": { "type": "string" },
+        "pairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fg": { "type": "string" },
+              "bg": { "type": "string" },
+              "type": { "type": "string" },
+              "ratio": { "type": ["number", "null"] },
+              "required": { "type": "number" },
+              "pass": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "typeRole": {
+      "type": "object",
+      "required": ["family"],
+      "additionalProperties": false,
+      "properties": {
+        "family": { "type": "string" },
+        "weight": { "type": ["integer", "string"] },
+        "tracking": { "type": "string", "description": "Display type takes negative tracking at size; body does not." },
+        "measure": { "type": "string", "description": "Characters per line the face is set for. 60-75ch for long-form." },
+        "fallback": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,20 +1,5 @@
 [
   {
-    "id": "agent-identity-and-portfolio",
-    "name": "Agent Identity and Portfolio",
-    "phase": "prepare",
-    "group": "Agents",
-    "defaultOn": false,
-    "description": "Defines consistent agent identities, transparent inventory, and evidence-backed marketplace portfolios.",
-    "runtimePrompt": "Keep agent identity memorable but truthful. Specify a reproducible avatar bible, capability and configuration limits, typed inventory availability, and portfolio claims linked to inspectable evidence. Reject fabricated achievements, endorsements, credentials, or deceptive persona claims.",
-    "category": "11-meta-system",
-    "hosts": [
-      "studio"
-    ],
-    "status": "stub",
-    "enabled": true
-  },
-  {
     "id": "animate",
     "name": "animate",
     "phase": "unrouted",
@@ -40,74 +25,6 @@
     "description": "Reverse-lookup glossary that turns a vague description of a web animation or motion effect into its exact term (\"the bouncy thing when a popover opens\" → Pop in; \"the iOS rubber-band scroll\" → Rubber-banding). Use when the user asks \"what's it called when…\", or describes a motion effect without knowing its name and wants the right word to prompt an AI or designer with. For naming an effect, not designing or building one.",
     "runtimePrompt": "",
     "category": "03-motion-3d",
-    "hosts": [
-      "claude",
-      "codex",
-      "studio"
-    ],
-    "status": "active",
-    "enabled": false
-  },
-  {
-    "id": "convenium-design-bootstrap",
-    "name": "convenium-design-bootstrap",
-    "phase": "unrouted",
-    "group": "Meta",
-    "defaultOn": false,
-    "description": "First-use analysis, audit, and install flow for ConveniumDesign_claude in a target project. Detects whether this is a first install or a re-audit, inventories the project's stack and existing six-files coverage, writes an audit doc, then offers to improve the existing project or scaffold a new one with the design roster ready. Trigger phrases - \"set up Convenium.Design here\", \"install ConveniumDesign_claude in this project\", \"audit this project\", \"bootstrap Convenium.Design\". Idempotent - safe to re-run.",
-    "runtimePrompt": "",
-    "category": "11-meta-system",
-    "hosts": [
-      "claude",
-      "codex",
-      "studio"
-    ],
-    "status": "active",
-    "enabled": false
-  },
-  {
-    "id": "convenium-design-cyberpunk-athens-skin",
-    "name": "convenium-design-cyberpunk-athens-skin",
-    "phase": "unrouted",
-    "group": "Meta",
-    "defaultOn": false,
-    "description": "Regenerate dashboard/css/tokens.cyberpunk-athens.css from the Cyberpunk Athens doctrine's token block, whenever the doctrine file changes. This is the mechanical derivation step CLAUDE.md's \"Never hand-edit tokens.cyberpunk-athens.css directly\" rule depends on. Trigger phrases - \"regenerate the cyberpunk athens skin\", \"sync the dashboard css to the doctrine\", \"update the skin css\". Do NOT use for - defining or changing the doctrine itself (that's the convenium-design-cyberpunk-athens agent's job; this skill only translates what's already decided there into CSS).",
-    "runtimePrompt": "",
-    "category": "11-meta-system",
-    "hosts": [
-      "claude",
-      "codex",
-      "studio"
-    ],
-    "status": "active",
-    "enabled": false
-  },
-  {
-    "id": "convenium-design-dashboard-sync",
-    "name": "convenium-design-dashboard-sync",
-    "phase": "unrouted",
-    "group": "Meta",
-    "defaultOn": false,
-    "description": "The single write path into a project's dashboard state.json. Any agent that starts, updates, blocks, or completes a task calls this skill rather than editing state.json directly - this is what keeps writes from racing across agents. Trigger phrases - this is invoked by other agents/skills as part of normal work, not typically by the user directly.",
-    "runtimePrompt": "",
-    "category": "11-meta-system",
-    "hosts": [
-      "claude",
-      "codex",
-      "studio"
-    ],
-    "status": "active",
-    "enabled": false
-  },
-  {
-    "id": "convenium-design-loadout-sync",
-    "name": "convenium-design-loadout-sync",
-    "phase": "unrouted",
-    "group": "Meta",
-    "defaultOn": false,
-    "description": "The single write path for a per-agent skill loadout. Activating, saving, or clearing a named setup goes through this skill rather than hand-editing agent files or .convenium-design/loadouts/ — it is what keeps the dashboard's \"Save\" button, this skill, and scripts/apply-loadout.ps1 producing byte-identical output. Trigger phrases - \"activate the awwwards-launch loadout\", \"apply this setup\", \"clear the active loadout\", \"sync the loadout to the agent files\". Usually invoked as part of dashboard work, not directly by the user.",
-    "runtimePrompt": "",
-    "category": "11-meta-system",
     "hosts": [
       "claude",
       "codex",
@@ -160,6 +77,7 @@
     "runtimePrompt": "Treat Convenium.Design as Apple-inspired rather than HIG-compliant. Prioritize purpose, agency, familiarity, simplicity, legible hierarchy, system typography, restrained materials, immediate feedback, spatial consistency, interruptible motion, reduced-motion and reduced-transparency alternatives, and platform-appropriate desktop behavior. Do not imitate proprietary Apple screens or assets.",
     "category": "01-design-direction",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
@@ -312,25 +230,11 @@
     "runtimePrompt": "Apply Emil Kowalski's design-engineering discipline after hierarchy and flows are stable. Decide whether motion is warranted by frequency and purpose; keep frequent and keyboard actions instant, use precise properties and strong easing, preserve interruptibility and reduced motion, constrain motion to transform and opacity where practical, and verify interaction details in slow motion when implemented.",
     "category": "01-design-direction",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
     "status": "active",
-    "enabled": true
-  },
-  {
-    "id": "ethical-gamification-systems",
-    "name": "Ethical Gamification Systems",
-    "phase": "direct",
-    "group": "Progression",
-    "defaultOn": false,
-    "description": "Creates meaningful missions, mastery, rewards, and collections with explicit spend and anti-coercion safeguards.",
-    "runtimePrompt": "Reward creative value, mastery, and reusable outcomes rather than attention or token spend. Make costs and evidence states explicit; reject false urgency, streak punishment, automatic paid retries, misleading status, and mechanics that add complexity without user benefit.",
-    "category": "11-meta-system",
-    "hosts": [
-      "studio"
-    ],
-    "status": "stub",
     "enabled": true
   },
   {
@@ -385,23 +289,6 @@
     "enabled": false
   },
   {
-    "id": "garden-kb-retriever",
-    "name": "garden-kb-retriever",
-    "phase": "unrouted",
-    "group": "Meta",
-    "defaultOn": false,
-    "description": "面向本地知识库目录的检索和问答助手。核心流程：(1)分层索引导航 (2)遇到PDF/Excel时必须先读取references学习处理方法 (3)处理文件后再检索。按文件类型组合使用 grep、Read、pdfplumber、pandas 进行渐进式检索，避免整文件加载。用户问题涉及\"从知识库目录回答问题/检索信息/查资料\"时使用。",
-    "runtimePrompt": "",
-    "category": "11-meta-system",
-    "hosts": [
-      "claude",
-      "codex",
-      "studio"
-    ],
-    "status": "active",
-    "enabled": false
-  },
-  {
     "id": "garden-web-design-engineer",
     "name": "garden-web-design-engineer",
     "phase": "unrouted",
@@ -445,6 +332,7 @@
     "runtimePrompt": "Use GSAP transforms and built-in eases for purposeful runtime-controlled motion. Honor prefers-reduced-motion and keep content visible without animation.",
     "category": "03-motion-3d",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
@@ -461,6 +349,7 @@
     "runtimePrompt": "Align GSAP setup and cleanup with the selected non-React framework lifecycle. Scope selectors and remove effects on unmount.",
     "category": "03-motion-3d",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
@@ -477,6 +366,7 @@
     "runtimePrompt": "Audit animation performance. Prefer transforms, batch DOM reads and writes, bound will-change, and flag layout thrashing or excessive concurrent effects.",
     "category": "03-motion-3d",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
@@ -493,6 +383,7 @@
     "runtimePrompt": "Select a GSAP plugin only for a concrete interaction need. Include registration, lifecycle, accessibility, licensing, and a no-plugin fallback.",
     "category": "03-motion-3d",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
@@ -509,6 +400,7 @@
     "runtimePrompt": "For React animation, use scoped refs and lifecycle-safe cleanup. Prevent duplicate effects across mounts and strict mode.",
     "category": "03-motion-3d",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
@@ -525,6 +417,7 @@
     "runtimePrompt": "Use scroll-driven motion only when the narrative requires it. Avoid decorative pinning; specify responsive and reduced-motion alternatives.",
     "category": "03-motion-3d",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
@@ -541,6 +434,7 @@
     "runtimePrompt": "Use a GSAP timeline only when animation order carries meaning. Keep timing interruptible, readable, and reduced-motion safe.",
     "category": "03-motion-3d",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
@@ -557,6 +451,7 @@
     "runtimePrompt": "Reach for `gsap.utils` helpers - clamp, mapRange, interpolate, snap, wrap, random, toArray - when motion math would otherwise be hand-rolled. Utilities only; they do not by themselves justify adding animation.",
     "category": "03-motion-3d",
     "hosts": [
+      "claude",
       "codex",
       "studio"
     ],
@@ -569,7 +464,7 @@
     "phase": "unrouted",
     "group": "Media",
     "defaultOn": false,
-    "description": "|",
+    "description": "Create and extend complete visual brand systems through the Higgsfield CLI and bundled deterministic local tooling: palettes, SVG logo marks, typography, mockups, social graphics, packaging, signage, merchandise, posters, presentation decks, and editable PPTX/PDF brandbooks. Preserves official supplied assets, persists approvals locally, and regenerates only dependent outputs. Use when: \"create a brand kit\", \"make a visual identity\", \"design a logo and brandbook\", \"apply this logo to branded assets\", \"make packaging or signage\", or \"extend our existing branding\". Chain with higgsfield-generate for general image production and Marketing Studio brand-kits when importing website metadata for ads. NOT for unbranded image generation (use higgsfield-generate), product catalog photography (use higgsfield-product-photoshoot), website implementation (use higgsfield-websites), or native Figma/Canva/PSD/AI delivery.",
     "runtimePrompt": "",
     "category": "04-media-generation",
     "hosts": [
@@ -586,7 +481,7 @@
     "phase": "unrouted",
     "group": "Media",
     "defaultOn": false,
-    "description": "|",
+    "description": "Generate images/videos/3D assets/audio via Higgsfield AI. Defaults: GPT Image 2 for image/design/text, Seedance 2.0 for video, Nano Banana 2/Lite/Pro for character/reference images, Marketing Studio for ads, Seed Audio 1.0 for audio. Use when: \"generate an image\", \"make a video\", \"animate this photo\", \"image-to-video\", \"edit/stylize/remix this image\", \"reframe this video\", \"edit this video from a sketch\", \"create a 3D model/GLB\", \"create a sound effect\", \"make music\", \"text-to-audio\", \"create an ad\", \"make a UGC video\", \"unboxing\", \"presenter video\", \"import product from URL\", or \"analyze video virality\". Supports generic generation, workflows, Marketing Studio, and Virality Predictor. Chain with higgsfield-soul-id for face/identity consistency. NOT for: Soul training, brand systems/brandbooks (use higgsfield-brandkit), photoshoots, cards, YouTube thumbnails (use higgsfield-youtube-thumbnail), explainers (use higgsfield-video-explainer), playable games/assets (use higgsfield-game-generation), or TTS.",
     "runtimePrompt": "",
     "category": "04-media-generation",
     "hosts": [
@@ -603,7 +498,7 @@
     "phase": "unrouted",
     "group": "Media",
     "defaultOn": false,
-    "description": "|",
+    "description": "Generate marketplace product image cards through Higgsfield: compliant main image, secondary product images, and A+ style content modules. Use when the user asks for marketplace listing images, product detail cards, secondary product images, product infographics, lifestyle listing shots, A+ style content, marketplace image sets, or sales-ready product visuals. Backend owns marketplace compliance references and prompt templates; this skill only routes user intent to the CLI. NOT for generic brand product photography without marketplace/listing context (use higgsfield-product-photoshoot), video generation or UGC ads (use higgsfield-generate), or Soul Character training (use higgsfield-soul-id).",
     "runtimePrompt": "",
     "category": "04-media-generation",
     "hosts": [
@@ -620,7 +515,7 @@
     "phase": "unrouted",
     "group": "Media",
     "defaultOn": false,
-    "description": "|",
+    "description": "Generate brand-quality product images through Higgsfield product-photoshoot prompt enhancement on GPT Image 2 / gpt_image_2. Entry point for professional brand/product visuals. Use when: \"product photo\", \"studio shot\", \"lifestyle image\", \"Pinterest pin\", \"hero/banner\", \"carousel\", \"ad creative\", \"Meta ads\", \"virtual try-on\", \"model wearing\", \"person holding product\", \"closeup with hands\", \"levitating/floating/splash product\", \"CGI/surreal product\", \"restyle\", \"seasonal/aesthetic variation\", or any product, brand, or paid-social creative. Modes: product_shot, lifestyle_scene, closeup_product_with_person, moodboard_pin, hero_banner, social_carousel, ad_creative_pack, virtual_model_tryout, conceptual_product, restyle. Backend assembles the final prompt; never freehand it. NOT for: no-product text-to-image (use higgsfield-generate), branded avatar video (use higgsfield-generate Marketing Studio), marketplace listing cards (use higgsfield-marketplace-cards), Soul Character training (use higgsfield-soul-id).",
     "runtimePrompt": "",
     "category": "04-media-generation",
     "hosts": [
@@ -637,7 +532,7 @@
     "phase": "unrouted",
     "group": "Media",
     "defaultOn": false,
-    "description": "|",
+    "description": "Train a Soul Character — a personalized model on a person's face that Higgsfield uses for identity-faithful image and video generation. Use when: \"create my Soul\", \"train my face\", \"make my digital twin\", \"build me an avatar\", \"learn my appearance\", \"create a character of me\", \"set up identity for video\", \"I want my face in generated images\". Chain: train Soul (one-time, returns reference_id) → use in higgsfield-generate via `--soul-id <id>` with models like `text2image_soul_v2` or `soul_cinema_studio`. NOT for: one-shot face swaps (use higgsfield-generate with --image), named-character / non-photo avatars (use higgsfield-generate with prompt).",
     "runtimePrompt": "",
     "category": "04-media-generation",
     "hosts": [
@@ -654,7 +549,7 @@
     "phase": "unrouted",
     "group": "Media",
     "defaultOn": false,
-    "description": "|",
+    "description": "Build a complete non-photoreal narrated explainer or story video from ordered 10-second blocks: one narrator, one universal style key, one Seed Audio take and one Gemini Omni clip per block, then server-side assembly with explainer_video. Use when: \"make an explainer video\", \"explain this in a video\", \"turn this topic or document into a narrated video\", \"tell this story as an animated video\", \"make a faceless narrated video\", or \"show me explainer styles\". Supports live CMS presets, custom style references, mascot/faceless modes, two aspects, and optional burned subtitles. NOT for: photoreal films, ads/UGC, talking heads, podcasts, motion typography reels, one-off clips without narration, or editing a finished video.",
     "runtimePrompt": "",
     "category": "04-media-generation",
     "hosts": [
@@ -671,7 +566,7 @@
     "phase": "unrouted",
     "group": "Media",
     "defaultOn": false,
-    "description": "|",
+    "description": "Build, edit, and deploy full-stack websites, apps and games via the Higgsfield CLI (`higgsfield website …`). Each is a React 19 + TanStack Start SSR app in one Cloudflare Worker (D1/R2/KV/DO/Containers). THREE product types, picked via `--type` on create: `website` (standalone, no Higgsfield integration — references/website-flow.md), `app` (Sign in with Higgsfield + fnf SDK, Quanta — references/app-flow.md), `game` (realtime multiplayer rooms — references/game-flow.md). Routes to the right flow; each carries its own rules and deploy/publish gates. Use when: \"build me a website\", \"make a landing page\", \"create a web app\", \"build a SaaS dashboard / portfolio\", \"make me a game\", \"deploy this site\", \"publish\". Also owns GAME ART: \"make a spritesheet\", \"tileable texture\", \"animate a 3D character\", game music/SFX — see the game-* references. NOT for: single image/video/audio generation (higgsfield-generate), product photos (higgsfield-product-photoshoot), marketplace cards (higgsfield-marketplace-cards).",
     "runtimePrompt": "",
     "category": "04-media-generation",
     "hosts": [
@@ -688,7 +583,7 @@
     "phase": "unrouted",
     "group": "Media",
     "defaultOn": false,
-    "description": "|",
+    "description": "Create high-click-through YouTube thumbnails and vertical video covers through the Higgsfield CLI. Builds a truthful information-gap concept, preserves up to three referenced identities, supports logos and controlled variants, renders the main image with Nano Banana Pro, and applies focused Seedream edits. Use when: \"make a YouTube thumbnail\", \"thumbnail for this video\", \"MrBeast-style cover\", \"Shorts cover\", or \"Instagram video cover\". Chain after any video workflow once its truthful topic and visual direction are known. NOT for producing the video itself (use higgsfield-generate), product catalog photos (use higgsfield-product-photoshoot), or marketplace cards (use higgsfield-marketplace-cards).",
     "runtimePrompt": "",
     "category": "04-media-generation",
     "hosts": [
@@ -1315,21 +1210,6 @@
     "enabled": false
   },
   {
-    "id": "taste-first-experience-design",
-    "name": "Taste-First Experience Design",
-    "phase": "direct",
-    "group": "Experience",
-    "defaultOn": false,
-    "description": "Turns visual preference evidence into editable Creative DNA, plain-language choices, and a bounded mission setup.",
-    "runtimePrompt": "Elicit taste through concrete visual choices, preserve provenance and uncertainty, produce an editable Style Profile, explain consequences in plain language, recommend the smallest capable squad, and progressively disclose advanced controls without hiding cost or permissions.",
-    "category": "01-design-direction",
-    "hosts": [
-      "studio"
-    ],
-    "status": "stub",
-    "enabled": true
-  },
-  {
     "id": "ui-ux",
     "name": "UI/UX Quality",
     "phase": "diagnose",
@@ -1413,5 +1293,430 @@
     ],
     "status": "active",
     "enabled": true
+  },
+  {
+    "phase": "diagnose",
+    "group": "Research",
+    "defaultOn": false,
+    "category": "07-research-intel",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": true,
+    "id": "product-marketing",
+    "name": "product-marketing",
+    "description": "Structure a business's offer, audience, ICP and positioning into a reusable context the Brand DNA is built on. Routed to the diagnose phase via brand-strategist.",
+    "runtimePrompt": "Structure the offer, the audience (primary first, with their jobs and objections), the positioning against the nearest alternative and the voice. Fold the result into .olympus/brand-dna.json -> business rather than a separate context file. Mark anything inferred as inferred."
+  },
+  {
+    "phase": "diagnose",
+    "group": "Research",
+    "defaultOn": false,
+    "category": "07-research-intel",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": true,
+    "id": "competitor-profiling",
+    "name": "competitor-profiling",
+    "description": "Profile a business's competitors from their URLs — offer, positioning, pricing, and how they present themselves visually — so the brand can stand apart. Routed to the diagnose phase via brand-strategist.",
+    "runtimePrompt": "Profile two to four competitors from URLs you actually fetch: offer, positioning, price signals, and look-and-feel. Cite each URL. Write profiles to .olympus/research/ and summarise each in brand-dna.json -> business.competitors. Never describe a site you did not load."
+  },
+  {
+    "id": "open-sourcing",
+    "name": "open-sourcing",
+    "description": "Trail of Bits release-readiness workflow: full-history secret scanning before anything else, licensing, docs, and GitHub Actions hardening (SHA-pinned actions, least-privilege permissions, zizmor/actionlint). Use before publishing a repo or wiring a deploy pipeline. Vendored; see APOLLO-NOTES.md.",
+    "phase": "unrouted",
+    "group": "Engineering",
+    "defaultOn": false,
+    "runtimePrompt": "",
+    "category": "06-ops-security",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "implementing-secret-scanning-with-gitleaks",
+    "name": "implementing-secret-scanning-with-gitleaks",
+    "description": "Gitleaks secret scanning: full-history scans, pre-commit hooks, CI integration, custom rules, baselines and the rotate-then-clean remediation flow. Read APOLLO-NOTES.md first — it corrects deprecated commands and unsafe defaults in the vendored body.",
+    "phase": "unrouted",
+    "group": "Engineering",
+    "defaultOn": false,
+    "runtimePrompt": "",
+    "category": "06-ops-security",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "static-site-apache-deploy",
+    "name": "static-site-apache-deploy",
+    "phase": "unrouted",
+    "group": "Engineering",
+    "defaultOn": false,
+    "description": "Deploy a static site to Apache/cPanel (GoDaddy): security audit, root-served build, .htaccess (redirects, HTTPS gate, headers, Report-Only CSP, caching, compression), SHA-pinned rsync-over-SSH GitHub Actions pipeline, and an email-safe DNS cutover with AutoSSL. Authored from the Convenium Studio deploy, 2026-10-09.",
+    "runtimePrompt": "",
+    "category": "06-ops-security",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "domain-and-hosting-plan",
+    "name": "domain-and-hosting-plan",
+    "phase": "unrouted",
+    "group": "Engineering",
+    "defaultOn": false,
+    "description": "Check and secure a domain through the GoDaddy connector (availability, cart guidance, owner-only purchase) and size hosting - static shell, backend, database, object storage, egress - from the measured footprint times a growth factor, then hand off DNS records. Authored for the ArkhEthos domain request, 2026-10-19.",
+    "runtimePrompt": "",
+    "category": "06-ops-security",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "octalysis-gamification",
+    "name": "octalysis-gamification",
+    "phase": "unrouted",
+    "group": "Direction",
+    "defaultOn": false,
+    "description": "Analyse or design motivation with Yu-kai Chou's Octalysis Framework: 8 core drives, white vs black hat, player lifecycle and player types (levels 1-3). The audit and strategy layer under gamified-ui. Vendored from eykd/vance-ts (ISC).",
+    "runtimePrompt": "",
+    "category": "01-design-direction",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "ethical-gamification-systems",
+    "name": "ethical-gamification-systems",
+    "phase": "unrouted",
+    "group": "Direction",
+    "defaultOn": false,
+    "description": "Design non-coercive gamification: mission loops, mastery-based progress, utility rewards, bounded token/credit spend, truthful status labels (verified, user-reported, simulated, estimated, unavailable) and a dark-pattern rejection checklist. The ethics gate for octalysis-gamification and gamified-ui. Authored by the owner (EXTERNAL_KNOWLEDGEBASE), replaces the retired stub.",
+    "runtimePrompt": "",
+    "category": "01-design-direction",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "game-feel",
+    "name": "game-feel",
+    "phase": "unrouted",
+    "group": "Motion",
+    "defaultOn": false,
+    "description": "Add juice: layered, transient feedback (pop, shake, flash, number pop) scaled by small/medium/large importance tiers. Engine examples upstream; APOLLO-NOTES.md maps them to GSAP/CSS and adds reduced-motion and a11y rules. Vendored from gamedev-skills/awesome-gamedev-agent-skills (Apache-2.0).",
+    "runtimePrompt": "",
+    "category": "03-motion-3d",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "gamified-ui",
+    "name": "gamified-ui",
+    "phase": "unrouted",
+    "group": "Web Build",
+    "defaultOn": false,
+    "description": "Design and build gamified web/app UI - XP and levels, streaks, achievements, progress, quests, leaderboards, celebration tiers - with every number committed to DESIGN.md before code, all states designed, and an ethics gate. Original Convenium.Design skill, 2026-10-14.",
+    "runtimePrompt": "",
+    "category": "02-web-build",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "mobile-app-shell",
+    "name": "Mobile App Shell",
+    "phase": "build",
+    "group": "Web Build",
+    "defaultOn": false,
+    "description": "Rebuild a site's phone experience when mobile pages are too long, unoptimized or below current standards. Owns per-page screen budgets, the 2026 standards floor (fluid type, container queries, svh/dvh, touch targets, INP), phone-sized scroll-scrub runways and frame sets, a thumb-zone tab bar, safe areas on all four sides, cheap phone motion, and the verification rules that catch what emulated tests miss. Use when asked to rebuild or optimize a site's mobile resolution, when a site must work as the primary phone experience (360–430 px wide), when scroll-driven video is soft or stutters on phones, or before sharing a concept most visitors will open on a phone.",
+    "runtimePrompt": "Treat the 360–430 px phone band as the primary layout: measure first (screens per route, overflow, tap targets at 390×844), hold each route to its screen budget (home ≤ 16, others ≤ 12), hold the 2026 standards floor — clamp() type between the committed ramp numbers, container queries for components, 100svh heroes and 100dvh sticky stages, ≥ 44 px primary targets with a 24 px hard floor, 16 px inputs, INP ≤ 200 ms, no overflow from 320 px — size scrub runways and frame sets for phones, and verify reduced motion by computed opacity, live-scroll lag on 4G and production cache headers.",
+    "category": "02-web-build",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": true
+  },
+  {
+    "id": "scroll-scrubbed-visual-sequence",
+    "name": "Scroll-Scrubbed Visual Sequence",
+    "phase": "build",
+    "group": "Motion",
+    "defaultOn": false,
+    "description": "Build reversible scroll-controlled visual transformations with a pinned or sticky stage, normalized progress, and video, image-sequence, canvas, SVG, or DOM renderers. Use for hero transformations, product assembly, interface state walkthroughs, object rotation, diagrams, or photo sequences that must move forward and backward with native scrolling.",
+    "runtimePrompt": "Build scroll-scrubbed media as a sticky stage driven by one normalized progress value, with a poster, a reduced-motion frame, copy kept in HTML, and phone runway and frame-set sizing from mobile-app-shell. Verify forward and reverse scrolling and fast flicks.",
+    "category": "03-motion-3d",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": true
+  },
+  {
+    "id": "better-interface",
+    "name": "Better Interface",
+    "phase": "verify",
+    "group": "Verification",
+    "defaultOn": false,
+    "description": "Combines all of the `better-*` skills into a single review across accessibility, layout, writing, typography, color and UI polish.",
+    "runtimePrompt": "Run one evidence-based review across accessibility, layout, writing, typography, colour and UI polish through the six better-* skills. Cite file:line, measure rendered states, treat the committed design system as convention, and report at most 15 findings with a Block or Approve verdict.",
+    "category": "01-design-direction",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": true
+  },
+  {
+    "id": "cinematic-scroll-storytelling",
+    "name": "Cinematic Scroll Storytelling",
+    "phase": "unrouted",
+    "group": "Motion",
+    "defaultOn": false,
+    "description": "Create cinematic scroll-driven landing pages with Lenis smooth scrolling, GSAP ScrollTrigger, scroll-linked progression, staggered text reveals, sticky card stacks, parallax backgrounds, scroll-scrubbed transitions, footer reveals, and immersive preloaders. Use when analyzing or building premium editorial scroll experiences, sticky project stacks, kinetic typography, or section-by-section storytelling.",
+    "runtimePrompt": "",
+    "category": "03-motion-3d",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "cinematic-gsap-lenis-motion-system",
+    "name": "Cinematic GSAP Lenis Motion System",
+    "phase": "unrouted",
+    "group": "Motion",
+    "defaultOn": false,
+    "description": "Create premium cinematic web motion systems with GSAP, ScrollTrigger, and Lenis. Use for luxury editorial websites, creative studio portfolios, Awwwards-style interactions, smooth scroll reveals, staggered text, parallax, pinned sections, magnetic hover states, custom cursors, and mouse-reactive layered movement.",
+    "runtimePrompt": "",
+    "category": "03-motion-3d",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "mobile-ios-design",
+    "name": "Mobile iOS Design",
+    "phase": "unrouted",
+    "group": "Web Build",
+    "defaultOn": false,
+    "description": "Master iOS Human Interface Guidelines and SwiftUI patterns for building native iOS apps. Use when designing iOS interfaces, implementing SwiftUI views, or ensuring apps follow Apple's design principles.",
+    "runtimePrompt": "",
+    "category": "02-web-build",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "responsive-design",
+    "name": "Responsive Design",
+    "phase": "unrouted",
+    "group": "Web Build",
+    "defaultOn": false,
+    "description": "Implement modern responsive layouts using container queries, fluid typography, CSS Grid, and mobile-first breakpoint strategies. Use when building adaptive interfaces, implementing fluid layouts, or creating component-level responsive behavior.",
+    "runtimePrompt": "",
+    "category": "02-web-build",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "gesture-patterns",
+    "name": "Gesture Patterns",
+    "phase": "unrouted",
+    "group": "Web Build",
+    "defaultOn": false,
+    "description": "Design gesture interactions for touch and pointer — swipe, drag, long-press, and their discoverability. Use when input is gestural. For OS-standard gestures on iOS and Android, use `platform-conventions` (ui-design).",
+    "runtimePrompt": "",
+    "category": "02-web-build",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "better-layout",
+    "name": "Better Layout",
+    "phase": "unrouted",
+    "group": "Craft",
+    "defaultOn": false,
+    "description": "Helps with grouping, alignment, reading order, responsive structure and room for translated text, so a layout holds up when it is resized, translated or mirrored.",
+    "runtimePrompt": "",
+    "category": "01-design-direction",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "better-typography",
+    "name": "Better Typography",
+    "phase": "unrouted",
+    "group": "Craft",
+    "defaultOn": false,
+    "description": "Sets and reviews how text renders in your product, from the type scale and spacing to font features, wrapping, truncation and punctuation.",
+    "runtimePrompt": "",
+    "category": "01-design-direction",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "better-colors",
+    "name": "Better Colors",
+    "phase": "unrouted",
+    "group": "Craft",
+    "defaultOn": false,
+    "description": "Helps you build and check a color system for your project. It generates palettes, names semantic tokens, converts between formats and measures contrast.",
+    "runtimePrompt": "",
+    "category": "01-design-direction",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "better-ui",
+    "name": "Better UI",
+    "phase": "unrouted",
+    "group": "Craft",
+    "defaultOn": false,
+    "description": "Polishes the surfaces, icons and motion in your project with exact values for border radius, optical alignment, shadows, icon states and animation.",
+    "runtimePrompt": "",
+    "category": "01-design-direction",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "better-writing",
+    "name": "Better Writing",
+    "phase": "unrouted",
+    "group": "Content",
+    "defaultOn": false,
+    "description": "Writes and reviews your interface copy, from labels and errors to empty states and confirmations, so it matches your product's voice and tells people what to do next.",
+    "runtimePrompt": "",
+    "category": "05-content-copy",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "interface-review",
+    "name": "Interface Review",
+    "phase": "unrouted",
+    "group": "Verification",
+    "defaultOn": false,
+    "description": "Reviews a branch, pull request or uncommitted change for the interface problems it introduced or regressed, across accessibility, layout, writing, typography, color and UI.",
+    "runtimePrompt": "",
+    "category": "08-qa-review",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
+  },
+  {
+    "id": "better-accessibility",
+    "name": "Better Accessibility",
+    "phase": "unrouted",
+    "group": "Verification",
+    "defaultOn": false,
+    "description": "Reviews and fixes keyboard and focus behavior, ARIA, accessible names, forms, screen-reader announcements, motion and zoom in your project against WCAG 2.2.",
+    "runtimePrompt": "",
+    "category": "08-qa-review",
+    "hosts": [
+      "claude",
+      "codex",
+      "studio"
+    ],
+    "status": "active",
+    "enabled": false
   }
 ]

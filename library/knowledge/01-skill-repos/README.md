@@ -42,4 +42,21 @@ Note that `Owl-Listener` also publishes `ai-design-skills` — a **different** r
 only to confirm it is wired up and used.
 
 Against the ~97 locally indexed skills, the genuine gaps are ranked in
-[../02-tool-inventories/gap-analysis.md](../02-tool-inventories/gap-analysis.md).
+[../../../unused/library/knowledge/02-tool-inventories/gap-analysis.md](../../../unused/library/knowledge/02-tool-inventories/gap-analysis.md).
+
+## 2026-10-14 — gamification sources
+
+Searched for gamification and gamified-UI skills on GitHub and in skill directories. Each repo was
+cloned and read; the directory listings were not relied on.
+
+| Repo | Licence | Verdict |
+|---|---|---|
+| [eykd/vance-ts](eykd-vance-ts.md) | ISC (package.json only) | **installed** `octalysis-gamification` |
+| [gamedev-skills/awesome-gamedev-agent-skills](gamedev-skills-awesome-gamedev-agent-skills.md) | Apache-2.0 | **installed** `game-feel` (1 of 67) |
+| [jarrodmedrano/jarrod-claude-skills](jarrodmedrano-jarrod-claude-skills.md) | MIT (package.json only) | park |
+| [mulosbron/gamification-skills](mulosbron-gamification-skills.md) | none | discard — no licence; conclusions only |
+
+None of the licensed sources covers web gamification mechanics (XP curves, streaks,
+achievements, celebration tiers). That gap is filled by the original Convenium.Design skill
+`library/skills/02-web-build/gamified-ui`. The closest unlicensed match is recorded in
+[../03-skill-briefs/ui-gamification.md](../03-skill-briefs/ui-gamification.md).

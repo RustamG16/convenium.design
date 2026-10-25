@@ -1822,3 +1822,29 @@ an observable response; every one of 45 distinct commands carries a written prom
   zero.
 - **The portrait crops** are an asset-production task, now specified rather than deferred.
 - **`REFERENCES.md`'s matrix weights hygiene and position equally** and should not.
+
+## 2026-09-15 — Task 3 shared Oracle Continuum shell
+
+The exact Home / Projects / Plan / Playground / Results / Knowledge / System / Agents / Settings navigation now wraps the retained feature roots. Nested project routes and legacy hash links preserve ownership and working functionality. The 210px rail becomes a drawer below 820px; project, stage, next action, environment and Oracle access remain visible. Unknown project stages are not inferred from legacy chat records. Full feature interiors remain later tasks.
+
+Measured before at 2026-09-15T17:07:01Z and after at 2026-09-15T17:19:48Z: T1=0→0, T2=16→16, T3=100→100, T4=0→0, T5=0→0, T6=1→1, T7=1→1, T8=1→1, T9=8→8, T10=0→0, T11=0→0. The inherited 390px document overflow (216–226px on supporting routes) is now zero; all five viewport sizes show zero clipping, AA text/boundary failures and undersized controls. Reduced motion and 200% text checks pass; console clean. Five route/projection tests and 109 additive browser shell assertions pass. The full behavior sweep found two stale route-expectation rows (corrected and their five command paths retested) and repeated HTTP 400s for a seeded Savra preview whose source file is absent outside this project. The full check is therefore not claimed green. Scope, files, compatibility, and remaining limits are recorded in `.superpowers/sdd/IMPLEMENTATION-PLAN/task-3-report.md`.
+
+## 2026-09-15 — Task 4 persistent Oracle, increment 1
+
+Added the deterministic Oracle intake/context contract and the shared dock's live context-token and text-input surface. Project classification, sequential questions, repeated-answer prevention, consequential-question explanations, reviewable brief/Design DNA output, removable optional context, and honest unavailable voice state are covered by five pure tests. Seven browser assertions verify the composer, mode state, route-following page token, persistence while navigating, and a clean runtime console.
+
+T1–T11 before/after remain unchanged at 0 / 16 / 100 / 0 / 0 / 1 / 1 / 1 / 8 / 0 / 0. All five widths retain zero overflow, clipping, contrast failures, and undersized controls; reduced motion and 200% text checks pass. `check:shell` passes 10 pure tests, the original 109 shell assertions, 11 repair assertions, and 7 Oracle assertions. This is not Task 4 completion: canonical proposal persistence and the full rendered questionnaire/choice-card flow remain next.
+
+## 2026-09-16 — Convenium.Design Studio recovery, final author verification
+
+Executed recovery Tasks1-8 under the accepted reference/control contract. One immutable six-role workflow now supplies runtime planning and evidence views; current project/chat/run identity, journal-backed approvals, Configure/Agents drafts, comparison invalidation, Work composer ownership, project Knowledge and System inspection form a tested local journey. Historical Savra uncertainties remain labelled.
+
+Author release checks PASS:35 recovery unit/control tests;110 shell checks;11 shell repairs;7 Oracle checks;full deterministic journey at390/820/1280/1440/1920;keyboard,200% text,reduced motion/transparency,offline/reconnect,empty/error and graph/list checks. T1-T11 unchanged PASS (spacing ratchet314); B1-B8 improved from the baseline recorded in recovery-progress to73/73 passing command contracts,175 clicks,12/12 decisions,zero runtime/network findings. No threshold was relaxed. Fresh final screenshots are in .olympus/final-recovery-shots.
+
+Initial independent review FAIL62; first repair review FAIL87. Second and final author repair completed; final independent verdict pending. Gate C pending user review. No commit,push,deployment or external generation. See .superpowers/sdd/IMPLEMENTATION-PLAN/savra-v2-parity-report.md for exact scope and the disclosed prior settings-isolation side effect (Design Engineer budget4321 in local knowledge/agents.json).
+
+Final independent review: PASS WITH NOTES92/100, two repair cycles complete. Details and all remaining notes are in .olympus/10-finish-review.md and the recovery execution report. Browser harness initial-mount waits remain timing-fragile on this host; readiness-based independent probes passed. Local deterministic scope and earlier budget4321 side effect remain disclosed. User Gate C pending. No commit or push.
+
+## 2026-09-16 — approved chat-first rebuild started
+
+The prior recovery prototype is historical evidence, not acceptance evidence for this rebuild. The approved product direction now makes chat the default workspace, adds standalone chats and one-level sidebar folders, scopes Constructor to projects, and replaces legacy global destinations with the canonical route set in `docs/superpowers/specs/2026-09-16-chat-first-usability-design.md`. Required design/plan/route/verification artifacts were prepared before implementation. Current status is implementation-start; no new visual or regression pass is claimed yet.

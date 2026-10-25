@@ -300,10 +300,13 @@ async function main() {
       await navigate(page, base + '/?b=' + encodeURIComponent(control.selector) + '#/' + (control.viewId === 'chrome' ? 'work' : control.viewId));
       await settle(page, 520);
       if (control.viewId !== 'chrome') await showView(page, control.viewId, 320);
+      // The census inspects disclosed controls. Reach that same real UI state before
+      // clicking; a hidden control cannot focus its field on a freshly loaded page.
+      await evaluate(page, `(() => { let parent=document.querySelector(${JSON.stringify(control.selector)})?.parentElement; while(parent){if(parent.tagName==='DETAILS')parent.open=true;parent=parent.parentElement;} })()`);
 
       // Some controls only exist behind a disclosure. Opening it is part of reaching them, not
       // part of what they do, so it happens before the snapshot.
-      if (control.selector === '#oracle-show-how' || control.selector === '#oracle-do-it' || control.selector === '#close-oracle') {
+      if (['#oracle-show-how', '#oracle-do-it', '#close-oracle', '#oracle-text-mode', '#oracle-voice-mode'].includes(control.selector)) {
         await evaluate(page, "document.querySelector('#toggle-oracle').click(); true");
         await settle(page, 260);
       }

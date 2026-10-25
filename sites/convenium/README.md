@@ -16,7 +16,7 @@ npx http-server . -p 8080      # or: python3 -m http.server 8080
 Open <http://localhost:8080/>. Opening `index.html` directly from disk also works, but the
 self-hosted fonts load more reliably over http.
 
-Published by GitHub Pages at `https://rustamg16.github.io/Apollo/convenium/`; every path is
+Published by GitHub Pages at `https://rustamg16.github.io/Convenium.Design/convenium/`; every path is
 relative, so the folder can be served from any subpath.
 
 ## What is in here

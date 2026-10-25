@@ -1,0 +1,48 @@
+{
+  "runId": "apollo-figma-ui-2026-09-15",
+  "fileKey": "18ehmW9x2r9lzY2WdryD56",
+  "fileUrl": "https://www.figma.com/design/18ehmW9x2r9lzY2WdryD56",
+  "phase": "phase3",
+  "step": "visual-qa",
+  "entities": {
+    "pages": {
+      "cover": "0:1",
+      "foundations": "5:4",
+      "screens": "5:5"
+    },
+    "frames": {
+      "foundations": "6:2",
+      "home": "7:2",
+      "plan": "8:2",
+      "playground": "9:2",
+      "knowledge": "10:2",
+      "system": "11:2"
+    }
+  },
+  "completedSteps": [
+    "phase0-discovery",
+    "phase1-foundations",
+    "phase2-file-structure",
+    "phase3-home",
+    "phase3-plan",
+    "phase3-playground",
+    "phase3-knowledge",
+    "phase3-system",
+    "qa-home",
+    "qa-plan",
+    "qa-playground",
+    "qa-knowledge"
+  ],
+  "pendingValidations": [
+    "apply-unified-shell:blocked-by-figma-starter-mcp-quota",
+    "system:screenshot",
+    "cover:content",
+    "componentization:reusable-patterns"
+  ],
+  "notes": [
+    "Figma Starter limits variable collections to one mode; Convenium.Design Light and Dark are separate semantic collections.",
+    "Figma Starter limits files to three pages; the file uses Cover, Foundations, and Convenium.Design Screens.",
+    "System screenshot verification was blocked by the Starter-plan MCP call quota after the frame was created."
+    ,"Unified shell mutation was prepared but rejected before execution by the same Figma Starter MCP quota; no partial navigation or color changes were applied."
+  ]
+}

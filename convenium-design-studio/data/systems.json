@@ -11,146 +11,180 @@
       "updatedAt": "2026-08-31T23:24:47.429Z",
       "agents": [
         {
-          "id": "convenium-design-director",
-          "name": "Convenium.Design",
-          "description": "Keeps the brief, approval gates, and integrated outcome coherent.",
+          "id": "design-director",
+          "name": "Design Director",
+          "responsibility": "Own intake, one direction, routing, gates and integration.",
           "skills": [
             "olympus-design-director",
-            "taste-first-experience-design"
+            "concept-studio"
           ],
-          "budget": 6000,
-          "approval": false,
+          "activation": "always",
+          "readOnly": false,
+          "canDelegate": false,
+          "provenance": {
+            "status": "reconstructed",
+            "source": "roles"
+          },
+          "description": "Own intake, one direction, routing, gates and integration.",
+          "budget": 4000,
+          "approval": true,
           "priority": 10,
           "triggers": [
-            "project",
-            "brief",
-            "plan",
-            "orchestrate",
-            "system",
-            "design"
+            "always",
+            "project"
           ],
-          "activation": "A mission needs a single accountable direction and clear approval boundaries.",
           "phase": "always",
           "mcp": [],
           "plugins": [],
-          "instructions": "Work only within the Convenium.Design responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
+          "instructions": "Work only within the Design Director responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
           "enabled": true
         },
         {
-          "id": "athena-evidence",
-          "name": "Athena",
-          "description": "Turns evidence, constraints, and references into decision-ready strategy.",
+          "id": "visual-analyst",
+          "name": "Visual Analyst",
+          "responsibility": "Read supplied media and existing-page evidence; do not author the direction.",
           "skills": [
-            "ux-evidence-audit",
             "reference-deconstruction",
-            "design-analytics"
+            "ux-evidence-audit"
           ],
-          "budget": 4800,
+          "activation": "evidence",
+          "readOnly": true,
+          "canDelegate": false,
+          "provenance": {
+            "status": "reconstructed",
+            "source": "roles"
+          },
+          "description": "Read supplied media and existing-page evidence; do not author the direction.",
+          "budget": 4000,
           "approval": false,
-          "priority": 8,
+          "priority": 9,
           "triggers": [
-            "audit",
-            "existing",
-            "reference",
-            "research",
             "evidence",
-            "analytics",
-            "diagnose",
-            "strategy"
+            "project"
           ],
-          "activation": "Current-state evidence or a defensible design decision is needed.",
           "phase": "diagnose",
           "mcp": [],
           "plugins": [],
-          "instructions": "Work only within the Athena responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
+          "instructions": "Work only within the Visual Analyst responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
           "enabled": true
         },
         {
-          "id": "calliope-experience",
-          "name": "Calliope",
-          "description": "Shapes narrative, hierarchy, and an expressive but usable interface direction.",
+          "id": "asset-producer",
+          "name": "Asset Producer",
+          "responsibility": "Produce only assets named in an approved media manifest.",
           "skills": [
-            "concept-studio",
-            "impeccable"
+            "asset-director"
           ],
-          "budget": 5600,
-          "approval": false,
-          "priority": 7,
+          "activation": "media",
+          "readOnly": false,
+          "canDelegate": false,
+          "provenance": {
+            "status": "reconstructed",
+            "source": "roles"
+          },
+          "description": "Produce only assets named in an approved media manifest.",
+          "budget": 4000,
+          "approval": true,
+          "priority": 8,
           "triggers": [
-            "design",
-            "redesign",
-            "concept",
-            "ux",
-            "ui",
-            "layout",
-            "story",
-            "interface"
+            "media",
+            "project"
           ],
-          "activation": "A product or page needs a distinct, human-readable experience direction.",
-          "phase": "direct",
+          "phase": "prepare",
           "mcp": [],
           "plugins": [],
-          "instructions": "Work only within the Calliope responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
+          "instructions": "Work only within the Asset Producer responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
           "enabled": true
         },
         {
-          "id": "hephaestus-build",
-          "name": "Hephaestus",
-          "description": "Builds the approved experience with durable frontend craft and technical restraint.",
+          "id": "design-engineer",
+          "name": "Design Engineer",
+          "responsibility": "Implement the approved build plan and numeric design; perform author QA.",
           "skills": [
             "impeccable",
             "awwwards-web-design",
             "gsap-core",
-            "gsap-performance"
+            "gsap-react",
+            "gsap-scrolltrigger",
+            "gsap-performance",
+            "visual-qa"
           ],
-          "budget": 6500,
-          "approval": false,
-          "priority": 6,
+          "activation": "build",
+          "readOnly": false,
+          "canDelegate": false,
+          "provenance": {
+            "status": "reconstructed",
+            "source": "roles"
+          },
+          "description": "Implement the approved build plan and numeric design; perform author QA.",
+          "budget": 4000,
+          "approval": true,
+          "priority": 7,
           "triggers": [
             "build",
-            "implement",
-            "code",
-            "frontend",
-            "html",
-            "css",
-            "component",
-            "motion"
+            "project"
           ],
-          "activation": "An approved direction is ready to become working interface code.",
           "phase": "build",
           "mcp": [],
           "plugins": [],
-          "instructions": "Work only within the Hephaestus responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
+          "instructions": "Work only within the Design Engineer responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
           "enabled": true
         },
         {
-          "id": "hermes-delivery",
-          "name": "Hermes",
-          "description": "Coordinates assets, purposeful motion, verification, and a clear handoff.",
+          "id": "independent-critic",
+          "name": "Independent Critic",
+          "responsibility": "Score direction and finished implementation independently without edits.",
           "skills": [
-            "asset-director",
-            "visual-qa",
-            "gsap-performance"
+            "award-rubric",
+            "visual-qa"
           ],
-          "budget": 4800,
-          "approval": true,
-          "priority": 5,
+          "activation": "review",
+          "readOnly": true,
+          "canDelegate": false,
+          "provenance": {
+            "status": "reconstructed",
+            "source": "roles"
+          },
+          "description": "Score direction and finished implementation independently without edits.",
+          "budget": 4000,
+          "approval": false,
+          "priority": 6,
           "triggers": [
-            "asset",
-            "media",
-            "video",
-            "animate",
-            "motion",
-            "qa",
-            "verify",
-            "accessibility",
-            "ship"
+            "review",
+            "project"
           ],
-          "activation": "The work needs local media, motion planning, verification, or delivery evidence.",
           "phase": "verify",
           "mcp": [],
           "plugins": [],
-          "instructions": "Work only within the Hermes responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
+          "instructions": "Work only within the Independent Critic responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
+          "enabled": true
+        },
+        {
+          "id": "analytics-specialist",
+          "name": "Analytics Specialist",
+          "responsibility": "Measure an explicit goal only when analytics is in scope.",
+          "skills": [
+            "design-analytics"
+          ],
+          "activation": "analytics",
+          "readOnly": true,
+          "canDelegate": false,
+          "provenance": {
+            "status": "reconstructed",
+            "source": "roles"
+          },
+          "description": "Measure an explicit goal only when analytics is in scope.",
+          "budget": 4000,
+          "approval": false,
+          "priority": 5,
+          "triggers": [
+            "analytics",
+            "project"
+          ],
+          "phase": "verify",
+          "mcp": [],
+          "plugins": [],
+          "instructions": "Work only within the Analytics Specialist responsibility. Return a bounded phase packet to the orchestrator and do not delegate.",
           "enabled": true
         }
       ],
@@ -193,17 +227,18 @@
       "budget": {
         "totalTokens": 30000,
         "approvals": {
-          "convenium-design-director": false,
-          "athena-evidence": false,
-          "calliope-experience": false,
-          "hephaestus-build": false,
-          "hermes-delivery": true
+          "design-director": true,
+          "visual-analyst": false,
+          "asset-producer": true,
+          "design-engineer": true,
+          "independent-critic": false,
+          "analytics-specialist": false
         }
       },
       "advancedSkills": [],
       "seeded": true,
       "createdAt": "2026-09-03T05:01:55.772Z",
-      "updatedAt": "2026-09-04T15:07:45.786Z"
+      "updatedAt": "2026-10-07T22:58:04.150Z"
     },
     {
       "id": "concept-lab",
@@ -228,17 +263,18 @@
       "budget": {
         "totalTokens": 30000,
         "approvals": {
-          "convenium-design-director": false,
-          "athena-evidence": false,
-          "calliope-experience": false,
-          "hephaestus-build": false,
-          "hermes-delivery": true
+          "design-director": true,
+          "visual-analyst": false,
+          "asset-producer": true,
+          "design-engineer": true,
+          "independent-critic": false,
+          "analytics-specialist": false
         }
       },
       "advancedSkills": [],
       "seeded": true,
       "createdAt": "2026-09-03T05:01:55.773Z",
-      "updatedAt": "2026-09-04T15:07:45.786Z"
+      "updatedAt": "2026-10-07T22:58:04.150Z"
     },
     {
       "id": "premium-build",
@@ -263,17 +299,18 @@
       "budget": {
         "totalTokens": 30000,
         "approvals": {
-          "convenium-design-director": false,
-          "athena-evidence": false,
-          "calliope-experience": false,
-          "hephaestus-build": false,
-          "hermes-delivery": true
+          "design-director": true,
+          "visual-analyst": false,
+          "asset-producer": true,
+          "design-engineer": true,
+          "independent-critic": false,
+          "analytics-specialist": false
         }
       },
       "advancedSkills": [],
       "seeded": true,
       "createdAt": "2026-09-03T05:01:55.773Z",
-      "updatedAt": "2026-09-04T15:07:45.786Z"
+      "updatedAt": "2026-10-07T22:58:04.150Z"
     },
     {
       "id": "delivery-qa",
@@ -298,17 +335,18 @@
       "budget": {
         "totalTokens": 30000,
         "approvals": {
-          "convenium-design-director": false,
-          "athena-evidence": false,
-          "calliope-experience": false,
-          "hephaestus-build": false,
-          "hermes-delivery": true
+          "design-director": true,
+          "visual-analyst": false,
+          "asset-producer": true,
+          "design-engineer": true,
+          "independent-critic": false,
+          "analytics-specialist": false
         }
       },
       "advancedSkills": [],
       "seeded": true,
       "createdAt": "2026-09-03T05:01:55.773Z",
-      "updatedAt": "2026-09-04T15:07:45.786Z"
+      "updatedAt": "2026-10-07T22:58:04.150Z"
     },
     {
       "id": "lean-audit-copy",
@@ -333,17 +371,18 @@
       "budget": {
         "totalTokens": 30000,
         "approvals": {
-          "convenium-design-director": false,
-          "athena-evidence": false,
-          "calliope-experience": false,
-          "hephaestus-build": false,
-          "hermes-delivery": true
+          "design-director": true,
+          "visual-analyst": false,
+          "asset-producer": true,
+          "design-engineer": true,
+          "independent-critic": false,
+          "analytics-specialist": false
         }
       },
       "advancedSkills": [],
       "seeded": false,
       "createdAt": "2026-09-03T06:25:08.233Z",
-      "updatedAt": "2026-09-04T15:07:45.786Z"
+      "updatedAt": "2026-10-07T22:58:04.150Z"
     }
   ],
   "migrations": [

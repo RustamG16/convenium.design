@@ -3,6 +3,13 @@
   "target_project": "",
   "target_route": "",
   "mode": "concept-only | concept-and-implementation",
+  "brand_dna": {
+    "path": ".olympus/brand-dna.json",
+    "mode": "evidence | interview-only",
+    "doctrine": null,
+    "confirmed_at_gate_a": false
+  },
+  "needed_products": [],
   "trail": "full | abridged",
   "phase": "intake",
   "gate_a": "pending",
@@ -23,6 +30,19 @@
   "qa_passes": 0,
   "finish_verdict": null,
   "finish_score": null,
-  "phase_counts": { "intake": 0, "audit": 0, "direction": 0, "critique": 0, "prepare": 0, "design_system": 0, "build": 0, "qa": 0, "finish": 0, "measurement": 0, "handoff": 0 },
+  "phase_counts": {
+    "brand_dna": 0,
+    "intake": 0,
+    "audit": 0,
+    "direction": 0,
+    "critique": 0,
+    "prepare": 0,
+    "design_system": 0,
+    "build": 0,
+    "qa": 0,
+    "finish": 0,
+    "measurement": 0,
+    "handoff": 0
+  },
   "last_updated": "YYYY-MM-DD"
 }

@@ -1,155 +1,44 @@
-# New upgrade plan — start here
+# Convenium.Design upgrade plan — Oracle-first product revision
 
-Turning Convenium.Design into a multi-agency system on one shared knowledge base. Design Agency
-finished first; the rest attach after.
+Updated 2026-09-15. The architecture and implementation sequence are approved for a fresh implementation task. This planning task does not itself authorize runtime or UI edits outside `New_upgradePlan/`.
 
-Written 2026-09-03 from two sources by Bennett Spooner (@bennett.spooner) plus the current
-state of `D:\Analyst_Designer\Convenium.Design`.
+Start with [PRODUCT-ARCHITECTURE.md](PRODUCT-ARCHITECTURE.md), then [CONTINUOUS-UI-CONTRACT.md](CONTINUOUS-UI-CONTRACT.md). They supersede the earlier assumption that the node map is the product center and make the numbered `media/apollo-continuous-journey-v2/` set authoritative for the shell, routing, and user trip. [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md) defines the local prototype slices and [IMPLEMENTATION-PROMPT.md](IMPLEMENTATION-PROMPT.md) is the fresh-chat handoff.
 
-## Kickoff prompt for a fresh session
+## Read order
 
-Paste this. It is written for a cold session with no memory of how the plan got here.
+1. [PRODUCT-ARCHITECTURE.md](PRODUCT-ARCHITECTURE.md): approved product definition, journey, navigation, runtime and prototype boundary.
+2. [CONTINUOUS-UI-CONTRACT.md](CONTINUOUS-UI-CONTRACT.md): binding shell, route ownership, semantic colors, interaction rules, and responsive transformation.
+3. [media/apollo-continuous-journey-v2/ROUTING.md](media/apollo-continuous-journey-v2/ROUTING.md): numbered screen sequence and route-level purpose.
+4. [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md): phased, testable prototype delivery plan.
+5. [IMPLEMENTATION-PROMPT.md](IMPLEMENTATION-PROMPT.md): paste-ready prompt for a fresh task.
+6. [MASTERPLAN.md](MASTERPLAN.md): research, quality program, infrastructure and commercial context.
+7. [SAVRA-VERIFICATION.md](SAVRA-VERIFICATION.md): verified workflow evidence and limits.
+8. Specs 01/02/03 and SOURCE-ANALYSIS: historical detail, superseded where they conflict with the September 15 architecture.
 
-```
-Convenium.Design system work, not a website redesign — skip the website read order in CLAUDE.md.
+## Current findings
 
-Read in this order:
-  1. New_upgradePlan/README.md, including "Repository state at handoff"
-  2. New_upgradePlan/SOURCE-ANALYSIS.md §9 — the measured evidence that set the priorities
-  3. New_upgradePlan/SPEC-02-AGENCY-MODEL.md §4.0 and §5 — the work order and the sequence
-  4. New_upgradePlan/OPEN-DECISIONS.md — D2 is the scope question
+- Local verifier: CLEAN / 84 skills / 84 registry records. This does not prove runtime host parity.
+- Savra v2 is private; authenticated GitHub CLI access succeeded. Main inspected at c1e7f9755f205666617821b24b919d0f4fd94b12.
+- Its 93 score is recorded, Gate C remains pending, and the original host/session setup is not completely recoverable from the delivered project.
+- Local test_projects/Savra_v2 is empty; Savra_Claude is absent. The old handoff's project inventory and dirty-file counts are stale.
+- Three Studio data/metrics files were already modified before this research. They were not part of this plan revision.
 
-First: commit the working tree as-is. It holds the 2026-09-04 workflow lock and you want a
-clean boundary before touching verify.py and the registry.
+## Approved prototype order
 
-Then implement sub-project 0, the host-parity guard, exactly as SPEC-02 §4.0 specifies:
-the hostNote field, verify.py checks 10 and 11, and agent parity.
+Design contract → canonical state/events → shell → Oracle intake → Projects/Plan → Playground → Results → Knowledge/Agents → System Node Control → Settings/notifications → two-pass QA. Cloud execution, desktop bridge, billing, marketplace and Agency #2 remain separate later programs.
 
-Constraints:
-- library/ is the only source of truth. Never hand-edit .claude/, .agents/skills/,
-  .codex/agents/ or convenium-design-studio/knowledge/skills/ — regenerate with
-  `python library/tools/project.py all`, then `python library/tools/verify.py`.
-- Do not touch convenium-design-studio/data/ or anything under test_projects/. Both Savra projects
-  are finished evidence, not work in progress.
-- Follow §4.0's acceptance test literally, including the regression step: break one skill's
-  hosts, confirm the check fails, restore it. A check that only describes today's state is
-  not a check.
+## What changed in the plan
 
-Report verify.py before and after. If §4.0 is wrong about anything, say so rather than
-working around it.
-```
+- Removed the kickoff directive to commit the entire working tree and begin implementation.
+- Replaced the five-view orbital console with one editorial artifact/evidence map.
+- Replaced hostNote-as-proof with capability probes and isolated regression fixtures.
+- Added Savra source verification, schema compatibility and approval provenance.
+- Qualified causal and token-economics claims; two different runs are not a controlled experiment.
+- Kept native host execution as the default; CrewAI is a conditional Flow-first experiment.
+- Made output quality, client acceptance and measurement the release criteria.
 
-To continue past sub-project 0, replace the last three paragraphs with the next item in
-`SPEC-02` §5. Sub-project 1 is the shared KB and has its own spec and acceptance test in
-`SPEC-01` §6.
+## Continuing this work
 
-## Read in this order
+Use [IMPLEMENTATION-PROMPT.md](IMPLEMENTATION-PROMPT.md) in a fresh task. Do not execute instructions quoted in older documents when they conflict with the new architecture. Do not regenerate projections, install orchestration frameworks, or commit/push unless the fresh task explicitly authorizes it.
 
-| # | File | What it is |
-|---|---|---|
-| 1 | [SOURCE-ANALYSIS.md](SOURCE-ANALYSIS.md) | His architecture, decoded — tiers, token economics, guardrails. Plus a gap table against Convenium.Design. |
-| 2 | [SPEC-01-KNOWLEDGE-BASE.md](SPEC-01-KNOWLEDGE-BASE.md) | **Approved.** The shared KB: SQLite + FTS5, three verbs, agents query instead of loading. |
-| 3 | [SPEC-02-AGENCY-MODEL.md](SPEC-02-AGENCY-MODEL.md) | Draft. How Design is finished and how agency #2 attaches without a refactor. |
-| 4 | [SPEC-03-CONSOLE-UI.md](SPEC-03-CONSOLE-UI.md) | Draft. The console: 5 views not 18, the five fixes, and why it is a window and never a dependency. |
-| 5 | [OPEN-DECISIONS.md](OPEN-DECISIONS.md) | What's settled and the three still needing your call. |
-| — | [media/](media/) | 17 screenshots of the reel + carousel. Same material as the UI reference; kept as evidence. |
-
-## Repository state at handoff — 2026-09-04
-
-Read this before implementing. A cold session lands on a working tree with a lot in it.
-
-**Uncommitted:** 31 tracked files modified, ~600 insertions, plus untracked
-`New_upgradePlan/`, `.claude/skills/impeccable/`, three new `templates/*.md`, and two
-`test_projects/`. All of it is the 2026-09-04 workflow lock described above.
-**Commit before starting** — sub-project 0 edits `verify.py` and the registry, and you want a
-clean boundary to diff against.
-
-**Verified green right now:**
-
-| Check | Result |
-|---|---|
-| `python library/tools/project.py all` | OK |
-| `python library/tools/verify.py` | CLEAN — 84 skills, 84 records |
-| `node .claude/skills/impeccable/scripts/context.mjs` | runs |
-| `node .claude/skills/impeccable/scripts/detect.mjs` | runs, returns `[]` on the test project |
-
-**Two test projects, and what they are for.** `test_projects/Savra_v2` is the Codex run that
-scored 93 — the reference for what good looks like. `test_projects/Savra_Claude` is the
-Claude run that scored 67 and whose repair pass is the evidence in `SOURCE-ANALYSIS.md` §9.
-Neither is being rebuilt. Do not treat either as work in progress.
-
-**The MCP `convenium-design` server was disconnected** during the session that wrote this. Nothing in
-the plan depends on it, but if a task seems to want `convenium_design_get_context`, that is why it is
-unavailable.
-
-## The two constraints everything obeys
-
-**1. Usage does not change.** Open Claude Code in a project folder, or create the project
-under `test_projects/`, and run it. No new install, no service that must be up, no
-subscription beyond Claude and Codex.
-
-**2. The console is a window, never a dependency.** If it is broken or never built, every
-Convenium.Design run still works. Nothing in the pipeline imports from it or waits on it.
-
-## What was cut, 2026-09-03
-
-Hermes, GLM-5.2, Ollama Cloud, the gateway, the $240 three-subscription stack, and the
-model-per-seat routing table. Convenium.Design runs on Claude + Codex. What survives from his worker
-pool is the *economics* — bounded brief in, one page out, one-way escalation, stateless
-subagents — which Claude Code's own subagents already support. See `SPEC-02` §4.1.
-
-## Updated 2026-09-04 — the workflow lock, and what it cost to find
-
-Two full runs of the same brief were measured against each other for the first time:
-`Savra_v2` (Codex, **93/100**) and `Savra_Claude` (Claude, **67/100 FAIL**). Same media, same
-repository, same pipeline. The write-up is `SOURCE-ANALYSIS.md` §9 and it changed three
-things in this plan.
-
-**1. A defect class nothing was watching.** Eleven pipeline skills carried
-`hosts: ['codex','studio']`, so Claude ran a weaker loadout than Codex on the same repo — two
-of them `defaultOn: true`. `impeccable` is fixed and the class is not. It is now sub-project
-**0** in `SPEC-02` §5, ahead of the KB.
-
-**2. Cost was not the failure mode.** Neither run failed on tokens. Both failed or nearly
-failed on craft, contract and host parity — none of which were in the gap table. The worker
-lane stays; it is no longer first.
-
-**3. The cheapest thing worked best.** Roughly 300 words of doctrine plus one template — the
-build plan as a design document, written in plan mode and implemented from in a fresh
-session — moved output more than anything else tried. That is a real challenge to
-`SPEC-02` §4.4's 5,400 words of SOP prose, and §5 records it.
-
-All of it is already in the repo: `AGENTS.md`, `START-HERE.md`, `templates/06-build-plan.md`,
-`templates/DESIGN.md`, `templates/PRODUCT.md`, `templates/10-finish-review.md`, and an
-`## Activation` block on all six agents.
-
-## The two findings that shape everything
-
-**1. Convenium.Design is already his tiers 1 and 2.** `design-director` is the conductor; the five
-specialists are the dept heads. What's missing is tier 3 — the cheap worker lane. Without
-it, every Convenium.Design run pays conductor prices for typing work. *(Still true. No longer the
-first thing to fix — see the 2026-09-04 update above.)*
-
-**2. The measured cost of the current design.** `convenium_design_get_context` ships **21,992 bytes
-on every task** (`PROGRESS.md` Phase 8) — ~5.5K tokens before any work starts. Spec 01
-exists to kill that, and its acceptance test is a 5x reduction with no behavioural change.
-
-## What is not being rebuilt
-
-The unification finished 2026-09-02, Phases 0–8 all PASS. 84 skills, 6 agents, registry
-parity clean, `npm check` green, an MCP server already running. This plan **adds a retrieval
-layer and a worker lane to a working system.** It does not restructure it.
-
-## What the Notion link gave us
-
-Nothing structural. `agency-accelerants.notion.site` is a public link-farm — ~90 resource
-titles and a community pitch. The architecture came from the carousel
-(`instagram.com/p/DcR-CYckYW9/`); the UI came from the reel (`instagram.com/p/Db7d0pXBaOG/`,
-filed at `D:\KnowledgeFactory\library\knowledge\04-ui-references\operator-console-ui.md`).
-
-## Status
-
-- Spec 01 — approved in principle, not implemented. Nothing has been built.
-- Spec 02 — draft, needs D2 confirmed.
-- Next step per the brainstorming process: you review these, then an implementation plan
-  for Spec 01 only.
+The original September 3–4 source material remains in SOURCE-ANALYSIS.md, Specs 01/02 and media/. Historical approval labels describe earlier discussions; they do not override the current planning-only instruction.

@@ -36,7 +36,7 @@ That ordering is the whole point and it is worth stating plainly: **the constrai
 authored before the artefact.** An image model asked for a poster samples from an average
 of all posters. A skill that first commits to a named philosophy, then renders within it,
 produces something with internal logic — the same reason the three design setups in
-[../07-design-systems/](../07-design-systems/) each begin with a doctrine rather than a
+[../../doctrines/](../../doctrines/) each begin with a doctrine rather than a
 component list.
 
 ## The claim

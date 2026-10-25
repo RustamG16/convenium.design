@@ -21,7 +21,7 @@ routing decision, one per phase.
 - **Skills** load from `.claude/skills/<id>/`. Invoke a skill with the **Skill tool**, not a
   `$name` token. Where `AGENTS.md` or an agent file writes `$reference-deconstruction`, that
   means "use the `reference-deconstruction` skill".
-- **Agents** are in `.claude/agents/<name>.md` (6: `design-director` + 5 specialists). A
+- **Agents** are in `.claude/agents/<name>.md` (7: `design-director`, `brand-strategist` + 5 specialists). A
   read-only specialist has no Write/Edit in its `tools:` list — respect that boundary.
 - **`impeccable` is projected here as a full body**, including its `scripts/` and
   `reference/` playbooks — run `node .claude/skills/impeccable/scripts/context.mjs` at the
@@ -29,14 +29,14 @@ routing decision, one per phase.
   design detector, so it owns the design-system stage. Until 2026-09-04 it was projected only
   to `.agents/` (Codex) and this host fell back to a plugin copy that ships no scripts, which
   meant Claude ran a materially weaker loadout than Codex on the same repository.
-- **Some skills remain plugin-owned and are not projected here** (`gsap-*`, `apple-design`,
-  `emil-design-eng`, `seo-audit`). Use the installed plugin skill of that name; do not look
-  for a `.claude/skills/` copy. `apple-design` and `emil-design-eng` are `defaultOn` in the
-  registry, so treat the plugin skill as active, not optional.
-- **Three skills are studio-only stubs** (`taste-first-experience-design`,
-  `ethical-gamification-systems`, `agent-identity-and-portfolio`) — no body to load here.
-- **PowerShell** scripts run via `powershell -File scripts\<name>.ps1` (e.g.
-  `validate-system.ps1`, `validate-project-context.ps1`).
+- **Every skill the pipeline needs is bundled** — `gsap-*`, `apple-design` and
+  `emil-design-eng` included. Use the `.claude/skills/` copy (or `convenium-design:<id>` when Convenium.Design is
+  installed as a plugin), never a same-named personal or plugin skill: those differ between
+  machines.
+- **Tooling is stdlib Python and cross-platform.** `python library/tools/verify.py` is the one
+  health check (`--project <path>` checks a project's six context files);
+  `python library/tools/apollo.py attach <project>` connects a project, `doctor` checks this
+  machine. The `scripts/*.ps1` files are thin wrappers kept for habit.
 - **Rebuild the generated trees** after any `library/` change:
   `python library/tools/project.py all` then `python library/tools/verify.py`.
 - **Before implementing anything visual**, write `PRODUCT.md` and `DESIGN.md` into the website
@@ -48,6 +48,10 @@ routing decision, one per phase.
   per-section media map. This is the locked workflow; see the build-plan rule in `AGENTS.md`.
 - **Read the brief as written.** Explicit creative freedom cancels the intake round. Do not
   ask questions a brief has already told you not to ask.
+- **"Rebuild/optimize the mobile resolution" on a built site is a retrofit, not a redesign.**
+  Kick off from `templates/prompts/mobile-app-grade-pass.md` on the abridged trail and load the
+  `mobile-app-shell` skill body alone (verification stays `visual-qa`). No intake, no other
+  skill bodies — the token budget of this pass is one digest read plus one skill.
 
 ## Do not
 
@@ -55,6 +59,7 @@ routing decision, one per phase.
   `convenium-design-studio/knowledge/skills/` — they are generated from `library/` and overwritten.
 - Write project evidence into this repo. It goes in `<website-project>/.olympus/`.
 - Touch `convenium-design-studio/data/`, `evidence/`, `handoffs/`, `public/media/`, or any `.olympus/`.
+- Read or route from `unused/` — it is retired material, indexed in `unused/README.md`.
 
 ## For humans
 

@@ -1,6 +1,7 @@
 # Olympus operating instructions
 
-These instructions apply whenever this folder is attached as context for a website redesign.
+These instructions apply whenever this folder is attached as context for a project's design
+work — a website, a brand identity, or whatever the business's Brand DNA says it needs.
 
 ## Source of truth
 
@@ -86,10 +87,13 @@ Direction is decided at intake, not by generating alternatives. The questionnair
 profile must resolve direction before Gate A. The default output is **one** direction.
 Produce more only when the user asks for alternatives, and state how many and why.
 
-The taste profile is load-bearing. If `library/design-dna/` holds no profile and the supplied
-references do not resolve the direction block in `templates/00-brief.md`, the director runs
-`$convenium-design-taste-interview` or `$convenium-design-style-picker` before Gate A rather than guessing, and
-writes the result to `library/design-dna/` where it persists across projects.
+The Brand DNA is load-bearing. Every project gets one before Gate A: the `brand-strategist`
+specialist analyses the business (its site, socials, reviews, competitors and media, or an
+interview when there is no public presence) and writes `.olympus/brand-dna.json` plus
+`BRAND.md` in the project — business, audience, voice, taste, doctrine match and the ranked
+products it needs. The taste part comes from `$convenium-design-taste-interview` or
+`$convenium-design-style-picker` rather than guessing. Client DNA lives with the client project, never in
+this repository; a user's personal default taste may live in `~/.apollo/taste.json`.
 
 Greenfield work has an entry: with no existing page the run starts at the questionnaire,
 `$ux-evidence-audit` stays dormant, and `$reference-deconstruction` carries the evidence phase.

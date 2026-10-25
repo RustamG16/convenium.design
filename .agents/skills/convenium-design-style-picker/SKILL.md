@@ -7,9 +7,9 @@ description: Path B of the taste-profile system. Presents the built-in design do
 
 ## 1. Present the options
 
-Show all four built-in doctrines with a one-line feel each (pull the "doctrine"
-one-liner from each `.claude/agents/convenium-design-*.md` file's description — don't write a new
-summary that could drift from the agent file):
+Show all four built-in doctrines with a one-line feel each (pull the one-liner from the
+top of each `library/doctrines/<name>/design.md` — don't write a new summary that could
+drift from the doctrine file):
 
 - **Atelier** — editorial restraint, type-led, near-still.
 - **Kinetic** — motion-first cinema, scroll as narrative.
@@ -22,7 +22,7 @@ above exist as real doctrines today, don't imply more are available.
 
 ## 2. Pre-fill from the chosen doctrine
 
-Copy `profiles/doctrines/<chosen>/profile.json` wholesale as the starting point —
+Copy `library/doctrines/<chosen>/profile.json` wholesale as the starting point —
 `explicitPreferences`, `avoidList`, `confidence.byField` all at 1.0, `doctrine` set,
 `source: "style-pick"`.
 
@@ -47,6 +47,6 @@ wants to go deeper, hand off to `convenium-design-taste-interview` instead of ex
 `source` stays `"style-pick"` unless the residual interview changed enough that
 `"hybrid"` is more accurate (judgement call — if only the three residual questions were
 answered, it's still `"style-pick"`; if the user asked to change core preferences from
-the doctrine default, it's `"hybrid"`). Write to the same locations as the interview
-path (`~/.convenium-design/profiles/` or `<project>/.convenium-design/profile.json`), and confirm with the
-user before use.
+the doctrine default, it's `"hybrid"`). Write it to the same place as the interview path —
+`.olympus/brand-dna.json → taste` in the project, plus `~/.apollo/taste.json` only if the
+user wants a personal default — and confirm with the user before use.

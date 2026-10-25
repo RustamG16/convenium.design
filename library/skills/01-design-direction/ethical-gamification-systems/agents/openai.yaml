@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ethical Gamification Systems"
+  short_description: "Design motivating, non-coercive progression"
+  default_prompt: "Use $ethical-gamification-systems to design transparent mission, mastery, reward, and collection mechanics without dark patterns."

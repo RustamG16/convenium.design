@@ -2,6 +2,7 @@ GENERATED.md
 MANIFEST.txt
 analytics-specialist.toml
 asset-producer.toml
+brand-strategist.toml
 design-director.toml
 design-engineer.toml
 independent-critic.toml

@@ -1,0 +1,114 @@
+# Production deploy: https://example.com on GoDaddy cPanel (Apache).
+# Builds the static export at the domain root and uploads out/ to public_html over SSH (rsync).
+# Setup, secrets and the DNS cutover: your runbook. Architecture: your architecture doc.
+#
+# Safety rules baked in:
+# - Actions are pinned to full commit SHAs (Dependabot keeps them current).
+# - No --delete: nothing on the server is ever removed, inside or outside public_html.
+# - The host key is pinned (GODADDY_SSH_KNOWN_HOSTS); StrictHostKeyChecking is never disabled.
+# - Credentials exist only as GitHub Actions secrets.
+name: Deploy to cPanel (example.com)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-godaddy
+  cancel-in-progress: false # never cut an upload off half-way
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: https://example.com
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: "1"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # The project's own bar (your verification bar). Any failure stops the deploy.
+      - run: npx tsc --noEmit
+      - run: npx eslint app components content lib
+      - run: npm run verify:tokens
+      - run: npm test
+
+      # Root-served production build: no GITHUB_PAGES, so no /<pages-base-path> basePath.
+      - name: Build (example.com)
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_ORIGIN: https://example.com
+
+      - name: Check the export
+        run: |
+          if grep -rIl '/<pages-base-path>' out/; then
+            echo "::error::out/ contains /<pages-base-path> — the GitHub Pages basePath leaked into the production build"; exit 1
+          fi
+          test -f out/.htaccess || { echo "::error::out/.htaccess missing"; exit 1; }
+          test -f out/404.html  || { echo "::error::out/404.html missing"; exit 1; }
+          grep -q 'https://example.com/' out/sitemap.xml || { echo "::error::sitemap does not use https://example.com"; exit 1; }
+          rm -f out/.nojekyll # GitHub Pages only
+
+      - name: Check deploy secrets
+        env:
+          HOST: ${{ secrets.GODADDY_SFTP_HOST }}
+          USER: ${{ secrets.GODADDY_SFTP_USER }}
+          KEY: ${{ secrets.GODADDY_SSH_KEY }}
+          KNOWN: ${{ secrets.GODADDY_SSH_KNOWN_HOSTS }}
+          TARGET: ${{ secrets.GODADDY_SFTP_PATH }}
+        run: |
+          missing=""
+          for v in HOST USER KEY KNOWN TARGET; do [ -n "${!v}" ] || missing="$missing $v"; done
+          if [ -n "$missing" ]; then echo "::error::missing secrets:$missing (your runbook § Secrets)"; exit 1; fi
+          case "$TARGET" in
+            */public_html/) ;;
+            *) echo "::error::GODADDY_SFTP_PATH must end in /public_html/ (got a different path)"; exit 1 ;;
+          esac
+
+      - name: Configure SSH
+        env:
+          KEY: ${{ secrets.GODADDY_SSH_KEY }}
+          KNOWN: ${{ secrets.GODADDY_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/godaddy
+          chmod 600 ~/.ssh/godaddy
+          printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      # Two passes: assets first, pages last, so no page is ever live before the chunks it loads.
+      # --checksum: only files whose content changed travel (checkout mtimes are meaningless).
+      - name: Upload to public_html
+        env:
+          HOST: ${{ secrets.GODADDY_SFTP_HOST }}
+          USER: ${{ secrets.GODADDY_SFTP_USER }}
+          PORT: ${{ secrets.GODADDY_SFTP_PORT || '22' }}
+          TARGET: ${{ secrets.GODADDY_SFTP_PATH }}
+        run: |
+          SSH="ssh -i $HOME/.ssh/godaddy -p $PORT -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts -o BatchMode=yes"
+          rsync -rlz --checksum --itemize-changes -e "$SSH" \
+            --exclude '*.html' --exclude '*.txt' \
+            out/ "$USER@$HOST:$TARGET"
+          rsync -rlz --checksum --itemize-changes -e "$SSH" \
+            --include '*/' --include '*.html' --include '*.txt' --exclude '*' \
+            out/ "$USER@$HOST:$TARGET"
+
+      - name: Remove the key
+        if: always()
+        run: rm -f ~/.ssh/godaddy

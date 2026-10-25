@@ -1,15 +1,12 @@
-import { readFile, writeFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { knowledgeDir } from './paths.mjs';
 
-const settingsPath = fileURLToPath(new URL('./knowledge/agents.json', import.meta.url));
+import { workflow, workflowPlan } from './workflow.mjs';
 
-export const agentDefinitions = [
-  { id: 'convenium-design-director', name: 'Convenium.Design', description: 'Keeps the brief, approval gates, and integrated outcome coherent.', skills: ['olympus-design-director', 'taste-first-experience-design'], budget: 6000, approval: false, priority: 10, triggers: ['project','brief','plan','orchestrate','system','design'], activation: 'A mission needs a single accountable direction and clear approval boundaries.' },
-  { id: 'athena-evidence', name: 'Athena', description: 'Turns evidence, constraints, and references into decision-ready strategy.', skills: ['ux-evidence-audit', 'reference-deconstruction', 'design-analytics'], budget: 4800, approval: false, priority: 8, triggers: ['audit','existing','reference','research','evidence','analytics','diagnose','strategy'], activation: 'Current-state evidence or a defensible design decision is needed.' },
-  { id: 'calliope-experience', name: 'Calliope', description: 'Shapes narrative, hierarchy, and an expressive but usable interface direction.', skills: ['concept-studio', 'impeccable'], budget: 5600, approval: false, priority: 7, triggers: ['design','redesign','concept','ux','ui','layout','story','interface'], activation: 'A product or page needs a distinct, human-readable experience direction.' },
-  { id: 'hephaestus-build', name: 'Hephaestus', description: 'Builds the approved experience with durable frontend craft and technical restraint.', skills: ['impeccable', 'awwwards-web-design', 'gsap-core', 'gsap-performance'], budget: 6500, approval: false, priority: 6, triggers: ['build','implement','code','frontend','html','css','component','motion'], activation: 'An approved direction is ready to become working interface code.' },
-  { id: 'hermes-delivery', name: 'Hermes', description: 'Coordinates assets, purposeful motion, verification, and a clear handoff.', skills: ['asset-director', 'visual-qa', 'gsap-performance'], budget: 4800, approval: true, priority: 5, triggers: ['asset','media','video','animate','motion','qa','verify','accessibility','ship'], activation: 'The work needs local media, motion planning, verification, or delivery evidence.' }
-];
+const settingsPath = join(knowledgeDir, 'agents.json');
+
+export const agentDefinitions = workflow.roles.map((role, index) => ({ ...role, description: role.responsibility, budget: 4000, approval: !role.readOnly, priority: 10-index, triggers: [role.activation, 'project'], phase: role.activation }));
 
 async function settings() {
   try { return JSON.parse(await readFile(settingsPath, 'utf8')); } catch { return {}; }
@@ -29,6 +26,7 @@ export async function updateAgent(id, input) {
     ...('approval' in input ? { approval: Boolean(input.approval) } : {}),
     ...('budget' in input ? { budget: Math.min(50_000, Math.max(500, Number(input.budget) || 1000)) } : {})
   };
+  await mkdir(knowledgeDir, {recursive:true});
   await writeFile(settingsPath, `${JSON.stringify(saved, null, 2)}\n`, 'utf8');
   return (await listAgents()).find(agent => agent.id === id);
 }
@@ -66,6 +64,38 @@ function loadoutSkills(agent, loadout, slots, prompt) {
 }
 
 export async function buildPlan(prompt, totalBudget = 30_000, options = {}) {
+  const { getActiveLoadout, listLoadouts } = await import('./systems.mjs');
+  const { slots } = await listLoadouts();
+  const loadout = options.loadout || (options.loadoutId ? (await listLoadouts()).loadouts.find(l => l.id === options.loadoutId) : await getActiveLoadout());
+  const plan = workflowPlan(prompt, totalBudget, options);
+  const roleSettings=Object.fromEntries(workflow.roles.map(role=>[role.id,{budget:4000,approval:false,enabled:true}]));
+  for(const [id,settings] of Object.entries(options.roleSettings||{})){
+    const role=workflow.roles.find(r=>r.id===id);if(!role)throw new Error('Unknown workflow role.');
+    if(!settings||Object.keys(settings).some(key=>!['budget','approval','enabled'].includes(key)))throw new Error('Unsupported role setting.');
+    if('budget' in settings&&(!Number.isInteger(settings.budget)||settings.budget<500||settings.budget>50000))throw new Error('Role budget must be 500–50000 tokens.');
+    if('approval' in settings&&typeof settings.approval!=='boolean'||'enabled' in settings&&typeof settings.enabled!=='boolean')throw new Error('Role switches must be boolean.');
+    if(settings.enabled===false&&!['media','analytics'].includes(role.activation))throw new Error('Required roles cannot be disabled.');
+    Object.assign(roleSettings[id],settings);
+  }
+  const weight=plan.steps.reduce((sum,step)=>sum+roleSettings[step.id].budget,0);
+  for(const step of plan.steps){step.budget=Math.floor(plan.requestedBudget*roleSettings[step.id].budget/weight);if(!roleSettings[step.id].enabled){step.status='blocked';step.blockedReasons.push('Role disabled in the current draft');}}
+  plan.allocatedBudget=plan.steps.reduce((sum,step)=>sum+step.budget,0);plan.roleSettings=roleSettings;
+  const owners = workflow.configurationSlots;
+  const currentSlots = slots.map(slot => ({...slot, owner:owners[slot.id]}));
+  for (const step of plan.steps) {
+    step.skills = loadoutSkills(step, loadout, currentSlots, String(prompt).toLowerCase());
+    step.approval = Boolean(step.gate || loadout?.budget?.approvals?.[step.id]||roleSettings[step.id].approval);
+  }
+  const { resolveLoadoutContext } = await import('./loadout-context.mjs');
+  const { context, profile } = await resolveLoadoutContext(loadout);
+  const choices = currentSlots.map(slot => `${slot.id}: ${loadout?.slots?.[slot.id] || slot.default} (${slot.owner})`).join('\n');
+  plan.context = [context, `Current configuration (reconstructed, not historical Savra settings):\n${choices}\nUse these capabilities only in their owner's active phase. Dormant roles stay dormant; configuration never grants approval.`].filter(Boolean).join('\n\n');
+  plan.loadout = loadout ? {id:loadout.id,name:loadout.name,slots:loadout.slots,designDna:loadout.designDna,roleSettings} : null;
+  plan.designDna = profile ? {profileId:profile.profileId,displayName:profile.displayName} : null;
+  return plan;
+}
+
+async function legacyBuildPlan(prompt, totalBudget = 30000, options = {}) {
   const normalized = String(prompt || '').toLowerCase();
   const { getActiveSystem, getActiveLoadout, listLoadouts } = await import('./systems.mjs');
   const system = await getActiveSystem();

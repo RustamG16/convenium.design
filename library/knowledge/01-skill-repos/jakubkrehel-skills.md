@@ -41,7 +41,7 @@ never be applied surgically.
 
 `variant` is the other notable one. Generating several treatments of one component is
 exactly the primitive needed for the multi-setup design approach in
-[../07-design-systems/](../07-design-systems/).
+[../../doctrines/](../../doctrines/).
 
 ## Overlap with installed
 

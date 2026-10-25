@@ -8,3 +8,12 @@
 *.mjs text eol=lf
 *.js text eol=lf
 
+
+# Generated trees: project.py always writes LF. Path rules beat extension rules
+# for files like *.tsx, *.sh, *.txt and extensionless scripts.
+.agents/** text eol=lf
+.claude/** text eol=lf
+.codex/agents/** text eol=lf
+apollo-studio/knowledge/** text eol=lf
+*.py text eol=lf
+*.sh text eol=lf

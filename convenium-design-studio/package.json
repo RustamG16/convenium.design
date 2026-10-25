@@ -8,17 +8,26 @@
     "start:once": "node server.mjs",
     "dev": "node --watch --watch-preserve-output server.mjs",
     "mcp": "node mcp-server.mjs",
-    "check": "npm run check:syntax && node scripts/ui-metrics.mjs --check && node scripts/ui-behaviour.mjs --check && node scripts/ui-shots.mjs",
-    "check:syntax": "node --check server.mjs && node --check mcp-server.mjs && node --check events.mjs && node --check systems.mjs && node --check public/app.js && node --check skills.mjs && node --check knowledge.mjs && node --check agents.mjs && node --check scripts/ui-metrics.mjs && node --check scripts/ui-shots.mjs && node --check scripts/ui-behaviour.mjs && node --check scripts/lib/harness.mjs && node --check scripts/lib/interact.mjs && node --check paths.mjs && node --check scripts/lib/cdp.mjs && node --check scripts/lib/probe.mjs && node --check scripts/lib/css-audit.mjs",
+    "check": "npm run check:syntax && npm run check:backend && npm run check:ui",
+    "check:syntax": "node --check server.mjs && node --check mcp-server.mjs && node --check events.mjs && node --check systems.mjs && node --check skills.mjs && node --check knowledge.mjs && node --check agents.mjs && node --check paths.mjs && node --check scripts/lib/cdp.mjs && node --check scripts/lib/harness.mjs && node scripts/check-modules.mjs",
     "metrics": "node scripts/ui-metrics.mjs",
     "metrics:baseline": "node scripts/ui-metrics.mjs --baseline",
-    "shots": "node scripts/ui-shots.mjs",
-    "behaviour": "node scripts/ui-behaviour.mjs"
+    "shots": "node scripts/ui-v2-fidelity.mjs",
+    "behaviour": "node scripts/ui-behaviour.mjs",
+    "check:backend": "node scripts/audit-knowledge.mjs && node --test scripts/savra-workflow.test.mjs scripts/savra-routing.test.mjs scripts/savra-artifacts.test.mjs scripts/savra-oracle.test.mjs scripts/agent-isolation.test.mjs scripts/fixture-output.test.mjs scripts/role-configuration.test.mjs scripts/state.test.mjs",
+    "check:ui": "node --test scripts/router-v2.test.mjs && node scripts/ui-v2-shell.mjs && node scripts/ui-v2-journey.mjs && node scripts/ui-v2-fidelity.mjs --check",
+    "check:legacy": "node --test scripts/router.test.mjs scripts/chat-first-route.test.mjs scripts/oracle.test.mjs scripts/workspace.test.mjs && node scripts/check-legacy.mjs && node scripts/ui-metrics.mjs --check && node scripts/ui-behaviour.mjs --check",
+    "fidelity": "node scripts/ui-v2-fidelity.mjs",
+    "tutorials": "node scripts/record-tutorials.mjs",
+    "audit:knowledge": "node scripts/audit-knowledge.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
     "lucide": "1.37.0"
+  },
+  "devDependencies": {
+    "playwright-core": "1.62"
   }
 }

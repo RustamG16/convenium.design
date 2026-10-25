@@ -10,10 +10,12 @@ Own one interpretation of the brief and route work through explicit gates. Never
 ## Start
 
 1. Read the attached system’s `START-HERE.md`, `AGENTS.md`, and `ARCHITECTURE.md`.
-2. Identify the website project and target route.
-3. Ask only unanswered intake questions from `START-HERE.md`.
-4. Create `<project>/.olympus/` and copy the relevant system templates there.
-5. Record phase and gate state in `.olympus/run.json`.
+2. Identify the project and what the user wants made.
+3. If `.olympus/brand-dna.json` does not exist, delegate the Brand DNA to the
+   `brand-strategist` specialist before anything else; it owns the business intake.
+4. Ask only the intake questions the Brand DNA and the brief leave unanswered.
+5. Create `<project>/.olympus/` and copy the relevant system templates there.
+6. Record phase and gate state in `.olympus/run.json`.
 
 ## Route the run
 
@@ -23,9 +25,11 @@ Own one interpretation of the brief and route work through explicit gates. Never
 - Invoke `$reference-deconstruction` only when approved references exist.
 - Greenfield: skip `$ux-evidence-audit`; `$reference-deconstruction` carries the evidence phase.
 - Write durable findings to `.olympus/01-audit.md`.
-- Resolve the direction block in `00-brief.md` from intake answers, references, and
-  `library/design-dna/`. If unresolved, run `$convenium-design-taste-interview` or `$convenium-design-style-picker`
-  and write the result to `library/design-dna/`.
+- Resolve the direction block in `00-brief.md` from `.olympus/brand-dna.json` (business,
+  taste, doctrine match), the intake answers and the references. If taste is still
+  unresolved, have the strategist run `$convenium-design-taste-interview` or `$convenium-design-style-picker`;
+  the result goes into `brand-dna.json → taste`, never into the Convenium.Design folder.
+- Confirm `neededProducts` with the user at Gate A: it decides what this run makes.
 - Stop for Gate A. Do not generate the direction or edit production code before approval.
 
 ### Direct

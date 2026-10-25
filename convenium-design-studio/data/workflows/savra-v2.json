@@ -1,0 +1,541 @@
+{
+  "id": "savra-v2",
+  "version": 1,
+  "configurationSlots": {
+    "craft": "design-engineer",
+    "direction": "design-director",
+    "evidence": "visual-analyst",
+    "structure": "visual-analyst",
+    "motion": "design-engineer",
+    "media": "asset-producer",
+    "copy": "design-director",
+    "verify": "independent-critic"
+  },
+  "configurationProvenance": { "status": "reconstructed", "source": "roles" },
+  "evidenceStatus": "reconstructed",
+  "sources": [
+    {
+      "id": "roles",
+      "path": ".codex/agents/",
+      "description": "Current Olympus role contracts, not a historical session transcript"
+    },
+    {
+      "id": "workflow",
+      "path": "START-HERE.md"
+    },
+    {
+      "id": "assets",
+      "path": "test_projects/Savra_v2/.olympus/05-asset-manifest.md"
+    },
+    {
+      "id": "plan",
+      "path": "test_projects/Savra_v2/.olympus/06-build-plan.md"
+    },
+    {
+      "id": "product",
+      "path": "test_projects/Savra_v2/PRODUCT.md"
+    },
+    {
+      "id": "design",
+      "path": "test_projects/Savra_v2/DESIGN.md"
+    },
+    {
+      "id": "qa",
+      "path": "test_projects/Savra_v2/.olympus/07-qa.md"
+    },
+    {
+      "id": "run",
+      "path": "test_projects/Savra_v2/.olympus/run.json"
+    }
+  ],
+  "roles": [
+    {
+      "id": "design-director",
+      "name": "Design Director",
+      "responsibility": "Own intake, one direction, routing, gates and integration.",
+      "skills": [
+        "olympus-design-director",
+        "concept-studio"
+      ],
+      "activation": "always",
+      "readOnly": false,
+      "canDelegate": false,
+      "provenance": {
+        "status": "reconstructed",
+        "source": "roles"
+      }
+    },
+    {
+      "id": "visual-analyst",
+      "name": "Visual Analyst",
+      "responsibility": "Read supplied media and existing-page evidence; do not author the direction.",
+      "skills": [
+        "reference-deconstruction",
+        "ux-evidence-audit"
+      ],
+      "activation": "evidence",
+      "readOnly": true,
+      "canDelegate": false,
+      "provenance": {
+        "status": "reconstructed",
+        "source": "roles"
+      }
+    },
+    {
+      "id": "asset-producer",
+      "name": "Asset Producer",
+      "responsibility": "Produce only assets named in an approved media manifest.",
+      "skills": [
+        "asset-director"
+      ],
+      "activation": "media",
+      "readOnly": false,
+      "canDelegate": false,
+      "provenance": {
+        "status": "reconstructed",
+        "source": "roles"
+      }
+    },
+    {
+      "id": "design-engineer",
+      "name": "Design Engineer",
+      "responsibility": "Implement the approved build plan and numeric design; perform author QA.",
+      "skills": [
+        "impeccable",
+        "awwwards-web-design",
+        "gsap-core",
+        "gsap-react",
+        "gsap-scrolltrigger",
+        "gsap-performance",
+        "visual-qa"
+      ],
+      "activation": "build",
+      "readOnly": false,
+      "canDelegate": false,
+      "provenance": {
+        "status": "reconstructed",
+        "source": "roles"
+      }
+    },
+    {
+      "id": "independent-critic",
+      "name": "Independent Critic",
+      "responsibility": "Score direction and finished implementation independently without edits.",
+      "skills": [
+        "award-rubric",
+        "visual-qa"
+      ],
+      "activation": "review",
+      "readOnly": true,
+      "canDelegate": false,
+      "provenance": {
+        "status": "reconstructed",
+        "source": "roles"
+      }
+    },
+    {
+      "id": "analytics-specialist",
+      "name": "Analytics Specialist",
+      "responsibility": "Measure an explicit goal only when analytics is in scope.",
+      "skills": [
+        "design-analytics"
+      ],
+      "activation": "analytics",
+      "readOnly": true,
+      "canDelegate": false,
+      "provenance": {
+        "status": "reconstructed",
+        "source": "roles"
+      }
+    }
+  ],
+  "phases": [
+    {
+      "id": "intake",
+      "owner": "design-director",
+      "inputs": [],
+      "outputs": [
+        "brief"
+      ],
+      "activation": "always",
+      "gate": null,
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "evidence",
+      "owner": "visual-analyst",
+      "inputs": [
+        "brief"
+      ],
+      "outputs": [
+        "references"
+      ],
+      "activation": "always",
+      "gate": null,
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "direction",
+      "owner": "design-director",
+      "inputs": [
+        "brief",
+        "references"
+      ],
+      "outputs": [
+        "direction"
+      ],
+      "activation": "always",
+      "gate": "A",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "direction-critique",
+      "owner": "independent-critic",
+      "inputs": [
+        "direction"
+      ],
+      "outputs": [
+        "critique"
+      ],
+      "activation": "always",
+      "gate": "A",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "asset-manifest",
+      "owner": "asset-producer",
+      "inputs": [
+        "direction",
+        "critique"
+      ],
+      "outputs": [
+        "assets"
+      ],
+      "activation": "media",
+      "gate": "B",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "design-system",
+      "owner": "design-director",
+      "inputs": [
+        "direction",
+        "critique"
+      ],
+      "outputs": [
+        "plan",
+        "product",
+        "design",
+        "decision"
+      ],
+      "activation": "always",
+      "gate": null,
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "build",
+      "owner": "design-engineer",
+      "inputs": [
+        "plan",
+        "design",
+        "assets"
+      ],
+      "outputs": [
+        "output"
+      ],
+      "activation": "always",
+      "gate": "B",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "author-qa",
+      "owner": "design-engineer",
+      "inputs": [
+        "output",
+        "design"
+      ],
+      "outputs": [
+        "qa"
+      ],
+      "activation": "always",
+      "gate": "B",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "finish-review",
+      "owner": "independent-critic",
+      "inputs": [
+        "output",
+        "design",
+        "qa"
+      ],
+      "outputs": [
+        "review"
+      ],
+      "activation": "always",
+      "gate": "B",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "repair",
+      "owner": "design-engineer",
+      "inputs": [
+        "review"
+      ],
+      "outputs": [
+        "output",
+        "qa"
+      ],
+      "activation": "repair",
+      "gate": "B",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "measure",
+      "owner": "analytics-specialist",
+      "inputs": [
+        "output",
+        "brief"
+      ],
+      "outputs": [
+        "metrics"
+      ],
+      "activation": "analytics",
+      "gate": "B",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "gate-c",
+      "owner": "design-director",
+      "inputs": [
+        "output",
+        "qa",
+        "review"
+      ],
+      "outputs": [
+        "run"
+      ],
+      "activation": "always",
+      "gate": "C",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    }
+  ],
+  "gates": [
+    {
+      "id": "A",
+      "requirement": "Reviewed brief",
+      "provenance": {
+        "status": "verified",
+        "source": "run"
+      }
+    },
+    {
+      "id": "B",
+      "requirement": "Current approved plan and numeric design",
+      "provenance": {
+        "status": "verified",
+        "source": "run"
+      }
+    },
+    {
+      "id": "C",
+      "requirement": "Author QA then independent review and user acceptance",
+      "provenance": {
+        "status": "verified",
+        "source": "run"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "brief",
+      "path": ".olympus/00-brief.md",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "references",
+      "path": ".olympus/01-audit.md",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "direction",
+      "path": ".olympus/02-concepts.md",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "critique",
+      "path": ".olympus/03-critique.md",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "decision",
+      "path": ".olympus/04-decision.md",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "assets",
+      "path": ".olympus/05-asset-manifest.md",
+      "provenance": {
+        "status": "verified",
+        "source": "assets"
+      }
+    },
+    {
+      "id": "plan",
+      "path": ".olympus/06-build-plan.md",
+      "provenance": {
+        "status": "verified",
+        "source": "plan"
+      }
+    },
+    {
+      "id": "product",
+      "path": "PRODUCT.md",
+      "provenance": {
+        "status": "verified",
+        "source": "product"
+      }
+    },
+    {
+      "id": "design",
+      "path": "DESIGN.md",
+      "provenance": {
+        "status": "verified",
+        "source": "design"
+      }
+    },
+    {
+      "id": "output",
+      "path": "src/App.tsx",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "qa",
+      "path": ".olympus/07-qa.md",
+      "provenance": {
+        "status": "verified",
+        "source": "qa"
+      }
+    },
+    {
+      "id": "review",
+      "path": ".olympus/10-finish-review.md",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    },
+    {
+      "id": "run",
+      "path": ".olympus/run.json",
+      "provenance": {
+        "status": "verified",
+        "source": "run"
+      }
+    },
+    {
+      "id": "metrics",
+      "path": ".olympus/08-metrics.md",
+      "provenance": {
+        "status": "reconstructed",
+        "source": "workflow"
+      }
+    }
+  ],
+  "policy": {
+    "maxRepairCycles": 2,
+    "maxReadOnlyWorkers": 2,
+    "authorCriticSequential": true,
+    "freshSessionBuild": true,
+    "oneDirection": true
+  },
+  "historical": {
+    "model": {
+      "value": null,
+      "provenance": {
+        "status": "unknown",
+        "source": "run"
+      }
+    },
+    "prompts": {
+      "value": null,
+      "provenance": {
+        "status": "unknown",
+        "source": "run"
+      }
+    },
+    "skillLoadOrder": {
+      "value": null,
+      "provenance": {
+        "status": "unknown",
+        "source": "run"
+      }
+    },
+    "hostSettings": {
+      "value": null,
+      "provenance": {
+        "status": "unknown",
+        "source": "run"
+      }
+    }
+  },
+  "limitations": [
+    "The final repository verifies artifacts and recorded results, not the original session model, hidden prompts, chronological skill loading order, or host settings.",
+    "Workflow routing is reconstructed from current Olympus contracts; missing intermediate historical artifacts are not invented.",
+    "Savra Gate C remains pending in its recorded run."
+  ]
+}

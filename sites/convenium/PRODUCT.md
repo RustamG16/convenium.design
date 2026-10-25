@@ -45,7 +45,7 @@ copy it because its content is a single life and its media is a single commissio
 - Media is served from Higgsfield's CDN by absolute URL (this build container cannot
   download it); the page must survive media that is slow or missing, so layout never
   depends on an image having loaded.
-- Published at `https://rustamg16.github.io/Apollo/convenium/`.
+- Published at `https://rustamg16.github.io/Convenium.Design/convenium/`.
 
 ## Capabilities and Constraints
 

@@ -64,7 +64,8 @@ export async function startServer({ scratchData = false, env = {} } = {}) {
     } catch { /* not up yet */ }
     await new Promise(r => setTimeout(r, 200));
   }
-  return { proc, base, dataDir };
+  // APOLLO_LEGACY_UI=1 points the legacy UI suites at the retained interface under /legacy/.
+  return { proc, base: process.env.APOLLO_LEGACY_UI ? base + '/legacy' : base, dataDir };
 }
 
 export async function evaluate(page, expression, options = {}) {

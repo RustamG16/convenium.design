@@ -1,0 +1,32 @@
+/* Totem-guided tutorials: spotlight, guide card, first-visit invite. */
+#tour-layer { position: relative; z-index: 70; }
+.tour-block { position: fixed; inset: 0; z-index: 70; }
+.tour-dim { position: fixed; inset: 0; background: rgba(8, 19, 22, .55); z-index: 70; }
+.tour-shade { position: fixed; z-index: 70; background: rgba(8, 19, 22, .55); }
+.tour-hole { position: fixed; z-index: 70; border-radius: .4rem; box-shadow: 0 0 0 2px var(--green-bright), 0 0 24px 4px rgba(6, 224, 139, .45); pointer-events: none; }
+.tour-card { position: fixed; z-index: 72; width: min(27rem, calc(100vw - 1.5rem)); display: grid; grid-template-columns: 6.4rem 1fr; align-items: end; gap: .2rem; animation: tour-in var(--dur-3) var(--ease); }
+@keyframes tour-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+.tour-totem { width: 6.6rem; height: 6.6rem; object-fit: contain; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .35)); align-self: end; margin-bottom: -.3rem; animation: totem-bob 3.6s ease-in-out infinite; }
+.pose-cheer .tour-totem { animation: totem-cheer .9s ease-in-out 2; }
+@keyframes totem-cheer { 30% { transform: translateY(-10px) rotate(-4deg); } 60% { transform: translateY(0) rotate(3deg); } }
+.tour-bubble { position: relative; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-pop); padding: .95rem 1.05rem .85rem; }
+.tour-bubble::before { content: ''; position: absolute; left: -9px; bottom: 1.4rem; border: 9px solid transparent; border-right-color: #fff; border-left: 0; filter: drop-shadow(-1px 0 0 var(--line)); }
+.tour-meta { display: flex; justify-content: space-between; align-items: center; font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--green); margin-bottom: .35rem; }
+.tour-meta span:first-child { display: inline-flex; align-items: center; gap: .35rem; }
+.tour-meta svg.i { width: .9rem; height: .9rem; }
+.tour-bubble h3 { margin: 0 0 .35rem; font-size: 1.02rem; font-weight: 800; text-transform: uppercase; line-height: 1.2; }
+.tour-bubble p { margin: 0; font-family: var(--font-sans); font-size: .84rem; line-height: 1.5; color: var(--ink-2); }
+.tour-action { display: flex; align-items: center; gap: .4rem; margin-top: .45rem !important; color: var(--blue) !important; font-weight: 500; }
+.tour-dots { display: flex; gap: .3rem; margin: .7rem 0 .55rem; }
+.tour-dots i { width: .45rem; height: .45rem; border-radius: 50%; background: #D7D8D3; }
+.tour-dots i.done { background: var(--green-line); } .tour-dots i.on { background: var(--green); width: 1.2rem; border-radius: .3rem; }
+.tour-actions { display: flex; align-items: center; gap: .5rem; justify-content: flex-end; }
+.tour-skip { margin-right: auto; color: var(--muted); }
+body.touring .dock { z-index: 30; }
+
+.tour-invite { position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 60; width: min(22rem, calc(100vw - 2rem)); display: grid; grid-template-columns: 5.2rem 1fr; gap: .6rem; align-items: end; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-pop); padding: .7rem .9rem .8rem .5rem; animation: tour-in var(--dur-3) var(--ease); }
+.tour-invite img { width: 5.2rem; height: 5.2rem; object-fit: contain; animation: totem-bob 3.6s ease-in-out infinite; }
+.tour-invite strong { display: block; font-size: .95rem; text-transform: uppercase; }
+.tour-invite p { margin: .25rem 0 .55rem; font-family: var(--font-sans); font-size: .8rem; color: var(--ink-2); }
+@media (max-width: 819px) { .tour-card { grid-template-columns: 4.6rem 1fr; } .tour-totem { width: 4.8rem; height: 4.8rem; } .tour-invite { bottom: 9rem; } }
+@media (prefers-reduced-motion: reduce) { .tour-totem, .tour-invite img, .tour-hole { animation: none !important; transition: none !important; } }

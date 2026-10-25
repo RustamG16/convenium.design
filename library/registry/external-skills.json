@@ -1,5 +1,5 @@
 {
-  "_comment": "Skill ids referenced but NOT owned as bodies in this library. plugin = installed Claude plugin (decision 9: never copied as a body). builtin = Anthropic-shipped. `seo-audit` was folded in during the unification then removed on 2026-09-03 (marketing, out of scope for a design system) - it is external again; its body still lives at C:/Users/Rustam Gurbanov/.claude/skills/seo-audit and the marketing-system-seed manifest in KnowledgeFactory.",
+  "_comment": "Skill ids referenced but NOT owned as bodies in this library: plugin = an installed host plugin, builtin = Anthropic-shipped. Convenium.Design prefers bundling: since 2026-10-08 apple-design, emil-design-eng, impeccable and every gsap-* skill are bundled bodies projected to all hosts, because host plugin sets vary between sessions on the same machine. `seo-audit` is external (marketing, out of scope for the design library).",
   "plugin": [
     "design:accessibility-review",
     "design:design-critique",
@@ -9,11 +9,6 @@
     "design:user-research",
     "design:ux-copy",
     "brightdata-plugin:competitive-intel",
-    "anthropic-skills:emil-design-eng",
-    "apple-design",
-    "impeccable",
-    "anthropic-skills:gsap-core",
-    "anthropic-skills:gsap-scrolltrigger",
     "dataviz",
     "seo-audit"
   ],

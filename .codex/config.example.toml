@@ -1,0 +1,6 @@
+# Optional: Apollo Studio MCP server for Codex. Codex does not expand a
+# project-dir variable, so replace <APOLLO_HOME> with this repo's absolute path.
+[mcp_servers.apollo]
+command = "node"
+args = ["<APOLLO_HOME>/apollo-studio/mcp-server.mjs"]
+required = false

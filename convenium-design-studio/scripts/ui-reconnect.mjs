@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';import {launch} from './lib/cdp.mjs';import {startServer,navigate,settle,evaluate} from './lib/harness.mjs';
+const server=await startServer({scratchData:true}),browser=await launch();
+try{const p=(await(await fetch(server.base+'/api/workspace')).json()).projects[0],page=await browser.newPage();
+ await navigate(page,server.base+`/#/projects/${p.id}/plan`);await settle(page,1900);
+ assert.ok(await evaluate(page,`!!document.querySelector('#journey-review-intake')`));
+ await page.send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:-1,uploadThroughput:-1});await settle(page,100);
+ const post=async command=>{const r=await fetch(server.base+`/api/projects/${p.id}/journey`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(command)});assert.equal(r.status,200);return r.json();};
+ const actor={kind:'user',id:'test'},operation={type:'batch',actor,operations:[{type:'artifact.save',artifact:{id:'brief-'+p.id,projectId:p.id,kind:'brief',content:{brief:{goal:'Fresh server goal'}}}},{type:'gate.approve',gate:'A',artifactId:'brief-'+p.id,actor}]};
+ const s=await post({type:'proposal.create',id:'reconnect',operation});await post({type:'proposal.resolve',id:'reconnect',operationHash:s.proposals[0].operationHash,approved:true,actor});await post({type:'proposal.apply',id:'reconnect'});
+ await page.send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});await settle(page,500);
+ assert.ok(await evaluate(page,`!!document.querySelector('#journey-create-plan')`),'Reconnect reloads changed server approval');
+ await evaluate(page,`location.hash='#/projects/${p.id}/home'`);await settle(page,200);
+ await evaluate(page,`document.querySelector('#journey-goal').value='Unsaved offline goal'`);
+ await page.send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:-1,uploadThroughput:-1});await settle(page,100);
+ await page.send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});await settle(page,400);
+ assert.equal(await evaluate(page,`document.querySelector('#journey-goal').value`),'Unsaved offline goal');
+ await evaluate(page,`location.hash='#/projects/${p.id}/work/${p.chats[0].id}'`);await settle(page,250);
+ await page.send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:-1,uploadThroughput:-1});await settle(page,100);
+ assert.equal(await evaluate(page,`document.querySelector('#new-chat').disabled`),true,'Offline chat creation disabled');
+ assert.equal(await evaluate(page,`document.querySelector('#work-composer button[type="submit"]').disabled`),true,'Offline send disabled while draft stays editable');
+ console.log('Reconnect refreshes canonical state and preserves input PASS');
+}finally{await browser.close();server.proc.kill();}

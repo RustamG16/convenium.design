@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "convenium-design": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${CLAUDE_PROJECT_DIR}/convenium-design-studio/mcp-server.mjs"],
+      "env": {}
+    }
+  }
+}

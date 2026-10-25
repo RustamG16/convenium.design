@@ -1,1 +1,0 @@
-{"root":["./src/app.tsx","./src/assets.ts","./src/main.tsx","./src/components/beatopening.tsx","./src/components/beatpass.tsx","./src/components/beats.tsx","./src/components/closing.tsx","./src/components/doors.tsx","./src/components/header.tsx","./src/components/placeholder.tsx","./src/components/reservation.tsx","./src/lib/motion.ts"],"version":"5.8.3"}

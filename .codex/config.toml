@@ -2,7 +2,5 @@
 enabled = true
 max_concurrent_threads_per_session = 2
 
-[mcp_servers.convenium-design]
-command = "node"
-args = ["D:/Analyst_Designer/Convenium.Design/convenium-design-studio/mcp-server.mjs"]
-required = true
+# The Convenium.Design Studio MCP server is optional and machine-specific. To enable it,
+# copy the block from .codex/config.example.toml and set the absolute path.

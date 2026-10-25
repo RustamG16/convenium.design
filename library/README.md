@@ -29,8 +29,11 @@ library/
 
 - `name:` in a skill's frontmatter **must equal its folder name**.
 - Precedence when stores disagree, highest wins: a real `SKILL.md` body → a
-  `sources/upstream/` copy → an ConveniumDesign_claude copy → a `runtimePrompt`-only entry (a stub).
-- Plugin skills are never copied here as bodies — they are declared in
+  `sources/upstream/` copy → an Apollo_claude copy → a `runtimePrompt`-only entry (a stub).
+- **Bundle, don't depend.** Anything a pipeline phase or an agent's `skills:` list needs is a
+  body here and is projected to every host. Host plugin sets change between sessions on the
+  same machine, so a route to a plugin skill works some days and not others. Skills Convenium.Design
+  only *mentions* and does not own (design:*, builtin document skills) are declared in
   `registry/external-skills.json`.
-- A skill whose bare name collides with an installed plugin skill keeps its file here but
-  its registry `hosts` **excludes `claude`**, so the projection never shadows the plugin.
+- Name collisions with personal or plugin skills are resolved by installing Convenium.Design as a
+  Claude Code plugin (skills become `convenium-design:<id>`), not by withholding the body.

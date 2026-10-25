@@ -1,0 +1,26 @@
+{
+  "name": "convenium-design",
+  "version": "0.4.0",
+  "description": "Gated design agency: a Brand DNA strategist, one Design Director and five specialists that take a business from intake to a verified, built design.",
+  "author": {
+    "name": "Rustam Gurbanov"
+  },
+  "repository": "https://github.com/RustamG16/convenium.design",
+  "license": "SEE LICENSE IN third-party/VERSIONS.md",
+  "keywords": [
+    "design",
+    "website",
+    "brand",
+    "agents"
+  ],
+  "skills": "./.claude/skills/",
+  "agents": [
+    "./.claude/agents/analytics-specialist.md",
+    "./.claude/agents/asset-producer.md",
+    "./.claude/agents/brand-strategist.md",
+    "./.claude/agents/design-director.md",
+    "./.claude/agents/design-engineer.md",
+    "./.claude/agents/independent-critic.md",
+    "./.claude/agents/visual-analyst.md"
+  ]
+}

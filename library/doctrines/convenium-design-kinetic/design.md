@@ -54,8 +54,11 @@ Atelier) or a data-dense tool (see Instrument).
 
 ## Who builds it
 
-The `convenium-design-kinetic` agent sets the design direction; `hephaestus` implements the actual
-motion. This file is reference documentation, not an executable skill.
+No agent is named after a doctrine. The `design-director` selects this doctrine at intake
+(from the client's `.olympus/brand-dna.json` or the brief), commits its tokens as numbers in
+the project's `DESIGN.md`, and `design-engineer` builds from that. New media is planned by
+`asset-director` and produced by `asset-producer`. This file is reference documentation,
+not an executable skill — read it, don't invoke it.
 
 ## Related
 

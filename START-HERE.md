@@ -1,6 +1,6 @@
 # Start Olympus
 
-Read this file completely before taking action. Then read `AGENTS.md` and `ARCHITECTURE.md` in this folder. Treat this folder as read-only reusable operating context. Put every project-specific artifact in `<website-project>/.olympus/`.
+Read this file completely before taking action. It comes third in the read order defined in `ARCHITECTURE-ESSENTIALS.md` (essentials → `AGENTS.md` → this file); open `ARCHITECTURE.md` only when a decision needs the full routing table. Treat this folder as read-only reusable operating context. Put every project-specific artifact in `<website-project>/.olympus/`.
 
 ## Your role
 
@@ -15,17 +15,21 @@ not run the intake round. Resolve these fields from the brief and the supplied m
 record them in `00-brief.md` as *director-resolved*, state in one line what you resolved and
 what you assumed, and continue to the plan.
 
-Otherwise, ask these questions (following the intake bound in `AGENTS.md`):
+Otherwise, start with the business, not the page. If the project has no
+`.olympus/brand-dna.json`, delegate the Brand DNA to the `brand-strategist` specialist: it
+reads whatever public presence the business has, runs one concise interview for the rest
+(offer, best customer, why they win, voice, what must not change, what to make first), and
+writes `brand-dna.json` + `BRAND.md`. Then ask only what is still open (following the intake
+bound in `AGENTS.md`):
 
-1. Which project folder and exact page/route should be redesigned?
-2. What is the page’s primary business goal and one action visitors should take?
-3. Who is the primary audience?
-4. What must remain unchanged: copy, brand, components, framework, integrations, or deadline?
-5. Which references should define the taste direction, and what specifically is liked about each?
-6. Which source assets exist: logo/vector, fonts and licenses, photos/video, brand guide, Figma, analytics, or product renders?
-7. Is the first run **concept only** or **concept + implementation**?
+1. Which project folder — and for a website, which page/route?
+2. Which source assets exist: logo/vector, fonts and licenses, photos/video, brand guide, Figma, analytics, or product renders?
+3. Is the first run **concept only** or **concept + implementation**?
 
-After the reply, restate the brief and explicitly ask for Gate A approval. Do not edit production code before Gate A.
+A question the Brand DNA already answers is never asked again.
+
+After the reply, restate the brief — including the `neededProducts` list from the Brand
+DNA, which decides what this run makes — and explicitly ask for Gate A approval. Do not edit production code before Gate A.
 
 ## Run sequence
 
@@ -46,6 +50,12 @@ Abridged is not a shortcut, it is the correct shape when the plan *is* the brief
 produced the best result this system has made was abridged: a plan-mode creative brief, then
 implementation in a fresh session, then `05`–`10`.
 
+**A scoped repair request on an implemented site is abridged, not a redesign.** "Rebuild the
+mobile resolution", "the phone pages are too long", "optimize mobile" means: kick off from
+`templates/prompts/mobile-app-grade-pass.md`, load `mobile-app-shell` and only it at build
+(verification stays `visual-qa`), and leave direction, palette and the committed type ramp
+untouched. No intake round, no new concepts, no other skill bodies.
+
 Before project work, also create the six concise root context files from
 `templates/project-context/` when they do not exist: `PRD.md`, `ARCHITECTURE.md`,
 `ARCHITECTURE-ESSENTIALS.md`, `AGENTS.md`, `CODEX.md`, and
@@ -63,7 +73,7 @@ Deliver `01-audit.md` with screenshots/evidence, severity, affected users, and t
 
 ### Gate A — approve the brief
 
-Resolve the direction block in `00-brief.md` from the intake answers, the supplied references, and `library/design-dna/`. If it is still unresolved, run `$convenium-design-taste-interview` or `$convenium-design-style-picker` now and write the result to `library/design-dna/`. Then show the interpreted problem, audience, constraints, success signal, missing assets, and the frozen direction. Wait for approval or corrections.
+Resolve the direction block in `00-brief.md` from `.olympus/brand-dna.json` (doctrine match, taste, voice, constraints), the intake answers and the supplied references. If taste is still unresolved, have the strategist run `$convenium-design-taste-interview` or `$convenium-design-style-picker` now; the result goes into `brand-dna.json → taste`. Then show the interpreted problem, audience, constraints, success signal, missing assets, and the frozen direction. Wait for approval or corrections.
 
 ### 2. Create the direction
 

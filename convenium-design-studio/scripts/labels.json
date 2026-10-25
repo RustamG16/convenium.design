@@ -101,7 +101,7 @@
       "view": "architecture",
       "label": "Agent in a phase lane",
       "postcondition": "Navigates to the loadout slot that agent owns.",
-      "assert": "return location.hash === '#/systems';"
+      "assert": "return location.hash === '#/plan/configure' && document.querySelector('#systems').classList.contains('is-active') && document.querySelector('[data-global-route=plan]').getAttribute('aria-current') === 'page';"
     },
     {
       "selector": "architecture|button.workflow-node.input-node",
@@ -385,7 +385,343 @@
       "view": "architecture",
       "label": "Change what it carries",
       "postcondition": "Navigates to the loadout editor.",
-      "assert": "return location.hash === '#/systems';"
+      "assert": "return location.hash === '#/plan/configure' && document.querySelector('#systems').classList.contains('is-active') && document.querySelector('[data-global-route=plan]').getAttribute('aria-current') === 'page';"
+    },
+    {
+      "selector": "#oracle-text-mode",
+      "view": "chrome",
+      "label": "Text",
+      "postcondition": "Focuses the contextual text field.",
+      "assert": "return document.activeElement.id === 'oracle-context-input';"
+    },
+    {
+      "selector": "#oracle-voice-mode",
+      "view": "chrome",
+      "label": "Voice unavailable",
+      "postcondition": "Explains voice is unavailable and cannot activate it.",
+      "assert": "return document.querySelector('#oracle-voice-mode').disabled;"
+    },
+    {
+      "selector": "#agents-workflow-primary",
+      "view": "agents",
+      "label": "Opens systems",
+      "postcondition": "Opens systems",
+      "assert": "return document.querySelector('#systems').classList.contains('is-active');"
+    },
+    {
+      "selector": "#architecture-workflow-primary",
+      "view": "architecture",
+      "label": "Opens systems",
+      "postcondition": "Opens systems",
+      "assert": "return document.querySelector('#systems').classList.contains('is-active');"
+    },
+    {
+      "selector": "#systems-workflow-primary",
+      "view": "systems",
+      "label": "Opens playground",
+      "postcondition": "Opens playground",
+      "assert": "return document.querySelector('#playground').classList.contains('is-active');"
+    },
+    {
+      "selector": "#system-show-graph",
+      "view": "architecture",
+      "label": "Shows the optional phase graph",
+      "postcondition": "Shows the optional phase graph",
+      "assert": "return !document.querySelector('.receipt-graph').hidden;"
+    },
+    {
+      "selector": "#knowledge-show-connections",
+      "view": "knowledge",
+      "label": "Shows the evidence connections",
+      "postcondition": "Shows the evidence connections",
+      "assert": "return !document.querySelector('.receipt-knowledge-graph').hidden;"
+    },
+    {
+      "selector": "#knowledge-open-evidence",
+      "view": "knowledge",
+      "label": "Opens the selected source text in the inspector",
+      "postcondition": "Opens the selected source text in the inspector",
+      "assert": "return !!document.querySelector('[data-evidence-inspector] pre');"
+    },
+    {
+      "selector": "#phase-list-intake",
+      "view": "architecture",
+      "label": "Selects intake in graph and inspector",
+      "postcondition": "Selects intake in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"intake\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='intake';"
+    },
+    {
+      "selector": "#phase-list-evidence",
+      "view": "architecture",
+      "label": "Selects evidence in graph and inspector",
+      "postcondition": "Selects evidence in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"evidence\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='evidence';"
+    },
+    {
+      "selector": "#phase-list-direction",
+      "view": "architecture",
+      "label": "Selects direction in graph and inspector",
+      "postcondition": "Selects direction in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"direction\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='direction';"
+    },
+    {
+      "selector": "#phase-list-direction-critique",
+      "view": "architecture",
+      "label": "Selects direction-critique in graph and inspector",
+      "postcondition": "Selects direction-critique in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"direction-critique\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='direction-critique';"
+    },
+    {
+      "selector": "#phase-list-asset-manifest",
+      "view": "architecture",
+      "label": "Selects asset-manifest in graph and inspector",
+      "postcondition": "Selects asset-manifest in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"asset-manifest\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='asset-manifest';"
+    },
+    {
+      "selector": "#phase-list-design-system",
+      "view": "architecture",
+      "label": "Selects design-system in graph and inspector",
+      "postcondition": "Selects design-system in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"design-system\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='design-system';"
+    },
+    {
+      "selector": "#phase-list-build",
+      "view": "architecture",
+      "label": "Selects build in graph and inspector",
+      "postcondition": "Selects build in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"build\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='build';"
+    },
+    {
+      "selector": "#phase-list-author-qa",
+      "view": "architecture",
+      "label": "Selects author-qa in graph and inspector",
+      "postcondition": "Selects author-qa in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"author-qa\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='author-qa';"
+    },
+    {
+      "selector": "#phase-list-finish-review",
+      "view": "architecture",
+      "label": "Selects finish-review in graph and inspector",
+      "postcondition": "Selects finish-review in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"finish-review\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='finish-review';"
+    },
+    {
+      "selector": "#phase-list-repair",
+      "view": "architecture",
+      "label": "Selects repair in graph and inspector",
+      "postcondition": "Selects repair in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"repair\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='repair';"
+    },
+    {
+      "selector": "#phase-list-measure",
+      "view": "architecture",
+      "label": "Selects measure in graph and inspector",
+      "postcondition": "Selects measure in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"measure\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='measure';"
+    },
+    {
+      "selector": "#phase-list-gate-c",
+      "view": "architecture",
+      "label": "Selects gate-c in graph and inspector",
+      "postcondition": "Selects gate-c in graph and inspector",
+      "assert": "return document.querySelector('[data-phase-node=\"gate-c\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-phase-inspector] h3').textContent==='gate-c';"
+    },
+    {
+      "selector": "#evidence-row-brief",
+      "view": "knowledge",
+      "label": "Selects brief source evidence",
+      "postcondition": "Selects brief source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"brief\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"brief\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-references",
+      "view": "knowledge",
+      "label": "Selects references source evidence",
+      "postcondition": "Selects references source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"references\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"references\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-direction",
+      "view": "knowledge",
+      "label": "Selects direction source evidence",
+      "postcondition": "Selects direction source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"direction\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"direction\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-critique",
+      "view": "knowledge",
+      "label": "Selects critique source evidence",
+      "postcondition": "Selects critique source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"critique\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"critique\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-decision",
+      "view": "knowledge",
+      "label": "Selects decision source evidence",
+      "postcondition": "Selects decision source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"decision\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"decision\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-assets",
+      "view": "knowledge",
+      "label": "Selects assets source evidence",
+      "postcondition": "Selects assets source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"assets\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"assets\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-plan",
+      "view": "knowledge",
+      "label": "Selects plan source evidence",
+      "postcondition": "Selects plan source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"plan\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"plan\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-product",
+      "view": "knowledge",
+      "label": "Selects product source evidence",
+      "postcondition": "Selects product source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"product\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"product\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-design",
+      "view": "knowledge",
+      "label": "Selects design source evidence",
+      "postcondition": "Selects design source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"design\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"design\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-output",
+      "view": "knowledge",
+      "label": "Selects output source evidence",
+      "postcondition": "Selects output source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"output\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"output\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-qa",
+      "view": "knowledge",
+      "label": "Selects qa source evidence",
+      "postcondition": "Selects qa source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"qa\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"qa\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-review",
+      "view": "knowledge",
+      "label": "Selects review source evidence",
+      "postcondition": "Selects review source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"review\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"review\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-run",
+      "view": "knowledge",
+      "label": "Selects run source evidence",
+      "postcondition": "Selects run source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"run\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"run\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#evidence-row-metrics",
+      "view": "knowledge",
+      "label": "Selects metrics source evidence",
+      "postcondition": "Selects metrics source evidence",
+      "assert": "return document.querySelector('[data-evidence-row=\"metrics\"]').getAttribute('aria-pressed')==='true' && document.querySelector('[data-evidence-node=\"metrics\"]').getAttribute('aria-pressed')==='true';"
+    },
+    {
+      "selector": "#journey-work-plan",
+      "view": "work",
+      "label": "Opens the project plan",
+      "postcondition": "Opens the project plan",
+      "assert": "return document.querySelector('#plan').classList.contains('is-active');"
+    },
+    {
+      "selector": "#journey-compare",
+      "view": "playground",
+      "label": "Runs the deterministic routing comparison",
+      "postcondition": "Runs the deterministic routing comparison",
+      "assert": "return document.querySelector('#journey-comparison').textContent.includes('contract checks passed');"
+    },
+    {
+      "selector": "#journey-apply-setup",
+      "view": "playground",
+      "label": "Reviews Setup B or remains unavailable before a tested plan",
+      "postcondition": "Reviews Setup B or remains unavailable before a tested plan",
+      "assert": "return document.querySelector('#journey-apply-setup').disabled || !!document.querySelector('#journey-proposal[open]');"
+    },
+    {
+      "selector": "#journey-begin-intake",
+      "view": "oracle",
+      "label": "Starts intake or explains the missing goal",
+      "postcondition": "Starts intake or explains the missing goal",
+      "assert": "return !!document.querySelector('#journey-answer') || document.querySelector('[data-journey-status]').textContent.length>0;"
+    },
+    {
+      "selector": "#configure-role-design-director",
+      "view": "systems",
+      "label": "Inspect Design Director",
+      "postcondition": "Inspect Design Director",
+      "assert": "return document.querySelector('[data-role-inspector] h2').textContent===\"Design Director\";"
+    },
+    {
+      "selector": "#configure-role-visual-analyst",
+      "view": "systems",
+      "label": "Inspect Visual Analyst",
+      "postcondition": "Inspect Visual Analyst",
+      "assert": "return document.querySelector('[data-role-inspector] h2').textContent===\"Visual Analyst\";"
+    },
+    {
+      "selector": "#configure-role-asset-producer",
+      "view": "systems",
+      "label": "Inspect Asset Producer",
+      "postcondition": "Inspect Asset Producer",
+      "assert": "return document.querySelector('[data-role-inspector] h2').textContent===\"Asset Producer\";"
+    },
+    {
+      "selector": "#configure-role-design-engineer",
+      "view": "systems",
+      "label": "Inspect Design Engineer",
+      "postcondition": "Inspect Design Engineer",
+      "assert": "return document.querySelector('[data-role-inspector] h2').textContent===\"Design Engineer\";"
+    },
+    {
+      "selector": "#configure-role-independent-critic",
+      "view": "systems",
+      "label": "Inspect Independent Critic",
+      "postcondition": "Inspect Independent Critic",
+      "assert": "return document.querySelector('[data-role-inspector] h2').textContent===\"Independent Critic\";"
+    },
+    {
+      "selector": "#configure-role-analytics-specialist",
+      "view": "systems",
+      "label": "Inspect Analytics Specialist",
+      "postcondition": "Inspect Analytics Specialist",
+      "assert": "return document.querySelector('[data-role-inspector] h2').textContent===\"Analytics Specialist\";"
+    },
+    {
+      "selector": "#role-reset",
+      "view": "systems",
+      "label": "Reset draft to the applied plan",
+      "postcondition": "Reset draft to the applied plan",
+      "assert": "return document.querySelector('[data-role-configuration] .receipt-status').textContent.includes('Draft reset');"
+    },
+    {
+      "selector": "#role-approval",
+      "view": "systems",
+      "label": "Save the additional role review request in the local draft",
+      "postcondition": "Save the additional role review request in the local draft",
+      "assert": "return document.querySelector('[data-role-configuration] .receipt-status').textContent.includes('Draft saved locally');"
+    },
+    {
+      "selector": "#role-enabled",
+      "view": "systems",
+      "label": "Change optional participation without enabling a required phase",
+      "postcondition": "Change optional participation without enabling a required phase",
+      "assert": "return document.querySelector('#role-enabled').disabled || document.querySelector('[data-role-configuration] .receipt-status').textContent.includes('Draft saved locally');"
+    },
+    {
+      "selector": "#role-undo",
+      "view": "systems",
+      "label": "Restore previous draft",
+      "postcondition": "Restores the draft before reset",
+      "assert": "return document.querySelector('[data-role-configuration] .receipt-status').textContent.includes('Previous draft restored');"
     }
   ]
 }

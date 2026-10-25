@@ -1,57 +1,177 @@
-# Olympus Designer System 1
+# Convenium.Design
 
-Olympus is a portable context pack for redesigning an existing website page. It is deliberately a **gated studio**, not an autonomous swarm: one design director owns the run, specialist roles are activated only when needed, and implementation cannot begin until a human selects a concept.
+Convenium.Design is a portable, gated design-orchestration system: one persistent **Design Director**
+routes an evidence-based website redesign through explicit approval gates, activating a skill
+or specialist only when its routing condition is true. It is deliberately not an "everything
+at once" swarm — implementation cannot begin until a human selects a concept, and every run
+leaves a verifiable trace (`.olympus/` in the target project).
 
-## Convenium.Design Orchestration Studio
+This repository is the **system** — reusable, host-neutral operating context. It never holds
+project-specific decisions or evidence; those belong in `<website-project>/.olympus/`.
 
-The working architecture console and same-prompt skill-comparison playground live in [`convenium-design-studio/`](convenium-design-studio/). Start it with:
+## Read order
+
+New to this repo (human or agent)? Read in this order:
+
+1. [`ARCHITECTURE-ESSENTIALS.md`](ARCHITECTURE-ESSENTIALS.md) — one screen: what Convenium.Design is, the
+   run, where things live.
+2. [`AGENTS.md`](AGENTS.md) — the full operating doctrine. This is the single source of truth
+   for both hosts; `CLAUDE.md` and `PROMPT.md` only add host-specific mechanics on top.
+3. [`START-HERE.md`](START-HERE.md) — the gated workflow and the intake questions.
+4. [`USAGE.md`](USAGE.md) — the human runbook: kickoff prompts for Claude Code and Codex, the
+   gates explained in three sentences, follow-up commands.
+5. Then only what the current decision needs: [`ARCHITECTURE.md`](ARCHITECTURE.md) for the full
+   routing table, a `library/doctrines/<name>/design.md` for a chosen doctrine, a specific
+   `library/agents/<name>.md` before delegating.
+
+## Set up on a new device
+
+### Prerequisites
+
+| Tool | Version | Used for |
+|---|---|---|
+| [Git](https://git-scm.com/) | any recent | cloning, version control |
+| [Node.js](https://nodejs.org/) | ≥ 20 | Convenium.Design Studio (`convenium-design-studio/`) |
+| [Python](https://www.python.org/) | 3.9+ (stdlib only) | `library/tools/*.py` — projecting and verifying the skill library |
+| PowerShell | 5.1+ (Windows) or [PowerShell 7](https://github.com/PowerShell/PowerShell) (macOS/Linux) | `scripts/*.ps1` validators |
+
+No API keys are required to use the system itself. `convenium-design-studio` runs in demo mode without
+credentials and switches to live mode only if `OPENAI_API_KEY` is set in its process
+environment — never commit that key.
+
+### Windows: enable long paths first
+
+The skill library has deeply nested paths (some vendored skills, e.g. under
+`remotion-best-practices/`, nest 6+ levels deep). Windows' default 260-character path limit can
+break `git clone`'s checkout step with `Filename too long` errors — set this **before**
+cloning:
 
 ```powershell
-cd D:\Analyst_Designer\Convenium.Design\convenium-design-studio
-npm.cmd start
+git config --global core.longpaths true
 ```
 
-Then open `http://127.0.0.1:4173`. It runs safely in demo mode without credentials and switches to live OpenAI Responses mode when `OPENAI_API_KEY` is present in the server process.
+If you still hit path-length errors afterward (rare, only on deeply nested user profile paths),
+also lift the OS-level limit once, as Administrator, then reboot:
 
-## Use it with any project
+```powershell
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
+  -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+```
 
-1. Attach this `system1` folder and the website project folder to the same Codex task.
-2. Tell Codex: **“Read `system1/START-HERE.md` completely and follow it. My website project is `<project-folder>`.”**
-3. Codex must ask the intake questions in `START-HERE.md` before auditing or editing.
-4. Approve the direction at Gate B.
-5. Review the verified implementation at Gate C.
+Cloning to a short root path (e.g. `D:\Convenium.Design` rather than a deeply nested `Documents`
+folder) further reduces the risk.
 
-Do not copy this system into the website. Project-specific decisions and evidence belong in `<project>/.olympus/`; this folder remains reusable and unchanged.
+### Clone and verify
+
+```bash
+git clone https://github.com/RustamG16/convenium.design.git
+cd Convenium.Design
+```
+
+Check the clone and this machine — stdlib Python, no installs:
+
+```bash
+python library/tools/apollo.py doctor
+```
+
+It runs `verify.py` (the single health check: library, registry, agents, generated trees,
+plugin manifest) and then warns about anything that makes Convenium.Design behave differently here than
+elsewhere — personal skills with the same names as Convenium.Design's, a retired global Convenium.Design, absolute
+paths. It must report `verify clean` before you trust the clone.
+
+### Install for Claude Code (recommended: as a plugin)
+
+```text
+/plugin marketplace add RustamG16/convenium.design        (or a local path to this folder)
+/plugin install convenium-design@convenium-design
+```
+
+The plugin carries every Convenium.Design skill and agent, namespaced (`apollo:gsap-core`,
+`apollo:design-director`), so nothing collides with skills you have installed personally.
+Without the plugin, start Claude Code with `claude --add-dir <this folder>` instead.
+
+### Attach a project (both hosts)
+
+```bash
+python library/tools/apollo.py attach <your-project>
+```
+
+This writes `.olympus/APOLLO.md` (where Convenium.Design lives on this machine, what to read first) and a
+short pointer block in the project's `AGENTS.md`/`CLAUDE.md`. Convenium.Design itself is never copied in.
+`.olympus/` is gitignored by default so client research stays private; pass
+`--commit-olympus` to keep the run trail in the project's history. `detach` reverses it.
+
+### Optional: Convenium.Design Studio (the local console)
+
+```bash
+cd convenium-design-studio
+npm install
+npm start
+```
+
+Then open `http://127.0.0.1:4173`. `npm run check` syntax-checks the whole studio (server,
+scripts, and public JS) — run it after `npm install` to confirm the clone is healthy.
+
+### MCP wiring (optional)
+
+The Convenium.Design Studio MCP server is off by default, so a session never depends on the optional
+console. To turn it on in Claude Code, copy `.mcp.json.example` to `.mcp.json` (it uses
+`${CLAUDE_PROJECT_DIR}`, so no per-device edits). For Codex, copy the block from
+`.codex/config.example.toml` into `.codex/config.toml` and set the path.
 
 ## What is included
 
-- `START-HERE.md` — the only kickoff instruction you need to reference.
-- `AGENTS.md` — operating rules Codex should obey while this folder is attached.
-- `ARCHITECTURE.md` — the complete routing model and skill/MCP map.
-- `.agents/skills/` — focused skills for audit, concepts, assets, motion, WebGL, analytics, and QA.
-- `.codex/agents/` — optional specialist roles. They are never all launched together.
-- `templates/` — stable output contracts for every run.
-- `config/MCP-SETUP.md` — optional connections and their activation rules.
+| Path | Holds |
+|---|---|
+| `library/` | **Source of truth** — skills, agents, doctrines, registry, design DNA. Edit only here. |
+| `.claude/`, `.agents/`, `.codex/` | **Generated, disposable** projections of `library/` for each host. Never edit directly — rebuild with `python library/tools/project.py all`. |
+| `convenium-design-studio/` | Optional local control plane / same-prompt skill-comparison console (Node ≥ 20). |
+| `templates/` | Stable output contracts for every run (`00-brief.md` … `10-finish-review.md`, `run.json`). |
+| `config/MCP-SETUP.md` | Optional external MCP connections and their activation rules. |
+| `test_projects/` | Device-specific test/demo projects. **Gitignored** — each one is its own independent git repo, never tracked or pushed as part of Convenium.Design. |
+| `scripts/` | Thin PowerShell wrappers around `library/tools/verify.py`, kept for existing habits. |
+| `unused/` | Retired plans, skills and experiments, kept instead of deleted. Nothing reads it; see `unused/README.md`. |
 
-The skill folder also vendors the requested [Impeccable](https://github.com/pbakaus/impeccable) package and [GreenSock’s official GSAP skills](https://github.com/greensock/gsap-skills). Exact upstream commits and licenses are recorded in `third-party/`.
+The skill library also vendors the requested
+[Impeccable](https://github.com/pbakaus/impeccable) package and
+[GreenSock's official GSAP skills](https://github.com/greensock/gsap-skills). Exact upstream
+commits and licenses are recorded in `third-party/`.
+
+## Use it with a website project
+
+1. Attach this repo and the website project folder to the same Claude Code / Codex session.
+2. Send the kickoff prompt from [`USAGE.md`](USAGE.md) (host-specific — Claude Code and Codex
+   have slightly different phrasing).
+3. The agent must ask the intake questions in `START-HERE.md` before auditing or editing.
+4. Approve the direction at Gate B.
+5. Review the verified implementation at Gate C.
+
+Do not copy this system into the website. Project-specific decisions and evidence belong in
+`<project>/.olympus/`; this repo stays reusable and unchanged by any single project's run.
 
 ## Core promise
 
-The system separates four kinds of work that broad “make it award-winning” prompts usually collapse together:
+The system separates four kinds of work that broad "make it award-winning" prompts usually
+collapse together:
 
-1. Evidence: what is wrong and why.
-2. Direction: one direction, resolved at intake from the questionnaire and taste profile.
-3. Production: only the chosen direction, with an explicit asset plan.
-4. Verification: browser evidence, analytics, and an independent critique.
+1. **Evidence** — what is wrong and why.
+2. **Direction** — one direction, resolved at intake from the questionnaire and taste profile.
+3. **Production** — only the chosen direction, with an explicit asset plan.
+4. **Verification** — browser evidence, analytics, and an independent critique.
 
-That separation is the main defense against wasted tokens, random redesigns, and polished-but-wrong output.
+That separation is the main defense against wasted tokens, random redesigns, and
+polished-but-wrong output.
 
-## Validate the pack
+## Maintaining the library
 
-From PowerShell:
+`library/` is the only place to edit skills, agents, and the registry. After any change there,
+rebuild every generated tree and re-verify before committing:
 
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate-system.ps1
+```bash
+python library/tools/project.py all      # regenerate .claude/ .agents/ .codex/ .claude-plugin/ convenium-design-studio/knowledge/
+python library/tools/verify.py           # the single health check — exit 0 = clean
+python library/tools/build_index.py      # refresh library/INDEX.md
 ```
 
-This performs a dependency-free structural check. The initial release was also checked with Codex’s `skill-creator` validator across all 19 included skills.
+`project.py <claude|codex|studio|digest|plugin>` runs one projector; add `--dry-run` to preview
+without writing.

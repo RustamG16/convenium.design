@@ -109,7 +109,7 @@ Convenium Studio
 
 Work includes websites, branding, marketing, AI automation, customer acquisition, field sales, and business process improvements. You've worked with Marcel on technical development and Sammy on sales and outreach.
 
-Related infrastructure includes Convenium Agency OS in Notion, Apollo design concepts, industry-specific operations, and the Convenium.at domain.
+Related infrastructure includes Convenium Agency OS in Notion, Convenium.Design design concepts, industry-specific operations, and the Convenium.at domain.
 
 [QHIQ: Quantum Holographic IQ: Quantic Holographic Artificial Intelligence From The Future](https://images.openai.com/static-rsc-4/bXFyjPWqKA9C2v5ofy9kdz3iqbdRwUgytyGH1M-gEk_qoZI4k8jRmjKuSWqoJO6xTPGVmUv1XHzqC9OADk6aX2SGkKw10etOUGgfTfZcjWLw_55ayMb0FbBYaZZU1H_CM1qt8NV9JbC_HjNpZl-Mqo1KfXBF_FkqUGE9sfP-7DQ?purpose=inline)
 

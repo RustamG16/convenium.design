@@ -2,7 +2,7 @@
 
 Dense and systematic. Information per pixel is the metric. For tools and information
 surfaces — dashboards, admin panels, data-heavy screens, maps and graphs. This is also
-the structural base ConveniumDesign_claude's own dashboard is built on.
+the structural base Apollo_claude's own dashboard is built on.
 
 ## The doctrine
 
@@ -28,6 +28,7 @@ numerals in data contexts; motion that delays a state change.
 --font-mono : IDs, codes, values, keys, paths
 --scale     : 1.200 (minor third)
 --sizes     : 11 / 12 / 13 / 14 / 16 / 20 / 28
+--display-max : 28px (the largest step of --sizes; run.json design_system is checked against it)
 --leading   : 1.35 UI / 1.5 prose blocks
 --label     : 11px, uppercase, +0.1em tracking, dim
 --bg        : neutral, slightly cool
@@ -50,8 +51,11 @@ Kinetic).
 
 ## Who builds it
 
-The `convenium-design-instrument` agent owns the actual design work under this doctrine. This
-file is reference documentation, not an executable skill.
+No agent is named after a doctrine. The `design-director` selects this doctrine at intake
+(from the client's `.olympus/brand-dna.json` or the brief), commits its tokens as numbers in
+the project's `DESIGN.md`, and `design-engineer` builds from that. New media is planned by
+`asset-director` and produced by `asset-producer`. This file is reference documentation,
+not an executable skill — read it, don't invoke it.
 
 ## Related
 

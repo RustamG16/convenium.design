@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apollo/brand-dna.schema.json",
+  "title": "Convenium.Design Brand DNA",
+  "description": "One business's Design DNA: who it is, who it serves, how it should look and sound, and what it needs made. Written by the brand-strategist agent to <project>/.olympus/brand-dna.json (with a readable BRAND.md beside it) and read by design-director to resolve direction and derive DESIGN.md tokens. Lives with the client project, never in the Convenium.Design repo.",
+  "type": "object",
+  "schemaVersion": 1,
+  "required": ["schemaVersion", "businessName", "createdAt", "updatedAt", "mode", "business", "taste", "doctrineMatch", "neededProducts", "openQuestions"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "businessName": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "mode": {
+      "type": "string",
+      "enum": ["evidence", "interview-only"],
+      "description": "evidence = built from the business's existing site, socials, documents, media and competitors, plus a short interview. interview-only = no public presence to analyse; built from the interview and supplied material alone."
+    },
+    "sources": {
+      "type": "array",
+      "description": "Everything the DNA was built from. A URL counts only if it was actually fetched.",
+      "items": {
+        "type": "object",
+        "required": ["kind", "ref", "fetched"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["website", "social", "document", "media", "competitor", "review-site", "interview", "other"] },
+          "ref": { "type": "string", "description": "URL, file path, or 'interview <date>'." },
+          "fetched": { "type": "boolean", "description": "false = described secondhand, not seen." },
+          "note": { "type": "string", "default": "" }
+        }
+      },
+      "default": []
+    },
+    "business": {
+      "type": "object",
+      "required": ["offer", "audience", "positioning", "goals", "voice"],
+      "properties": {
+        "industry": { "type": "string", "default": "" },
+        "location": { "type": "string", "default": "", "description": "Where it trades; matters for local businesses (hospitality, retail, services)." },
+        "offer": { "type": "string", "description": "What it sells, in one or two sentences a customer would recognise." },
+        "priceTier": { "type": "string", "enum": ["budget", "mid", "premium", "luxury", "unknown"], "default": "unknown" },
+        "audience": {
+          "type": "array",
+          "description": "Primary audience first.",
+          "items": {
+            "type": "object",
+            "required": ["segment"],
+            "properties": {
+              "segment": { "type": "string" },
+              "jobs": { "type": "array", "items": { "type": "string" }, "default": [], "description": "What they are trying to get done when they meet this business." },
+              "objections": { "type": "array", "items": { "type": "string" }, "default": [] }
+            }
+          },
+          "minItems": 1
+        },
+        "positioning": { "type": "string", "description": "Why choose this over the alternatives, in the business's own terms." },
+        "differentiators": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "competitors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "url": { "type": "string", "default": "" },
+              "lookAndFeel": { "type": "string", "default": "", "description": "How it presents itself visually — the thing to stand apart from." },
+              "note": { "type": "string", "default": "" }
+            }
+          },
+          "default": []
+        },
+        "goals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Business outcomes, primary first (e.g. 'more direct bookings', not 'a nicer site')."
+        },
+        "primaryAction": { "type": "string", "default": "", "description": "The one thing a visitor or customer should do." },
+        "constraints": { "type": "array", "items": { "type": "string" }, "default": [], "description": "Must-keep brand assets, legal, platform, budget, deadline." },
+        "voice": {
+          "type": "object",
+          "required": ["adjectives"],
+          "properties": {
+            "adjectives": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+            "doSay": { "type": "array", "items": { "type": "string" }, "default": [] },
+            "dontSay": { "type": "array", "items": { "type": "string" }, "default": [] }
+          }
+        },
+        "existingAssets": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Logo/vector, fonts and licences, photography, video, brand guide, Figma — with paths where supplied."
+        }
+      }
+    },
+    "taste": {
+      "description": "The visual taste profile. Same shape as taste-profile.schema.json (profileId, displayName, source, doctrine, explicitPreferences, avoidList, references, confidence, provenance), produced by convenium-design-taste-interview or convenium-design-style-picker.",
+      "$ref": "taste-profile.schema.json"
+    },
+    "doctrineMatch": {
+      "type": "object",
+      "required": ["doctrine", "why"],
+      "properties": {
+        "doctrine": { "type": "string", "enum": ["convenium-design-atelier", "convenium-design-kinetic", "convenium-design-instrument", "convenium-design-cyberpunk-athens", "custom"] },
+        "why": { "type": "string", "description": "The evidence that points to this doctrine — business, audience and taste, not just taste." },
+        "departures": { "type": "array", "items": { "type": "string" }, "default": [], "description": "Where this business should deviate from the doctrine's defaults, and why." }
+      }
+    },
+    "neededProducts": {
+      "type": "array",
+      "description": "What the business needs made, highest value first. The user confirms this list at Gate A. Only `website` and `brand-identity` have a full pipeline today; other kinds are recorded so later tracks can pick them up.",
+      "items": {
+        "type": "object",
+        "required": ["kind", "why", "priority"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["website", "landing-page", "brand-identity", "social-media-kit", "ad-creative", "video", "presentation", "print", "app-ui", "software-tool", "other"] },
+          "why": { "type": "string" },
+          "priority": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "minItems": 1
+    },
+    "openQuestions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "What the strategist could not establish. Never filled with guesses."
+    }
+  }
+}

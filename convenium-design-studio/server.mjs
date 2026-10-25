@@ -1,4 +1,7 @@
 import http from 'node:http';
+import { savraReceipt } from './receipts.mjs';
+import { projectJourney } from './journey.mjs';
+import { prepareFixture } from './fixture-output.mjs';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { readFile, stat } from 'node:fs/promises';
@@ -19,14 +22,14 @@ const root = fileURLToPath(new URL('./public/', import.meta.url));
 const port = Number(process.env.PORT || 4173);
 const apiKey = process.env.OPENAI_API_KEY || '';
 // Models are configuration, not a constant. The three below are the values this workspace
-// has always shipped and they stay the default, so nothing changes without CONVENIUM_DESIGN_MODELS set.
+// has always shipped and they stay the default, so nothing changes without APOLLO_MODELS set.
 //
 // What changes is the claim. "Live API ready" was shown whenever an API key existed, with no
 // check that the key worked or that these model ids resolve - so a workspace whose models the
 // account cannot reach still announced it was ready, and the failure only appeared after a
 // person spent a run finding out. B6 measures that: a runtime claim must be backed by a
 // verified capability.
-const configuredModels = (process.env.CONVENIUM_DESIGN_MODELS || 'gpt-5.6-sol,gpt-5.6-terra,gpt-5.6-luna')
+const configuredModels = (process.env.APOLLO_MODELS || 'gpt-5.6-sol,gpt-5.6-terra,gpt-5.6-luna')
   .split(',').map(value => value.trim()).filter(Boolean);
 const allowedModels = new Set(configuredModels);
 const defaultModel = configuredModels[0] || 'gpt-5.6-terra';
@@ -60,14 +63,14 @@ async function verifyRuntime() {
       runtimeDetail = `${reachable.length} of ${configuredModels.length} configured models confirmed.`;
     } else {
       runtimeMode = 'live-unverified';
-      runtimeDetail = `None of ${configuredModels.join(', ')} is available to this key. Set CONVENIUM_DESIGN_MODELS.`;
+      runtimeDetail = `None of ${configuredModels.join(', ')} is available to this key. Set APOLLO_MODELS.`;
     }
   } catch (error) {
     runtimeMode = 'live-unverified';
     runtimeDetail = 'Could not reach the models endpoint: ' + (error.message || 'unknown error') + '.';
   }
 }
-const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };
+const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf', '.mp4': 'video/mp4', '.txt': 'text/plain; charset=utf-8', '.md': 'text/markdown; charset=utf-8' };
 const execFileAsync = promisify(execFile);
 
 const json = (response, status, body) => {
@@ -196,24 +199,26 @@ async function handleOracle(request, response, planOnly = false) {
     const prompt = String(body.prompt || '').trim();
     if (prompt.length < 3 || prompt.length > 30_000) return json(response, 400, { error: 'Prompt must contain 3–30,000 characters.' });
     const budget = Math.min(300_000, Math.max(1000, Number(body.budget) || 30_000));
-    const plan = await buildPlan(prompt, budget);
-    await publishEvent({ host: 'convenium-design', kind: 'plan.created', summary: `Oracle created a ${plan.steps.length}-specialist plan.`, data: { systemId: plan.system.id, systemName: plan.system.name, specialists: plan.steps.map(step => step.name), requestedBudget: plan.requestedBudget, allocatedBudget: plan.allocatedBudget, phase: 'plan', agent: 'Convenium.Design Orchestrator', tokens: 0 } });
+    const canonicalState=body.projectId?await (await projectJourney(body.projectId)).read():null;
+    const configuration=canonicalState?.artifacts.findLast(a=>a.kind==='plan')?.content?.configuration;
+    const plan = await buildPlan(prompt, budget, {loadoutId:configuration?.id||body.loadoutId,roleSettings:configuration?.roleSettings,projectId:body.projectId,canonicalState});
+    await publishEvent({ host: 'apollo', kind: 'plan.created', summary: `Oracle created a ${plan.steps.length}-specialist plan.`, data: { systemId: plan.system.id, systemName: plan.system.name, specialists: plan.steps.map(step => step.name), requestedBudget: plan.requestedBudget, allocatedBudget: plan.allocatedBudget, phase: 'plan', agent: 'Convenium.Design Orchestrator', tokens: 0 } });
     if (planOnly) return json(response, 200, { mode: 'plan', plan });
     const approved = new Set(Array.isArray(body.approvedAgentIds) ? body.approvedAgentIds : []);
-    const executable = plan.steps.filter(step => !step.approval || approved.has(step.id));
-    const waiting = plan.steps.filter(step => step.approval && !approved.has(step.id));
+    const executable = plan.steps.filter(step => step.status !== 'blocked' && (!step.approval || approved.has(step.id)));
+    const waiting = plan.steps.filter(step => !executable.includes(step));
     const runId = crypto.randomUUID();
-    await publishEvent({ host: 'convenium-design', kind: 'run.started', runId, summary: `${apiKey && body.mode !== 'demo' ? 'Live' : 'Demo'} Oracle run started.`, data: { systemId: plan.system.id, systemName: plan.system.name, specialists: executable.map(step => step.name), waiting: waiting.map(step => step.name), phase: 'plan', agent: 'Convenium.Design Orchestrator', tokens: 0 } });
+    await publishEvent({ host: 'apollo', kind: 'run.started', runId, summary: `${apiKey && body.mode !== 'demo' ? 'Live' : 'Demo'} Oracle run started.`, data: { systemId: plan.system.id, systemName: plan.system.name, specialists: executable.map(step => step.name), waiting: waiting.map(step => step.name), phase: 'plan', agent: 'Convenium.Design Orchestrator', tokens: 0 } });
     if (!apiKey || body.mode === 'demo') {
       const route = executable.length ? executable.map(step => `${step.name} [${step.skills.join(', ')}]`).join('\n') : 'No specialist matched this request.';
       const contextNote = plan.context
         ? `\nLoadout context sent ahead of every capability:\n${plan.context}\n`
         : '\nNo brief and no Design DNA attached: this loadout adds no context of its own.\n';
       const answer = `DEMO MODE — Convenium.Design planned the request but made no model calls.\n\nActivated specialists:\n${route}\n${contextNote}\n${waiting.length ? `Waiting for approval: ${waiting.map(step => step.name).join(', ')}\n\n` : ''}Open this workspace in a supported host or configure OPENAI_API_KEY for live execution.`;
-      for (const step of executable) await publishEvent({ host: 'convenium-design', kind: 'run.progress', runId, summary: `${step.name} simulated in demo mode.`, data: { systemId: plan.system.id, phase: step.phase, agent: step.name, tokens: 0, status: 'simulated' } });
+      for (const step of executable) await publishEvent({ host: 'apollo', kind: 'run.progress', runId, summary: `${step.name} simulated in demo mode.`, data: { systemId: plan.system.id, phase: step.phase, agent: step.name, tokens: 0, status: 'simulated' } });
       const output = await recordSystemOutput(plan.system.id, { name: `Oracle · ${prompt.slice(0, 72)}`, type: 'Oracle run', status: 'Demo', runId, summary: 'Planned route preview; no model tokens were consumed.', content: answer });
-      await publishEvent({ host: 'convenium-design', kind: 'run.completed', runId, summary: 'Demo Oracle run completed without model usage.', data: { systemId: plan.system.id, outputId: output.id, phase: 'synthesize', agent: 'Convenium.Design Orchestrator', tokens: 0 } });
-      return json(response, 200, { runId, mode: 'demo', plan, waiting, output, trace: executable.map(step => ({ agent: step.name, status: 'simulated', budget: step.budget, skills: step.skills })), answer });
+      await publishEvent({ host: 'apollo', kind: 'run.completed', runId, summary: 'Demo Oracle run completed without model usage.', data: { systemId: plan.system.id, outputId: output.id, phase: 'synthesize', agent: 'Convenium.Design Orchestrator', tokens: 0 } });
+      return json(response, 200, { runId, mode: 'demo', plan, waiting, output, trace: executable.map(step => ({ agent: step.name, phase:step.phase, status: 'simulated', budget: step.budget, skills: step.skills })), answer });
     }
     const model = allowedModels.has(body.model) ? body.model : defaultModel;
     const loadoutContext = plan.context || '';
@@ -229,14 +234,14 @@ async function handleOracle(request, response, planOnly = false) {
         const item = settled[offset];
         const packet = item.status === 'fulfilled' ? item.value : { step: batch[offset], error: item.reason?.message || 'Specialist failed.' };
         specialistResults.push(packet);
-        await publishEvent({ host: 'convenium-design', kind: packet.error ? 'run.failed' : 'run.progress', runId, summary: packet.error ? `${packet.step.name} failed.` : `${packet.step.name} completed its phase.`, data: { systemId: plan.system.id, phase: packet.step.phase, agent: packet.step.name, tokens: packet.result?.usage.totalTokens || 0, status: packet.error ? 'failed' : 'completed' } });
+        await publishEvent({ host: 'apollo', kind: packet.error ? 'run.failed' : 'run.progress', runId, summary: packet.error ? `${packet.step.name} failed.` : `${packet.step.name} completed its phase.`, data: { systemId: plan.system.id, phase: packet.step.phase, agent: packet.step.name, tokens: packet.result?.usage.totalTokens || 0, status: packet.error ? 'failed' : 'completed' } });
       }
     }
     const packets = specialistResults.map(item => `## ${item.step.name}\n${item.error || item.result.text}`).join('\n\n');
     const synthesis = await requestOpenAI({ input: `USER REQUEST\n${prompt}\n\nSPECIALIST PACKETS\n${packets || 'No specialist was required.'}`, instructions: `You are Convenium.Design Orchestrator. ${plan.system.instructions}\n${loadoutContext}\nProduce one direct, coherent answer. Use only relevant specialist evidence, expose material uncertainties and approvals, and do not claim tools were used beyond the packets.`, model, maxOutputTokens: Math.min(10_000, Math.max(1000, budget - plan.allocatedBudget)) });
     const usage = specialistResults.reduce((sum, item) => sum + (item.result?.usage.totalTokens || 0), synthesis.usage.totalTokens);
     const output = await recordSystemOutput(plan.system.id, { name: `Oracle · ${prompt.slice(0, 72)}`, type: 'Oracle run', status: 'Complete', runId, summary: synthesis.text.slice(0, 500), content: synthesis.text });
-    await publishEvent({ host: 'convenium-design', kind: 'run.completed', runId, summary: 'Live Oracle run completed.', data: { systemId: plan.system.id, outputId: output.id, phase: 'synthesize', agent: 'Convenium.Design Orchestrator', tokens: synthesis.usage.totalTokens, totalRunTokens: usage, specialists: specialistResults.length } });
+    await publishEvent({ host: 'apollo', kind: 'run.completed', runId, summary: 'Live Oracle run completed.', data: { systemId: plan.system.id, outputId: output.id, phase: 'synthesize', agent: 'Convenium.Design Orchestrator', tokens: synthesis.usage.totalTokens, totalRunTokens: usage, specialists: specialistResults.length } });
     json(response, 200, { runId, mode: 'live', plan, waiting, output, answer: synthesis.text, usage, trace: specialistResults.map(item => ({ agent: item.step.name, status: item.error ? 'failed' : 'completed', budget: item.step.budget, skills: item.step.skills, tokens: item.result?.usage.totalTokens || 0, error: item.error })) });
   } catch (error) { json(response, 400, { error: error.message || 'Oracle request failed.' }); }
 }
@@ -271,7 +276,8 @@ async function integrations() {
 
 async function serveStatic(request, response) {
   const url = new URL(request.url, `http://${request.headers.host}`);
-  const requested = url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname.slice(1));
+  // The legacy interface is kept reachable at /legacy/ while the journey-v2 UI replaces it.
+  const requested = url.pathname === '/' ? 'index.html' : url.pathname === '/legacy' || url.pathname === '/legacy/' ? 'legacy/index.html' : decodeURIComponent(url.pathname.slice(1));
   const resolved = normalize(join(root, requested));
   if (!resolved.startsWith(normalize(root))) return json(response, 403, { error: 'Forbidden.' });
   try {
@@ -287,10 +293,32 @@ await Promise.all([initializeKnowledge(), initializeEventStore(), initializeSyst
 
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host}`);
-  const path = url.pathname;
+  // /legacy/api/* is the same API, so the retained legacy UI and its test suite keep working.
+  const path = url.pathname.startsWith('/legacy/api/') ? url.pathname.slice('/legacy'.length) : url.pathname;
   try {
     if (request.method === 'GET' && path === '/api/config') return json(response, 200, { mode: runtimeMode, modeDetail: runtimeDetail, models: [...allowedModels], skills: await allSkills(), tools, plugins, presets });
+    if (request.method === 'GET' && path === '/api/systems/savra-v2-system/receipt') {
+      try { return json(response, 200, await savraReceipt(url.searchParams.get('artifact'))); }
+      catch (error) { return json(response, 400, { error: error.message }); }
+    }
     if (request.method === 'GET' && path === '/api/workspace') return json(response, 200, await listWorkspace());
+    if (request.method === 'POST' && path === '/api/workflow/compare') {
+      const input=await readJson(request);const loadouts=await listLoadouts();
+      if(![input.a,input.b].every(id=>loadouts.loadouts.some(l=>l.id===id)))throw new Error('Choose two available loadouts.');
+      const started=performance.now();
+      const [a,b]=await Promise.all([buildPlan(input.prompt,30000,{loadoutId:input.a,roleSettings:input.rolesA}),buildPlan(input.prompt,30000,{loadoutId:input.b,roleSettings:input.rolesB})]);
+      const checks=[{name:'Same workflow version',pass:a.workflow.id===b.workflow.id&&a.workflow.version===b.workflow.version},{name:'Six functional roles',pass:a.workflow.roles.length===6&&b.workflow.roles.length===6},{name:'Build stays gated',pass:[a,b].every(p=>p.steps.find(s=>s.phase==='build').status==='blocked')},{name:'Sequential author and critic',pass:[a,b].every(p=>p.concurrency===1)}];
+      return json(response,200,{mode:'deterministic',productionApplied:false,a,b,checks,elapsedMs:Math.round(performance.now()-started),limitations:['Routing and approval contract checks only. Visual quality, model output quality and provider cost are not measured.']});
+    }
+    const journeyMatch=path.match(/^\/api\/projects\/([a-z0-9-]+)\/journey$/);
+    const fixtureMatch=path.match(/^\/api\/projects\/([a-z0-9-]+)\/journey\/fixture$/);
+    if(fixtureMatch && request.method==='POST') {
+      const writer=await projectJourney(fixtureMatch[1]);return json(response,200,prepareFixture(await writer.read(),fixtureMatch[1]));
+    }
+    if(journeyMatch && ['GET','POST'].includes(request.method)) {
+      const writer=await projectJourney(journeyMatch[1]);
+      return json(response,200,request.method==='GET'?await writer.read():await writer.dispatch(await readJson(request)));
+    }
     if (request.method === 'POST' && path === '/api/projects') return json(response, 201, await createProject(await readJson(request)));
     const projectChatMatch = path.match(/^\/api\/projects\/([a-z0-9-]+)\/chats$/);
     if (request.method === 'POST' && projectChatMatch) return json(response, 201, await createChat(projectChatMatch[1], await readJson(request)));

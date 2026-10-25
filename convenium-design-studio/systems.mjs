@@ -2,18 +2,21 @@ import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { agentDefinitions } from './agents.mjs';
-import { slots as slotMap, presets } from './skills.mjs';
+import { slots as registrySlots, presets } from './skills.mjs';
+import { workflow } from './workflow.mjs';
 import { dataFile } from './paths.mjs';
 
 const dataPath = dataFile('systems.json');
-const conveniumDesignRoot = fileURLToPath(new URL('../', import.meta.url));
+const slotMap=registrySlots.map(slot=>({...slot,owner:workflow.configurationSlots[slot.id]}));
+const apolloRoot = fileURLToPath(new URL('../', import.meta.url));
 const phases = new Set(['always', 'diagnose', 'direct', 'prepare', 'build', 'verify']);
 const phaseByAgent = {
-  'convenium-design-director': 'always',
-  'athena-evidence': 'diagnose',
-  'calliope-experience': 'direct',
-  'hephaestus-build': 'build',
-  'hermes-delivery': 'verify'
+  'design-director': 'always',
+  'visual-analyst': 'diagnose',
+  'asset-producer': 'prepare',
+  'design-engineer': 'build',
+  'independent-critic': 'verify',
+  'analytics-specialist': 'verify'
 };
 
 const clean = (value, max = 4000) => String(value || '').trim().slice(0, max);
@@ -50,7 +53,7 @@ function seedSystem() {
       createdAt: '2026-08-10T23:28:15.190Z',
       runId: 'savra-20260810T225627Z-codex',
       summary: 'Cinematic restaurant concept built from supplied synthetic media.',
-      previewPath: 'test_projects/Savra_Restraunt/.olympus/evidence/qa/desktop-1440x900.png'
+      previewPath: 'test_projects/Savra_v2/.impeccable/review/desktop.png'
     }]
   };
 }
@@ -163,6 +166,7 @@ function migrateStore(parsed) {
   // button; an empty one is the bug's residue and is dropped, and one that holds recorded
   // outputs keeps them by handing them to the pipeline.
   const pipeline = store.systems.find(system => system.id === PIPELINE_ID) || store.systems[0];
+  pipeline.agents = defaultAgents();
   const extras = store.systems.filter(system => system !== pipeline);
   for (const extra of extras) {
     if (extra.outputs?.length) {
@@ -382,7 +386,7 @@ export { slotMap as loadoutSlots };
 
 export async function recordSystemOutput(systemId, input = {}) {
   const store = await loadStore();
-  const system = store.systems.find(item => item.id === systemId);
+  const system = store.systems.find(item => item.id === systemId) || (systemId === 'savra-v2-system' ? store.systems.find(item => item.id === PIPELINE_ID) : null);
   if (!system) throw new Error('System not found.');
   const output = normalizeOutput(input);
   const existing = output.runId && system.outputs.findIndex(item => item.runId === output.runId);
@@ -410,8 +414,11 @@ export async function getOutputPreview(systemId, outputId) {
   const store = await loadStore();
   const output = store.systems.find(system => system.id === systemId)?.outputs.find(item => item.id === outputId);
   if (!output?.previewPath) throw new Error('Preview not found.');
-  const path = resolve(conveniumDesignRoot, output.previewPath);
-  const rel = relative(resolve(conveniumDesignRoot), path);
+  // Compatibility for the shipped obsolete seed only; preserve stored user records.
+  const previewPath = output.id === 'savra-threshold-ritual' && output.previewPath === 'test_projects/Savra_Restraunt/.olympus/evidence/qa/desktop-1440x900.png'
+    ? 'test_projects/Savra_v2/.impeccable/review/desktop.png' : output.previewPath;
+  const path = resolve(apolloRoot, previewPath);
+  const rel = relative(resolve(apolloRoot), path);
   if (!rel || rel.startsWith('..')) throw new Error('Unsafe preview path.');
   const info = await stat(path);
   if (!info.isFile()) throw new Error('Preview not found.');
