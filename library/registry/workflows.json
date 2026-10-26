@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "note": "The ships of the console: each ship is one workflow (trail) through the system. Authored here, joined with the registry by `project.py ship` into ship/data/ship-data.js. A stage's `phase` must be a registry phase; `crew` names ids from crew.json; a `gate` row is a decision the user takes. A new workflow must be added here or the console will not show it.",
+  "default": "ss-full-run",
+  "ships": [
+    {
+      "id": "ss-full-run",
+      "name": "SS Full Run",
+      "class": "Flagship",
+      "summary": "The complete gated run: Brand DNA and intake, audit, one direction, assets and build plan, design system as numbers, build, two verification passes, handoff. For briefs that need interpreting.",
+      "stages": [
+        { "id": "dna", "label": "Brand DNA + intake", "phase": "diagnose", "artifacts": ["brand-dna.json", "BRAND.md", "00-brief.md"], "crew": ["strategist"] },
+        { "id": "audit", "label": "Audit the evidence", "phase": "diagnose", "artifacts": ["01-audit.md"], "crew": ["analyst"] },
+        { "gate": "A", "label": "Gate A — brief approved" },
+        { "id": "direction", "label": "One direction + critique", "phase": "direct", "artifacts": ["02-concepts.md", "03-critique.md"], "crew": ["captain", "critic"] },
+        { "gate": "B", "label": "Gate B — direction selected" },
+        { "id": "assets", "label": "Asset manifest", "phase": "prepare", "artifacts": ["05-asset-manifest.md"], "crew": ["producer"] },
+        { "id": "plan", "label": "Build plan (the design document)", "phase": "prepare", "artifacts": ["06-build-plan.md"], "crew": ["captain"] },
+        { "id": "design-system", "label": "Design system as numbers", "phase": "prepare", "artifacts": ["PRODUCT.md", "DESIGN.md", "design.json"], "crew": ["engineer"] },
+        { "id": "build", "label": "Implement from the plan, fresh session", "phase": "build", "artifacts": [], "crew": ["engineer"] },
+        { "id": "verify", "label": "QA + independent finish review", "phase": "verify", "artifacts": ["07-qa.md", "10-finish-review.md", "08-metrics.md"], "crew": ["critic", "metrics"] },
+        { "gate": "C", "label": "Gate C — client review" },
+        { "id": "handoff", "label": "Handoff", "phase": "verify", "artifacts": ["09-handoff.md"], "crew": ["captain"] }
+      ]
+    },
+    {
+      "id": "ss-abridged",
+      "name": "SS Abridged",
+      "class": "Cutter",
+      "summary": "The plan is the brief: creative freedom granted or direction already fixed. Gates A and B recorded approved-in-plan; never skips the build plan, DESIGN.md, the finish review or Gate C.",
+      "stages": [
+        { "id": "resolve", "label": "Director-resolved brief", "phase": "diagnose", "artifacts": ["00-brief.md"], "crew": ["captain"] },
+        { "id": "plan", "label": "Build plan in plan mode", "phase": "prepare", "artifacts": ["06-build-plan.md"], "crew": ["captain"] },
+        { "id": "design-system", "label": "Design system as numbers", "phase": "prepare", "artifacts": ["PRODUCT.md", "DESIGN.md", "design.json"], "crew": ["engineer"] },
+        { "id": "build", "label": "Implement from the plan, fresh session", "phase": "build", "artifacts": [], "crew": ["engineer"] },
+        { "id": "verify", "label": "QA + independent finish review", "phase": "verify", "artifacts": ["07-qa.md", "10-finish-review.md"], "crew": ["critic"] },
+        { "gate": "C", "label": "Gate C — client review" }
+      ]
+    },
+    {
+      "id": "ss-mobile-retrofit",
+      "name": "SS Mobile Retrofit",
+      "class": "Repair tug",
+      "summary": "A scoped repair pass on an implemented site: rebuild the mobile resolution without changing the direction. One skill body (mobile-app-shell), kickoff in templates/prompts/mobile-app-grade-pass.md.",
+      "skills": ["mobile-app-shell", "visual-qa"],
+      "stages": [
+        { "id": "measure", "label": "Measure in numbers (screens, targets, overflow)", "phase": "diagnose", "artifacts": ["01-audit.md"], "crew": ["analyst"] },
+        { "id": "plan", "label": "Scoped plan: budgets + 2026 standards floor", "phase": "prepare", "artifacts": ["06-build-plan.md"], "crew": ["captain"] },
+        { "id": "build", "label": "Build in slices, budgets as tests", "phase": "build", "artifacts": [], "crew": ["engineer"] },
+        { "id": "verify", "label": "Before/after QA + finish review", "phase": "verify", "artifacts": ["07-qa.md", "10-finish-review.md"], "crew": ["critic"] },
+        { "gate": "C", "label": "Gate C — client review" }
+      ]
+    }
+  ]
+}

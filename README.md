@@ -31,13 +31,11 @@ New to this repo (human or agent)? Read in this order:
 | Tool | Version | Used for |
 |---|---|---|
 | [Git](https://git-scm.com/) | any recent | cloning, version control |
-| [Node.js](https://nodejs.org/) | ≥ 20 | Convenium.Design Studio (`convenium-design-studio/`) |
+| A browser | any recent | the ship console (`ship/index.html`) — no build step, no server |
 | [Python](https://www.python.org/) | 3.9+ (stdlib only) | `library/tools/*.py` — projecting and verifying the skill library |
 | PowerShell | 5.1+ (Windows) or [PowerShell 7](https://github.com/PowerShell/PowerShell) (macOS/Linux) | `scripts/*.ps1` validators |
 
-No API keys are required to use the system itself. `convenium-design-studio` runs in demo mode without
-credentials and switches to live mode only if `OPENAI_API_KEY` is set in its process
-environment — never commit that key.
+No API keys are required to use the system.
 
 ### Windows: enable long paths first
 
@@ -101,23 +99,11 @@ short pointer block in the project's `AGENTS.md`/`CLAUDE.md`. Convenium.Design i
 `.olympus/` is gitignored by default so client research stays private; pass
 `--commit-olympus` to keep the run trail in the project's history. `detach` reverses it.
 
-### Optional: Convenium.Design Studio (the local console)
+### The ship console
 
-```bash
-cd convenium-design-studio
-npm install
-npm start
-```
-
-Then open `http://127.0.0.1:4173`. `npm run check` syntax-checks the whole studio (server,
-scripts, and public JS) — run it after `npm install` to confirm the clone is healthy.
-
-### MCP wiring (optional)
-
-The Convenium.Design Studio MCP server is off by default, so a session never depends on the optional
-console. To turn it on in Claude Code, copy `.mcp.json.example` to `.mcp.json` (it uses
-`${CLAUDE_PROJECT_DIR}`, so no per-device edits). For Codex, copy the block from
-`.codex/config.example.toml` into `.codex/config.toml` and set the path.
+Open `ship/index.html` in any browser — no install, no server. The crew are the agents, the
+ships are the workflows; "hiring" new crew or switching ships customises the presentation in
+your browser while the library stays the source of truth. See `ship/README.md`.
 
 ## What is included
 
@@ -125,7 +111,7 @@ console. To turn it on in Claude Code, copy `.mcp.json.example` to `.mcp.json` (
 |---|---|
 | `library/` | **Source of truth** — skills, agents, doctrines, registry, design DNA. Edit only here. |
 | `.claude/`, `.agents/`, `.codex/` | **Generated, disposable** projections of `library/` for each host. Never edit directly — rebuild with `python library/tools/project.py all`. |
-| `convenium-design-studio/` | Optional local control plane / same-prompt skill-comparison console (Node ≥ 20). |
+| `ship/` | The 2D ship console: crew = agents, ships = workflows. `ship/data/` is generated; the rest is source. |
 | `templates/` | Stable output contracts for every run (`00-brief.md` … `10-finish-review.md`, `run.json`). |
 | `config/MCP-SETUP.md` | Optional external MCP connections and their activation rules. |
 | `test_projects/` | Device-specific test/demo projects. **Gitignored** — each one is its own independent git repo, never tracked or pushed as part of Convenium.Design. |
@@ -168,10 +154,10 @@ polished-but-wrong output.
 rebuild every generated tree and re-verify before committing:
 
 ```bash
-python library/tools/project.py all      # regenerate .claude/ .agents/ .codex/ .claude-plugin/ convenium-design-studio/knowledge/
+python library/tools/project.py all      # regenerate .claude/ .agents/ .codex/ .claude-plugin/ ship/data/
 python library/tools/verify.py           # the single health check — exit 0 = clean
 python library/tools/build_index.py      # refresh library/INDEX.md
 ```
 
-`project.py <claude|codex|studio|digest|plugin>` runs one projector; add `--dry-run` to preview
+`project.py <claude|codex|ship|digest|plugin>` runs one projector; add `--dry-run` to preview
 without writing.

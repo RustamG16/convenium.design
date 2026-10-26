@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "note": "The default Convenium.Design crew: one character per agent in library/agents/. Authored here, joined with the registry by `project.py ship` into ship/data/ship-data.js. Narrative fields are invented and carry truth: Simulated; what an agent verifiably does comes from its agent file and the registry. A new agent must get a crew entry or verify.py fails.",
+  "crew": [
+    {
+      "id": "captain",
+      "name": "Captain Oddvar Quill",
+      "glyph": "🪶",
+      "species": "Tall heron-like alien; a jeweller's loupe for a monocle; a long coat whose pockets are all briefs",
+      "essence": "The ship moves only when the brief is clear. Oddvar reads it aloud, asks the one question nobody wanted, and holds the three gates: nothing is designed, built or shipped until he has said so.",
+      "role": { "title": "Captain and orchestrator", "agent": "design-director" },
+      "station": 1,
+      "phase": "direct",
+      "strengths": [
+        "Turns a vague request into one brief everyone can repeat",
+        "Routes work to one specialist at a time and keeps the order",
+        "Owns the answer; never lets a specialist speak for the ship"
+      ],
+      "blindSpots": [
+        { "hypothesis": "Treats a creative-freedom brief as permission to skip intake entirely", "truth": "Simulated" },
+        { "hypothesis": "A gate can become a ceremony when the decision was already made", "truth": "Simulated" }
+      ],
+      "motivations": ["A verified, built result from one coherent direction", "Never making the client repeat themselves"],
+      "growthPaths": ["Delegating the first evidence pass without rewriting it", "Shorter briefs with the same precision"],
+      "related": ["strategist", "critic"],
+      "analogy": "Nothing leaves this ship without passing my desk. Brief first, then the gates: A, B and C.",
+      "plainMeaning": "design-director owns the brief, routes every specialist, and approves Gate A (brief), Gate B (direction) and Gate C (handoff).",
+      "pigment": "#D9A441",
+      "working": "reading a brief and stamping a gate"
+    },
+    {
+      "id": "strategist",
+      "name": "Mira Sondh",
+      "glyph": "🦎",
+      "species": "Chameleon-folk; her skin slowly takes the palette of whatever business she is studying",
+      "essence": "Before anyone draws, Mira finds out who the business is: its people, its voice, its taste and what it must never look like. She writes the Brand DNA that the rest of the crew works from.",
+      "role": { "title": "Brand strategist, keeper of the DNA still", "agent": "brand-strategist" },
+      "station": 2,
+      "phase": "diagnose",
+      "strengths": [
+        "Separates evidence about a business from the owner's wishes about it",
+        "Runs a taste interview or a style pick, whichever the client has time for",
+        "Writes an avoid-list as carefully as a preference list"
+      ],
+      "blindSpots": [
+        { "hypothesis": "Her skin can take a palette faster than the evidence justifies it", "truth": "Simulated" },
+        { "hypothesis": "Interview-only mode can mistake eloquence for a brand", "truth": "Simulated" }
+      ],
+      "motivations": ["A DNA file the client recognises as themselves", "Work that is distinct because the business is"],
+      "growthPaths": ["Faster evidence mode on sites with little to read", "Making the avoid-list the first thing anyone sees"],
+      "related": ["captain", "analyst"],
+      "analogy": "Give me the business and I turn its colour. Then I write down what it must never look like.",
+      "plainMeaning": "brand-strategist produces brand-dna.json and BRAND.md first, by evidence or by interview, before any direction work.",
+      "pigment": "#7FB069",
+      "working": "distilling colour swatches into a vial"
+    },
+    {
+      "id": "analyst",
+      "name": "Oculo Prant",
+      "glyph": "🔍",
+      "species": "Squat three-eyed mechanic with a stack of magnifier goggles; carries two notebooks, never one",
+      "essence": "Oculo looks at the existing page as it really renders and writes down what is there. One notebook says \"seen\", the other says \"inferred\", and nobody has ever caught him mixing them.",
+      "role": { "title": "Visual analyst, evidence bay", "agent": "visual-analyst" },
+      "station": 3,
+      "phase": "diagnose",
+      "strengths": [
+        "Reads computed styles and real behaviour, not screenshots",
+        "Marks every claim as observed or inferred",
+        "Deconstructs a reference into transferable logic without copying it"
+      ],
+      "blindSpots": [
+        { "hypothesis": "Can audit a page that was never worth keeping", "truth": "Simulated" },
+        { "hypothesis": "Greenfield work gives him nothing to look at until references arrive", "truth": "Simulated" }
+      ],
+      "motivations": ["A defect list nobody can argue with", "Evidence that survives the redesign"],
+      "growthPaths": ["Shorter audits that still carry the proof", "Reading motion as evidence, not just layout"],
+      "related": ["strategist", "critic"],
+      "analogy": "Three eyes, two notebooks. This one is what I saw; that one is what I think. They never share a page.",
+      "plainMeaning": "visual-analyst is read-only: it audits the live page (ux-evidence-audit) or deconstructs references, and labels observed versus inferred.",
+      "pigment": "#5FA8D3",
+      "working": "inspecting a floating page under a magnifier"
+    },
+    {
+      "id": "critic",
+      "name": "Hesper Grane",
+      "glyph": "💠",
+      "species": "Crystalline being; refracts whatever it looks at; has never held a tool",
+      "essence": "Hesper scores. It was not in the room while the work was made, it does not redesign, and it writes PASS, PASS WITH NOTES or FAIL against a rubric everybody saw in advance.",
+      "role": { "title": "Independent critic, scoring alcove", "agent": "independent-critic" },
+      "station": 4,
+      "phase": "verify",
+      "strengths": [
+        "Scores against explicit anchors, never against taste of the day",
+        "Catches a weak concept that passes every technical check",
+        "Keeps its distance: a fresh session, blind to the maker's reasons"
+      ],
+      "blindSpots": [
+        { "hypothesis": "A rubric can reward what it can measure over what matters", "truth": "Simulated" },
+        { "hypothesis": "Two repair cycles is a rule, not a promise of a better third", "truth": "Simulated" }
+      ],
+      "motivations": ["A verdict the maker can act on", "No award for effort, only for the result"],
+      "growthPaths": ["Shorter notes with the same bite", "Scoring motion and feel, not only stills"],
+      "related": ["captain", "analyst", "engineer"],
+      "analogy": "I was not here when you built it. That is the point. Show me, and I will tell you the score.",
+      "plainMeaning": "independent-critic is read-only; it scores directions (award-rubric) and finished builds (visual-qa, finish review) and never redesigns.",
+      "pigment": "#B48EDC",
+      "working": "holding a slate and weighing a floating score"
+    },
+    {
+      "id": "engineer",
+      "name": "Wren Tollak",
+      "glyph": "🔧",
+      "species": "Four-armed insectoid welder; two arms build while two arms check the plan",
+      "essence": "Wren builds only what Gate B approved and only from the build plan. Four arms, one direction. If the plan says tokens before layout, the first thing welded is the token sheet.",
+      "role": { "title": "Design engineer, build bay", "agent": "design-engineer" },
+      "station": 5,
+      "phase": "build",
+      "strengths": [
+        "Implements the selected direction, not a new one",
+        "Commits the design system (tokens, type, spacing) before any layout code",
+        "Loads one craft skill at a time and finishes it"
+      ],
+      "blindSpots": [
+        { "hypothesis": "Four arms can out-build the plan when the plan is thin", "truth": "Simulated" },
+        { "hypothesis": "A loud craft choice can drown a quiet brief", "truth": "Simulated" }
+      ],
+      "motivations": ["A build that matches the approved direction pixel for pixel", "No defect the critic finds twice"],
+      "growthPaths": ["Reduced-motion paths as part of the first weld, not a repair", "Measuring frame cost before adding motion"],
+      "related": ["captain", "producer", "critic"],
+      "analogy": "Two arms build, two arms hold the plan. If it is not on the plan, it is not on the ship.",
+      "plainMeaning": "design-engineer builds from 06-build-plan.md in a fresh session, with the Craft and Motion slots deciding how the build feels and moves.",
+      "pigment": "#E07A5F",
+      "working": "welding a glowing panel with two arms while reading a plan with the other two"
+    },
+    {
+      "id": "producer",
+      "name": "Pip Maravel",
+      "glyph": "📦",
+      "species": "Fuzzy pack-rat alien; a provenance ledger chained to its belt; sorts everything twice",
+      "essence": "Pip keeps the media hold. Nothing comes aboard without a row in the ledger: where it came from, what it cost, who may use it. Pip would rather leave a shelf empty than fill it with something unlicensed.",
+      "role": { "title": "Asset producer, media hold", "agent": "asset-producer" },
+      "station": 6,
+      "phase": "prepare",
+      "strengths": [
+        "Produces media only from an approved manifest",
+        "Records provenance, licence and cost for every file",
+        "Prefers sourcing and reuse to generation"
+      ],
+      "blindSpots": [
+        { "hypothesis": "A full ledger can feel like a full hold", "truth": "Simulated" },
+        { "hypothesis": "Caution can delay the one hero asset the build needs", "truth": "Simulated" }
+      ],
+      "motivations": ["A hold where every file has a story", "Budget left over at the end of a run"],
+      "growthPaths": ["Faster quotes", "Teaching the crew to write a manifest row themselves"],
+      "related": ["engineer", "captain"],
+      "analogy": "Every crate has a label: where from, what it cost, who may open it. No label, no crate.",
+      "plainMeaning": "asset-producer sources or generates media only from 05-asset-manifest.md, after a quote, and records provenance for each file.",
+      "pigment": "#C9A27E",
+      "working": "stacking labelled crates and ticking a ledger"
+    },
+    {
+      "id": "metrics",
+      "name": "Ledger Nin",
+      "glyph": "🧮",
+      "species": "Slim robot whose torso is an abacus; beads click when a number is real",
+      "essence": "Nin measures. It writes the event contract before anyone claims a result, and it has never invented a baseline. When a number is missing, Nin says \"unavailable\", not zero.",
+      "role": { "title": "Analytics specialist, sensor mast", "agent": "analytics-specialist" },
+      "station": 7,
+      "phase": "verify",
+      "strengths": [
+        "Writes a measurement plan with one outcome and a few guardrails",
+        "Separates verified, estimated and unavailable numbers",
+        "Never invents data to make a story work"
+      ],
+      "blindSpots": [
+        { "hypothesis": "An event contract nobody instruments is a wish", "truth": "Simulated" },
+        { "hypothesis": "Guardrails can multiply until nothing moves", "truth": "Simulated" }
+      ],
+      "motivations": ["One honest number per run", "A dashboard that admits what it does not know"],
+      "growthPaths": ["Measuring feel, not only clicks", "Smaller contracts that ship"],
+      "related": ["critic", "captain"],
+      "analogy": "If the beads do not click, the number is not real. I would rather say unavailable than guess.",
+      "plainMeaning": "analytics-specialist is read-only; it defines the measurement plan and event contract (design-analytics) and never fabricates data.",
+      "pigment": "#8FA3B5",
+      "working": "sliding abacus beads and watching a sensor readout"
+    }
+  ]
+}

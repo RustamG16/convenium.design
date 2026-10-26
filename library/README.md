@@ -1,7 +1,7 @@
 # library/ — Convenium.Design's source of truth
 
 Everything an agent needs is authored **here and only here**. The host trees
-(`.claude/`, `.agents/skills/`, `.codex/agents/`, `convenium-design-studio/knowledge/`) are
+(`.claude/`, `.agents/skills/`, `.codex/agents/`) and the console data (`ship/data/`) are
 **generated** from this directory by `tools/project.py` (added in Phase 3). Editing a
 generated tree is a defect; the generator overwrites it.
 

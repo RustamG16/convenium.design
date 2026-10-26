@@ -10,6 +10,9 @@ the only copy of something worth keeping.
 
 | What | From | Why it moved | Safe to delete |
 |---|---|---|---|
+| `convenium-design-studio/` | repo root | The old Node console (server, 3D-ish dashboard, tutorials, metrics, MCP server, `.mcp.json.example`), retired 2026-10-26 for the 2D ship console (`ship/`) | yes |
+| `New_upgradePlan/` (the rest) | repo root | Studio redesign plans and media for the retired console above | yes |
+| `sites/` + `pages-pipeline/` | repo root, `.github/workflows/`, `scripts/` | The two built websites (convenium, plain) and their GitHub Pages deploy pipeline — site builds, not the design system | yes |
 | `root-docs/APOLLO-ARCHITECTURE-REVIEW.md` | repo root | 14 Aug review of the Olympus/Studio split; resolved by the 2 Sep unification | yes |
 | `root-docs/APOLLO-PRODUCT-ARCHITECTURE.md`, `APOLLO-IMPLEMENTATION-PLAN.md` | repo root | 14 Aug SaaS plan, never executed; superseded by `New_upgradePlan/PRODUCT-ARCHITECTURE.md` | yes |
 | `root-docs/PLAN-UNIFICATION.md`, `PROGRESS.md` | repo root | The v3 unification plan and its execution log; completed 2 Sep | yes |

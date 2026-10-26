@@ -44,8 +44,10 @@ Brand DNA (brand-strategist → .olympus/brand-dna.json + BRAND.md)
   ("no three directions") is a rejection to encode, not a request; "current"/"trending"/a
   named year opens a research lane that must cite live URLs. See `AGENTS.md`.
 - **Seven agents, one roster.** `library/agents/` is what both hosts run — the director, the
-  brand strategist and five specialists — and each states its own activation conditions. The console's five-name pantheon in `convenium-design-studio/data/`
-  is a display model; `slots.json` carries `runtimeOwner` to map between them.
+  brand strategist and five specialists — and each states its own activation conditions. The
+  user's console is the 2D ship (`ship/index.html`): crew members are the agents
+  (`library/registry/crew.json`), ships are the workflows (`library/registry/workflows.json`),
+  and its data file is generated — see `ship/README.md` for the keep-it-true rule.
 - **Greenfield**: no existing page → start at the questionnaire, `ux-evidence-audit` dormant,
   `reference-deconstruction` carries evidence.
 - **Loops**: see the loop bounds in `AGENTS.md` (QA cycles, intake, audit cache, one-direction,
@@ -61,7 +63,8 @@ Brand DNA (brand-strategist → .olympus/brand-dna.json + BRAND.md)
 | Registry | `library/registry/skills.registry.json` · `ROUTING-DIGEST.md` (route from this) |
 | Brand DNA (per client project) | `<project>/.olympus/brand-dna.json` · schema `library/schemas/brand-dna.schema.json` |
 | Doctrines | `library/doctrines/` — direction input to the questionnaire |
-| **Generated, disposable** | `.claude/` · `.agents/skills/` · `.codex/agents/` · `.claude-plugin/` · `convenium-design-studio/knowledge/` |
+| **Generated, disposable** | `.claude/` · `.agents/skills/` · `.codex/agents/` · `.claude-plugin/` · `ship/data/` |
+| The ship console (crew = agents, ships = workflows) | `ship/index.html` — open in a browser, no build |
 | Rebuild the generated trees | `python library/tools/project.py all` |
 | Check the repo / this machine | `python library/tools/verify.py` · `python library/tools/apollo.py doctor` |
 | Connect a project | Claude plugin (`.claude-plugin/`) or `python library/tools/apollo.py attach <project>` |

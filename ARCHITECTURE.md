@@ -148,9 +148,9 @@ Recorded so the next pass starts from decisions, not rediscovery.
 - **Remotion dedupe.** `remotion-best-practices` is an upstream router whose relative links
   point into nested copies of the other twelve remotion skills, and some copies differ from the
   top-level ones. Dedupe against upstream, not by hand.
-- **Phase vocabulary.** Registry, agents and Studio use different phase names; unify only with
-  a migration for `run.json` and Studio.
+- **Phase vocabulary.** Registry and agents use the registry's phase names; `run.json` keeps
+  its own trail vocabulary. Unify only with a migration for `run.json`.
 - **V3 harvest.** `unused/v3-apollo/` holds a WCAG contrast checker (`lib/contrast.mjs`), a
   token schema and an eval harness worth folding in as a regression suite.
-- **Studio.** Optional and unchanged by the 2026-10-08 cleanup; its redesign plans live in
-  `New_upgradePlan/` and `convenium-design-studio/docs/`.
+- **Studio.** Retired 2026-10-26 to `unused/convenium-design-studio/` (with its redesign
+  plans in `unused/New_upgradePlan/`); the 2D ship console (`ship/`) replaced it.

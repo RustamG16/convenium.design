@@ -55,6 +55,8 @@ REQUIRED_FILES = [
     "library/schemas/taste-profile.schema.json",
     "library/README.md", "library/registry/skills.registry.json",
     "library/registry/ROUTING-DIGEST.md", "library/tools/project.py", "library/tools/verify.py",
+    "library/registry/crew.json", "library/registry/workflows.json",
+    "ship/index.html", "ship/style.css", "ship/ship.js", "ship/data/ship-data.js",
 ]
 LINE_CAPS = {"library/registry/ROUTING-DIGEST.md": 200, "CLAUDE.md": 120, "PROMPT.md": 120}
 PROJECT_CONTEXT = ["PRD.md", "ARCHITECTURE.md", "ARCHITECTURE-ESSENTIALS.md", "AGENTS.md",
@@ -179,6 +181,38 @@ def check_library():
         for sk in p["skills"]:
             if sk not in by_id:
                 bad.append(f"presets.json {p['id']}: skill {sk} not in registry")
+
+    # the console's authored data: one crew member per agent, ships with valid phases
+    crew = json.load(open(os.path.join(REGISTRY, "crew.json"), encoding="utf-8")).get("crew", [])
+    crew_ids = {m["id"] for m in crew}
+    crew_agents = [m["role"]["agent"] for m in crew]
+    if sorted(crew_agents) != sorted(SANCTIONED_AGENTS):
+        bad.append("crew.json: crew members must map one-to-one onto the sanctioned agents "
+                   f"(got {sorted(crew_agents)})")
+    if len({m["station"] for m in crew}) != len(crew):
+        bad.append("crew.json: stations must be unique")
+    for m in crew:
+        if not re.match(r"^#[0-9A-Fa-f]{6}$", m.get("pigment", "")):
+            bad.append(f"crew.json {m['id']}: pigment is not a hex colour")
+        for r in m.get("related", []):
+            if r not in crew_ids:
+                bad.append(f"crew.json {m['id']}: related id {r} does not exist")
+    wf = json.load(open(os.path.join(REGISTRY, "workflows.json"), encoding="utf-8"))
+    ship_ids = {s["id"] for s in wf.get("ships", [])}
+    if wf.get("default") not in ship_ids:
+        bad.append(f"workflows.json: default ship {wf.get('default')!r} does not exist")
+    for s in wf.get("ships", []):
+        for sk in s.get("skills", []):
+            if sk not in by_id:
+                bad.append(f"workflows.json {s['id']}: skill {sk} not in registry")
+        for st in s.get("stages", []):
+            if "gate" in st:
+                continue
+            if st.get("phase") not in VALID_PHASES:
+                bad.append(f"workflows.json {s['id']}/{st.get('id')}: invalid phase {st.get('phase')!r}")
+            for c in st.get("crew", []):
+                if c not in crew_ids:
+                    bad.append(f"workflows.json {s['id']}/{st.get('id')}: crew id {c} not in crew.json")
     return folders, reg
 
 
@@ -237,6 +271,8 @@ def check_system(reg):
     out = dry.stdout + dry.stderr
     if dry.returncode != 0 or "HALT" in out:
         bad.append("project.py all --dry-run did not report OK:\n" + out)
+    if "1 write (ship console data)" in out:
+        bad.append("ship/data/ship-data.js is stale — run `python library/tools/project.py ship`")
     pending = sum(int(n) for n in re.findall(r"(\d+) write", out))
     if pending:
         bad.append(f"generated trees are stale: project.py all --dry-run plans {pending} write(s); "

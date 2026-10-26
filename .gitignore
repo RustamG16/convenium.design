@@ -6,7 +6,7 @@ node_modules/
 !.env.example
 tmp/
 *.log
-convenium-design-studio/data/*.jsonl
+unused/convenium-design-studio/data/*.jsonl
 
 # test_projects/* are device-specific, each an independent git repo with its
 # own origin (or none yet) — never tracked or pushed as part of Convenium.Design.
@@ -16,6 +16,3 @@ test_projects/
 # lives in <project>/.olympus/brand-dna.json, never in this repo.
 library/design-dna/*
 !library/design-dna/.gitkeep
-
-# Pages build output
-_site/

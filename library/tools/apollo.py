@@ -189,7 +189,7 @@ def doctor():
               ".mcp.json.example to .mcp.json; for Codex see .codex/config.example.toml.")
 
     tracked = subprocess.run(["git", "-C", HOME, "grep", "-l", "-I", "-E", r"[A-Za-z]:[/\\](Users|Analyst_Designer)",
-                              "--", ".", ":!unused", ":!convenium-design-studio", ":!New_upgradePlan", ":!test_projects"],
+                              "--", ".", ":!unused", ":!test_projects"],
                              capture_output=True, text=True)
     hits = [l for l in tracked.stdout.splitlines() if l.strip()]
     if hits:

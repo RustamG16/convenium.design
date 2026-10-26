@@ -68,15 +68,16 @@ the handoff if a new task becomes necessary.
 `library/` is the only place to edit skills, agents, and the registry. After any change:
 
 ```
-python library/tools/project.py all      # regenerate .claude/ .agents/ .codex/ .claude-plugin/ convenium-design-studio/knowledge/
+python library/tools/project.py all      # regenerate .claude/ .agents/ .codex/ .claude-plugin/ ship/data/
 python library/tools/verify.py            # the single health check — exit 0 = clean
 python library/tools/build_index.py       # refresh library/INDEX.md
 ```
 
-`project.py <claude|codex|studio|digest|plugin>` runs one projector; add `--dry-run` to preview.
+`project.py <claude|codex|ship|digest|plugin>` runs one projector; add `--dry-run` to preview.
 
-## The Studio
+## The ship console
 
-`convenium-design-studio/` is an optional local control plane (Node ≥20): `npm --prefix convenium-design-studio
-start`, then `http://127.0.0.1:4173`. It reads the same `library/registry/` data via
-`skills.mjs`. `npm --prefix convenium-design-studio run check` syntax-checks it.
+Open `ship/index.html` in any browser — no install, no server. Crew members are the agents,
+ships are the workflows, loadout slots come from `library/registry/slots.json`. Local
+customisation (hired crew, ship choice, loadout picks) lives in the browser only; the data
+file `ship/data/ship-data.js` is generated — see `ship/README.md` for the keep-it-true rule.

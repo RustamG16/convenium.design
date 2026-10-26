@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Convenium.Design — Ship Console</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-left">
+    <span class="wordmark">CONVENIUM.DESIGN</span>
+    <span class="masthead-sub">ship console</span>
+  </div>
+  <div class="masthead-right">
+    <label class="ship-picker">
+      <span>Ship</span>
+      <select id="ship-select" aria-label="Choose a workflow ship"></select>
+    </label>
+    <button id="reset-custom" class="ghost-btn" title="Forget local crew edits, loadout and ship choice">Reset</button>
+  </div>
+</header>
+
+<main>
+  <section class="bridge" aria-labelledby="bridge-h">
+    <div class="section-head">
+      <h2 id="bridge-h">The bridge</h2>
+      <p class="section-sub">Seven crew, one per agent. Click a crew member to read their sheet — or hire a replacement.</p>
+    </div>
+    <div class="hull-wrap">
+      <svg class="hull" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs>
+          <linearGradient id="hullg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1d2740"/><stop offset="1" stop-color="#121a2e"/>
+          </linearGradient>
+          <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="#7fd4ff" stop-opacity="0.9"/><stop offset="1" stop-color="#7fd4ff" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="500" cy="285" rx="470" ry="10" fill="#0b1120"/>
+        <path d="M60 220 Q 70 150 180 130 L 790 110 Q 920 115 960 180 Q 940 235 850 245 L 150 250 Q 85 245 60 220 Z"
+              fill="url(#hullg)" stroke="#36456b" stroke-width="2"/>
+        <path d="M250 130 Q 300 60 420 56 L 560 54 Q 640 60 660 112 L 655 120 L 255 128 Z"
+              fill="#18223a" stroke="#36456b" stroke-width="2"/>
+        <path d="M300 96 L 620 88 L 630 108 L 295 116 Z" fill="#0e1526" stroke="#4a5d8f" stroke-width="1.5"/>
+        <circle cx="905" cy="185" r="26" fill="url(#glow)"/>
+        <circle cx="905" cy="185" r="12" fill="#9fe3ff"/>
+        <path d="M60 220 L 20 235 L 70 238 Z" fill="#18223a" stroke="#36456b"/>
+        <g stroke="#2a3757" stroke-width="1"><line x1="160" y1="170" x2="840" y2="152"/><line x1="140" y1="205" x2="860" y2="192"/></g>
+      </svg>
+      <div id="stations" class="stations"></div>
+    </div>
+    <div id="crew-sheet" class="crew-sheet" hidden></div>
+  </section>
+
+  <section class="voyage" aria-labelledby="voyage-h">
+    <div class="section-head">
+      <h2 id="voyage-h">The voyage</h2>
+      <p class="section-sub" id="voyage-sub"></p>
+    </div>
+    <ol id="stages" class="stages"></ol>
+    <details class="phase-skills">
+      <summary>Skills routed on this voyage</summary>
+      <div id="phase-skills-body"></div>
+    </details>
+  </section>
+
+  <section class="loadout" aria-labelledby="loadout-h">
+    <div class="section-head">
+      <h2 id="loadout-h">The loadout</h2>
+      <p class="section-sub">Eight questions that change how a run feels. Your picks live in this browser only; the registry defaults stay the source of truth.</p>
+    </div>
+    <div id="slots" class="slots"></div>
+  </section>
+</main>
+
+<footer class="colophon">
+  <p id="colophon-counts"></p>
+  <p>Data is generated from <code>library/</code> — after any change to agents, skills, crew or workflows run
+     <code>python library/tools/project.py ship</code> (or <code>all</code>). Hand edits to <code>ship/data/</code> are overwritten.</p>
+</footer>
+
+<script src="data/ship-data.js"></script>
+<script src="ship.js"></script>
+</body>
+</html>

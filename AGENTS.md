@@ -24,6 +24,12 @@ work — a website, a brand identity, or whatever the business's Brand DNA says 
   `templates/project-context/`; run `scripts/validate-project-context.ps1` before Gate A.
 - Use progressive disclosure: read Architecture Essentials first, then only the product,
   architecture, agent, or history file needed for the current decision.
+- Keep the user's console true: any change to agents, skills, routing, doctrines, crew or
+  workflows updates the authored console sources in the same change
+  (`library/registry/crew.json` — one crew member per agent; `library/registry/workflows.json`
+  — one ship per workflow) and rebuilds the generated trees, which include the console data
+  (`ship/data/ship-data.js`). `verify.py` fails while the console is stale or a new agent has
+  no crew entry.
 
 ## Reading the brief
 

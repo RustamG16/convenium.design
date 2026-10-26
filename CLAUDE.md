@@ -48,6 +48,11 @@ routing decision, one per phase.
   per-section media map. This is the locked workflow; see the build-plan rule in `AGENTS.md`.
 - **Read the brief as written.** Explicit creative freedom cancels the intake round. Do not
   ask questions a brief has already told you not to ask.
+- **The ship console (`ship/index.html`) must stay true to the system.** Any change to agents,
+  skills, routing, doctrines or workflows also updates the console in the same change: edit
+  `library/registry/crew.json` (a new agent needs a crew member) or
+  `library/registry/workflows.json` (a new workflow needs a ship), then rebuild — `verify.py`
+  fails while `ship/data/ship-data.js` is stale. See `ship/README.md`.
 - **"Rebuild/optimize the mobile resolution" on a built site is a retrofit, not a redesign.**
   Kick off from `templates/prompts/mobile-app-grade-pass.md` on the abridged trail and load the
   `mobile-app-shell` skill body alone (verification stays `visual-qa`). No intake, no other
@@ -56,9 +61,9 @@ routing decision, one per phase.
 ## Do not
 
 - Edit anything under `.claude/`, `.agents/skills/`, `.codex/agents/`, or
-  `convenium-design-studio/knowledge/skills/` — they are generated from `library/` and overwritten.
+  `ship/data/` — they are generated from `library/` and overwritten.
 - Write project evidence into this repo. It goes in `<website-project>/.olympus/`.
-- Touch `convenium-design-studio/data/`, `evidence/`, `handoffs/`, `public/media/`, or any `.olympus/`.
+- Touch `evidence/`, `handoffs/`, `public/media/`, or any `.olympus/`.
 - Read or route from `unused/` — it is retired material, indexed in `unused/README.md`.
 
 ## For humans
