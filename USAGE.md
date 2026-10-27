@@ -30,8 +30,8 @@ python library/tools/apollo.py attach <PROJECT_FOLDER>
 Nothing in `library/` holds an absolute path; `.olympus/APOLLO.md` in the project is the only
 file that does, and `attach` rewrites it. Generated trees (`.claude/`, `.agents/`, `.codex/`,
 `ship/data/`) are committed, so a fresh clone is usable without a rebuild; rebuild only after
-editing `library/`. For the mobile fleet pass on several sites, see
-`templates/prompts/mobile-fleet-pass.md`.
+editing `library/`. For one site's mobile pass, `templates/prompts/mobile-pass-single-site.md` is paste-ready; for
+several sites at once, `templates/prompts/mobile-fleet-pass.md`.
 
 ## Connect a project (once per project)
 

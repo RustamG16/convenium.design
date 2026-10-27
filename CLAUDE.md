@@ -58,6 +58,8 @@ routing decision, one per phase.
   `mobile-app-shell` body at audit and build, `visual-qa` at the finish review — one body per
   phase, no intake, nothing else.
 
+- **One site, paste-ready:** `templates/prompts/mobile-pass-single-site.md` — fill `<CD>`, `<SITE>`,
+  `<URL>`, paste; it carries the run plan, budgets, the shell kit port and the two-pass verification.
 - **Several sites at once is the fleet pass.** Kick off from `templates/prompts/mobile-fleet-pass.md`
   (`ss-mobile-fleet`): the director writes `00-run-plan.md` first, one read-only agent measures
   with `mobile-app-shell/reference/shell/measure.mjs`, the shell is built once on the reference
