@@ -1,0 +1,42 @@
+{
+  "site": "<id from fleet.json>",
+  "route": "/",
+  "viewport": "390x844",
+  "measured_at": "YYYY-MM-DD",
+  "before": {
+    "screens": 0,
+    "under24": 0,
+    "smallInputs": 0,
+    "overflowX": false,
+    "bottomBar": false
+  },
+  "after": {
+    "screens": 0,
+    "under24": 0,
+    "smallInputs": 0,
+    "overflowX": false,
+    "bottomBar": true
+  },
+  "budget": {
+    "screens": 10,
+    "under24": 0,
+    "smallInputs": 0,
+    "overflowX": false,
+    "bottomBar": true
+  },
+  "pass": false,
+  "gap": "what is still over budget and why it was not cut",
+  "cuts": [
+    {
+      "section": "<id>",
+      "treatment": "merge | rail | details | show-all | density | content",
+      "before_screens": 0,
+      "after_screens": 0
+    }
+  ],
+  "desktop_unchanged_at_1280": true,
+  "not_verified": [
+    "real iPhone pass",
+    "INP on mid-range Android"
+  ]
+}

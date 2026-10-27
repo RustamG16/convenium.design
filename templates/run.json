@@ -1,5 +1,5 @@
 {
-  "system": "olympus-designer-system1",
+  "system": "convenium.design",
   "target_project": "",
   "target_route": "",
   "mode": "concept-only | concept-and-implementation",
@@ -42,7 +42,20 @@
     "qa": 0,
     "finish": 0,
     "measurement": 0,
-    "handoff": 0
+    "handoff": 0,
+    "run_plan": 0,
+    "measure": 0,
+    "shell": 0,
+    "fleet": 0,
+    "review": 0
   },
-  "last_updated": "YYYY-MM-DD"
+  "last_updated": "YYYY-MM-DD",
+  "run_plan": ".olympus/00-run-plan.md",
+  "gates": {
+    "gate_0": null,
+    "gate_1": null,
+    "gate_2": null,
+    "note": "fleet trail only; A/B/C are the top-level keys"
+  },
+  "artifact_hashes": {}
 }

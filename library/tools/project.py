@@ -44,7 +44,7 @@ for f in sorted(os.listdir(AGENTS_DIR)):
     body = re.sub(r"^# .+?\n\n", "", body, count=1, flags=re.S)  # drop the "# name" heading
     AGENTS[f[:-3]] = {"fm": fm, "body": body.strip("\n")}
 
-READONLY_TOOLS = "Read, Glob, Grep, Bash, WebFetch"
+READONLY_TOOLS = "Read, Glob, Grep, Bash, WebFetch, Skill"   # Skill: the packet names ONE SKILL.md to open
 WRITE_TOOLS = READONLY_TOOLS + ", Write, Edit, NotebookEdit"
 
 
@@ -184,8 +184,8 @@ def claude_agent(name):
           f"tools: {READONLY_TOOLS if ro else WRITE_TOOLS}"]
     if a["fm"].get("model"):          # the model rule in AGENTS.md: planner/builder/reader tier per agent
         fm.append(f"model: {a['fm']['model']}")
-    if a["fm"].get("skills"):
-        fm.append(f"skills: {a['fm']['skills']}")
+    # `routes:` is deliberately NOT projected as `skills:` — Claude Code preloads every listed
+    # skill body at spawn, which would defeat one-body-per-phase. The packet names the one path.
     fm += ["---", "", body, ""]
     return "\n".join(fm)
 
@@ -289,7 +289,7 @@ def build_ship(dry):
                        if os.path.isdir(os.path.join(LIB, "doctrines", d)))
     agents = []
     for name, a in AGENTS.items():
-        skills = [s.strip() for s in a["fm"].get("skills", "").strip("[]").split(",") if s.strip()]
+        skills = [s.strip() for s in a["fm"].get("routes", "").strip("[]").split(",") if s.strip()]
         agents.append({"id": name, "description": a["fm"].get("description", ""),
                        "access": a["fm"].get("access", "write"), "skills": skills})
     skills = [{"id": r["id"], "name": r["name"], "phase": r["phase"], "group": r["group"],

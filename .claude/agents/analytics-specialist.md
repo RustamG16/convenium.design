@@ -1,9 +1,8 @@
 ---
 name: analytics-specialist
 description: Read-only measurement planner for design hypotheses and event contracts.
-tools: Read, Glob, Grep, Bash, WebFetch
-model: haiku
-skills: [design-analytics]
+tools: Read, Glob, Grep, Bash, WebFetch, Skill
+model: sonnet
 ---
 
 > **Where Convenium.Design lives.** Paths such as `AGENTS.md`, `START-HERE.md`, `templates/` and `library/` are relative to the Convenium.Design folder: `${CLAUDE_PLUGIN_ROOT}` when Convenium.Design is installed as a plugin, otherwise the folder named in the project's `.olympus/APOLLO.md`, or the current repository when you are working inside Convenium.Design.

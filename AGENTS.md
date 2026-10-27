@@ -21,7 +21,7 @@ work — a website, a brand identity, or whatever the business's Brand DNA says 
 - Verify desktop, mobile, interaction states, reduced motion, console/runtime health, accessibility basics, and performance risks.
 - Keep an audit trail in `.olympus/` using the templates in this repository.
 - Do not begin a new project without the six root context files in
-  `templates/project-context/`; run `scripts/validate-project-context.ps1` before Gate A.
+  `templates/project-context/`; run `python library/tools/verify.py --project <project>` before Gate A.
 - Use progressive disclosure: read Architecture Essentials first, then only the product,
   architecture, agent, or history file needed for the current decision.
 - Keep the user's console true: any change to agents, skills, routing, doctrines, crew or
@@ -106,62 +106,72 @@ Greenfield work has an entry: with no existing page the run starts at the questi
 
 ## Activation protocol — plan first, agents on demand, one skill each
 
-The system is lazy by construction, and this is the order that keeps it so:
+The system is lazy by construction, and this is the order that keeps it so. It is enforced by
+a file and a check, not by prose:
 
-1. **The director plans before anyone else exists.** The first artifact of any run is a
-   written plan (`06-build-plan.md` on the full trail, `00-run-plan.md` on a fleet run,
-   the approved plan on an abridged trail). It names each phase, the agent that phase
-   activates — only if that agent's activation condition in `library/agents/<name>.md` is
-   true — the **one** skill body that agent may load, and its output contract.
-2. **An agent not named in the plan does not run.** There is no standing roster; the
-   specialists are inert until the plan activates them for a bounded phase.
-3. **An agent reads only its packet.** The packet carries the task, the file paths, the
-   single skill id and the contract. It never carries the routing digest, the registry, or
-   another agent's output beyond the file path. Routing is the director's job alone.
-4. **Skills outside the packet stay closed.** Every skill in `library/skills/` is available
-   to the host; none is open until named. Loading a body "for context" is a defect.
-5. **Parallel means independent.** Agents run concurrently only when their file sets do not
-   overlap (one site per agent on a fleet run); otherwise sequentially. Two workers at most
-   for evidence gathering; a fleet build is the exception and may run one agent per site
-   per wave.
+1. **The director writes `00-run-plan.md` at step 0 of every trail**, from
+   `templates/00-run-plan.md`, before any agent exists — full, abridged and fleet alike. It
+   names each phase, the agent that phase activates (only if that agent's activation
+   condition in `library/agents/<name>.md` is true), the **one** skill body that agent may
+   open (as an absolute `SKILL.md` path), its outputs and its stop condition. The Brand DNA
+   phase is the first row of that plan, not an exception to it. `06-build-plan.md` stays the
+   creative document; it never carries the roster.
+2. **`verify.py --plan .olympus/00-run-plan.md` must be clean before the first spawn**, and
+   again after any edit to the plan. An agent, skill or parallel wave not in the file does
+   not run; add the row first.
+3. **An agent reads only its packet.** The packet quotes the plan row: task, file paths, the
+   single `SKILL.md` path to open with the Skill tool, the output contract, the stop
+   condition. It never carries the routing digest, the registry, or another agent's output
+   beyond a file path. Routing is the director's job alone.
+4. **Host agents preload nothing.** `library/agents/*.md` carries `routes:` (informational);
+   `project.py` deliberately does not project it as the host `skills:` field, because that
+   field loads every listed body at spawn. One body per phase is therefore real, not aspirational.
+5. **The director is the main session, never a subagent.** Subagents cannot delegate, so a
+   `design-director` subagent would dead-end at its first "delegate to" line; its projected
+   description says so.
+6. **Parallel means non-overlapping files.** Agents run concurrently only when their file
+   sets do not overlap: at most two read-only evidence gatherers on a normal run; on a fleet
+   run, one writing engineer per site per wave, each in its own git worktree. Authors and
+   critics that may touch the same files run sequentially.
 
-The six root context files (`templates/project-context/`) and the model rule below are the
-two other standing rules every run starts from.
+The six root context files (`templates/project-context/`, checked with
+`verify.py --project <path>`) and the model rule below are the two other standing rules every
+run starts from.
 
 ## The model rule — which model for which goal
 
 Match the model to the kind of judgement the phase needs, not to the agent's name. Tiers,
 and the Claude Code alias each maps to (set in `library/agents/<name>.md` as `model:`,
-projected into the host agent files; the user's `--model` flag and a host without a tier
-override it):
+projected into `.claude/agents/*.md`; the user's `--model` flag changes the main session
+only; Codex has no per-agent model, so a Codex run is one tier throughout — the planner's):
 
-| Tier | Use it for | Alias | Default holders |
+| Tier | Use it for | Alias | Holders |
 |---|---|---|---|
-| **planner** | Reading the brief, Brand DNA, routing, the plan, every gate conversation, scored critique | `opus` | `design-director`, `brand-strategist`, `independent-critic` |
-| **builder** | Implementation from a written plan, asset production, porting a known shell | `sonnet` | `design-engineer`, `asset-producer`, `visual-analyst` |
-| **reader** | Mechanical collection: running a measurement script over many routes, filling a manifest, collecting QA files | `haiku` | `analytics-specialist`, fleet Phase 0 |
+| **planner** | Reading the brief, Brand DNA, routing, the run plan, every gate conversation, scored critique, audit interpretation (severity, leverage) | `opus` | `design-director`, `brand-strategist`, `independent-critic` |
+| **builder** | Implementation from a written plan, asset production, porting a known shell, evidence collection that needs reading a page, analytics contracts | `sonnet` | `design-engineer`, `asset-producer`, `visual-analyst`, `analytics-specialist` |
+| **reader** | Mechanical collection: running a measurement script over many routes and returning the table | `haiku` | `fleet-measurer` |
 
-Three consequences: a plan is never written by a reader; a build is never started by a
-planner reading its own plan for the first time (fresh session, builder tier); a critic is
-always at least the tier that built the thing it scores. When the host cannot set a model
-per agent, the whole run goes at the planner tier and the reader-tier savings are forgone —
-never the other way round.
+Three consequences: a plan is never written by a reader; a build never starts in the session
+that wrote the plan (fresh session, builder tier, per the build-plan rule); a critic is always
+at least the tier that built the thing it scores. The `visual-analyst` collects evidence at
+builder tier and the director, at planner tier, ranks it — the audit's "five highest-leverage
+problems" are the director's judgement on the analyst's table.
 
 ## Delegation policy
 
-The default is a single Design Director using focused skills. Optional custom agents in `.codex/agents/` are specialists, not a hierarchy.
+The default is a single Design Director (the main session) using focused skills. The agents in `library/agents/` (projected to `.claude/agents/` and `.codex/agents/`) are bounded specialists, not a hierarchy.
 
 - Delegate only a bounded phase with a written output contract.
 - Never launch all specialists; activate only what the written plan names (activation protocol above).
 - Never let a specialist delegate further.
 - Run authors and critics sequentially when both may touch the same files.
-- Use parallel work only for independent read-only evidence gathering, with at most two workers.
+- Use parallel work only for non-overlapping file sets: at most two read-only evidence gatherers, or — on a fleet run — one writing engineer per site per wave in its own worktree (activation protocol, rule 6).
 - The Design Director integrates the result and owns user communication.
 
 ## Token control — two-stage skill loading
 
 - Route from `library/registry/ROUTING-DIGEST.md` — one line per pipeline-active skill.
-- Load a `SKILL.md` body only after the routing decision is made.
+- Load a `SKILL.md` body only after the routing decision is made — by its absolute path from the run plan, with the Skill tool or by reading the file; agents preload nothing.
 - Never load more than one `SKILL.md` body per phase.
 - Share file paths and concise phase packets, not the whole conversation.
 - A critic identifies defects and scores work; it does not secretly redesign it.
@@ -182,9 +192,9 @@ in `AGENTS.md`" rather than restating a number.
 3. **An audit is never re-run against unchanged evidence** — the `.olympus/` artifact from the
    previous run is the cache; regenerate it only when the target or evidence changed.
 4. **One direction by default** (see the direction rule); more only on explicit request.
-5. **Anti-loop:** if a phase's output is byte-identical to the previous attempt, stop and
-   escalate — two identical outputs mean the model is not converging and a third attempt will
-   not either.
+5. **Anti-loop:** record a sha256 of each phase artifact in `run.json → artifact_hashes` when
+   the phase completes; if a repeat produces the same hash, stop and escalate — two identical
+   outputs mean the model is not converging and a third attempt will not either.
 
 ## Cost feedback
 

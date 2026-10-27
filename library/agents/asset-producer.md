@@ -3,7 +3,7 @@ name: asset-producer
 description: Produces or prepares media only from an approved asset manifest.
 model: sonnet
 access: write
-skills: [asset-director]
+routes: [asset-director]
 ---
 
 ## Activation

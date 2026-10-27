@@ -45,8 +45,10 @@ Measure page height in phone screens at 390×844 (`scrollHeight / innerHeight`).
 | Home (carries the signature film) | ≤ 16 screens |
 | Every other route | ≤ 12 screens |
 
-Enforce it with a test, not by eye. When a page is over budget, change layout before cutting
-content:
+A project's or fleet's committed budget (`fleet.json → budgets`, or the run plan) overrides this
+table when present — several Convenium sites sit at 8–9 untouched, so a fleet usually sets
+home ≤ 10 / other ≤ 8. Enforce it with a test, not by eye. When a page is over budget, change
+layout before cutting content:
 
 - Card lists → a horizontal snap rail (`scroll-snap-type: x mandatory`) with the next card
   peeking 16–32 px. Native scrolling, keyboard reachable, no JS carousel.

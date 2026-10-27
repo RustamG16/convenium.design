@@ -162,9 +162,14 @@ def doctor():
     print()
     if sys.version_info < (3, 9):
         warn.append(f"Python {sys.version.split()[0]} — Convenium.Design's tools need 3.9+")
-    for tool, why in (("git", "cloning and updating Convenium.Design"), ("node", "Impeccable's scripts and Convenium.Design Studio (optional)")):
+    for tool, why in (("git", "cloning and updating Convenium.Design"), ("node", "Impeccable's scripts, measure.mjs (mobile passes) and Convenium.Design Studio")):
         if subprocess.run([tool, "--version"], capture_output=True, shell=os.name == "nt").returncode != 0:
             warn.append(f"`{tool}` not found — needed for {why}")
+
+    pw = subprocess.run(["npx", "--no-install", "playwright", "--version"], capture_output=True, shell=os.name == "nt")
+    if pw.returncode != 0:
+        warn.append("Playwright not found — `measure.mjs` (mobile passes) and visual-qa captures need it: "
+                    "`npm i -D playwright && npx playwright install chromium` in the project")
 
     projected = set()
     for rel in (".claude/skills", ".agents/skills"):

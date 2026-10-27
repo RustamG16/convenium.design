@@ -24,8 +24,8 @@ before/after table.
 > means sharp media on 3x screens, no page longer than it needs to be, and no scroll animation
 > that freezes or lags.
 >
-> 1. **Audit** with `ux-evidence-audit`, then `mobile-app-shell` §6 as the measurement list (its §0
->    snippet is the quick per-route read). Record numbers, not
+> 1. **Audit** with `mobile-app-shell` §6 as the measurement list (its §0 snippet is the quick
+>    per-route read; `reference/shell/measure.mjs` runs it over a URL list) — one body, this one. Record numbers, not
 >    impressions, in `01-audit.md`, at 360x780, 390x844 and 430x932 plus an iPhone WebKit pass:
 >    - page length in screens, per route, with lazy images forced to load
 >    - source pixels per CSS pixel for every visible image, using the real file's pixels (not
@@ -52,9 +52,9 @@ before/after table.
 >    artefact with nothing else using the CPU. Never touch engines the project marks frozen;
 >    additive hooks, new asset sets alongside existing ones and overlay layout are fair game.
 >    Encode every budget and measurement from step 1 as a test, so it cannot regress silently.
-> 4. **QA** (`07-qa.md`) with a before/after table, then hand the **finish review** to a different
->    session, using `better-interface`, `visual-qa` and `mobile-app-shell`. The builder never writes
->    `10-finish-review.md`.
+> 4. **QA** (`07-qa.md` + `07-qa.json` from `templates/`) with a before/after table, then hand the
+>    **finish review** to a different session that loads `visual-qa` only and scores against the
+>    budgets in step 2. The builder never writes `10-finish-review.md`.
 >
 > Respect the loop bounds in `AGENTS.md`. Report anything you could not verify on a real device
 > as not verified. Do not commit, push or deploy without the user's word.

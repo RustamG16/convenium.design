@@ -37,6 +37,12 @@ DNA, which decides what this run makes — and explicitly ask for Gate A approva
 
 Create `<website-project>/.olympus/` from the files in `templates/`. Record the target route, constraints, reference locations, and approval state in `run.json`.
 
+**Write `00-run-plan.md` first** (from `templates/00-run-plan.md`): every phase, its agent, its one
+skill body as an absolute path, outputs, stop condition. Check it with
+`python <Convenium.Design>/library/tools/verify.py --plan .olympus/00-run-plan.md`. Nothing is
+spawned that the plan does not name (activation protocol in `AGENTS.md`). The Brand DNA phase is
+its first row.
+
 **Choose the trail and record it in `run.json` as `trail`.**
 
 | | Full | Abridged |
@@ -52,14 +58,16 @@ implementation in a fresh session, then `05`–`10`.
 
 **A scoped repair request on an implemented site is abridged, not a redesign.** "Rebuild the
 mobile resolution", "the phone pages are too long", "optimize mobile" means: kick off from
-`templates/prompts/mobile-app-grade-pass.md`, load `mobile-app-shell` and only it at build
-(verification stays `visual-qa`), and leave direction, palette and the committed type ramp
-untouched. No intake round, no new concepts, no other skill bodies.
+`templates/prompts/mobile-app-grade-pass.md`, one body per phase — audit: `mobile-app-shell` (§0/§6
+as the measurement list); build: `mobile-app-shell`; finish review: `visual-qa` — and leave
+direction, palette and the committed type ramp untouched. No intake round, no new concepts, no
+other skill bodies. Several sites at once: `templates/prompts/mobile-fleet-pass.md`.
 
 Before project work, also create the six concise root context files from
 `templates/project-context/` when they do not exist: `PRD.md`, `ARCHITECTURE.md`,
-`ARCHITECTURE-ESSENTIALS.md`, `AGENTS.md`, `CODEX.md`, and
-`PROGRESS-AND-DECISIONS.md`. Validate them with `scripts/validate-project-context.ps1`.
+`ARCHITECTURE-ESSENTIALS.md`, `AGENTS.md`, `CODEX.md` (the Codex read router; `apollo.py attach`
+writes the matching `CLAUDE.md`), and `PROGRESS-AND-DECISIONS.md`. Validate them with
+`python <Convenium.Design>/library/tools/verify.py --project <project>`.
 `CODEX.md` is a read router, not a duplicate specification; load only the task-relevant
 documents after `ARCHITECTURE-ESSENTIALS.md`.
 
@@ -69,7 +77,7 @@ Use `$ux-evidence-audit` on the existing page. Use `$reference-deconstruction` o
 
 **Greenfield (no existing page):** skip `$ux-evidence-audit`; start from the questionnaire and let `$reference-deconstruction` carry the evidence phase.
 
-Deliver `01-audit.md` with screenshots/evidence, severity, affected users, and the five highest-leverage problems. Do not propose a visual concept yet.
+The analyst delivers the evidence (observed vs inferred, per route and width); the director ranks it into `01-audit.md` — severity, affected users, and the five highest-leverage problems. Do not propose a visual concept yet.
 
 ### Gate A — approve the brief
 
@@ -154,7 +162,7 @@ Show what changed, before/after evidence, known limitations, asset provenance, p
 ## Context budget rules
 
 - One director owns the full brief. Specialists receive only the contract and files needed for their phase.
-- Maximum one specialist at a time by default; maximum two only for independent read-only analysis.
+- Maximum one specialist at a time by default; two only for independent read-only analysis; on a fleet run, one writing engineer per site per wave in its own worktree (activation protocol in `AGENTS.md`).
 - No nested delegation. A specialist returns to the director instead of spawning another specialist.
 - Never ask every skill for an opinion. Route from `library/registry/ROUTING-DIGEST.md`, one skill body per phase.
 - Store durable findings in `.olympus/`; pass file paths and short summaries instead of repeating the full history.

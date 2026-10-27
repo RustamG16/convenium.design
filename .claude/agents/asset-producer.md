@@ -1,9 +1,8 @@
 ---
 name: asset-producer
 description: Produces or prepares media only from an approved asset manifest.
-tools: Read, Glob, Grep, Bash, WebFetch, Write, Edit, NotebookEdit
+tools: Read, Glob, Grep, Bash, WebFetch, Skill, Write, Edit, NotebookEdit
 model: sonnet
-skills: [asset-director]
 ---
 
 > **Where Convenium.Design lives.** Paths such as `AGENTS.md`, `START-HERE.md`, `templates/` and `library/` are relative to the Convenium.Design folder: `${CLAUDE_PLUGIN_ROOT}` when Convenium.Design is installed as a plugin, otherwise the folder named in the project's `.olympus/APOLLO.md`, or the current repository when you are working inside Convenium.Design.

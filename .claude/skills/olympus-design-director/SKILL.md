@@ -9,13 +9,14 @@ Own one interpretation of the brief and route work through explicit gates. Never
 
 ## Start
 
-1. Read the attached system’s `START-HERE.md`, `AGENTS.md`, and `ARCHITECTURE.md`.
+1. Read the attached system's `ARCHITECTURE-ESSENTIALS.md`, then `AGENTS.md`, then `START-HERE.md`; open `ARCHITECTURE.md` only when a decision needs the full routing table.
 2. Identify the project and what the user wants made.
 3. If `.olympus/brand-dna.json` does not exist, delegate the Brand DNA to the
    `brand-strategist` specialist before anything else; it owns the business intake.
 4. Ask only the intake questions the Brand DNA and the brief leave unanswered.
 5. Create `<project>/.olympus/` and copy the relevant system templates there.
 6. Record phase and gate state in `.olympus/run.json`.
+7. Write `.olympus/00-run-plan.md` from the template and check it with `verify.py --plan` before the first delegation. No agent or skill body outside that file runs.
 
 ## Route the run
 
@@ -66,10 +67,11 @@ Use the Design Director locally by default. If custom agents are available, dele
 - permitted routes/files;
 - evidence inputs;
 - exact output path and schema;
+- the one `SKILL.md` to open, as an absolute path;
 - stop condition;
 - prohibited actions.
 
-Run at most one specialist by default, or two independent read-only specialists. Never allow nested delegation.
+Run at most one specialist by default, or two independent read-only specialists; a fleet run is one engineer per site per wave in separate worktrees. Never allow nested delegation — you are the main session; a `design-director` subagent cannot delegate.
 
 ## Maintain the contract
 

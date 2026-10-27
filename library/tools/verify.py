@@ -38,12 +38,12 @@ VALID_HOSTS = {"claude", "codex", "studio"}
 VALID_STATUS = {"active", "stub", "manual"}
 SANCTIONED_AGENTS = {
     "visual-analyst", "independent-critic", "asset-producer", "design-engineer",
-    "analytics-specialist", "design-director", "brand-strategist",
+    "analytics-specialist", "design-director", "brand-strategist", "fleet-measurer",
 }
 REQUIRED_FILES = [
     "README.md", "START-HERE.md", "PROMPT.md", "CLAUDE.md", "USAGE.md", "AGENTS.md",
     "ARCHITECTURE.md", "ARCHITECTURE-ESSENTIALS.md", ".codex/config.toml",
-    "config/MCP-SETUP.md", "templates/run.json",
+    "config/MCP-SETUP.md", "templates/run.json", "templates/00-run-plan.md", "templates/07-qa.json",
     *[f"templates/{n}.md" for n in ("00-brief", "01-audit", "02-concepts", "03-critique",
                                     "04-decision", "05-asset-manifest", "06-build-plan",
                                     "07-qa", "08-metrics", "09-handoff", "10-finish-review",
@@ -165,7 +165,7 @@ def check_library():
             bad.append(f"agent {a}: frontmatter name mismatch")
         if fm_field(fm, "model") not in (None, "", "opus", "sonnet", "haiku", "inherit"):
             bad.append(f"agent {a}: model must be a tier alias (opus|sonnet|haiku|inherit), got {fm_field(fm, 'model')!r}")
-        for sk in inline_list(fm_field(fm, "skills")):
+        for sk in inline_list(fm_field(fm, "routes")):
             if sk in external:
                 continue
             r = by_id.get(sk)
@@ -335,7 +335,54 @@ def check_project(path):
     return path
 
 
+def check_plan(path):
+    """`00-run-plan.md`: the fenced json block must name only sanctioned agents, one registered
+    skill (or null) per phase, an output and a stop condition. This is what makes the
+    activation protocol in AGENTS.md checkable instead of prose."""
+    txt = read(path)
+    m = re.search(r"```json\s*\n(.*?)\n```", txt, re.S)
+    if not m:
+        bad.append(f"{path}: no fenced json block"); return path
+    try:
+        plan = json.loads(m.group(1))
+    except ValueError as e:
+        bad.append(f"{path}: json block does not parse ({e})"); return path
+    by_id = {r["id"] for r in json.load(open(os.path.join(REGISTRY, "skills.registry.json"), encoding="utf-8"))}
+    seen = set()
+    for ph in plan.get("phases", []):
+        pid = ph.get("id", "?")
+        if pid in seen:
+            bad.append(f"plan {pid}: duplicate phase id")
+        seen.add(pid)
+        agent = ph.get("agent")
+        if agent not in SANCTIONED_AGENTS and agent != "director":
+            bad.append(f"plan {pid}: agent {agent!r} is not sanctioned (or 'director')")
+        sk = ph.get("skill")
+        if isinstance(sk, list):
+            bad.append(f"plan {pid}: one skill per phase, got a list")
+        elif sk is not None and sk not in by_id:
+            bad.append(f"plan {pid}: skill {sk!r} not in registry")
+        if not ph.get("outputs"):
+            bad.append(f"plan {pid}: no outputs")
+        if not ph.get("stop"):
+            bad.append(f"plan {pid}: no stop condition")
+        if agent == "director" and ph.get("parallel"):
+            bad.append(f"plan {pid}: the director never runs in parallel")
+    if not plan.get("phases"):
+        bad.append(f"{path}: no phases")
+    return path
+
+
 def main(argv):
+    if argv[:1] == ["--plan"]:
+        if len(argv) < 2:
+            print(__doc__)
+            return 2
+        path = check_plan(argv[1])
+        for b in bad:
+            print("FAIL ", b)
+        print(f"\nCLEAN (run plan {path})" if not bad else f"\n{len(bad)} problem(s)")
+        return 1 if bad else 0
     if argv[:1] == ["--project"]:
         if len(argv) < 2:
             print(__doc__)

@@ -313,6 +313,50 @@ window.CONVENIUM_SHIP_DATA = {
       "plainMeaning": "analytics-specialist is read-only; it defines the measurement plan and event contract (design-analytics) and never fabricates data.",
       "pigment": "#8FA3B5",
       "working": "sliding abacus beads and watching a sensor readout"
+    },
+    {
+      "id": "gauge",
+      "name": "Tally Gauge",
+      "glyph": "📏",
+      "species": "Small brass automaton with a measuring tape for a tongue and a clicker counter in each hand",
+      "essence": "Tally runs the same measurement over every route and writes the numbers down exactly as they came. It has no opinion and would not know where to keep one.",
+      "role": {
+        "title": "Fleet measurer, reader tier",
+        "agent": "fleet-measurer"
+      },
+      "station": 8,
+      "phase": "diagnose",
+      "strengths": [
+        "Runs a script over fifty routes without drifting",
+        "Reports a failed load as a failed load, never a guess",
+        "Hands the table back and writes nothing"
+      ],
+      "blindSpots": [
+        {
+          "hypothesis": "Could interpret the numbers if asked",
+          "truth": "Simulated"
+        },
+        {
+          "hypothesis": "Cheapest crew member on the ship",
+          "truth": "Simulated"
+        }
+      ],
+      "motivations": [
+        "A table nobody has to re-run",
+        "Zero rows marked 'estimated'"
+      ],
+      "growthPaths": [
+        "More viewports in the same pass",
+        "Timing numbers next to the layout numbers"
+      ],
+      "related": [
+        "analyst",
+        "captain"
+      ],
+      "analogy": "A tape measure does not have a view on the room.",
+      "plainMeaning": "fleet-measurer is read-only and reader-tier (haiku): it runs measure.mjs or a similar script over many URLs and returns the table in its reply; the director writes the files.",
+      "pigment": "#C9A227",
+      "working": "clicking a counter while a tape unspools across the deck"
     }
   ],
   "workflows": {
@@ -326,6 +370,17 @@ window.CONVENIUM_SHIP_DATA = {
         "class": "Flagship",
         "summary": "The complete gated run: Brand DNA and intake, audit, one direction, assets and build plan, design system as numbers, build, two verification passes, handoff. For briefs that need interpreting.",
         "stages": [
+          {
+            "id": "run-plan",
+            "label": "Run plan: which agents, one skill each",
+            "phase": "diagnose",
+            "artifacts": [
+              "00-run-plan.md"
+            ],
+            "crew": [
+              "captain"
+            ]
+          },
           {
             "id": "dna",
             "label": "Brand DNA + intake",
@@ -403,7 +458,7 @@ window.CONVENIUM_SHIP_DATA = {
               "design.json"
             ],
             "crew": [
-              "engineer"
+              "captain"
             ]
           },
           {
@@ -452,6 +507,17 @@ window.CONVENIUM_SHIP_DATA = {
         "class": "Cutter",
         "summary": "The plan is the brief: creative freedom granted or direction already fixed. Gates A and B recorded approved-in-plan; never skips the build plan, DESIGN.md, the finish review or Gate C.",
         "stages": [
+          {
+            "id": "run-plan",
+            "label": "Run plan: which agents, one skill each",
+            "phase": "diagnose",
+            "artifacts": [
+              "00-run-plan.md"
+            ],
+            "crew": [
+              "captain"
+            ]
+          },
           {
             "id": "resolve",
             "label": "Director-resolved brief",
@@ -525,6 +591,17 @@ window.CONVENIUM_SHIP_DATA = {
         ],
         "stages": [
           {
+            "id": "run-plan",
+            "label": "Run plan",
+            "phase": "diagnose",
+            "artifacts": [
+              "00-run-plan.md"
+            ],
+            "crew": [
+              "captain"
+            ]
+          },
+          {
             "id": "measure",
             "label": "Measure in numbers (screens, targets, overflow)",
             "phase": "diagnose",
@@ -577,7 +654,7 @@ window.CONVENIUM_SHIP_DATA = {
         "id": "ss-mobile-fleet",
         "name": "SS Mobile Fleet",
         "class": "Convoy",
-        "summary": "Many built sites, one phone standard, one take: measure all, build the shell once, one bounded agent per site in parallel, one independent review. Kickoff in templates/prompts/mobile-fleet-pass.md; shell kit in mobile-app-shell/reference/shell/.",
+        "summary": "Many built sites, one phone standard, one take: the director plans, a reader-tier measurer returns the numbers, the shell is built once, one engineer per site per wave in its own worktree, one critic per wave. Kickoff in templates/prompts/mobile-fleet-pass.md; shell kit in mobile-app-shell/reference/shell/.",
         "skills": [
           "mobile-app-shell",
           "visual-qa"
@@ -597,13 +674,13 @@ window.CONVENIUM_SHIP_DATA = {
           },
           {
             "id": "measure",
-            "label": "Measure every site in numbers",
+            "label": "Measure every route (table in reply; director writes)",
             "phase": "diagnose",
             "artifacts": [
               "01-audit.md"
             ],
             "crew": [
-              "analyst"
+              "gauge"
             ]
           },
           {
@@ -630,7 +707,7 @@ window.CONVENIUM_SHIP_DATA = {
             "label": "One agent per site, parallel per wave",
             "phase": "build",
             "artifacts": [
-              "07-qa.md per site",
+              "07-qa.json per site",
               "02-results.md"
             ],
             "crew": [
@@ -643,7 +720,7 @@ window.CONVENIUM_SHIP_DATA = {
           },
           {
             "id": "review",
-            "label": "Independent finish review across the fleet",
+            "label": "One critic per wave vs fleet.json budgets + reference",
             "phase": "verify",
             "artifacts": [
               "03-finish-review.md"
@@ -890,7 +967,7 @@ window.CONVENIUM_SHIP_DATA = {
     },
     {
       "id": "design-director",
-      "description": "Owns one interpretation of the brief and routes a business's design work — Brand DNA first, then the website or brand identity it needs — through explicit A/B/C gates. Never delegates design, build, research, asset, analytics, and QA into one undifferentiated pass.",
+      "description": "Main-session role, never a subagent (subagents cannot delegate). Owns one interpretation of the brief and routes a business's design work — Brand DNA first, then the website or brand identity it needs — through explicit A/B/C gates. Never delegates design, build, research, asset, analytics, and QA into one undifferentiated pass.",
       "access": "write",
       "skills": [
         "olympus-design-director",
@@ -913,6 +990,14 @@ window.CONVENIUM_SHIP_DATA = {
         "impeccable",
         "emil-design-eng",
         "gsap-core"
+      ]
+    },
+    {
+      "id": "fleet-measurer",
+      "description": "Only when the run plan names it. Read-only reader-tier specialist that runs a measurement script over many routes and returns the numbers as a table in its reply. No judgement, no files.",
+      "access": "read-only",
+      "skills": [
+        "mobile-app-shell"
       ]
     },
     {

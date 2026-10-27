@@ -5,5 +5,6 @@ asset-producer.toml
 brand-strategist.toml
 design-director.toml
 design-engineer.toml
+fleet-measurer.toml
 independent-critic.toml
 visual-analyst.toml

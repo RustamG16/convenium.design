@@ -20,6 +20,7 @@
     "./.claude/agents/brand-strategist.md",
     "./.claude/agents/design-director.md",
     "./.claude/agents/design-engineer.md",
+    "./.claude/agents/fleet-measurer.md",
     "./.claude/agents/independent-critic.md",
     "./.claude/agents/visual-analyst.md"
   ]

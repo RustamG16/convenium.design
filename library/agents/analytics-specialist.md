@@ -1,9 +1,9 @@
 ---
 name: analytics-specialist
 description: Read-only measurement planner for design hypotheses and event contracts.
-model: haiku
+model: sonnet
 access: read-only
-skills: [design-analytics]
+routes: [design-analytics]
 ---
 
 ## Activation

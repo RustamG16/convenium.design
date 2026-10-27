@@ -55,16 +55,21 @@ routing decision, one per phase.
   fails while `ship/data/ship-data.js` is stale. See `ship/README.md`.
 - **"Rebuild/optimize the mobile resolution" on a built site is a retrofit, not a redesign.**
   Kick off from `templates/prompts/mobile-app-grade-pass.md` on the abridged trail and load the
-  `mobile-app-shell` skill body alone (verification stays `visual-qa`). No intake, no other
-  skill bodies — the token budget of this pass is one digest read plus one skill.
+  `mobile-app-shell` body at audit and build, `visual-qa` at the finish review — one body per
+  phase, no intake, nothing else.
 
 - **Several sites at once is the fleet pass.** Kick off from `templates/prompts/mobile-fleet-pass.md`
   (`ss-mobile-fleet`): the director writes `00-run-plan.md` first, one read-only agent measures
   with `mobile-app-shell/reference/shell/measure.mjs`, the shell is built once on the reference
   site, then one agent per site in parallel worktrees, each with the `mobile-app-shell` body only.
+- **Agents preload no skills.** `.claude/agents/*.md` carry `tools:` (including `Skill`) and `model:` but
+  never `skills:` — that field would load every listed body at spawn. The packet names the one
+  `SKILL.md` path; the agent opens it with the Skill tool or reads the file.
+- **Every run starts with `.olympus/00-run-plan.md`** (`templates/00-run-plan.md`), checked with
+  `python library/tools/verify.py --plan <file>` before the first subagent. Agents not in it do not run.
 - **Models are set per agent.** `library/agents/<name>.md` carries `model: opus|sonnet|haiku`
   (the model rule in `AGENTS.md`); `project.py` writes it into `.claude/agents/*.md`, where
-  Claude Code honours it for subagents. `claude --model` overrides the orchestrator only.
+  Claude Code honours it for subagents. `claude --model` changes the main session only.
 - **Agents are inert until the plan names them.** See the activation protocol in `AGENTS.md`:
   no agent is spawned and no second skill body is opened in a phase that the written plan did
   not ask for.

@@ -1,7 +1,10 @@
 # library/agents/ — host-neutral agents
 
-Seven agents: the `design-director`, who owns the run and talks to the user, and six bounded
-specialists it activates one at a time.
+Eight agents: the `design-director`, who owns the run and talks to the user, and seven bounded
+specialists it activates one at a time. `routes:` in the frontmatter is the list of skills an agent
+may be routed — informational, shown on the console; it is **not** projected into the host
+`skills:` field, because that field preloads every listed body and would break one-body loading.
+The packet names the one `SKILL.md` path the agent opens with the Skill tool.
 
 | Agent | Access | Phase | Job |
 |---|---|---|---|
@@ -12,6 +15,7 @@ specialists it activates one at a time.
 | `asset-producer` | write | prepare | Media from an approved asset manifest only |
 | `design-engineer` | write | build | Implements the Gate-B direction |
 | `analytics-specialist` | read-only | verify | Measurement plans and event contracts |
+| `fleet-measurer` | read-only | diagnose | Runs a measurement script over many routes; returns a table, writes nothing |
 
 `$name` in a body is the **host-neutral skill marker**. `tools/project.py` translates it:
 Codex keeps `$name`; Claude rewrites it as "the *name* skill (Skill tool)".
