@@ -17,6 +17,22 @@ any production code is written. **Gate C** is the client review of the verified
 implementation, with before/after evidence, asset provenance, and how success will be
 measured.
 
+## New machine (five minutes, nothing else to configure)
+
+```bash
+git clone https://github.com/RustamG16/convenium.design.git   # or git pull
+cd convenium.design
+python library/tools/verify.py          # library + generated trees + console must be green
+python library/tools/apollo.py doctor   # what differs on this machine (python, node, hosts)
+python library/tools/apollo.py attach <PROJECT_FOLDER>
+```
+
+Nothing in `library/` holds an absolute path; `.olympus/APOLLO.md` in the project is the only
+file that does, and `attach` rewrites it. Generated trees (`.claude/`, `.agents/`, `.codex/`,
+`ship/data/`) are committed, so a fresh clone is usable without a rebuild; rebuild only after
+editing `library/`. For the mobile fleet pass on several sites, see
+`templates/prompts/mobile-fleet-pass.md`.
+
 ## Connect a project (once per project)
 
 ```bash

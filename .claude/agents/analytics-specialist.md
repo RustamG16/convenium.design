@@ -2,6 +2,7 @@
 name: analytics-specialist
 description: Read-only measurement planner for design hypotheses and event contracts.
 tools: Read, Glob, Grep, Bash, WebFetch
+model: haiku
 skills: [design-analytics]
 ---
 

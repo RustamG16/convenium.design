@@ -1,0 +1,11 @@
+<!-- Mobile tab bar — paste before </body>. 4–5 cells, last one is the primary action in the accent.
+     data-tab = id of the section it points at (mobile.js marks the active one). Replace labels/targets per site;
+     keep the SVGs or swap for the site's own icon set (22 px, fill: currentColor). -->
+<nav class="m-tabbar js-only" aria-label="Schnellnavigation" data-tabbar>
+  <a href="#top" data-tab="top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-5v-5h-4v5H5a1 1 0 0 1-1-1z"/></svg><span>Start</span></a>
+  <a href="#leistungen" data-tab="leistungen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h7v6H4zM13 5h7v6h-7zM4 13h7v6H4zM13 13h7v6h-7z"/></svg><span>Leistungen</span></a>
+  <a href="#preise" data-tab="preise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9zm0 2.2 6.3 3.2L12 11.5 5.7 8.4zM5 10.2l6 3v5.5l-6-3zm8 8.5v-5.5l6-3v5.5z"/></svg><span>Preise</span></a>
+  <a href="#kontakt" data-tab="kontakt"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zm2 2v12h10V6zm2 2h6v2H9zm0 4h6v2H9z"/></svg><span>Kontakt</span></a>
+  <a class="m-tab-primary" href="#buchen" data-tab="buchen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v12H8l-5 4z"/></svg><span>Buchen</span></a>
+</nav>
+<script src="mobile.js" defer></script>

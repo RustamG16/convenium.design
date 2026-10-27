@@ -163,6 +163,8 @@ def check_library():
         fm = frontmatter(read(os.path.join(agents_dir, f"{a}.md")))
         if fm_field(fm, "name") != a:
             bad.append(f"agent {a}: frontmatter name mismatch")
+        if fm_field(fm, "model") not in (None, "", "opus", "sonnet", "haiku", "inherit"):
+            bad.append(f"agent {a}: model must be a tier alias (opus|sonnet|haiku|inherit), got {fm_field(fm, 'model')!r}")
         for sk in inline_list(fm_field(fm, "skills")):
             if sk in external:
                 continue

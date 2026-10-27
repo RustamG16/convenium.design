@@ -9,18 +9,124 @@
       "class": "Flagship",
       "summary": "The complete gated run: Brand DNA and intake, audit, one direction, assets and build plan, design system as numbers, build, two verification passes, handoff. For briefs that need interpreting.",
       "stages": [
-        { "id": "dna", "label": "Brand DNA + intake", "phase": "diagnose", "artifacts": ["brand-dna.json", "BRAND.md", "00-brief.md"], "crew": ["strategist"] },
-        { "id": "audit", "label": "Audit the evidence", "phase": "diagnose", "artifacts": ["01-audit.md"], "crew": ["analyst"] },
-        { "gate": "A", "label": "Gate A — brief approved" },
-        { "id": "direction", "label": "One direction + critique", "phase": "direct", "artifacts": ["02-concepts.md", "03-critique.md"], "crew": ["captain", "critic"] },
-        { "gate": "B", "label": "Gate B — direction selected" },
-        { "id": "assets", "label": "Asset manifest", "phase": "prepare", "artifacts": ["05-asset-manifest.md"], "crew": ["producer"] },
-        { "id": "plan", "label": "Build plan (the design document)", "phase": "prepare", "artifacts": ["06-build-plan.md"], "crew": ["captain"] },
-        { "id": "design-system", "label": "Design system as numbers", "phase": "prepare", "artifacts": ["PRODUCT.md", "DESIGN.md", "design.json"], "crew": ["engineer"] },
-        { "id": "build", "label": "Implement from the plan, fresh session", "phase": "build", "artifacts": [], "crew": ["engineer"] },
-        { "id": "verify", "label": "QA + independent finish review", "phase": "verify", "artifacts": ["07-qa.md", "10-finish-review.md", "08-metrics.md"], "crew": ["critic", "metrics"] },
-        { "gate": "C", "label": "Gate C — client review" },
-        { "id": "handoff", "label": "Handoff", "phase": "verify", "artifacts": ["09-handoff.md"], "crew": ["captain"] }
+        {
+          "id": "dna",
+          "label": "Brand DNA + intake",
+          "phase": "diagnose",
+          "artifacts": [
+            "brand-dna.json",
+            "BRAND.md",
+            "00-brief.md"
+          ],
+          "crew": [
+            "strategist"
+          ]
+        },
+        {
+          "id": "audit",
+          "label": "Audit the evidence",
+          "phase": "diagnose",
+          "artifacts": [
+            "01-audit.md"
+          ],
+          "crew": [
+            "analyst"
+          ]
+        },
+        {
+          "gate": "A",
+          "label": "Gate A — brief approved"
+        },
+        {
+          "id": "direction",
+          "label": "One direction + critique",
+          "phase": "direct",
+          "artifacts": [
+            "02-concepts.md",
+            "03-critique.md"
+          ],
+          "crew": [
+            "captain",
+            "critic"
+          ]
+        },
+        {
+          "gate": "B",
+          "label": "Gate B — direction selected"
+        },
+        {
+          "id": "assets",
+          "label": "Asset manifest",
+          "phase": "prepare",
+          "artifacts": [
+            "05-asset-manifest.md"
+          ],
+          "crew": [
+            "producer"
+          ]
+        },
+        {
+          "id": "plan",
+          "label": "Build plan (the design document)",
+          "phase": "prepare",
+          "artifacts": [
+            "06-build-plan.md"
+          ],
+          "crew": [
+            "captain"
+          ]
+        },
+        {
+          "id": "design-system",
+          "label": "Design system as numbers",
+          "phase": "prepare",
+          "artifacts": [
+            "PRODUCT.md",
+            "DESIGN.md",
+            "design.json"
+          ],
+          "crew": [
+            "engineer"
+          ]
+        },
+        {
+          "id": "build",
+          "label": "Implement from the plan, fresh session",
+          "phase": "build",
+          "artifacts": [],
+          "crew": [
+            "engineer"
+          ]
+        },
+        {
+          "id": "verify",
+          "label": "QA + independent finish review",
+          "phase": "verify",
+          "artifacts": [
+            "07-qa.md",
+            "10-finish-review.md",
+            "08-metrics.md"
+          ],
+          "crew": [
+            "critic",
+            "metrics"
+          ]
+        },
+        {
+          "gate": "C",
+          "label": "Gate C — client review"
+        },
+        {
+          "id": "handoff",
+          "label": "Handoff",
+          "phase": "verify",
+          "artifacts": [
+            "09-handoff.md"
+          ],
+          "crew": [
+            "captain"
+          ]
+        }
       ]
     },
     {
@@ -29,12 +135,66 @@
       "class": "Cutter",
       "summary": "The plan is the brief: creative freedom granted or direction already fixed. Gates A and B recorded approved-in-plan; never skips the build plan, DESIGN.md, the finish review or Gate C.",
       "stages": [
-        { "id": "resolve", "label": "Director-resolved brief", "phase": "diagnose", "artifacts": ["00-brief.md"], "crew": ["captain"] },
-        { "id": "plan", "label": "Build plan in plan mode", "phase": "prepare", "artifacts": ["06-build-plan.md"], "crew": ["captain"] },
-        { "id": "design-system", "label": "Design system as numbers", "phase": "prepare", "artifacts": ["PRODUCT.md", "DESIGN.md", "design.json"], "crew": ["engineer"] },
-        { "id": "build", "label": "Implement from the plan, fresh session", "phase": "build", "artifacts": [], "crew": ["engineer"] },
-        { "id": "verify", "label": "QA + independent finish review", "phase": "verify", "artifacts": ["07-qa.md", "10-finish-review.md"], "crew": ["critic"] },
-        { "gate": "C", "label": "Gate C — client review" }
+        {
+          "id": "resolve",
+          "label": "Director-resolved brief",
+          "phase": "diagnose",
+          "artifacts": [
+            "00-brief.md"
+          ],
+          "crew": [
+            "captain"
+          ]
+        },
+        {
+          "id": "plan",
+          "label": "Build plan in plan mode",
+          "phase": "prepare",
+          "artifacts": [
+            "06-build-plan.md"
+          ],
+          "crew": [
+            "captain"
+          ]
+        },
+        {
+          "id": "design-system",
+          "label": "Design system as numbers",
+          "phase": "prepare",
+          "artifacts": [
+            "PRODUCT.md",
+            "DESIGN.md",
+            "design.json"
+          ],
+          "crew": [
+            "engineer"
+          ]
+        },
+        {
+          "id": "build",
+          "label": "Implement from the plan, fresh session",
+          "phase": "build",
+          "artifacts": [],
+          "crew": [
+            "engineer"
+          ]
+        },
+        {
+          "id": "verify",
+          "label": "QA + independent finish review",
+          "phase": "verify",
+          "artifacts": [
+            "07-qa.md",
+            "10-finish-review.md"
+          ],
+          "crew": [
+            "critic"
+          ]
+        },
+        {
+          "gate": "C",
+          "label": "Gate C — client review"
+        }
       ]
     },
     {
@@ -42,13 +202,143 @@
       "name": "SS Mobile Retrofit",
       "class": "Repair tug",
       "summary": "A scoped repair pass on an implemented site: rebuild the mobile resolution without changing the direction. One skill body (mobile-app-shell), kickoff in templates/prompts/mobile-app-grade-pass.md.",
-      "skills": ["mobile-app-shell", "visual-qa"],
+      "skills": [
+        "mobile-app-shell",
+        "visual-qa"
+      ],
       "stages": [
-        { "id": "measure", "label": "Measure in numbers (screens, targets, overflow)", "phase": "diagnose", "artifacts": ["01-audit.md"], "crew": ["analyst"] },
-        { "id": "plan", "label": "Scoped plan: budgets + 2026 standards floor", "phase": "prepare", "artifacts": ["06-build-plan.md"], "crew": ["captain"] },
-        { "id": "build", "label": "Build in slices, budgets as tests", "phase": "build", "artifacts": [], "crew": ["engineer"] },
-        { "id": "verify", "label": "Before/after QA + finish review", "phase": "verify", "artifacts": ["07-qa.md", "10-finish-review.md"], "crew": ["critic"] },
-        { "gate": "C", "label": "Gate C — client review" }
+        {
+          "id": "measure",
+          "label": "Measure in numbers (screens, targets, overflow)",
+          "phase": "diagnose",
+          "artifacts": [
+            "01-audit.md"
+          ],
+          "crew": [
+            "analyst"
+          ]
+        },
+        {
+          "id": "plan",
+          "label": "Scoped plan: budgets + 2026 standards floor",
+          "phase": "prepare",
+          "artifacts": [
+            "06-build-plan.md"
+          ],
+          "crew": [
+            "captain"
+          ]
+        },
+        {
+          "id": "build",
+          "label": "Build in slices, budgets as tests",
+          "phase": "build",
+          "artifacts": [],
+          "crew": [
+            "engineer"
+          ]
+        },
+        {
+          "id": "verify",
+          "label": "Before/after QA + finish review",
+          "phase": "verify",
+          "artifacts": [
+            "07-qa.md",
+            "10-finish-review.md"
+          ],
+          "crew": [
+            "critic"
+          ]
+        },
+        {
+          "gate": "C",
+          "label": "Gate C — client review"
+        }
+      ]
+    },
+    {
+      "id": "ss-mobile-fleet",
+      "name": "SS Mobile Fleet",
+      "class": "Convoy",
+      "summary": "Many built sites, one phone standard, one take: measure all, build the shell once, one bounded agent per site in parallel, one independent review. Kickoff in templates/prompts/mobile-fleet-pass.md; shell kit in mobile-app-shell/reference/shell/.",
+      "skills": [
+        "mobile-app-shell",
+        "visual-qa"
+      ],
+      "stages": [
+        {
+          "id": "plan",
+          "label": "Run plan: which agents, one skill each",
+          "phase": "diagnose",
+          "artifacts": [
+            "00-run-plan.md",
+            "fleet.json"
+          ],
+          "crew": [
+            "captain"
+          ]
+        },
+        {
+          "id": "measure",
+          "label": "Measure every site in numbers",
+          "phase": "diagnose",
+          "artifacts": [
+            "01-audit.md"
+          ],
+          "crew": [
+            "analyst"
+          ]
+        },
+        {
+          "gate": "0",
+          "label": "Gate 0 — reference site + budgets confirmed"
+        },
+        {
+          "id": "shell",
+          "label": "Build the shell once on the reference",
+          "phase": "prepare",
+          "artifacts": [
+            "shell/PORTING.md"
+          ],
+          "crew": [
+            "engineer"
+          ]
+        },
+        {
+          "gate": "1",
+          "label": "Gate 1 — shell checked on a phone"
+        },
+        {
+          "id": "fleet",
+          "label": "One agent per site, parallel per wave",
+          "phase": "build",
+          "artifacts": [
+            "07-qa.md per site",
+            "02-results.md"
+          ],
+          "crew": [
+            "engineer"
+          ]
+        },
+        {
+          "gate": "2",
+          "label": "Gate 2 — results table, gaps named"
+        },
+        {
+          "id": "review",
+          "label": "Independent finish review across the fleet",
+          "phase": "verify",
+          "artifacts": [
+            "03-finish-review.md"
+          ],
+          "crew": [
+            "critic"
+          ]
+        },
+        {
+          "gate": "C",
+          "label": "Gate C — deploy per site, on the word"
+        }
       ]
     }
   ]

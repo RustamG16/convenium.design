@@ -142,6 +142,18 @@ Each of these has shipped a defect that a green test suite missed.
 Device matrix: 360×780, 360×800, 375×667, 384×832, 390×844, 393×873, 414×896, 430×932,
 plus one WebKit iPhone pass. Re-check pinned runways at 390 and 1920 after any runway change.
 
+## 7. Fleet mode and the reference shell
+
+`reference/shell/` is the shell built once and ported per site: `mobile.css` (one media-query
+layer with a token map), `mobile.js` (tab state, phone-only `<details>` folds, overlay
+awareness), `tab-bar.html`, `measure.mjs` (the §0/§6 numbers for a list of URLs) and
+`PORTING.md` (the three HTML edits, per stack). Port it; do not redesign it per site.
+
+Many sites at once run from `templates/prompts/mobile-fleet-pass.md` (`ss-mobile-fleet`):
+measure all → Gate 0 → shell on the reference → Gate 1 → one agent per site per wave,
+each loading this skill body only → Gate 2 → independent review → deploy per site on the
+user's word. A single site runs from `mobile-app-grade-pass.md`.
+
 ## Before you finish
 
 | Symptom | Fix |

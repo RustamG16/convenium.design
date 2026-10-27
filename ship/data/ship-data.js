@@ -572,6 +572,91 @@ window.CONVENIUM_SHIP_DATA = {
             "label": "Gate C — client review"
           }
         ]
+      },
+      {
+        "id": "ss-mobile-fleet",
+        "name": "SS Mobile Fleet",
+        "class": "Convoy",
+        "summary": "Many built sites, one phone standard, one take: measure all, build the shell once, one bounded agent per site in parallel, one independent review. Kickoff in templates/prompts/mobile-fleet-pass.md; shell kit in mobile-app-shell/reference/shell/.",
+        "skills": [
+          "mobile-app-shell",
+          "visual-qa"
+        ],
+        "stages": [
+          {
+            "id": "plan",
+            "label": "Run plan: which agents, one skill each",
+            "phase": "diagnose",
+            "artifacts": [
+              "00-run-plan.md",
+              "fleet.json"
+            ],
+            "crew": [
+              "captain"
+            ]
+          },
+          {
+            "id": "measure",
+            "label": "Measure every site in numbers",
+            "phase": "diagnose",
+            "artifacts": [
+              "01-audit.md"
+            ],
+            "crew": [
+              "analyst"
+            ]
+          },
+          {
+            "gate": "0",
+            "label": "Gate 0 — reference site + budgets confirmed"
+          },
+          {
+            "id": "shell",
+            "label": "Build the shell once on the reference",
+            "phase": "prepare",
+            "artifacts": [
+              "shell/PORTING.md"
+            ],
+            "crew": [
+              "engineer"
+            ]
+          },
+          {
+            "gate": "1",
+            "label": "Gate 1 — shell checked on a phone"
+          },
+          {
+            "id": "fleet",
+            "label": "One agent per site, parallel per wave",
+            "phase": "build",
+            "artifacts": [
+              "07-qa.md per site",
+              "02-results.md"
+            ],
+            "crew": [
+              "engineer"
+            ]
+          },
+          {
+            "gate": "2",
+            "label": "Gate 2 — results table, gaps named"
+          },
+          {
+            "id": "review",
+            "label": "Independent finish review across the fleet",
+            "phase": "verify",
+            "artifacts": [
+              "03-finish-review.md"
+            ],
+            "crew": [
+              "critic"
+            ]
+          },
+          {
+            "gate": "C",
+            "label": "Gate C — deploy per site, on the word"
+          }
+        ]
       }
     ]
   },

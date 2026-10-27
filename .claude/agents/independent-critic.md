@@ -2,6 +2,7 @@
 name: independent-critic
 description: Read-only critic that scores completed concepts or implementations without redesigning them.
 tools: Read, Glob, Grep, Bash, WebFetch
+model: opus
 skills: [award-rubric, visual-qa]
 ---
 

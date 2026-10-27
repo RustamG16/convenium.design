@@ -1,6 +1,7 @@
 ---
 name: brand-strategist
 description: Analyses the user and their business and writes its Design DNA — business, audience, voice, visual taste, doctrine match and the products it needs — to .olympus/brand-dna.json and BRAND.md. Use at intake whenever a project has no Brand DNA yet, before Gate A.
+model: opus
 access: write
 skills: [convenium-design-taste-interview, convenium-design-style-picker, product-marketing, customer-research, competitor-profiling, reference-deconstruction]
 ---

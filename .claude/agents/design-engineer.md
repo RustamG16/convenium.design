@@ -2,6 +2,7 @@
 name: design-engineer
 description: Implements the selected concept and verifies a bounded website slice.
 tools: Read, Glob, Grep, Bash, WebFetch, Write, Edit, NotebookEdit
+model: sonnet
 skills: [impeccable, emil-design-eng, gsap-core]
 ---
 

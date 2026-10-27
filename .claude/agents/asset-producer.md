@@ -2,6 +2,7 @@
 name: asset-producer
 description: Produces or prepares media only from an approved asset manifest.
 tools: Read, Glob, Grep, Bash, WebFetch, Write, Edit, NotebookEdit
+model: sonnet
 skills: [asset-director]
 ---
 

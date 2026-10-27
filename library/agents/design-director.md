@@ -1,6 +1,7 @@
 ---
 name: design-director
 description: Owns one interpretation of the brief and routes a business's design work — Brand DNA first, then the website or brand identity it needs — through explicit A/B/C gates. Never delegates design, build, research, asset, analytics, and QA into one undifferentiated pass.
+model: opus
 access: write
 skills: [olympus-design-director, ux-evidence-audit, reference-deconstruction, concept-studio, award-rubric, asset-director, webgl-experience, awwwards-web-design, design-analytics, visual-qa]
 ---

@@ -1,6 +1,7 @@
 ---
 name: design-engineer
 description: Implements the selected concept and verifies a bounded website slice.
+model: sonnet
 access: write
 skills: [impeccable, emil-design-eng, gsap-core]
 ---

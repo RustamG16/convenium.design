@@ -58,6 +58,17 @@ routing decision, one per phase.
   `mobile-app-shell` skill body alone (verification stays `visual-qa`). No intake, no other
   skill bodies — the token budget of this pass is one digest read plus one skill.
 
+- **Several sites at once is the fleet pass.** Kick off from `templates/prompts/mobile-fleet-pass.md`
+  (`ss-mobile-fleet`): the director writes `00-run-plan.md` first, one read-only agent measures
+  with `mobile-app-shell/reference/shell/measure.mjs`, the shell is built once on the reference
+  site, then one agent per site in parallel worktrees, each with the `mobile-app-shell` body only.
+- **Models are set per agent.** `library/agents/<name>.md` carries `model: opus|sonnet|haiku`
+  (the model rule in `AGENTS.md`); `project.py` writes it into `.claude/agents/*.md`, where
+  Claude Code honours it for subagents. `claude --model` overrides the orchestrator only.
+- **Agents are inert until the plan names them.** See the activation protocol in `AGENTS.md`:
+  no agent is spawned and no second skill body is opened in a phase that the written plan did
+  not ask for.
+
 ## Do not
 
 - Edit anything under `.claude/`, `.agents/skills/`, `.codex/agents/`, or

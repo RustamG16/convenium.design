@@ -104,12 +104,55 @@ this repository; a user's personal default taste may live in `~/.apollo/taste.js
 Greenfield work has an entry: with no existing page the run starts at the questionnaire,
 `$ux-evidence-audit` stays dormant, and `$reference-deconstruction` carries the evidence phase.
 
+## Activation protocol — plan first, agents on demand, one skill each
+
+The system is lazy by construction, and this is the order that keeps it so:
+
+1. **The director plans before anyone else exists.** The first artifact of any run is a
+   written plan (`06-build-plan.md` on the full trail, `00-run-plan.md` on a fleet run,
+   the approved plan on an abridged trail). It names each phase, the agent that phase
+   activates — only if that agent's activation condition in `library/agents/<name>.md` is
+   true — the **one** skill body that agent may load, and its output contract.
+2. **An agent not named in the plan does not run.** There is no standing roster; the
+   specialists are inert until the plan activates them for a bounded phase.
+3. **An agent reads only its packet.** The packet carries the task, the file paths, the
+   single skill id and the contract. It never carries the routing digest, the registry, or
+   another agent's output beyond the file path. Routing is the director's job alone.
+4. **Skills outside the packet stay closed.** Every skill in `library/skills/` is available
+   to the host; none is open until named. Loading a body "for context" is a defect.
+5. **Parallel means independent.** Agents run concurrently only when their file sets do not
+   overlap (one site per agent on a fleet run); otherwise sequentially. Two workers at most
+   for evidence gathering; a fleet build is the exception and may run one agent per site
+   per wave.
+
+The six root context files (`templates/project-context/`) and the model rule below are the
+two other standing rules every run starts from.
+
+## The model rule — which model for which goal
+
+Match the model to the kind of judgement the phase needs, not to the agent's name. Tiers,
+and the Claude Code alias each maps to (set in `library/agents/<name>.md` as `model:`,
+projected into the host agent files; the user's `--model` flag and a host without a tier
+override it):
+
+| Tier | Use it for | Alias | Default holders |
+|---|---|---|---|
+| **planner** | Reading the brief, Brand DNA, routing, the plan, every gate conversation, scored critique | `opus` | `design-director`, `brand-strategist`, `independent-critic` |
+| **builder** | Implementation from a written plan, asset production, porting a known shell | `sonnet` | `design-engineer`, `asset-producer`, `visual-analyst` |
+| **reader** | Mechanical collection: running a measurement script over many routes, filling a manifest, collecting QA files | `haiku` | `analytics-specialist`, fleet Phase 0 |
+
+Three consequences: a plan is never written by a reader; a build is never started by a
+planner reading its own plan for the first time (fresh session, builder tier); a critic is
+always at least the tier that built the thing it scores. When the host cannot set a model
+per agent, the whole run goes at the planner tier and the reader-tier savings are forgone —
+never the other way round.
+
 ## Delegation policy
 
 The default is a single Design Director using focused skills. Optional custom agents in `.codex/agents/` are specialists, not a hierarchy.
 
 - Delegate only a bounded phase with a written output contract.
-- Never launch all specialists.
+- Never launch all specialists; activate only what the written plan names (activation protocol above).
 - Never let a specialist delegate further.
 - Run authors and critics sequentially when both may touch the same files.
 - Use parallel work only for independent read-only evidence gathering, with at most two workers.

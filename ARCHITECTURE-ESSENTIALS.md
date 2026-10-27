@@ -50,6 +50,11 @@ Brand DNA (brand-strategist → .olympus/brand-dna.json + BRAND.md)
   and its data file is generated — see `ship/README.md` for the keep-it-true rule.
 - **Greenfield**: no existing page → start at the questionnaire, `ux-evidence-audit` dormant,
   `reference-deconstruction` carries evidence.
+- **Agents on demand, one skill each, a model per tier.** The written plan activates agents;
+  nothing runs that it did not name, and each agent opens one skill body. `AGENTS.md`:
+  activation protocol and the model rule (planner `opus` / builder `sonnet` / reader `haiku`).
+- **Many sites at once**: `templates/prompts/mobile-fleet-pass.md` (`ss-mobile-fleet`), shell
+  kit in `mobile-app-shell/reference/shell/`.
 - **Loops**: see the loop bounds in `AGENTS.md` (QA cycles, intake, audit cache, one-direction,
   anti-loop). Phase counts are recorded in `run.json`.
 

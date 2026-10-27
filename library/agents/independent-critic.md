@@ -1,6 +1,7 @@
 ---
 name: independent-critic
 description: Read-only critic that scores completed concepts or implementations without redesigning them.
+model: opus
 access: read-only
 skills: [award-rubric, visual-qa]
 ---

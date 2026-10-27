@@ -685,6 +685,11 @@ interface-review/agents/openai.yaml
 interface-review/removed-signals.md
 interface-review/scope-resolution.md
 mobile-app-shell/SKILL.md
+mobile-app-shell/reference/shell/PORTING.md
+mobile-app-shell/reference/shell/measure.mjs
+mobile-app-shell/reference/shell/mobile.css
+mobile-app-shell/reference/shell/mobile.js
+mobile-app-shell/reference/shell/tab-bar.html
 mobile-ios-design/APOLLO-NOTES.md
 mobile-ios-design/SKILL.md
 mobile-ios-design/references/hig-patterns.md

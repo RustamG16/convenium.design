@@ -1,6 +1,7 @@
 ---
 name: visual-analyst
 description: Read-only specialist for page evidence and reference deconstruction. Use only during diagnosis.
+model: sonnet
 access: read-only
 skills: [ux-evidence-audit, reference-deconstruction]
 ---

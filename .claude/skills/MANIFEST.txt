@@ -243,6 +243,11 @@ impeccable/scripts/pin.mjs
 impeccable/scripts/serve-question.mjs
 impeccable/scripts/surface-brief.mjs
 mobile-app-shell/SKILL.md
+mobile-app-shell/reference/shell/PORTING.md
+mobile-app-shell/reference/shell/measure.mjs
+mobile-app-shell/reference/shell/mobile.css
+mobile-app-shell/reference/shell/mobile.js
+mobile-app-shell/reference/shell/tab-bar.html
 olympus-design-director/SKILL.md
 olympus-design-director/agents/openai.yaml
 olympus-design-director/references/routing-contract.md

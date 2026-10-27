@@ -2,6 +2,7 @@
 name: visual-analyst
 description: Read-only specialist for page evidence and reference deconstruction. Use only during diagnosis.
 tools: Read, Glob, Grep, Bash, WebFetch
+model: sonnet
 skills: [ux-evidence-audit, reference-deconstruction]
 ---
 

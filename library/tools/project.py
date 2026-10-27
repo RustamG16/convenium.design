@@ -182,6 +182,8 @@ def claude_agent(name):
                                   lambda m: f"the *{m.group(1)}* skill (Skill tool)", a["body"])
     fm = ["---", f"name: {name}", f"description: {a['fm']['description']}",
           f"tools: {READONLY_TOOLS if ro else WRITE_TOOLS}"]
+    if a["fm"].get("model"):          # the model rule in AGENTS.md: planner/builder/reader tier per agent
+        fm.append(f"model: {a['fm']['model']}")
     if a["fm"].get("skills"):
         fm.append(f"skills: {a['fm']['skills']}")
     fm += ["---", "", body, ""]
