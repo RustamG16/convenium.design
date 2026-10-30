@@ -1,0 +1,105 @@
+/* Numeric token contract: shipyard/DESIGN.md "Token block". Do not drift from these values.
+   Same Convenium DNA as the ArkhEthos ship view; deviations are marked "delta" in DESIGN.md. */
+:root {
+  /* Warm noir hull. Depth comes from tonal steps and hairlines, not shadows. */
+  --ink: #0f0c0c;
+  --bg: #1b1717;
+  --surface: #221d1d;
+  --elevated: #2b2525;
+  --raised: #342d2d;
+  --border: #3d3535;
+  --hairline: rgba(237, 235, 221, 0.09);
+  --text: #edebdd; /* cotton, 14.6:1 on noir */
+  --muted: #a8a29a; /* 7.0:1 on noir */
+  --cotton: #edebdd;
+
+  /* One signal. Cherry selects, chili marks, chili-soft is small red text. */
+  --cherry: #810100;
+  --maroon: #630000;
+  --chili: #d73b3e;
+  --chili-soft: #e5595c; /* 4.97:1 on noir */
+
+  --focus: #e5595c;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+
+  /* Recruit pigments (8 swatches). Data colour only, never interface accents. */
+  --sw-1: #d9a441;
+  --sw-2: #86c2a8;
+  --sw-3: #c79fdc;
+  --sw-4: #93aedb;
+  --sw-5: #e39b95;
+  --sw-6: #d8b66e;
+  --sw-7: #e9dcc5;
+  --sw-8: #9fc7c0;
+
+  /* Three voices: Archivo decides, Newsreader explains, Inter operates. */
+  --font-display: 'Archivo Variable', 'Archivo', 'Arial Narrow', Arial, sans-serif;
+  --font-serif: 'Newsreader Variable', 'Newsreader', Georgia, serif;
+  --font-ui: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display-axes: 'wght' 900, 'wdth' 100;
+
+  --display: 80px; /* hangar title */
+  --page-title: 56px; /* ship name, member name */
+  --section: 32px; /* section head, uppercase Archivo */
+  --title: 22px; /* card and panel title, Newsreader 400 */
+  --body: 16px;
+  --label: 12px; /* Inter 500, tracking 0.06em */
+  --stat: 13px; /* Inter tabular-nums */
+  --lh-display: 0.98;
+  --lh-section: 1.02;
+  --lh-title: 1.2;
+  --lh-body: 1.55;
+  --lh-label: 1.4;
+  --track-label: 0.06em;
+
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 40px;
+  --s7: 48px;
+  --s8: 80px;
+
+  --r-control: 8px;
+  --r-panel: 10px;
+  --r-socket: 999px;
+  --r-pill: 999px;
+  --hit: 44px;
+  --socket-touch: 48px;
+
+  --content: 1440px;
+  --reading: 68ch;
+  --panel-w: 360px;
+  --drawer-w: 420px; /* delta: Armory drawer */
+
+  --t-micro: 160ms;
+  --t-panel: 240ms;
+  --t-camera: 700ms;
+  --t-reduced: 120ms;
+  --stagger: 45ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* delta: equip arrival is GSAP back.out(1.6), the only overshoot in the product (set in code). */
+
+  --header-h: 64px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --display: 44px;
+    --page-title: 36px;
+    --section: 26px;
+    --title: 20px;
+    --header-h: 56px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  :root {
+    --display: 60px;
+    --page-title: 44px;
+    --section: 26px;
+    --title: 20px;
+  }
+}

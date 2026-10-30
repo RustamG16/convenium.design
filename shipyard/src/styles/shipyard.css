@@ -1,0 +1,346 @@
+/* Shipyard shell and Hangar. Numbers come from tokens.css (DESIGN.md). */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s5);
+  min-height: var(--header-h);
+  padding: 0 var(--s5);
+  background: rgba(27, 23, 23, 0.86);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--hairline);
+}
+.site-header .brand {
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+.site-header nav {
+  display: flex;
+  gap: var(--s2);
+}
+.site-header nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit);
+  padding: 0 var(--s3);
+  border-radius: var(--r-control);
+  color: var(--muted);
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color var(--t-micro) var(--ease), background-color var(--t-micro) var(--ease);
+}
+.site-header nav a:hover,
+.site-header nav a[aria-current='page'] {
+  color: var(--cotton);
+  background: var(--surface);
+}
+
+.banner {
+  margin: 0;
+  padding: var(--s3) var(--s5);
+  background: var(--elevated);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--stat);
+}
+
+.page {
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: var(--s6) var(--s5) var(--s8);
+}
+
+.display {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-size: var(--display);
+  line-height: var(--lh-display);
+  text-transform: uppercase;
+}
+.page-title {
+  margin: 0 0 var(--s4);
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-size: var(--page-title);
+  line-height: var(--lh-display);
+  text-transform: uppercase;
+}
+.section-head {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  font-size: var(--section);
+  line-height: var(--lh-section);
+  text-transform: uppercase;
+}
+.card-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--title);
+  line-height: var(--lh-title);
+}
+.lede,
+.prose {
+  max-width: var(--reading);
+  margin: var(--s4) 0;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: var(--lh-body);
+}
+.prose-sm {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.label {
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  line-height: var(--lh-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.stat {
+  margin: 0;
+  font-size: var(--stat);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.hangar-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.pill {
+  min-height: var(--hit);
+  padding: 0 var(--s4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: transparent;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  transition: background-color var(--t-micro) var(--ease), border-color var(--t-micro) var(--ease);
+}
+.pill:hover {
+  background: var(--surface);
+  border-color: var(--muted);
+}
+.popover {
+  z-index: 30;
+  width: min(360px, calc(100vw - 32px));
+  padding: var(--s4) var(--s5);
+  background: var(--elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+}
+.popover ol {
+  margin: 0 0 var(--s3);
+  padding-left: var(--s5);
+}
+.popover li + li {
+  margin-top: var(--s2);
+}
+.popover .promise {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--cotton);
+}
+.popover-arrow {
+  fill: var(--elevated);
+}
+
+.fleet,
+.drydock {
+  margin-top: var(--s7);
+}
+.section-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s4);
+  margin-bottom: var(--s5);
+}
+.section-row .section-head {
+  margin-right: auto;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--hit);
+  padding: 0 var(--s5);
+  border: 1px solid transparent;
+  border-radius: var(--r-control);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color var(--t-micro) var(--ease), color var(--t-micro) var(--ease), border-color var(--t-micro) var(--ease);
+}
+.btn-primary {
+  background: var(--cotton);
+  color: var(--bg);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--cherry);
+  color: var(--cotton);
+}
+.btn-quiet {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--cotton);
+}
+.btn-quiet:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--muted);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ship-card {
+  display: grid;
+  gap: var(--s3);
+  max-width: 560px;
+  padding: var(--s5);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-panel);
+}
+.ship-card .hull {
+  width: 100%;
+  max-width: 240px;
+  color: var(--muted);
+}
+.ship-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+.class-badge {
+  padding: 2px var(--s3);
+  background: var(--cherry);
+  color: var(--cotton);
+  font-size: var(--label);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  transform: skewX(-8deg);
+}
+.lock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  margin: 0;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s1) var(--s3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  font-size: var(--stat);
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s4);
+}
+.empty .prose {
+  margin: 0;
+}
+.drydock-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer-line {
+  margin-top: var(--s7);
+}
+
+.truth {
+  display: inline-block;
+  padding: 1px var(--s2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.state-line {
+  padding: var(--s6) var(--s5);
+  color: var(--muted);
+}
+.state-panel {
+  max-width: 640px;
+  margin: var(--s6) auto;
+  padding: var(--s5);
+  background: var(--surface);
+  border: 1px solid var(--chili-soft);
+  border-radius: var(--r-panel);
+}
+.state-panel h2 {
+  margin: 0 0 var(--s3);
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
+
+.stub .label {
+  margin: 0 0 var(--s2);
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: var(--s5) var(--s4) var(--s7);
+  }
+  .site-header {
+    padding: 0 var(--s4);
+  }
+  .lede,
+  .prose {
+    font-size: 18px;
+  }
+}
