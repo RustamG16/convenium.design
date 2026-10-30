@@ -63,10 +63,11 @@ describe('store reducer', () => {
   });
 
   it('grants a commission once and keeps the first date', () => {
+    const env = { idx: loadIndexFromDisk() };
     let s = initialState();
-    s = reduce(s, { type: 'commission/grant', id: 'first-export' }, AT);
-    s = reduce(s, { type: 'commission/grant', id: 'first-export' }, '2027-01-01T00:00:00.000Z');
-    expect(s.commissions).toEqual({ 'first-export': AT });
+    s = reduce(s, { type: 'ship/create', name: 'First' }, AT, env);
+    s = reduce(s, { type: 'ship/create', name: 'Second' }, '2027-01-01T00:00:00.000Z', env);
+    expect(s.commissions).toEqual({ 'first-ship': AT });
   });
 
   it('the store shell notifies subscribers only on change', () => {

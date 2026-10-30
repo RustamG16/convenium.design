@@ -22,6 +22,8 @@ const FORBIDDEN: [string, RegExp][] = [
   ['streak', /streak/i],
   ['leaderboard / ranking', /leaderboard|(?<![\w-])rankings?(?![\w-])/i],
   ['countdown / timer', /countdown|(?<![\w-])timers?(?![\w-])/i],
+  ['expiry', /expir(y|es|ed|ation)/i],
+  ['loss / at-risk wording', /at risk|you['’]ll lose|about to lose/i],
   ['loot / random reward', /loot|Math\.random|crypto\.getRandomValues|randomUUID/],
 ];
 

@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router';
+import { CommissionToast } from './features/logbook/CommissionToast';
 import { KbGate } from './kb/context';
 import { usePersistBanner } from './store/context';
 
@@ -35,6 +36,7 @@ export function App() {
       <KbGate>
         <Outlet />
       </KbGate>
+      <CommissionToast />
     </>
   );
 }

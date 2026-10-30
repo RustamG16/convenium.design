@@ -403,6 +403,36 @@
         "note": {
           "type": "string",
           "maxLength": 400
+        },
+        "file": {
+          "description": "export: the file or action that was exported",
+          "type": "string",
+          "maxLength": 120
+        },
+        "clean": {
+          "description": "export: pre-flight had no blocker and no warning",
+          "type": "boolean"
+        },
+        "hull": {
+          "description": "export: hull integrity 0..100 at that moment",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "problems": {
+          "description": "verify-result: 0 means CLEAN, n means n problem(s)",
+          "type": "integer",
+          "minimum": 0
+        },
+        "artifactHashes": {
+          "description": "run-json: count of artifact_hashes in the file",
+          "type": "integer",
+          "minimum": 0
+        },
+        "runKey": {
+          "description": "run-json: identity of the run, so the same file is logged once",
+          "type": "string",
+          "maxLength": 64
         }
       }
     }

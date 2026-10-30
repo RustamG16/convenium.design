@@ -4,7 +4,7 @@
  * unavailable (private mode, quota) degrades to session-only with its own banner reason.
  */
 import { z } from 'zod';
-import { describeIssues, shipSchema } from '../domain/schema';
+import { describeIssues, logEntrySchema, shipSchema } from '../domain/schema';
 import { emptyPersisted, STATE_VERSION, type PersistedState } from './store';
 
 export const STORAGE_KEY = 'convenium.shipyard.v1';
@@ -28,6 +28,8 @@ const persistedSchema = z.object({
   ships: z.array(shipSchema),
   codex: z.array(z.string()),
   commissions: z.record(z.string(), z.string()),
+  // Added after the first v1 stores were written: absent means empty, not malformed.
+  logbook: z.record(z.string(), z.array(logEntrySchema)).default({}),
   ui: z.object({
     introSeen: z.record(z.string(), z.literal(true)),
     sound: z.boolean(),

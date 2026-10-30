@@ -6,15 +6,19 @@
  * Only custom ships, the codex, commissions and per-ship UI state are stored.
  *
  * Nothing here scores, ranks, times or randomises. `commissions` records the date an outcome
- * happened; it is not a currency.
+ * happened; it is not a currency, and no action grants one directly: the reducer derives grants
+ * from outcomes (see ./outcomes.ts), so browsing and clicking cannot.
  */
 import type { KbIndex } from '../kb/artifacts';
 import { blankShip, cloneShip } from '../domain/ship';
 import { equip, fromHold, move, toHold, unequip, type EquipOptions } from '../domain/loadout';
 import type { Anchor, LogEntry, Ship } from '../domain/schema';
+import { grantCommissions } from './outcomes';
 
 export const STATE_VERSION = 1 as const;
 export const UNDO_DEPTH = 50;
+/** Newest entries kept per ship, so the stored state stays small. */
+export const LOGBOOK_CAP = 500;
 
 export interface UiState {
   /** ship ids whose boarding walk has played once */
@@ -32,6 +36,8 @@ export interface PersistedState {
   codex: string[];
   /** commission id -> ISO date it was granted */
   commissions: Record<string, string>;
+  /** ship id -> its logbook (exports, pasted verify results, imported run.json), for library and custom ships alike */
+  logbook: Record<string, LogEntry[]>;
   ui: UiState;
 }
 
@@ -54,7 +60,6 @@ export type Action =
   | { type: 'ship/rename'; id: string; name: string }
   | { type: 'ship/delete'; id: string }
   | { type: 'codex/inspect'; skill: string }
-  | { type: 'commission/grant'; id: string }
   | { type: 'log/add'; shipId: string; entry: LogEntry }
   | { type: 'ui/introSeen'; shipId: string }
   | { type: 'ui/sound'; on: boolean }
@@ -66,7 +71,6 @@ export type Action =
 /** Actions that do not enter the undo stack (view state, bookkeeping, history itself). */
 const NOT_UNDOABLE = new Set<Action['type']>([
   'codex/inspect',
-  'commission/grant',
   'log/add',
   'ui/introSeen',
   'ui/sound',
@@ -77,7 +81,7 @@ const NOT_UNDOABLE = new Set<Action['type']>([
 ]);
 
 export function emptyPersisted(): PersistedState {
-  return { version: STATE_VERSION, ships: [], codex: [], commissions: {}, ui: { introSeen: {}, sound: false, designPath: '' } };
+  return { version: STATE_VERSION, ships: [], codex: [], commissions: {}, logbook: {}, ui: { introSeen: {}, sound: false, designPath: '' } };
 }
 
 export function initialState(persisted: PersistedState = emptyPersisted()): StoreState {
@@ -85,7 +89,7 @@ export function initialState(persisted: PersistedState = emptyPersisted()): Stor
 }
 
 export function toPersisted(s: StoreState): PersistedState {
-  return { version: STATE_VERSION, ships: s.ships, codex: s.codex, commissions: s.commissions, ui: s.ui };
+  return { version: STATE_VERSION, ships: s.ships, codex: s.codex, commissions: s.commissions, logbook: s.logbook, ui: s.ui };
 }
 
 /** A ship id not used by `taken`: `base`, then `base-2`, `base-3`... within the 48-char id pattern. */
@@ -162,10 +166,12 @@ function applyAction(state: StoreState, action: Action, at: string, env?: Env): 
       return { ...state, ships: state.ships.filter((s) => s.id !== action.id) };
     case 'codex/inspect':
       return state.codex.includes(action.skill) ? state : { ...state, codex: [...state.codex, action.skill] };
-    case 'commission/grant':
-      return action.id in state.commissions ? state : { ...state, commissions: { ...state.commissions, [action.id]: at } };
-    case 'log/add':
-      return { ...state, ships: mapShip(state, action.shipId, (s) => ({ ...s, logbook: [...(s.logbook ?? []), action.entry] })) };
+    case 'log/add': {
+      const rows = state.logbook[action.shipId] ?? [];
+      // The same run.json is logged once (the same result is not a new run).
+      if (action.entry.kind === 'run-json' && action.entry.runKey && rows.some((r) => r.runKey === action.entry.runKey)) return state;
+      return { ...state, logbook: { ...state.logbook, [action.shipId]: [...rows, action.entry].slice(-LOGBOOK_CAP) } };
+    }
     case 'ui/introSeen':
       return { ...state, ui: { ...state.ui, introSeen: { ...state.ui.introSeen, [action.shipId]: true } } };
     case 'ui/sound':
@@ -191,8 +197,10 @@ export function reduce(state: StoreState, action: Action, at: string, env?: Env)
     if (!next) return state;
     return { ...state, ships: next, future: state.future.slice(1), past: [...state.past, state.ships].slice(-UNDO_DEPTH) };
   }
-  const next = applyAction(state, action, at, env);
-  if (next === state || NOT_UNDOABLE.has(action.type)) return next;
+  const applied = applyAction(state, action, at, env);
+  if (applied === state) return state;
+  const next = grantCommissions(state, applied, action, at, env);
+  if (NOT_UNDOABLE.has(action.type)) return next;
   if (next.ships === state.ships) return next;
   return { ...next, past: [...state.past, state.ships].slice(-UNDO_DEPTH), future: [] };
 }

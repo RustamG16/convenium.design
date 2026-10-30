@@ -45,6 +45,11 @@ export function normalizePath(p: string): string {
   return p.trim().replace(/\\/g, '/').replace(/\/+$/, '');
 }
 
+/** An absolute path on Windows (drive letter or UNC) or POSIX (a leading slash). */
+export function isAbsolutePath(p: string): boolean {
+  return /^([A-Za-z]:[\\/]|\/|\\\\)/.test(p.trim());
+}
+
 /** The run-plan agent id for a member: the design-director is the main session, `director`. */
 export function runPlanAgent(agent: string): string {
   return agent === 'design-director' ? 'director' : agent;

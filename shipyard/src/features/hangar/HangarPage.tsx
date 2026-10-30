@@ -1,5 +1,6 @@
 import * as Popover from '@radix-ui/react-popover';
 import { Link } from 'react-router';
+import { HullRing } from '../../components/HullRing';
 import { TruthLabel } from '../../components/TruthLabel';
 import { useKb } from '../../kb/context';
 import { useMemo } from 'react';
@@ -17,31 +18,6 @@ function HullSilhouette() {
       <path d="M58 22 L72 8 L118 8 L128 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
       <path d="M58 52 L74 64 L122 64 L136 54" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
     </svg>
-  );
-}
-
-/** Hull integrity: passed / applicable pre-flight checks as a ring (06 section 7.4). Truth: Verified. */
-function HullRing({ percent, passed, applicable }: { percent: number; passed: number; applicable: number }) {
-  const r = 22;
-  const c = 2 * Math.PI * r;
-  return (
-    <div className="ring" data-testid="hull-ring" role="img" aria-label={`Hull integrity ${percent} percent, ${passed} of ${applicable} checks passed`}>
-      <svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true" focusable="false">
-        <circle cx="28" cy="28" r={r} fill="none" stroke="var(--border)" strokeWidth="4" />
-        <circle
-          cx="28"
-          cy="28"
-          r={r}
-          fill="none"
-          stroke="var(--cotton)"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeDasharray={`${(c * percent) / 100} ${c}`}
-          transform="rotate(-90 28 28)"
-        />
-      </svg>
-      <span className="ring-num">{percent}</span>
-    </div>
   );
 }
 
@@ -75,7 +51,7 @@ function ShipCard({ ship }: { ship: Ship }) {
         ))}
       </ul>
       <div className="integrity">
-        <HullRing percent={report.integrity} passed={report.passed} applicable={report.applicable} />
+        <HullRing percent={report.integrity} passed={report.passed} applicable={report.applicable} blockers={report.blockers} />
         <p className="stat">
           Hull integrity {report.passed} of {report.applicable} checks <TruthLabel truth="Verified" />
           <br />
@@ -88,6 +64,9 @@ function ShipCard({ ship }: { ship: Ship }) {
       <p>
         <Link className="btn btn-quiet" to={`/ship/${ship.id}`} data-testid="open-ship">
           Open the ship
+        </Link>{' '}
+        <Link className="btn btn-quiet" to={`/ship/${ship.id}/preflight`} data-testid="open-preflight">
+          Pre-flight and export
         </Link>
       </p>
     </article>

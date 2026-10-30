@@ -82,6 +82,18 @@ export const logEntrySchema = z.object({
   project: z.string().optional(),
   phaseCounts: z.record(z.string(), z.number().int()).optional(),
   note: z.string().max(400).optional(),
+  /** export: the file or action ("00-run-plan.md", "ship.json", "kickoff prompt", "shipyard/ships/<id>.ship.json") */
+  file: z.string().max(120).optional(),
+  /** export: pre-flight had no blocker and no warning when the file was made */
+  clean: z.boolean().optional(),
+  /** export: hull integrity (0..100) at that moment */
+  hull: z.number().int().min(0).max(100).optional(),
+  /** verify-result: 0 means CLEAN, n means n problem(s) */
+  problems: z.number().int().min(0).optional(),
+  /** run-json: how many artifact_hashes the file carried (absent when the file had none) */
+  artifactHashes: z.number().int().min(0).optional(),
+  /** run-json: identity of the run, so the same file is logged once */
+  runKey: z.string().max(64).optional(),
 });
 
 export const shipSchema = z.strictObject({

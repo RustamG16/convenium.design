@@ -23,22 +23,30 @@ function ShipEntry() {
 /** The scene and its page code load on demand: three, R3F and the GLBs stay out of the initial shell. */
 const board = async () => ({ Component: (await import('./features/board/BoardPage')).default });
 const lab = async () => ({ Component: (await import('./features/lab/LabPage')).default });
+const preflightPage = async () => ({ Component: (await import('./features/preflight/PreflightPage')).default });
+const logbookPage = async () => ({ Component: (await import('./features/logbook/LogbookPage')).default });
 const bridge = async () => ({ Component: (await import('./features/bridge/BridgePage')).default });
 
 export const routes = [
   {
     path: '/',
     element: <App />,
+    // Shown while a lazy route (pre-flight, logbook, bridge, board) loads on a first visit to its address.
+    HydrateFallback: () => (
+      <p className="state-line" role="status">
+        Loading Shipyard...
+      </p>
+    ),
     children: [
       { index: true, element: <HangarPage /> },
       { path: 'ship/:id', element: <ShipEntry /> },
       { path: 'ship/:id/board', lazy: board },
       { path: 'ship/:id/bridge', lazy: bridge },
       { path: 'ship/:id/voyage', element: <ShipStub screen="Voyage" task="T8" note="The stage track with gate buoys." /> },
-      { path: 'ship/:id/preflight', element: <ShipStub screen="Preflight" task="T9" note="Hull diagram, checks and export." /> },
+      { path: 'ship/:id/preflight', lazy: preflightPage },
       { path: 'armory', element: <StubPage title="Armory" route="#/armory" task="T7" note="The knowledge base: every skill as an artifact you can equip." /> },
       { path: 'lab', lazy: lab },
-      { path: 'logbook', element: <StubPage title="Logbook" route="#/logbook" task="T9" note="Exports, imported verify results and commissions." /> },
+      { path: 'logbook', lazy: logbookPage },
       { path: '*', element: <StubPage title="Not found" route="#/" task="n/a" note="No such screen." /> },
     ],
   },

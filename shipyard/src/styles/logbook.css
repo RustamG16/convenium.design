@@ -1,0 +1,205 @@
+/* Logbook and the commissions rail (rewards-rail anatomy from ArkhEthos, tokens only). */
+
+.logbook header .lede {
+  margin-top: 0;
+}
+
+.lb-commissions {
+  margin: var(--s6) 0;
+}
+.lb-note {
+  margin: 0 0 var(--s4);
+}
+
+.reward-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(160px, 1fr);
+  gap: var(--s3);
+  margin: 0;
+  padding: var(--s1) var(--s1) var(--s3);
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.reward-card {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: var(--s2);
+  min-height: 300px;
+  padding: var(--s4);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-panel);
+  scroll-snap-align: start;
+  transition: border-color var(--t-micro) var(--ease);
+}
+.reward-card:hover {
+  border-color: var(--border);
+}
+.reward-card[data-granted='true'] {
+  border-color: rgba(215, 59, 62, 0.55);
+  background: linear-gradient(180deg, rgba(129, 1, 0, 0.32), transparent 70%), var(--surface);
+}
+.reward-tag {
+  justify-self: start;
+}
+.reward-art {
+  width: 100%;
+  height: 96px;
+  padding: var(--s2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-control);
+  background: var(--ink);
+  color: var(--muted);
+}
+.reward-card[data-granted='true'] .reward-art {
+  color: var(--chili-soft);
+}
+.reward-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 1.2;
+}
+.reward-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.reward-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0 var(--s2);
+  min-height: 36px;
+  padding: var(--s1) var(--s2);
+  text-align: center;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.reward-state time {
+  white-space: nowrap;
+}
+.reward-state.is-granted {
+  border-color: var(--cherry);
+  background: var(--cherry);
+  color: var(--cotton);
+}
+
+.lb-layout {
+  display: grid;
+  gap: var(--s6);
+  align-items: start;
+  margin-top: var(--s6);
+}
+@media (min-width: 1200px) {
+  .lb-layout {
+    grid-template-columns: minmax(0, 1fr) 420px;
+  }
+  .lb-import {
+    position: sticky;
+    top: calc(var(--header-h) + var(--s4));
+  }
+}
+.lb-ships {
+  display: grid;
+  gap: var(--s4);
+  min-width: 0;
+}
+.lb-ship {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s3);
+  padding: var(--s5);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-panel);
+}
+.lb-ship-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+}
+.lb-ship-head .stat {
+  margin-right: auto;
+}
+.lb-group-head {
+  margin: var(--s3) 0 var(--s2);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lb-rows {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lb-row {
+  display: grid;
+  gap: var(--s1);
+  padding: var(--s3) 0;
+  border-top: 1px solid var(--hairline);
+}
+.lb-row:first-child {
+  border-top: 0;
+}
+.lb-row p {
+  margin: 0;
+}
+.lb-what {
+  font-size: 15px;
+}
+.lb-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin: var(--s1) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lb-import {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s4);
+  padding: var(--s5);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-panel);
+}
+.lb-import .panel-head,
+.lb-import p {
+  margin: 0;
+}
+.lb-issues {
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--chili-soft);
+  border-radius: var(--r-control);
+  font-size: 14px;
+}
+.lb-issues ul {
+  margin: var(--s2) 0 0;
+  padding-left: var(--s5);
+}
+@media (max-width: 767px) {
+  .lb-ship,
+  .lb-import {
+    padding: var(--s4);
+  }
+}

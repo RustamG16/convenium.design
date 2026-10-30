@@ -58,12 +58,19 @@ test('How it works? carries the honest promise', async ({ page }) => {
   await expect(page.getByText('Nothing here runs an agent; it writes the plan a session runs.')).toBeVisible();
 });
 
-test('every route resolves on hash history; non-Hangar screens are labelled stubs', async ({ page }) => {
+test('every route resolves on hash history; screens not built yet are labelled stubs', async ({ page }) => {
   const problems = trackConsole(page);
-  for (const hash of ['#/armory', '#/logbook', '#/ship/ss-full-run/board', '#/ship/ss-full-run/bridge', '#/ship/ss-full-run/voyage', '#/ship/ss-full-run/preflight']) {
+  // Armory (T7) and Voyage (T8) are still stubs; the others are real screens (board, bridge, pre-flight, logbook).
+  for (const hash of ['#/armory', '#/ship/ss-full-run/voyage']) {
     await page.goto(`/${hash}`);
     await expect(page.getByTestId('stub-page')).toContainText('Stub');
   }
+  await page.goto('/#/logbook');
+  await expect(page.getByRole('heading', { level: 1, name: 'Logbook' })).toBeVisible();
+  await page.goto('/#/ship/ss-full-run/preflight');
+  await expect(page.getByRole('heading', { level: 1, name: 'Pre-flight' })).toBeVisible();
+  await page.goto('/#/ship/ss-full-run/bridge');
+  await expect(page.getByTestId('stub-page')).toHaveCount(0);
   expect(problems).toEqual([]);
 });
 

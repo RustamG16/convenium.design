@@ -337,7 +337,14 @@
     padding: var(--s5) var(--s4) var(--s7);
   }
   .site-header {
+    gap: var(--s3);
     padding: 0 var(--s4);
+  }
+  .site-header nav {
+    gap: 0;
+  }
+  .site-header nav a {
+    padding: 0 var(--s2);
   }
   .lede,
   .prose {
@@ -364,4 +371,40 @@
   font-size: var(--stat);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
+}
+
+/* Commission toast: a status line shown once, when a grant happens in front of the owner. It stays until dismissed. */
+.toast-region {
+  position: fixed;
+  left: var(--s5);
+  bottom: var(--s5);
+  z-index: 40;
+  max-width: min(420px, calc(100vw - 2 * var(--s5)));
+}
+.toast {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s4);
+  background: var(--elevated);
+  border: 1px solid var(--cherry);
+  border-radius: var(--r-panel);
+}
+.toast p {
+  margin: 0;
+}
+.toast-line {
+  font-size: 14px;
+}
+.toast-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+@media (max-width: 767px) {
+  .toast-region {
+    left: var(--s3);
+    right: var(--s3);
+    bottom: var(--s3);
+    max-width: none;
+  }
 }
