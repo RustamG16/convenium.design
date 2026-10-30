@@ -17,3 +17,10 @@
   three non-default library workflows are written in T3; ArkhEthos media must be imported from a
   local checkout (`plan/05-asset-manifest.md`).
 - **Not done:** no code, no media copied, no generation.
+
+## 2026-10-30 — Build started (Claude, local build session, design-director)
+
+- **T0:** plan read in full; `verify.py --plan shipyard/plan/00-run-plan.md` CLEAN; baseline `verify.py` CLEAN at 101 skills.
+- **Worktree:** the build runs in `D:/Analyst_Designer/Convenium.Design-shipyard` on `shipyard/build`, branched from the plan commit `53d2660` (on `main` `59edb95`). The main checkout moved to `relay-workflow` during kickoff (`62dc353`, which adds a 102nd skill), so building there risked colliding with that work. `relay-workflow` is not in this branch; merging it later will need `project.py` and `verify.py` reconciled and the KB rebuilt.
+- **ArkhEthos revision:** port and media come from a read-only snapshot of `4de85a8`, the revision `05-asset-manifest.md` was measured at and the plan read. The owner's checkout is on `claude/improvement-research-2026-10-28` (`4db3cf3`), where seven crew GLBs are meshopt-recompressed (5.4 MB total set instead of 12.4 MB) and the ship code lacks about 200 lines `4de85a8` has. Importing from that checkout refuses, as the manifest requires. Nothing in ArkhEthos was edited.
+- **Order:** run-plan phase order is followed (T9 before T6–T8), per the kickoff's "in its order". Each task still gets one commit.

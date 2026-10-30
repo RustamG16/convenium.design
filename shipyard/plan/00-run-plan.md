@@ -9,15 +9,14 @@ python library/tools/verify.py --plan shipyard/plan/00-run-plan.md
 
 Trail **abridged** (brief and direction fixed by the owner; see `06-build-plan.md` § 1). The
 director is the main session of the **build** session, not the session that wrote the plan.
-Replace `<CD>` with the absolute path of this Convenium.Design checkout before spawning; every
-`skill_path` is under it. Engineering phases run sequentially — they share `shipyard/`. The
+`convenium_design` is this build worktree; every `skill_path` is under it. Engineering phases run sequentially — they share `shipyard/`. The
 author QA and the finish review never run in parallel with each other or with a build phase.
 
 ```json
 {
   "run": "convenium-shipyard",
   "trail": "abridged",
-  "convenium_design": "<CD>",
+  "convenium_design": "D:/Analyst_Designer/Convenium.Design-shipyard",
   "phases": [
     {
       "id": "plan-check",
@@ -45,7 +44,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "id": "scaffold-domain",
       "agent": "design-engineer",
       "skill": "project-scaffold",
-      "skill_path": "<CD>/library/skills/09-engineering-workflow/project-scaffold/SKILL.md",
+      "skill_path": "D:/Analyst_Designer/Convenium.Design-shipyard/library/skills/09-engineering-workflow/project-scaffold/SKILL.md",
       "model": "sonnet",
       "inputs": ["shipyard/plan/06-build-plan.md §3 §5 §8 §9 §11 T2-T3", "shipyard/ARCHITECTURE.md", "shipyard/schemas/ship.schema.json"],
       "outputs": ["shipyard/package.json and app skeleton", "shipyard/src/kb", "shipyard/src/domain", "shipyard/src/store", "tests/unit", "scripts/check-plans.mjs"],
@@ -56,7 +55,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "id": "scene-port",
       "agent": "design-engineer",
       "skill": "webgl-experience",
-      "skill_path": "<CD>/library/skills/03-motion-3d/webgl-experience/SKILL.md",
+      "skill_path": "D:/Analyst_Designer/Convenium.Design-shipyard/library/skills/03-motion-3d/webgl-experience/SKILL.md",
       "model": "sonnet",
       "inputs": ["ArkhEthos/src/features/ship (local checkout)", "shipyard/ARCHITECTURE.md Port map", "shipyard/plan/05-asset-manifest.md", "shipyard/plan/06-build-plan.md §5 §6 T4-T5"],
       "outputs": ["shipyard/src/scene", "shipyard/src/scene/artifacts", "shipyard/public/media (imported)", "features/board"],
@@ -67,7 +66,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "id": "game-layer",
       "agent": "design-engineer",
       "skill": "gamified-ui",
-      "skill_path": "<CD>/library/skills/02-web-build/gamified-ui/SKILL.md",
+      "skill_path": "D:/Analyst_Designer/Convenium.Design-shipyard/library/skills/02-web-build/gamified-ui/SKILL.md",
       "model": "sonnet",
       "inputs": ["shipyard/plan/06-build-plan.md §7 §8 §9 T9", "shipyard/DESIGN.md Gamification"],
       "outputs": ["features/preflight", "features/logbook", "src/domain/commissions.ts"],
@@ -78,7 +77,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "id": "editors",
       "agent": "design-engineer",
       "skill": "ui-ux",
-      "skill_path": "<CD>/library/skills/01-design-direction/ui-ux/SKILL.md",
+      "skill_path": "D:/Analyst_Designer/Convenium.Design-shipyard/library/skills/01-design-direction/ui-ux/SKILL.md",
       "model": "sonnet",
       "inputs": ["shipyard/plan/06-build-plan.md §4 §10 T6-T8", "shipyard/DESIGN.md Layout grid"],
       "outputs": ["features/hangar", "features/bridge", "features/armory", "features/voyage"],
@@ -89,7 +88,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "id": "assets",
       "agent": "asset-producer",
       "skill": "asset-director",
-      "skill_path": "<CD>/library/skills/04-media-generation/asset-director/SKILL.md",
+      "skill_path": "D:/Analyst_Designer/Convenium.Design-shipyard/library/skills/04-media-generation/asset-director/SKILL.md",
       "model": "sonnet",
       "inputs": ["shipyard/plan/05-asset-manifest.md"],
       "outputs": ["shipyard/plan/05-asset-manifest.md status column filled", "11 family glyph SVGs in shipyard/src/scene/artifacts/glyphs.tsx reviewed", "shipyard/public/media/LICENSES.md"],
@@ -100,7 +99,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "id": "motion",
       "agent": "design-engineer",
       "skill": "emil-design-eng",
-      "skill_path": "<CD>/library/skills/01-design-direction/emil-design-eng/SKILL.md",
+      "skill_path": "D:/Analyst_Designer/Convenium.Design-shipyard/library/skills/01-design-direction/emil-design-eng/SKILL.md",
       "model": "sonnet",
       "inputs": ["shipyard/DESIGN.md Motion contract", "shipyard/plan/06-build-plan.md T10"],
       "outputs": ["motion implemented per table", "src/lib/feel.ts tiers"],
@@ -111,7 +110,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "id": "finish",
       "agent": "design-engineer",
       "skill": "impeccable",
-      "skill_path": "<CD>/library/skills/01-design-direction/impeccable/SKILL.md",
+      "skill_path": "D:/Analyst_Designer/Convenium.Design-shipyard/library/skills/01-design-direction/impeccable/SKILL.md",
       "model": "sonnet",
       "inputs": ["shipyard/PRODUCT.md", "shipyard/DESIGN.md", "node .claude/skills/impeccable/scripts/context.mjs output"],
       "outputs": ["finish pass applied", "required states reachable"],
@@ -122,7 +121,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "id": "author-qa",
       "agent": "design-engineer",
       "skill": "visual-qa",
-      "skill_path": "<CD>/library/skills/08-qa-review/visual-qa/SKILL.md",
+      "skill_path": "D:/Analyst_Designer/Convenium.Design-shipyard/library/skills/08-qa-review/visual-qa/SKILL.md",
       "model": "sonnet",
       "inputs": ["running app", "shipyard/plan/06-build-plan.md acceptance criteria"],
       "outputs": ["shipyard/plan/07-qa.md", "shipyard/plan/qa-screens/"],
@@ -133,7 +132,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "id": "finish-review",
       "agent": "independent-critic",
       "skill": "award-rubric",
-      "skill_path": "<CD>/library/skills/08-qa-review/award-rubric/SKILL.md",
+      "skill_path": "D:/Analyst_Designer/Convenium.Design-shipyard/library/skills/08-qa-review/award-rubric/SKILL.md",
       "model": "opus",
       "inputs": ["shipyard/DESIGN.md", "shipyard/plan/06-build-plan.md", "shipyard/plan/07-qa.md", "running app"],
       "outputs": ["shipyard/plan/10-finish-review.md"],
