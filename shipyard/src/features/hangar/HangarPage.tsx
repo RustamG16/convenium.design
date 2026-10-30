@@ -85,6 +85,11 @@ function ShipCard({ ship }: { ship: Ship }) {
       <p className="stat">
         {ship.crew.length} crew · {stages} stages · {gates} gates
       </p>
+      <p>
+        <Link className="btn btn-quiet" to={`/ship/${ship.id}`} data-testid="open-ship">
+          Open the ship
+        </Link>
+      </p>
     </article>
   );
 }

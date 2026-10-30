@@ -1,0 +1,859 @@
+/* The ship: boarding walk and crew profile (DESIGN.md > 3D scene; ported from ArkhEthos ship.css,
+   2026-10-19 ship tour). Prefix: ship-. Pigments arrive as --c on the element; they never colour
+   buttons or focus. Numbers come from tokens.css. */
+
+/* Shared bits ArkhEthos's global.css supplied. */
+.stack { display: grid; gap: var(--s4); }
+.row { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+.muted { color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+.sheet-line { margin: 0; font-size: 14px; }
+.section-title { font-family: var(--font-display); font-variation-settings: var(--display-axes); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin: 0; text-wrap: balance; line-height: var(--lh-section); }
+.panel-glass { background: var(--hairline); background: rgba(27, 23, 23, 0.86); backdrop-filter: blur(14px) saturate(1.05); -webkit-backdrop-filter: blur(14px) saturate(1.05); }
+.btn-sm { position: relative; min-height: 36px; padding: 0 var(--s3); font-size: 13px; }
+.btn-sm::after { content: ''; position: absolute; inset: -4px; }
+.world-chips { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.world-chip { position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 var(--s3); border-radius: 999px; border: 1px solid color-mix(in srgb, var(--c, var(--muted)) 45%, transparent); background: color-mix(in srgb, var(--c, var(--muted)) 8%, transparent); font-weight: 700; font-size: 13px; cursor: pointer; }
+.world-chip::after { content: ''; position: absolute; inset: -2px 0; }
+.skew-badge { display: inline-block; padding: 2px 7px 1px; border-radius: 3px; transform: skewX(-12deg); background: var(--cherry); color: var(--cotton); font-family: var(--font-display); font-variation-settings: 'wght' 900, 'wdth' 100; font-weight: 900; font-style: italic; font-size: 10px; letter-spacing: 0.06em; line-height: 1.4; text-transform: uppercase; }
+.skew-badge[data-tone='cotton'] { background: var(--cotton); color: var(--bg); }
+.skew-badge[data-tone='muted'] { background: var(--muted); color: var(--bg); }
+@keyframes ship-chip-pop { from { transform: scale(0.96); } to { transform: none; } }
+.truth-detail { text-transform: none; letter-spacing: 0; }
+.ship-carry { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s1); }
+.ship-carry li { display: grid; grid-template-columns: 18px minmax(0, 1fr); column-gap: var(--s2); align-items: center; font-size: 14px; }
+.ship-carry li code { grid-column: 2; font-size: 12px; color: var(--muted); }
+.ship-carry li[data-active] span { font-weight: 700; }
+
+.page.ship-page { padding-bottom: var(--s6); }
+.ship-head { margin-bottom: var(--s4); }
+
+/* Turntable */
+.ship-turntable {
+  aspect-ratio: 4 / 5;
+  width: 100%;
+  border-radius: 12px;
+  background: radial-gradient(120% 90% at 50% 100%, color-mix(in oklab, var(--c, #3a2f2b) 18%, #141010) 0%, #0f0c0c 70%);
+  border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+  overflow: hidden;
+}
+.ship-portrait {
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+.ship-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ship-turntable canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Crew rail */
+.ship-rail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s1);
+}
+.ship-rail-item {
+  --ring: color-mix(in oklab, var(--c, var(--muted)) 55%, transparent);
+  width: 100%;
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-areas: 'n name' 'n role';
+  column-gap: var(--s2);
+  align-items: center;
+  text-align: left;
+  padding: var(--s1) var(--s2);
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.ship-rail-item:hover {
+  background: color-mix(in oklab, var(--c, var(--muted)) 10%, transparent);
+}
+.ship-rail-item[data-active] {
+  border-color: var(--ring);
+  background: color-mix(in oklab, var(--c, var(--muted)) 14%, transparent);
+}
+.ship-rail-station {
+  grid-area: n;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--c, var(--muted));
+  color: var(--cotton);
+  font-size: 12px;
+}
+.ship-rail-item[data-met] .ship-rail-station::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--cotton);
+  transform: translate(10px, -10px);
+}
+.ship-rail-station {
+  position: relative;
+}
+.ship-rail-name {
+  grid-area: name;
+  font-weight: 600;
+}
+.ship-rail-role {
+  grid-area: role;
+  font-size: 13px;
+}
+
+/* Identity card: the universe side panel's language (hairline, glass, display title, serif voice). */
+.ship-identity {
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  padding: var(--s5);
+  background-color: rgba(27, 23, 23, 0.84);
+  background-image: radial-gradient(120% 60% at 0% 0%, color-mix(in srgb, var(--c, #c9473f) 18%, transparent), transparent 60%);
+}
+.ship-identity .ship-identity-name {
+  margin: 0;
+  font-size: clamp(24px, 2.4vw, 32px);
+  overflow-wrap: anywhere;
+}
+.ship-identity-species,
+.ship-identity-essence {
+  margin: 0;
+  max-width: 64ch;
+}
+.ship-identity-species {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--muted);
+}
+.ship-identity-line {
+  margin: 0;
+  padding-left: var(--s3);
+  border-left: 2px solid var(--c, var(--border));
+}
+.ship-identity-line p {
+  margin: 0 0 var(--s1);
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: 1.35;
+}
+.ship-identity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--s3);
+}
+.ship-facet h3 {
+  margin: 0 0 var(--s1);
+  display: flex;
+  gap: var(--s2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ship-facet-list {
+  margin: 0;
+  padding-left: 1.1em;
+  display: grid;
+  gap: 4px;
+}
+
+/* Truth labels: text always, a dot as a second cue */
+.ship-truth {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ship-truth-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+.ship-truth[data-truth='Verified'] .ship-truth-dot {
+  background: currentColor;
+}
+.ship-truth-detail {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Crew briefed */
+.ship-briefed {
+  display: grid;
+  gap: var(--s1);
+  padding: var(--s3);
+  border-radius: 12px;
+  border: 1px solid var(--line, color-mix(in oklab, currentColor 15%, transparent));
+}
+
+/* Crew ecosystem (xyflow) */
+.ship-eco {
+  margin-top: var(--s5);
+  display: grid;
+  gap: var(--s3);
+}
+.ship-eco-phases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: var(--s2);
+  flex-wrap: wrap;
+}
+.ship-eco-phases li {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, currentColor 18%, transparent);
+}
+.ship-eco-canvas {
+  height: 440px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+  background: #141010;
+}
+.ship-eco-canvas .react-flow__node {
+  font: inherit;
+  color: inherit;
+  box-shadow: none;
+}
+.ship-eco-canvas .react-flow__handle {
+  opacity: 0;
+}
+.ship-eco-node {
+  display: grid;
+  gap: 4px;
+  padding: var(--s2);
+  border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--c, currentColor) 40%, transparent);
+  background: color-mix(in oklab, var(--c, #3a2f2b) 10%, #1a1414);
+  text-align: left;
+  cursor: pointer;
+}
+.ship-eco-node[data-active] {
+  border-color: var(--c, currentColor);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--c, currentColor) 25%, transparent);
+}
+.ship-eco-node-sim {
+  border-style: dashed;
+  cursor: default;
+}
+.ship-eco-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.ship-eco-name .ship-rail-station {
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
+.ship-eco-role {
+  font-size: 11px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+/* Intro: one full-height stage below the header; you walk inside it (free roam, phase 1.6). */
+.page.ship-page-intro {
+  padding: 0;
+  max-width: none;
+  margin: 0;
+}
+.ship-intro {
+  position: relative;
+}
+.ship-intro-stage {
+  position: relative;
+  height: calc(100vh - var(--header-h, 0px));
+  height: calc(100svh - var(--header-h, 0px));
+  overflow: hidden;
+  background: #0f0c0c;
+}
+.ship-intro-stage .ship-canvas,
+.ship-intro-stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+.ship-skip {
+  position: absolute;
+  top: var(--s3);
+  right: var(--s3);
+  min-height: 44px;
+  z-index: 3;
+}
+/* Progress rail: nine >= 44px targets; the title shows on hover and focus. */
+.ship-waypoints {
+  position: absolute;
+  left: var(--s2);
+  top: 50%;
+  transform: translateY(-50%);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  z-index: 3;
+}
+.ship-waypoint-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0 0 15px;
+  border: 0;
+  background: transparent;
+  color: #f4ece4;
+  cursor: pointer;
+}
+.ship-waypoint-dot {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  transition: background 150ms ease, transform 150ms ease;
+}
+.ship-waypoint-btn[data-active] .ship-waypoint-dot {
+  background: #f2b65a;
+  border-color: #f2b65a;
+}
+.ship-waypoint-title {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(20, 16, 16, 0.86);
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-4px);
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+.ship-waypoint-btn:hover .ship-waypoint-title,
+.ship-waypoint-btn:focus-visible .ship-waypoint-title {
+  opacity: 1;
+  transform: none;
+}
+.ship-waypoint-btn:hover .ship-waypoint-dot {
+  transform: scale(1.15);
+}
+.ship-tools {
+  position: absolute;
+  top: var(--s3);
+  left: var(--s3);
+  display: flex;
+  gap: var(--s2);
+  z-index: 3;
+}
+.ship-tools .btn {
+  min-height: 44px;
+  background: rgba(27, 23, 23, 0.84);
+  backdrop-filter: blur(14px);
+}
+.ship-tools .btn[aria-pressed='true'] {
+  border-color: color-mix(in srgb, var(--cotton) 55%, transparent);
+}
+/* WASD hint, bottom-left on desktop. */
+.ship-keys {
+  position: absolute;
+  left: var(--s3);
+  bottom: var(--s3);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(27, 23, 23, 0.84);
+  backdrop-filter: blur(14px);
+  color: var(--muted);
+  font-size: 12px;
+  z-index: 3;
+  pointer-events: none;
+}
+.ship-keys kbd {
+  min-width: 22px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--cotton) 30%, transparent);
+  border-bottom-width: 2px;
+  color: var(--cotton);
+  font: 700 11px/1.5 var(--font-display);
+  text-align: center;
+}
+.ship-keys kbd + kbd {
+  margin-left: -1px;
+}
+@media (pointer: coarse) {
+  .ship-keys,
+  .ship-look-hint {
+    display: none;
+  }
+}
+/* Captured-mouse look: a hint at the centre while the mouse is free, a dot while it is captured. */
+.ship-look-hint {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 28px);
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(27, 23, 23, 0.72);
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 2;
+  pointer-events: none;
+}
+.ship-look-hint kbd {
+  padding: 0 5px;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--cotton) 30%, transparent);
+  color: var(--cotton);
+  font: 700 11px/1.5 var(--font-display);
+}
+.ship-crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--cotton);
+  box-shadow: 0 0 0 1.5px rgba(15, 12, 12, 0.7);
+  z-index: 2;
+  pointer-events: none;
+}
+/* Phones: a hold-to-walk pad under the sound button; the card owns the bottom of the screen. */
+.ship-pad {
+  position: absolute;
+  left: var(--s2);
+  top: calc(var(--s2) + 56px);
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  grid-template-rows: repeat(3, 48px);
+  grid-template-areas: '. up .' 'left . right' '. down .';
+  z-index: 3;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ship-pad-btn {
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(27, 23, 23, 0.84);
+  color: var(--cotton);
+  touch-action: none;
+}
+.ship-pad-btn:active {
+  background: color-mix(in srgb, var(--cotton) 18%, rgba(27, 23, 23, 0.84));
+}
+.ship-pad-btn[data-area='up'] {
+  grid-area: up;
+  transform: rotate(-90deg);
+}
+.ship-pad-btn[data-area='down'] {
+  grid-area: down;
+  transform: rotate(90deg);
+}
+.ship-pad-btn[data-area='left'] {
+  grid-area: left;
+  transform: rotate(180deg);
+}
+.ship-pad-btn[data-area='right'] {
+  grid-area: right;
+}
+/* Drags on the canvas look around, in every direction; nothing scrolls here. */
+.ship-intro-stage .ship-canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.ship-intro-stage .ship-canvas:active {
+  cursor: grabbing;
+}
+/* Desktop: a click captures the mouse, so the view offers a crosshair instead of a hand. */
+.ship-intro-stage[data-look='capture'] .ship-canvas,
+.ship-intro-stage[data-look='capture'] .ship-canvas:active {
+  cursor: crosshair;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ship-waypoint-title,
+  .ship-waypoint-dot {
+    transition: none;
+  }
+}
+.ship-wp-card {
+  position: absolute;
+  right: var(--s4);
+  bottom: var(--s4);
+  width: min(var(--panel-w, 360px), calc(100% - 2 * var(--s4)));
+  display: grid;
+  gap: var(--s3);
+  align-content: start;
+  padding: var(--s5);
+  border-radius: var(--r-panel);
+  border: 1px solid var(--border);
+  background-color: rgba(27, 23, 23, 0.84);
+  background-image: radial-gradient(130% 70% at 0% 0%, color-mix(in srgb, var(--c, #c9473f) 22%, transparent), transparent 62%);
+  z-index: 3;
+  animation: ship-card-in 240ms ease-out;
+  /* Talk can make the card long: it scrolls inside and never covers Skip to bridge. */
+  max-height: calc(100% - 2 * var(--s4) - 56px);
+  overflow: auto;
+}
+.ship-wp-head {
+  display: grid;
+  gap: var(--s1);
+}
+.ship-wp-meta {
+  gap: var(--s2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.ship-wp-meta .label {
+  margin: 0;
+}
+.ship-wp-role {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--s2);
+}
+.ship-wp-quote {
+  margin: 0;
+  padding-left: var(--s3);
+  border-left: 2px solid var(--c, var(--border));
+  display: grid;
+  gap: var(--s1);
+}
+.ship-wp-quote p {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 19px;
+  line-height: 1.35;
+}
+.ship-wp-quote footer {
+  font-size: 14px;
+}
+.ship-wp-lead {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.4;
+}
+.ship-wp-body {
+  gap: var(--s3);
+}
+.ship-wp-actions {
+  gap: var(--s2);
+  flex-wrap: wrap;
+}
+.ship-wp-card .ship-inspected {
+  margin: 0;
+}
+.ship-wp-card .world-chip[data-found] {
+  border-color: color-mix(in srgb, var(--c) 70%, transparent);
+}
+.ship-chip-dot {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--c, var(--muted));
+  color: #1b1717;
+  font-size: 11px;
+  font-weight: 800;
+}
+.ship-crew-chip {
+  padding-left: 6px;
+}
+/* The pipeline: five phase rows, the owners as pigment chips, gates as a trailing label. */
+.ship-pipeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  counter-reset: phase;
+}
+.ship-pipeline-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  grid-template-areas: 'phase crew' '. gate';
+  column-gap: var(--s2);
+  row-gap: 2px;
+  padding: var(--s2) 0;
+  border-top: 1px solid var(--border);
+}
+.ship-pipeline-step:first-child {
+  border-top: 0;
+}
+.ship-pipeline-phase {
+  grid-area: phase;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 24px;
+}
+.ship-pipeline-crew {
+  grid-area: crew;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--s2);
+}
+.ship-pipeline-member {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+.ship-pipeline-gate {
+  grid-area: gate;
+  margin: 0;
+  color: var(--cotton);
+}
+.ship-pipeline-gate::before {
+  content: '↳ ';
+  color: var(--muted);
+}
+@keyframes ship-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ship-wp-card {
+    animation: none;
+  }
+}
+/* Speech bubble: placed every frame at the talking member's head (--bx/--by from the scene). */
+.ship-bubble {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: min(320px, 70vw);
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--c, #a79b92) 60%, transparent);
+  background: rgba(250, 244, 236, 0.95);
+  color: #1e1918;
+  font-size: 14px;
+  line-height: 1.35;
+  transform: translate(calc(var(--bx, -999px) - 50%), calc(var(--by, -999px) - 100% - 10px));
+  pointer-events: none;
+  z-index: 2;
+}
+.ship-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border-right: inherit;
+  border-bottom: inherit;
+  transform: translateX(-50%) rotate(45deg);
+}
+.ship-bubble[data-hidden='true'] {
+  visibility: hidden;
+}
+.ship-hotspot-label {
+  display: grid;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in oklab, var(--c, #a79b92) 60%, transparent);
+  background: rgba(20, 16, 16, 0.9);
+  color: #f4ece4;
+  font-size: 13px;
+  white-space: nowrap;
+  text-align: center;
+}
+.ship-hotspot-label span {
+  font-size: 12px;
+  opacity: 0.75;
+}
+.ship-walk-slots {
+  display: grid;
+  gap: var(--s1);
+}
+.ship-walk-slots .label {
+  margin: 0;
+}
+.ship-walk-slot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  align-items: center;
+  gap: var(--s2);
+  font-size: 14px;
+}
+.ship-walk-slot select {
+  min-height: 44px;
+  min-width: 0;
+  padding: 0 var(--s2);
+  border-radius: 8px;
+  border: 1px solid color-mix(in oklab, var(--c, #a79b92) 45%, transparent);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font: inherit;
+}
+.ship-walk-slot option {
+  color: #1e1918;
+}
+.ship-inspected {
+  animation: ship-chip-pop 180ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ship-inspected {
+    animation: none;
+  }
+}
+.ship-wp-card .ship-wp-name {
+  margin: 0;
+  font-size: clamp(22px, 2.2vw, 28px);
+  overflow-wrap: anywhere;
+}
+.ship-wp-line {
+  margin: 0;
+  font-size: 16px;
+}
+.ship-wp-talk {
+  padding-top: var(--s2);
+  border-top: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+}
+@media (max-width: 767px) {
+  .ship-wp-card {
+    left: var(--s2);
+    right: var(--s2);
+    bottom: calc(var(--s2) + var(--tabbar-h, 72px));
+    max-height: 55vh;
+    overflow: auto;
+    width: auto;
+    gap: var(--s2);
+    padding: var(--s3);
+  }
+  .ship-wp-quote p,
+  .ship-wp-lead {
+    font-size: 16px;
+  }
+  .ship-waypoints {
+    display: none;
+  }
+  .ship-tools {
+    top: var(--s2);
+    left: var(--s2);
+  }
+}
+
+
+/* ---------- Crew profile (the bridge) ---------- */
+/* Grid: 320 / 1fr / 360 at >= 1200; two columns 768-1199 (the rack drops below); stacked under 768. */
+.ship-profile {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) 360px;
+  gap: var(--s4);
+  align-items: start;
+}
+@media (max-width: 1199px) {
+  .ship-profile { grid-template-columns: 280px minmax(0, 1fr); }
+  .ship-rack { grid-column: 1 / -1; }
+}
+@media (max-width: 767px) {
+  .ship-profile { grid-template-columns: minmax(0, 1fr); }
+}
+.ship-page-title { margin: 0; font-size: var(--page-title); }
+.ship-portrait-glyph { display: grid; place-items: center; width: 100%; height: 100%; font-size: 96px; }
+
+.ship-rack {
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  padding: var(--s4);
+  background: var(--surface);
+  gap: var(--s3);
+}
+.ship-rack-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
+.ship-rack-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: var(--display-axes);
+  text-transform: uppercase;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+.ship-anchors { gap: var(--s3); }
+.ship-anchor h3 { margin: 0 0 var(--s1); display: flex; justify-content: space-between; }
+.ship-art-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s1); }
+.ship-art {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  grid-template-areas: 'glyph name tier' 'glyph id id';
+  column-gap: var(--s2);
+  align-items: center;
+  min-height: 48px;
+  padding: var(--s1) var(--s2);
+  border-radius: var(--r-control);
+  border: 1px solid var(--hairline);
+  background: var(--bg);
+}
+.ship-art .glyph { grid-area: glyph; }
+.ship-art-name { grid-area: name; font-weight: 600; font-size: 14px; }
+.ship-art code { grid-area: id; font-size: 12px; color: var(--muted); }
+.ship-art-tier { grid-area: tier; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.ship-art[data-tier='core'] { border-color: color-mix(in srgb, var(--c) 55%, transparent); border-width: 2px; }
+.ship-art[data-tier='swappable'] { border-color: color-mix(in srgb, var(--c) 55%, transparent); }
+.ship-art[data-tier='library'] { border-style: dashed; border-color: color-mix(in srgb, var(--c) 50%, transparent); }
+.ship-art[data-tier='dormant'] { border-style: dotted; border-color: color-mix(in srgb, var(--c) 50%, transparent); }
+.ship-art[data-active] { background: color-mix(in srgb, var(--c) 10%, var(--bg)); }
+.ship-art-empty { display: flex; justify-content: center; min-height: 36px; border-style: dashed; color: var(--muted); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; background: transparent; }
+.ship-art-retired { opacity: 0.6; }
+.ship-rail-count { grid-area: n; justify-self: end; font-size: 11px; color: var(--muted); display: none; }
+.ship-rail-item { position: relative; }

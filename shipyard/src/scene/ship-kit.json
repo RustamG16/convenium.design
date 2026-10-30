@@ -1,0 +1,32 @@
+{
+  "source": "Kenney Modular Space Kit 1.0 (corridor-*, airlock-frame, conduit-cables, wall-panel, support-pillar) + Kenney Space Kit 2.0 (console-terminal, crew-seat, window-frame, cargo-barrels, railing) + Quaternius Sci-Fi Essentials Kit Standard (locker, crate-large, tool-rack, workbench) + Kenney Space Station Kit (pipe, pipe-ring, wall-display, hatch, floor-grate, container-tall, lectern, readout)",
+  "license": "CC0 1.0",
+  "url": "https://kenney.nl/assets/modular-space-kit",
+  "urls": ["https://kenney.nl/assets/modular-space-kit", "https://kenney.nl/assets/space-kit", "https://quaternius.com/packs/scifiessentialskit.html", "https://kenney.nl/assets/space-station-kit"],
+  "pieces": [
+    { "id": "corridor-floor", "file": "/media/ship-kit/corridor-floor.glb", "role": "floor", "size": [4, 0, 4], "bytes": 4808 },
+    { "id": "corridor-wall", "file": "/media/ship-kit/corridor-wall.glb", "role": "wall", "size": [4, 4.25, 1], "bytes": 20668 },
+    { "id": "corridor-ceiling", "file": "/media/ship-kit/corridor-ceiling.glb", "role": "ceiling", "size": [4.2, 4.7, 0.775], "bytes": 17872 },
+    { "id": "airlock-frame", "file": "/media/ship-kit/airlock-frame.glb", "role": "door", "size": [4.2, 4.62, 1.4], "bytes": 27788 },
+    { "id": "conduit-cables", "file": "/media/ship-kit/conduit-cables.glb", "role": "pipe", "size": [1.91, 0.16, 2.1], "bytes": 19792 },
+    { "id": "wall-panel", "file": "/media/ship-kit/wall-panel.glb", "role": "panel", "size": [4, 4.25, 1.37], "bytes": 41532 },
+    { "id": "console-terminal", "file": "/media/ship-kit/console-terminal.glb", "role": "console", "size": [0.525, 0.375, 0.225], "bytes": 4868 },
+    { "id": "crew-seat", "file": "/media/ship-kit/crew-seat.glb", "role": "seat", "size": [0.15, 0.294, 0.15], "bytes": 5112 },
+    { "id": "window-frame", "file": "/media/ship-kit/window-frame.glb", "role": "window", "size": [1, 1, 1], "bytes": 8372 },
+    { "id": "cargo-barrels", "file": "/media/ship-kit/cargo-barrels.glb", "role": "prop", "size": [0.55, 0.35, 0.5], "bytes": 11564 },
+    { "id": "railing", "file": "/media/ship-kit/railing.glb", "role": "railing", "size": [0.8, 0.25, 0.05], "bytes": 4036 },
+    { "id": "support-pillar", "file": "/media/ship-kit/support-pillar.glb", "role": "prop", "size": [1.56, 4.23, 1.56], "bytes": 18824 },
+    { "id": "locker", "file": "/media/ship-kit/locker.glb", "role": "locker", "size": [0.98, 2.67, 0.5], "bytes": 54436 },
+    { "id": "crate-large", "file": "/media/ship-kit/crate-large.glb", "role": "crate", "size": [3.47, 1.5, 1.5], "bytes": 210564 },
+    { "id": "tool-rack", "file": "/media/ship-kit/tool-rack.glb", "role": "rack", "size": [1.37, 2.67, 0.54], "bytes": 123000 },
+    { "id": "workbench", "file": "/media/ship-kit/workbench.glb", "role": "bench", "size": [2.84, 0.94, 1.03], "bytes": 93976 },
+    { "id": "pipe", "file": "/media/ship-kit/pipe.glb", "role": "pipe", "size": [0.25, 0.5, 0.28], "bytes": 4200 },
+    { "id": "pipe-ring", "file": "/media/ship-kit/pipe-ring.glb", "role": "pipe", "size": [0.35, 0.5, 0.4], "bytes": 4820 },
+    { "id": "wall-display", "file": "/media/ship-kit/wall-display.glb", "role": "screen", "size": [0.4, 0.46, 0.38], "bytes": 6692 },
+    { "id": "hatch", "file": "/media/ship-kit/hatch.glb", "role": "door", "size": [0.4, 0.7, 0.1], "bytes": 5372 },
+    { "id": "floor-grate", "file": "/media/ship-kit/floor-grate.glb", "role": "floor", "size": [1, 0.3, 1], "bytes": 6912 },
+    { "id": "container-tall", "file": "/media/ship-kit/container-tall.glb", "role": "prop", "size": [0.6, 0.9, 0.6], "bytes": 7912 },
+    { "id": "lectern", "file": "/media/ship-kit/lectern.glb", "role": "lectern", "size": [0.84, 0.6, 0.82], "bytes": 14784 },
+    { "id": "readout", "file": "/media/ship-kit/readout.glb", "role": "screen", "size": [0.8, 0.66, 0.44], "bytes": 11496 }
+  ]
+}

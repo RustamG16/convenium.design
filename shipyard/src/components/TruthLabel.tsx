@@ -7,10 +7,12 @@ const MEANING: Record<Truth, string> = {
   'User-reported': 'Pasted by you; not checked here',
 };
 
-export function TruthLabel({ truth }: { truth: Truth }) {
+/** `detail` is the evidence in a few words, shown after the label (for example the agent the row comes from). */
+export function TruthLabel({ truth, detail }: { truth: Truth; detail?: string }) {
   return (
-    <span className="truth" data-truth={truth} title={MEANING[truth]}>
+    <span className="truth" data-truth={truth} title={detail ? `${MEANING[truth]}: ${detail}` : MEANING[truth]}>
       {truth}
+      {detail && <span className="truth-detail"> · {detail}</span>}
     </span>
   );
 }
