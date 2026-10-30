@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "status": "draft — authored in the plan package (2026-10-30). At build time this moves to library/registry/artifacts.json (source of truth) and is joined into shipyard/public/data/knowledge-base.json by `python library/tools/project.py shipyard`.",
+  "note": "Every registry skill resolves to exactly one artifact: family from its `category`, tier from real registry state, name from `overrides` or the generated pattern. Contrast of each pigment on #1B1717 measured 2026-10-30 (WCAG 2.x relative luminance): all >= 7.9:1.",
+  "anchors": {
+    "hand":    { "bone": "RightHand",    "offset": [0.0, -0.06, 0.04], "capacity": 1, "label": "Hand" },
+    "offhand": { "bone": "LeftHand",     "offset": [0.0, -0.06, 0.04], "capacity": 1, "label": "Off-hand" },
+    "head":    { "bone": "Head",         "offset": [0.0, 0.12, 0.08],  "capacity": 1, "label": "Head" },
+    "back":    { "bone": "Spine02",      "offset": [0.0, 0.05, -0.18], "capacity": 1, "label": "Back" },
+    "belt":    { "bone": "Hips",         "offset": [0.0, 0.02, 0.14],  "capacity": 3, "label": "Belt", "spread": 0.12 },
+    "orbit":   { "bone": "Armature",     "offset": [0.0, 2.2, 0.0],    "capacity": 2, "label": "Orbit", "radius": 0.45 }
+  },
+  "anchorRule": "Any anchor accepts any family; capacity is the only limit. A family's `defaultAnchor` and `autoPlace` order decide where an artifact lands when placed automatically (default loadouts, Equip without choosing). Pose by anchor: hand/offhand = held (scale 1), head/back/belt = worn (scale 0.7), orbit = floating (scale 0.8, circles the head).",
+  "anchorNote": "All seven crew GLBs (captain, strategist, analyst, critic, engineer, producer, metrics; there is no gauge.glb) share one Meshy rig (bones verified 2026-10-30 in captain.glb and engineer.glb: Head, LeftHand, RightHand, Spine02, Hips, Armature …). `orbit` y is scaled by the member's heightM. Total capacity 9 per crew member.",
+  "tiers": [
+    { "id": "core",      "label": "Core",      "rule": "skill is pipeline-active: its phase is not 'unrouted' (listed in ROUTING-DIGEST.md)", "rim": "solid-2" },
+    { "id": "swappable", "label": "Swappable", "rule": "skill is a candidate in a slots.json slot (and not already core)", "rim": "solid-1" },
+    { "id": "library",   "label": "Library",   "rule": "status 'active', phase 'unrouted', in no slot — a capability invoked explicitly", "rim": "dashed-1" },
+    { "id": "dormant",   "label": "Dormant",   "rule": "status is not 'active' (e.g. 'manual')", "rim": "dotted-1" }
+  ],
+  "hold": "Overflow and spare artifacts live in the ship's hold (ship-level, unlimited). A stage can only activate an artifact a member is wearing.",
+  "tierNote": "Tiers describe what the system does with a skill, not its value. They are never sold, unlocked or randomised; every tier is equipable.",
+  "families": [
+    { "category": "01-design-direction",     "id": "lens",      "name": "Lens",      "form": "faceted prism lens in a brass ring",       "mesh": "lathe ring + icosahedron(detail 0) lens",      "pigment": "#E8C46A", "defaultAnchor": "head",    "autoPlace": ["head", "hand", "orbit"] },
+    { "category": "02-web-build",            "id": "wrench",    "name": "Wrench",    "form": "double-ended wrench with a glowing core",   "mesh": "extruded 2D wrench profile, depth 0.02",       "pigment": "#8FC9B0", "defaultAnchor": "hand",    "autoPlace": ["hand", "belt", "offhand"] },
+    { "category": "03-motion-3d",            "id": "gyroscope", "name": "Gyroscope", "form": "three nested rings spinning on offset axes","mesh": "3 × torus (r 0.06/0.05/0.04, tube 0.004)",    "pigment": "#B8A4E8", "defaultAnchor": "orbit",   "autoPlace": ["orbit", "hand", "belt"] },
+    { "category": "04-media-generation",     "id": "projector", "name": "Projector", "form": "shoulder-pack projector with a light cone", "mesh": "rounded box + cone (additive, opacity 0.25)",  "pigment": "#E79A8E", "defaultAnchor": "back",    "autoPlace": ["back", "hand"] },
+    { "category": "05-content-copy",         "id": "quill",     "name": "Quill",     "form": "long feather quill with an ink drop",      "mesh": "lathe shaft + 2 curved planes",                "pigment": "#E9DCC5", "defaultAnchor": "offhand", "autoPlace": ["offhand", "hand", "belt"] },
+    { "category": "06-ops-security",         "id": "seal",      "name": "Seal",      "form": "round signet seal on a chain",             "mesh": "cylinder + torus chain links (instanced)",     "pigment": "#9FB7D9", "defaultAnchor": "belt",    "autoPlace": ["belt", "offhand"] },
+    { "category": "07-research-intel",       "id": "spyglass",  "name": "Spyglass",  "form": "collapsible three-stage spyglass",         "mesh": "3 × cylinder, stepped radii",                  "pigment": "#7FCFD6", "defaultAnchor": "offhand", "autoPlace": ["offhand", "hand", "belt"] },
+    { "category": "08-qa-review",            "id": "calipers",  "name": "Calipers",  "form": "vernier calipers with a readout",          "mesh": "extruded profile + small plane readout",       "pigment": "#D9D27A", "defaultAnchor": "belt",    "autoPlace": ["belt", "hand"] },
+    { "category": "09-engineering-workflow", "id": "gearbox",   "name": "Gearbox",   "form": "open gearbox with two meshing cogs",       "mesh": "box frame + 2 extruded gears (counter-rotate)", "pigment": "#C9A88A", "defaultAnchor": "back",    "autoPlace": ["back", "belt"] },
+    { "category": "10-docs-deliverables",    "id": "codex",     "name": "Codex",     "form": "small bound tome with a clasp",            "mesh": "rounded box + thin box cover",                 "pigment": "#D3B4C9", "defaultAnchor": "belt",    "autoPlace": ["belt", "offhand"] },
+    { "category": "11-meta-system",          "id": "orrery",    "name": "Orrery",    "form": "miniature orrery: a core and two moons",   "mesh": "sphere + 2 spheres on torus tracks",           "pigment": "#A9D98A", "defaultAnchor": "orbit",   "autoPlace": ["orbit", "head"] }
+  ],
+  "naming": {
+    "pattern": "{Family} of {Title}",
+    "title": "the skill's `name` in Title Case with hyphens as spaces (e.g. 'gsap-scrolltrigger' -> 'Gyroscope of Gsap Scrolltrigger')",
+    "rule": "Only `overrides` carry invented names; overrides never rename the skill id shown under the artifact name, and never use a brand or a person's name. An override name must contain its family name (verify.py checks it)."
+  },
+  "overrides": {
+    "olympus-design-director": { "name": "The Captain's Lens", "lore": "Turns once per gate." },
+    "impeccable":              { "name": "Finishing Lens", "lore": "Commits the numbers before the first line of layout." },
+    "apple-design":            { "name": "Glass Lens of Restraint", "lore": "Fluid, physical motion; nothing ornamental." },
+    "emil-design-eng":         { "name": "Lens of the Invisible Detail", "lore": "States, transitions and the feel between them." },
+    "awwwards-web-design":     { "name": "Editorial Lens", "lore": "Big type, choreographed scroll." },
+    "ui-ux":                   { "name": "Lens of Familiar Paths", "lore": "Product cognition before expression." },
+    "concept-studio":          { "name": "Lens of One Direction", "lore": "One concept, defended in writing." },
+    "gamified-ui":             { "name": "Honest Scoreboard Wrench", "lore": "Shows real progress or nothing." },
+    "mobile-app-shell":        { "name": "Thumb-Zone Wrench", "lore": "The phone is the primary screen." },
+    "scroll-scrubbed-visual-sequence": { "name": "Reversible Gyroscope", "lore": "Forward and back with the scroll." },
+    "webgl-experience":        { "name": "Gyroscope of Bounded Depth", "lore": "3D only when it explains something." },
+    "asset-director":          { "name": "Manifest Projector", "lore": "Every image has a source and a right." },
+    "copywriting":             { "name": "Persuading Quill" },
+    "copy-editing":            { "name": "Trimming Quill" },
+    "ux-evidence-audit":       { "name": "Evidence Spyglass", "lore": "Seen and inferred, never mixed." },
+    "reference-deconstruction":{ "name": "Lens of Transferable Logic" },
+    "design-analytics":        { "name": "Hypothesis Spyglass" },
+    "visual-qa":               { "name": "Calipers of the Approved Direction" },
+    "award-rubric":            { "name": "Scoring Calipers", "lore": "Scores; never redesigns." },
+    "better-interface":        { "name": "Six-Facet Lens" }
+  }
+}

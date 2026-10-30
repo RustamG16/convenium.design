@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "convenium.shipyard/ship.v1",
+  "title": "Shipyard ship (one workflow + its crew + their artifacts)",
+  "description": "The exported / saved form of a ship. The app validates the same shape with zod (src/domain/schema.ts). Skill, agent and workflow ids are references into the generated knowledge base; unknown ids load as 'retired' and fail pre-flight, they are never silently dropped.",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "class",
+    "kbHash",
+    "crew",
+    "voyage",
+    "createdAt",
+    "updatedAt"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "shipyard.ship.v1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,47}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 48
+    },
+    "class": {
+      "enum": [
+        "flagship",
+        "abridged",
+        "retrofit",
+        "fleet",
+        "custom"
+      ]
+    },
+    "origin": {
+      "description": "Where the ship came from. 'library' ships are read-only templates from workflows.json; editing one forks a custom copy.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "library",
+            "clone",
+            "blank",
+            "import"
+          ]
+        },
+        "workflow": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 400
+    },
+    "hull": {
+      "description": "Cosmetic hull for the hangar (one of the CC0 Quaternius hulls).",
+      "enum": [
+        "ship-a",
+        "ship-b",
+        "ship-c",
+        "ship-d",
+        "ship-e"
+      ]
+    },
+    "trail": {
+      "enum": [
+        "full",
+        "abridged",
+        "fleet"
+      ]
+    },
+    "doctrine": {
+      "description": "Optional doctrine chart the ship carries (library/doctrines id).",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "modules": {
+      "description": "Ship-level plugins / connectors / tools (ids from plugins.json and tools.json). Presentation + export note only.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "kbHash": {
+      "description": "sourceHash of the knowledge base the ship was saved against; a mismatch shows the stale-library banner.",
+      "type": "string"
+    },
+    "crew": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/$defs/member"
+      }
+    },
+    "voyage": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/stage"
+          },
+          {
+            "$ref": "#/$defs/gate"
+          }
+        ]
+      }
+    },
+    "logbook": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/logEntry"
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "hold": {
+      "description": "Ship's hold: spare skill ids carried by the ship but worn by nobody (overflow of default loadouts lands here). Not activatable until worn.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "scoped": {
+      "description": "True for a scoped repair on a built site (retrofit, fleet): PF-09 (design system before build) does not apply. Library retrofit/fleet ships set it.",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "$defs": {
+    "member": {
+      "type": "object",
+      "required": [
+        "id",
+        "agent",
+        "character",
+        "station",
+        "loadout"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,31}$"
+        },
+        "agent": {
+          "description": "The runtime agent this character plays (library/agents). The character is cosmetic; the agent is what runs.",
+          "enum": [
+            "design-director",
+            "brand-strategist",
+            "visual-analyst",
+            "independent-critic",
+            "design-engineer",
+            "asset-producer",
+            "analytics-specialist",
+            "fleet-measurer"
+          ]
+        },
+        "character": {
+          "type": "object",
+          "required": [
+            "name",
+            "body",
+            "pigment"
+          ],
+          "properties": {
+            "fromCrew": {
+              "description": "crew.json id when this is (or forks) a library character",
+              "type": "string"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            },
+            "species": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "essence": {
+              "type": "string",
+              "maxLength": 400
+            },
+            "analogy": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "body": {
+              "description": "Which rigged GLB to wear (7 exist; there is no gauge body), or the procedural stand-in.",
+              "enum": [
+                "captain",
+                "strategist",
+                "analyst",
+                "critic",
+                "engineer",
+                "producer",
+                "metrics",
+                "standin"
+              ]
+            },
+            "pigment": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            "glyph": {
+              "type": "string",
+              "maxLength": 4
+            }
+          }
+        },
+        "station": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "loadout": {
+          "description": "Equipped artifacts by anchor. Capacity per anchor in data/artifact-families.json (hand 1, offhand 1, head 1, back 1, belt 3, orbit 2).",
+          "type": "array",
+          "maxItems": 9,
+          "items": {
+            "type": "object",
+            "required": [
+              "skill",
+              "anchor"
+            ],
+            "properties": {
+              "skill": {
+                "type": "string"
+              },
+              "anchor": {
+                "enum": [
+                  "hand",
+                  "offhand",
+                  "head",
+                  "back",
+                  "belt",
+                  "orbit"
+                ]
+              },
+              "index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "stage": {
+      "type": "object",
+      "required": [
+        "kind",
+        "id",
+        "label",
+        "phase",
+        "member",
+        "activeSkill",
+        "outputs",
+        "stop"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "stage"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,31}$"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "phase": {
+          "enum": [
+            "always",
+            "diagnose",
+            "direct",
+            "prepare",
+            "build",
+            "verify"
+          ]
+        },
+        "member": {
+          "description": "crew member id, or 'director' for the main session itself",
+          "type": "string"
+        },
+        "activeSkill": {
+          "description": "ONE equipped skill id, or null. Exported as the run-plan row's `skill`.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "stop": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parallel": {
+          "type": "boolean",
+          "default": false
+        },
+        "wave": {
+          "description": "fleet trail: stages sharing a wave run together",
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "required": [
+        "kind",
+        "gate",
+        "label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "gate"
+        },
+        "gate": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]$"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80
+        }
+      }
+    },
+    "logEntry": {
+      "type": "object",
+      "required": [
+        "at",
+        "kind",
+        "truth"
+      ],
+      "properties": {
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "kind": {
+          "enum": [
+            "export",
+            "verify-result",
+            "run-json"
+          ]
+        },
+        "truth": {
+          "enum": [
+            "Verified",
+            "User-reported"
+          ]
+        },
+        "project": {
+          "type": "string"
+        },
+        "phaseCounts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 400
+        }
+      }
+    }
+  }
+}
