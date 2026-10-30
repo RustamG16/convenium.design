@@ -22,6 +22,7 @@ function ShipEntry() {
 
 /** The scene and its page code load on demand: three, R3F and the GLBs stay out of the initial shell. */
 const board = async () => ({ Component: (await import('./features/board/BoardPage')).default });
+const lab = async () => ({ Component: (await import('./features/lab/LabPage')).default });
 const bridge = async () => ({ Component: (await import('./features/bridge/BridgePage')).default });
 
 export const routes = [
@@ -36,6 +37,7 @@ export const routes = [
       { path: 'ship/:id/voyage', element: <ShipStub screen="Voyage" task="T8" note="The stage track with gate buoys." /> },
       { path: 'ship/:id/preflight', element: <ShipStub screen="Preflight" task="T9" note="Hull diagram, checks and export." /> },
       { path: 'armory', element: <StubPage title="Armory" route="#/armory" task="T7" note="The knowledge base: every skill as an artifact you can equip." /> },
+      { path: 'lab', lazy: lab },
       { path: 'logbook', element: <StubPage title="Logbook" route="#/logbook" task="T9" note="Exports, imported verify results and commissions." /> },
       { path: '*', element: <StubPage title="Not found" route="#/" task="n/a" note="No such screen." /> },
     ],

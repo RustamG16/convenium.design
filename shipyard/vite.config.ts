@@ -76,6 +76,6 @@ export default defineConfig({
   build: { sourcemap: false, target: 'es2022', chunkSizeWarningLimit: 1200 },
   test: {
     environment: 'node',
-    include: ['tests/unit/**/*.test.ts'],
+    include: ['tests/unit/**/*.test.{ts,tsx}'],
   },
 });
