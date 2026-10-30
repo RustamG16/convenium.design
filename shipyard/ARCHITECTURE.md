@@ -27,7 +27,6 @@ shipyard/
   README.md  CLAUDE.md  PRODUCT.md  DESIGN.md  ARCHITECTURE.md   (+ six context files)
   plan/                     00-run-plan.md 05-asset-manifest.md 06-build-plan.md (+ 07-qa.md, 10-finish-review.md later)
   schemas/ship.schema.json
-  data/artifact-families.json          → moves to library/registry/artifacts.json in T1
   prompts/KICKOFF-LOCAL.md
   ships/                    committed *.ship.json (dev-server save target; empty at start)
   scripts/

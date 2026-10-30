@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "status": "draft — authored in the plan package (2026-10-30). At build time this moves to library/registry/artifacts.json (source of truth) and is joined into shipyard/public/data/knowledge-base.json by `python library/tools/project.py shipyard`.",
+  "status": "source of truth for Shipyard artifacts; joined into shipyard/public/data/knowledge-base.json by `python library/tools/project.py shipyard`.",
   "note": "Every registry skill resolves to exactly one artifact: family from its `category`, tier from real registry state, name from `overrides` or the generated pattern. Contrast of each pigment on #1B1717 measured 2026-10-30 (WCAG 2.x relative luminance): all >= 7.9:1.",
   "anchors": {
     "hand":    { "bone": "RightHand",    "offset": [0.0, -0.06, 0.04], "capacity": 1, "label": "Hand" },

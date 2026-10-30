@@ -78,8 +78,8 @@ routing decision, one per phase.
 
 ## Do not
 
-- Edit anything under `.claude/`, `.agents/skills/`, `.codex/agents/`, or
-  `ship/data/` — they are generated from `library/` and overwritten.
+- Edit anything under `.claude/`, `.agents/skills/`, `.codex/agents/`, `ship/data/` or
+  `shipyard/public/data/` — they are generated from `library/` and overwritten.
 - Write project evidence into this repo. It goes in `<website-project>/.olympus/`.
 - Touch `evidence/`, `handoffs/`, `public/media/`, or any `.olympus/`.
 - Read or route from `unused/` — it is retired material, indexed in `unused/README.md`.

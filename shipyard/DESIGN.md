@@ -21,7 +21,7 @@ place colour is loud: each artifact family carries a **family pigment** used as 
 | Cherry / maroon / chili / chili-soft | #810100 / #630000 / #D73B3E / #E5595C |
 | Focus | chili-soft #E5595C, 3px outline, 3px offset |
 | Crew pigments | from `library/registry/crew.json` `pigment` (default crew); recruits pick from the 8-swatch set #D9A441 #86C2A8 #C79FDC #93AEDB #E39B95 #D8B66E #E9DCC5 #9FC7C0 |
-| **Δ** Family pigments (artifacts) | see `data/artifact-families.json`; all ≥ 4.5:1 on #1B1717 as 12px label text |
+| **Δ** Family pigments (artifacts) | see `library/registry/artifacts.json`; all ≥ 4.5:1 on #1B1717 as 12px label text |
 | Tier rims | Core: cotton 2px solid · Swappable: cotton 1px solid · Library: cotton 1px dashed · Dormant: muted 1px dotted. Tier always also named in text |
 | Display / prose / UI font | Archivo Variable (wght 900, uppercase) / Newsreader Variable / Inter Variable — self-hosted via @fontsource, OFL |
 | Hangar title desktop/tablet/mobile | 80 / 60 / 44px, line-height 0.98 |

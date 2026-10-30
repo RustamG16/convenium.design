@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """project.py — project library/ into the host trees. stdlib only.
 
-    python library/tools/project.py <claude|codex|ship|digest|plugin|all> [--dry-run]
+    python library/tools/project.py <claude|codex|ship|digest|plugin|shipyard|all> [--dry-run]
 
 A generated tree is disposable: editing one is a defect; this overwrites it. Every generated
 root carries GENERATED.md (source + rebuild command) and MANIFEST.txt (every file written).
@@ -10,7 +10,7 @@ Delete budget: a file is deleted only if its exact path is in that root's previo
 MANIFEST.txt AND the root has a GENERATED.md. Anything else is a hard halt. On a first run
 (no MANIFEST.txt) the generator writes only and deletes nothing.
 """
-import json, os, re, shutil, sys, time
+import hashlib, json, os, re, shutil, sys, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LIB = os.path.join(ROOT, "library")
@@ -310,6 +310,106 @@ def build_ship(dry):
     return True
 
 
+def shipyard_sources():
+    """Every library file the Shipyard knowledge base is joined from, as repo-relative posix paths."""
+    rels = [f"library/registry/{n}.json" for n in ("skills.registry", "crew", "workflows", "slots",
+                                                   "plugins", "tools", "artifacts")]
+    rels += [f"library/agents/{n}.md" for n in sorted(AGENTS)]
+    doctrines = os.path.join(LIB, "doctrines")
+    for d in sorted(os.listdir(doctrines)):
+        if os.path.isdir(os.path.join(doctrines, d)):
+            rels += [f"library/doctrines/{d}/{n}" for n in ("profile.json", "design.md")]
+    return rels
+
+
+def shipyard_source_hash():
+    """sha256 of the sources. Hashed as text with LF line ends, so a CRLF checkout agrees."""
+    h = hashlib.sha256()
+    for rel in shipyard_sources():
+        h.update(rel.encode("utf-8") + b"\0")
+        h.update(open(os.path.join(ROOT, rel), encoding="utf-8").read().encode("utf-8") + b"\0")
+    return h.hexdigest()
+
+
+def artifact_for(rec, families, overrides, slotted):
+    """One registry skill -> its artifact: family from category, tier from real registry state."""
+    fam = families[rec["category"]]
+    if rec["phase"] != "unrouted":
+        tier = "core"
+    elif rec["id"] in slotted:
+        tier = "swappable"
+    elif rec["status"] == "active":
+        tier = "library"
+    else:
+        tier = "dormant"
+    title = " ".join(w.capitalize() for w in rec["name"].replace("-", " ").split())
+    over = overrides.get(rec["id"], {})
+    return {"family": fam["id"], "familyName": fam["name"], "pigment": fam["pigment"], "tier": tier,
+            "name": over.get("name") or f"{fam['name']} of {title}", "lore": over.get("lore"),
+            "defaultAnchor": fam["defaultAnchor"], "autoPlace": fam["autoPlace"]}
+
+
+def build_shipyard(dry):
+    """Shipyard's knowledge base: shipyard/public/data/knowledge-base.json, joined from the library.
+
+    The second consumer of the registry after the 2D console. Deterministic (no timestamps), so
+    a rebuild with unchanged sources writes nothing; `sourceHash` lets verify.py prove freshness.
+    """
+    reg_dir = os.path.join(LIB, "registry")
+    load = lambda n: json.load(open(os.path.join(reg_dir, n), encoding="utf-8"))
+    arts, crew, workflows, slots = load("artifacts.json"), load("crew.json"), load("workflows.json"), load("slots.json")
+    families = {f["category"]: f for f in arts["families"]}
+    slot_rows = {}
+    for slot in slots.get("slots", []):
+        for c in slot.get("candidates", []):
+            slot_rows.setdefault(c["skill"], []).append({"slot": slot["id"], "changes": c.get("changes", "")})
+    agents, routed_by = [], {}
+    for name, a in AGENTS.items():
+        routes = [s.strip() for s in a["fm"].get("routes", "").strip("[]").split(",") if s.strip()]
+        for sk in routes:
+            routed_by.setdefault(sk, []).append(name)
+        act = re.search(r"\*\*Phase:\*\*\s*`([a-z-]+)`\s*·\s*\*\*Priority:\*\*\s*(\d+)", a["body"])
+        when = re.search(r"\*\*Activate when:\*\*\s*(.+)", a["body"])
+        agents.append({"id": name, "description": a["fm"].get("description", ""),
+                       "access": a["fm"].get("access", "write"), "model": a["fm"].get("model"),
+                       "routes": routes, "phase": act.group(1) if act else None,
+                       "priority": int(act.group(2)) if act else None,
+                       "activateWhen": when.group(1).strip() if when else None})
+    skills = []
+    for r in REG:
+        if r["category"] not in families:     # verify.py names this as a failure; do not crash the rebuild
+            continue
+        skills.append({"id": r["id"], "name": r["name"], "phase": r["phase"], "group": r["group"],
+                       "category": r["category"], "hosts": r["hosts"], "status": r["status"],
+                       "defaultOn": bool(r.get("defaultOn")), "description": " ".join(r["description"].split()),
+                       "skillPath": f"library/skills/{r['category']}/{r['id']}/SKILL.md",
+                       "artifact": artifact_for(r, families, arts.get("overrides", {}), slot_rows),
+                       "routedBy": routed_by.get(r["id"], []), "slots": slot_rows.get(r["id"], [])})
+    doctrines = []
+    ddir = os.path.join(LIB, "doctrines")
+    for d in sorted(os.listdir(ddir)):
+        if not os.path.isdir(os.path.join(ddir, d)):
+            continue
+        prof = json.load(open(os.path.join(ddir, d, "profile.json"), encoding="utf-8"))
+        lines = open(os.path.join(ddir, d, "design.md"), encoding="utf-8").read().split("\n\n")
+        doctrines.append({"id": d, "displayName": prof.get("displayName", d), "title": lines[0].lstrip("# ").strip(),
+                          "summary": " ".join(lines[1].split()) if len(lines) > 1 else "",
+                          "avoidList": prof.get("avoidList", []), "designPath": f"library/doctrines/{d}/design.md"})
+    data = {"schema": "shipyard.kb.v1",
+            "source": "generated by `python library/tools/project.py shipyard` from library/ — do not edit",
+            "sourceHash": shipyard_source_hash(),
+            "anchors": arts["anchors"], "anchorRule": arts["anchorRule"], "tiers": arts["tiers"],
+            "families": arts["families"], "skills": skills, "agents": agents, "crew": crew["crew"],
+            "workflows": {"default": workflows["default"], "ships": workflows["ships"]},
+            "slots": slots.get("slots", []), "doctrines": doctrines,
+            "plugins": load("plugins.json"), "tools": load("tools.json")}
+    target = os.path.join(ROOT, "shipyard", "public", "data", "knowledge-base.json")
+    if not dry:
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+    write_if_changed(target, json.dumps(data, indent=1, ensure_ascii=False) + "\n", dry, "shipyard knowledge base")
+    return True
+
+
 def build_digest(dry):
     target = os.path.join(LIB, "registry", "ROUTING-DIGEST.md")
     active = [r for r in REG if r["phase"] != "unrouted"]
@@ -393,7 +493,7 @@ def build_plugin(dry):
 
 
 TARGETS = {"claude": build_claude, "codex": build_codex, "ship": build_ship,
-           "digest": build_digest, "plugin": build_plugin}
+           "digest": build_digest, "plugin": build_plugin, "shipyard": build_shipyard}
 
 
 def main(argv):

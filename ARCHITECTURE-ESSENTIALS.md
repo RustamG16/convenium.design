@@ -68,7 +68,7 @@ Brand DNA (brand-strategist → .olympus/brand-dna.json + BRAND.md)
 | Registry | `library/registry/skills.registry.json` · `ROUTING-DIGEST.md` (route from this) |
 | Brand DNA (per client project) | `<project>/.olympus/brand-dna.json` · schema `library/schemas/brand-dna.schema.json` |
 | Doctrines | `library/doctrines/` — direction input to the questionnaire |
-| **Generated, disposable** | `.claude/` · `.agents/skills/` · `.codex/agents/` · `.claude-plugin/` · `ship/data/` |
+| **Generated, disposable** | `.claude/` · `.agents/skills/` · `.codex/agents/` · `.claude-plugin/` · `ship/data/` · `shipyard/public/data/` |
 | The ship console (crew = agents, ships = workflows) | `ship/index.html` — open in a browser, no build |
 | Rebuild the generated trees | `python library/tools/project.py all` |
 | Check the repo / this machine | `python library/tools/verify.py` · `python library/tools/apollo.py doctor` |

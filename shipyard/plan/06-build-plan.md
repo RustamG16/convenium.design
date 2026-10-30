@@ -186,7 +186,7 @@ with date, or the plain condition ("Export a ship with a clean pre-flight"). No 
 
 ## 5. Artifact system
 
-Source: `data/artifact-families.json` (moves to `library/registry/artifacts.json` in T1).
+Source: `library/registry/artifacts.json`.
 
 - **Family** from the skill's `category` (11 families: Lens, Wrench, Gyroscope, Projector, Quill,
   Seal, Spyglass, Calipers, Gearbox, Codex, Orrery). Each family = one procedural mesh recipe

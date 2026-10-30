@@ -35,7 +35,7 @@ author QA and the finish review never run in parallel with each other or with a 
       "skill": null,
       "skill_path": null,
       "model": "opus",
-      "inputs": ["shipyard/data/artifact-families.json", "library/tools/project.py", "library/tools/verify.py"],
+      "inputs": ["library/registry/artifacts.json", "library/tools/project.py", "library/tools/verify.py"],
       "outputs": ["library/registry/artifacts.json", "project.py shipyard target", "verify.py KB checks", "shipyard/public/data/knowledge-base.json"],
       "stop": "T1 done-when: project.py all && verify.py CLEAN; removing a skill from the registry makes verify fail",
       "parallel": false

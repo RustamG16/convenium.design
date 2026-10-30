@@ -24,6 +24,9 @@ System checks (formerly scripts/validate-system.ps1):
  14. generated trees match a fresh projection (project.py all --dry-run plans 0 writes)
  15. line caps; CLAUDE.md shares no 16-word run with AGENTS.md; no TODO markers in
      system-authored files
+ 16. Shipyard: every family covers a real category, every registry skill resolves to an
+     artifact, every artifacts.json override names a registry skill and contains its family
+     name, and the knowledge base is fresh (its sourceHash equals the hash of the sources)
 """
 import json, os, re, subprocess, sys
 
@@ -57,13 +60,15 @@ REQUIRED_FILES = [
     "library/registry/ROUTING-DIGEST.md", "library/tools/project.py", "library/tools/verify.py",
     "library/registry/crew.json", "library/registry/workflows.json",
     "ship/index.html", "ship/style.css", "ship/ship.js", "ship/data/ship-data.js",
+    "library/registry/artifacts.json", "shipyard/public/data/knowledge-base.json",
 ]
 LINE_CAPS = {"library/registry/ROUTING-DIGEST.md": 200, "CLAUDE.md": 120, "PROMPT.md": 120}
 PROJECT_CONTEXT = ["PRD.md", "ARCHITECTURE.md", "ARCHITECTURE-ESSENTIALS.md", "AGENTS.md",
                    "CODEX.md", "PROGRESS-AND-DECISIONS.md"]
 # skipped by the TODO scan: vendored, generated, retired, or project material
 TODO_SKIP = {".git", "node_modules", "third-party", "test_projects", "unused", ".olympus",
-             ".claude", ".agents", ".codex", "knowledge", "skills"}
+             ".claude", ".agents", ".codex", "knowledge", "skills", "dist", "test-results",
+             "playwright-report"}
 CITED_PATH = re.compile(r"`((?:library|templates|scripts|profiles|dashboard|config|"
                         r"references|\.claude/agents|\.claude/skills|\.agents/skills)/[^`\s]+)`")
 
@@ -320,6 +325,42 @@ def check_system(reg):
                 bad.append(f"unresolved TODO marker in {os.path.relpath(p, ROOT)}")
 
 
+def check_shipyard(reg):
+    """The artifact contract: every skill has an artifact, and the generated KB is not stale."""
+    p = os.path.join(REGISTRY, "artifacts.json")
+    if not os.path.isfile(p):
+        return                                  # named by the required-files check
+    arts = json.load(open(p, encoding="utf-8"))
+    families = {f["category"]: f for f in arts.get("families", [])}
+    by_id = {r["id"]: r for r in reg}
+    real = {r["category"] for r in reg}
+    for cat in sorted(set(families) - real):
+        bad.append(f"artifacts.json: family category {cat} has no registry skill")
+    for r in reg:
+        if r["category"] not in families:
+            bad.append(f"artifacts.json: skill {r['id']} does not resolve to an artifact "
+                       f"(no family for category {r['category']})")
+    for sid, over in arts.get("overrides", {}).items():
+        r = by_id.get(sid)
+        if not r:
+            bad.append(f"artifacts.json: override {sid} names no registry skill")
+        elif r["category"] in families and families[r["category"]]["name"] not in over.get("name", ""):
+            bad.append(f"artifacts.json: override {sid} name {over.get('name')!r} "
+                       f"does not contain its family {families[r['category']]['name']!r}")
+    kb_path = os.path.join(ROOT, "shipyard", "public", "data", "knowledge-base.json")
+    if not os.path.isfile(kb_path):
+        return                                  # named by the required-files check
+    kb = json.load(open(kb_path, encoding="utf-8"))
+    sys.dont_write_bytecode = True
+    sys.path.insert(0, TOOLS)
+    import project                              # the one definition of the source hash
+    if kb.get("sourceHash") != project.shipyard_source_hash():
+        bad.append("shipyard knowledge base is stale — run `python library/tools/project.py shipyard`")
+    missing = sorted(set(by_id) - {s["id"] for s in kb.get("skills", []) if s.get("artifact")})
+    if missing:
+        bad.append(f"shipyard knowledge base: {len(missing)} skill(s) without an artifact: {', '.join(missing[:8])}")
+
+
 # ------------------------------------------------------------------ project
 def check_project(path):
     path = os.path.abspath(path)
@@ -392,6 +433,7 @@ def main(argv):
     else:
         folders, reg = check_library()
         check_system(reg)
+        check_shipyard(reg)
         print(f"skills {len(folders)} | registry records {len(reg)}")
         label = "library + system"
     for b in bad:

@@ -31,7 +31,7 @@ verified exports and imported `run.json` files, and nothing is ranked, timed or 
 4. `ARCHITECTURE.md` — stack, folder tree, the port map from ArkhEthos, data pipeline.
 5. `plan/00-run-plan.md` — the activation plan (which agent, one skill each).
 6. `plan/05-asset-manifest.md` — media, sources and licences (no paid generation by default).
-7. `schemas/` and `data/` — the contracts and the drafted artifact families.
+7. `schemas/` and `library/registry/artifacts.json` — the contracts and the artifact families.
 
 ## Run it at home
 

@@ -25,7 +25,7 @@ them as CC0. Kit, hulls and sound are CC0 1.0.
 
 | Asset | Recipe | Where |
 |---|---|---|
-| 11 artifact families | `data/artifact-families.json` › `mesh`; ≤ 600 tris; 4 hash-picked variants each | `src/scene/artifacts/families.tsx` |
+| 11 artifact families | `library/registry/artifacts.json` › `mesh`; ≤ 600 tris; 4 hash-picked variants each | `src/scene/artifacts/families.tsx` |
 | 11 family glyphs | 24px SVG, 1.5px stroke, cotton + family pigment fill at 0.2 | `src/scene/artifacts/glyphs.tsx` |
 | Anchor silhouette | SVG body outline with 9 sockets (DOM loadout + no-WebGL) | `features/bridge/AnchorDiagram.tsx` |
 | Hull diagram | SVG, one panel per pre-flight rule group | `features/preflight/HullDiagram.tsx` |

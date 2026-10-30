@@ -238,7 +238,7 @@
           "maximum": 8
         },
         "loadout": {
-          "description": "Equipped artifacts by anchor. Capacity per anchor in data/artifact-families.json (hand 1, offhand 1, head 1, back 1, belt 3, orbit 2).",
+          "description": "Equipped artifacts by anchor. Capacity per anchor in library/registry/artifacts.json (hand 1, offhand 1, head 1, back 1, belt 3, orbit 2).",
           "type": "array",
           "maxItems": 9,
           "items": {
