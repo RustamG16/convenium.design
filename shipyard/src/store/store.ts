@@ -8,7 +8,10 @@
  * Nothing here scores, ranks, times or randomises. `commissions` records the date an outcome
  * happened; it is not a currency.
  */
-import type { LogEntry, Ship } from '../domain/schema';
+import type { KbIndex } from '../kb/artifacts';
+import { blankShip, cloneShip } from '../domain/ship';
+import { equip, fromHold, move, toHold, unequip, type EquipOptions } from '../domain/loadout';
+import type { Anchor, LogEntry, Ship } from '../domain/schema';
 
 export const STATE_VERSION = 1 as const;
 export const UNDO_DEPTH = 50;
@@ -41,6 +44,13 @@ export type Action =
   | { type: 'ship/add'; ship: Ship }
   | { type: 'ship/import'; ship: Ship }
   | { type: 'ship/replace'; ship: Ship }
+  | { type: 'ship/create'; name: string }
+  | { type: 'ship/clone'; source: Ship; name: string }
+  | { type: 'loadout/equip'; shipId: string; member: string; skill: string; opts?: EquipOptions }
+  | { type: 'loadout/unequip'; shipId: string; member: string; skill: string }
+  | { type: 'loadout/move'; shipId: string; member: string; skill: string; anchor: Anchor; opts?: Omit<EquipOptions, 'anchor'> }
+  | { type: 'loadout/toHold'; shipId: string; member: string; skill: string }
+  | { type: 'loadout/fromHold'; shipId: string; member: string; skill: string; opts?: EquipOptions }
   | { type: 'ship/rename'; id: string; name: string }
   | { type: 'ship/delete'; id: string }
   | { type: 'codex/inspect'; skill: string }
@@ -90,12 +100,51 @@ export function uniqueShipId(taken: Iterable<string>, base: string): string {
   }
 }
 
+/** A refused equip leaves the ship as it was; the UI shows the reason from `equip()` itself. */
+function okShip(result: { ok: true; ship: Ship } | { ok: false }): Ship | null {
+  return result.ok ? result.ship : null;
+}
+
 function mapShip(state: StoreState, id: string, fn: (s: Ship) => Ship): Ship[] {
   return state.ships.map((s) => (s.id === id ? fn(s) : s));
 }
 
-function applyAction(state: StoreState, action: Action, at: string): StoreState {
+/** What actions that need the knowledge base read from. Absent in tests that do not touch ships' contents. */
+export interface Env {
+  idx: KbIndex;
+}
+
+function edit(state: StoreState, shipId: string, fn: (ship: Ship) => Ship | null, at: string): StoreState {
+  const ship = state.ships.find((s) => s.id === shipId);
+  if (!ship) return state;
+  const next = fn(ship);
+  return next && next !== ship ? { ...state, ships: mapShip(state, shipId, () => ({ ...next, updatedAt: at })) } : state;
+}
+
+function applyAction(state: StoreState, action: Action, at: string, env?: Env): StoreState {
   switch (action.type) {
+    case 'ship/create': {
+      if (!env) return state;
+      const taken = [...state.ships.map((s) => s.id), ...env.idx.kb.workflows.ships.map((w) => w.id)];
+      const id = uniqueShipId(taken, action.name);
+      return { ...state, ships: [...state.ships, blankShip(env.idx, { id, name: action.name.trim() || 'New ship' }, at)] };
+    }
+    case 'ship/clone': {
+      if (!env) return state;
+      const taken = [...state.ships.map((s) => s.id), ...env.idx.kb.workflows.ships.map((w) => w.id)];
+      const id = uniqueShipId(taken, action.name);
+      return { ...state, ships: [...state.ships, cloneShip(action.source, { id, name: action.name.trim() || `${action.source.name} copy` }, at)] };
+    }
+    case 'loadout/equip':
+      return edit(state, action.shipId, (s) => (env ? okShip(equip(env.idx, s, action.member, action.skill, action.opts)) : null), at);
+    case 'loadout/fromHold':
+      return edit(state, action.shipId, (s) => (env ? okShip(fromHold(env.idx, s, action.member, action.skill, action.opts)) : null), at);
+    case 'loadout/move':
+      return edit(state, action.shipId, (s) => (env ? okShip(move(env.idx, s, action.member, action.skill, action.anchor, action.opts)) : null), at);
+    case 'loadout/unequip':
+      return edit(state, action.shipId, (s) => unequip(s, action.member, action.skill), at);
+    case 'loadout/toHold':
+      return edit(state, action.shipId, (s) => toHold(s, action.member, action.skill), at);
     case 'ship/add':
       return { ...state, ships: [...state.ships.filter((s) => s.id !== action.ship.id), action.ship] };
     case 'ship/import': {
@@ -131,7 +180,7 @@ function applyAction(state: StoreState, action: Action, at: string): StoreState 
 }
 
 /** Pure reducer. `at` is the ISO time to stamp (injected so tests stay deterministic). */
-export function reduce(state: StoreState, action: Action, at: string): StoreState {
+export function reduce(state: StoreState, action: Action, at: string, env?: Env): StoreState {
   if (action.type === 'history/undo') {
     const previous = state.past[state.past.length - 1];
     if (!previous) return state;
@@ -142,7 +191,7 @@ export function reduce(state: StoreState, action: Action, at: string): StoreStat
     if (!next) return state;
     return { ...state, ships: next, future: state.future.slice(1), past: [...state.past, state.ships].slice(-UNDO_DEPTH) };
   }
-  const next = applyAction(state, action, at);
+  const next = applyAction(state, action, at, env);
   if (next === state || NOT_UNDOABLE.has(action.type)) return next;
   if (next.ships === state.ships) return next;
   return { ...next, past: [...state.past, state.ships].slice(-UNDO_DEPTH), future: [] };
@@ -152,18 +201,24 @@ export interface Store {
   getState(): StoreState;
   dispatch(action: Action): void;
   subscribe(listener: () => void): () => void;
+  /** The knowledge base the ship-editing actions read from; set once it has loaded. */
+  setEnv(env: Env | undefined): void;
 }
 
-export function createStore(initial: StoreState, now: () => string = () => new Date().toISOString()): Store {
+export function createStore(initial: StoreState, now: () => string = () => new Date().toISOString(), initialEnv?: Env): Store {
   let state = initial;
+  let env = initialEnv;
   const listeners = new Set<() => void>();
   return {
     getState: () => state,
     dispatch(action) {
-      const next = reduce(state, action, now());
+      const next = reduce(state, action, now(), env);
       if (next === state) return;
       state = next;
       listeners.forEach((l) => l());
+    },
+    setEnv(next) {
+      env = next;
     },
     subscribe(listener) {
       listeners.add(listener);

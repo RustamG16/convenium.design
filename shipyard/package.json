@@ -12,6 +12,7 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:plans": "node scripts/check-plans.mjs",
     "test:e2e": "playwright test",
     "import:media": "node scripts/import-arkhethos-media.mjs"
   },

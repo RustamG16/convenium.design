@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import type { Ship } from '../../src/domain/schema';
 import { browserlessStorage } from './storage';
 import { readPersisted, STORAGE_KEY, writePersisted } from '../../src/store/persist';
+import { defaultShip } from '../../src/domain/ship';
+import { wornSkills } from '../../src/domain/loadout';
+import { loadIndexFromDisk } from './helpers';
 import { createStore, emptyPersisted, initialState, reduce, uniqueShipId, UNDO_DEPTH, toPersisted } from '../../src/store/store';
 
 const AT = '2026-10-30T10:00:00.000Z';
@@ -110,5 +113,52 @@ describe('persistence', () => {
     const throwing = { getItem: () => { throw new Error('denied'); }, setItem: () => { throw new Error('quota'); }, removeItem: () => undefined };
     expect(readPersisted(throwing).banner).toBe('unavailable');
     expect(writePersisted(throwing, emptyPersisted())).toBe(false);
+  });
+});
+
+describe('ship-editing actions (need the knowledge base)', () => {
+  const idx = loadIndexFromDisk();
+  const env = { idx };
+
+  it('create makes a blank ship under an id that avoids library ids; clone forks a library ship', () => {
+    let s = initialState();
+    s = reduce(s, { type: 'ship/create', name: 'SS Full Run' }, AT, env);
+    expect(s.ships).toHaveLength(1);
+    expect(s.ships[0].id).toBe('ss-full-run-2');
+    s = reduce(s, { type: 'ship/clone', source: defaultShip(idx, AT), name: 'My Full Run' }, AT, env);
+    expect(s.ships[1]).toMatchObject({ id: 'my-full-run', class: 'custom', origin: { kind: 'clone', from: 'ss-full-run' } });
+    s = reduce(s, { type: 'history/undo' }, AT, env);
+    expect(s.ships).toHaveLength(1);
+  });
+
+  it('equip, unequip, toHold and fromHold edit the ship, stamp updatedAt and undo', () => {
+    let s = initialState();
+    s = reduce(s, { type: 'ship/clone', source: defaultShip(idx, AT), name: 'Fork' }, AT, env);
+    const id = s.ships[0].id;
+    const later = '2026-10-31T00:00:00.000Z';
+    s = reduce(s, { type: 'loadout/unequip', shipId: id, member: 'engineer', skill: 'gsap-core' }, later, env);
+    expect(wornSkills(s.ships[0].crew.find((m) => m.id === 'engineer')!)).not.toContain('gsap-core');
+    expect(s.ships[0].updatedAt).toBe(later);
+    s = reduce(s, { type: 'loadout/equip', shipId: id, member: 'engineer', skill: 'gsap-core' }, later, env);
+    expect(wornSkills(s.ships[0].crew.find((m) => m.id === 'engineer')!)).toContain('gsap-core');
+    s = reduce(s, { type: 'loadout/toHold', shipId: id, member: 'engineer', skill: 'gsap-core' }, later, env);
+    expect(s.ships[0].hold).toContain('gsap-core');
+    s = reduce(s, { type: 'loadout/fromHold', shipId: id, member: 'engineer', skill: 'gsap-core' }, later, env);
+    expect(s.ships[0].hold).not.toContain('gsap-core');
+    s = reduce(s, { type: 'history/undo' }, later, env);
+    expect(s.ships[0].hold).toContain('gsap-core');
+  });
+
+  it('a refused equip leaves the ship and the undo stack untouched', () => {
+    let s = initialState();
+    s = reduce(s, { type: 'ship/clone', source: defaultShip(idx, AT), name: 'Fork' }, AT, env);
+    const before = s;
+    s = reduce(s, { type: 'loadout/equip', shipId: s.ships[0].id, member: 'engineer', skill: 'impeccable' }, AT, env);
+    expect(s).toBe(before);
+  });
+
+  it('without the knowledge base the ship-building actions do nothing', () => {
+    const s = initialState();
+    expect(reduce(s, { type: 'ship/create', name: 'X' }, AT)).toBe(s);
   });
 });

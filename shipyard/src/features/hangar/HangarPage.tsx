@@ -2,8 +2,11 @@ import * as Popover from '@radix-ui/react-popover';
 import { Link } from 'react-router';
 import { TruthLabel } from '../../components/TruthLabel';
 import { useKb } from '../../kb/context';
-import { skillCount, workflowCrew } from '../../kb/artifacts';
-import type { KbWorkflow } from '../../kb/schema';
+import { useMemo } from 'react';
+import { preflight } from '../../domain/preflight';
+import type { Ship } from '../../domain/schema';
+import { LIBRARY_EPOCH, libraryShips } from '../../domain/ship';
+import { skillCount } from '../../kb/artifacts';
 import { useStoreState } from '../../store/context';
 
 /** Placeholder hull profile until the scene phase traces the five hull GLBs (05-asset-manifest). */
@@ -17,19 +20,44 @@ function HullSilhouette() {
   );
 }
 
-function ShipCard({ workflow }: { workflow: KbWorkflow }) {
-  const { kb } = useKb();
-  const crew = workflowCrew(kb, workflow);
-  const stages = workflow.stages.filter((s) => 'id' in s).length;
-  const gates = workflow.stages.filter((s) => 'gate' in s).length;
+/** Hull integrity: passed / applicable pre-flight checks as a ring (06 section 7.4). Truth: Verified. */
+function HullRing({ percent, passed, applicable }: { percent: number; passed: number; applicable: number }) {
+  const r = 22;
+  const c = 2 * Math.PI * r;
   return (
-    <article className="ship-card" data-testid="ship-card" data-ship={workflow.id} aria-labelledby={`ship-${workflow.id}`}>
+    <div className="ring" data-testid="hull-ring" role="img" aria-label={`Hull integrity ${percent} percent, ${passed} of ${applicable} checks passed`}>
+      <svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+        <circle cx="28" cy="28" r={r} fill="none" stroke="var(--border)" strokeWidth="4" />
+        <circle
+          cx="28"
+          cy="28"
+          r={r}
+          fill="none"
+          stroke="var(--cotton)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeDasharray={`${(c * percent) / 100} ${c}`}
+          transform="rotate(-90 28 28)"
+        />
+      </svg>
+      <span className="ring-num">{percent}</span>
+    </div>
+  );
+}
+
+function ShipCard({ ship }: { ship: Ship }) {
+  const idx = useKb();
+  const report = useMemo(() => preflight(idx, ship), [idx, ship]);
+  const stages = ship.voyage.filter((v) => v.kind === 'stage').length;
+  const gates = ship.voyage.filter((v) => v.kind === 'gate').length;
+  return (
+    <article className="ship-card" data-testid="ship-card" data-ship={ship.id} aria-labelledby={`ship-${ship.id}`}>
       <HullSilhouette />
       <div className="ship-card-head">
-        <h3 id={`ship-${workflow.id}`} className="card-title">
-          {workflow.name}
+        <h3 id={`ship-${ship.id}`} className="card-title">
+          {ship.name}
         </h3>
-        <span className="class-badge">{workflow.class}</span>
+        <span className="class-badge">{ship.class}</span>
       </div>
       <p className="lock" data-testid="template-lock">
         <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -37,26 +65,37 @@ function ShipCard({ workflow }: { workflow: KbWorkflow }) {
         </svg>
         Commissioned · Template
       </p>
-      <p className="prose-sm">{workflow.summary}</p>
-      <ul className="chips" aria-label={`Crew of ${workflow.name}`} data-testid="crew-chips">
-        {crew.map((c) => (
-          <li key={c.id} className="chip" data-crew={c.id}>
-            <span className="dot" style={{ background: c.pigment }} aria-hidden="true" />
-            {c.name}
+      <p className="prose-sm">{ship.summary}</p>
+      <ul className="chips" aria-label={`Crew of ${ship.name}`} data-testid="crew-chips">
+        {ship.crew.map((m) => (
+          <li key={m.id} className="chip" data-crew={m.id}>
+            <span className="dot" style={{ background: m.character.pigment }} aria-hidden="true" />
+            {m.character.name}
           </li>
         ))}
       </ul>
+      <div className="integrity">
+        <HullRing percent={report.integrity} passed={report.passed} applicable={report.applicable} />
+        <p className="stat">
+          Hull integrity {report.passed} of {report.applicable} checks <TruthLabel truth="Verified" />
+          <br />
+          {report.next ? `Next: ${report.next.id} ${report.next.reason}` : 'Pre-flight is clean. Ready to export.'}
+        </p>
+      </div>
       <p className="stat">
-        {crew.length} crew · {stages} stages · {gates} gates
+        {ship.crew.length} crew · {stages} stages · {gates} gates
       </p>
     </article>
   );
 }
 
 export function HangarPage() {
-  const { kb, workflow } = useKb();
+  const idx = useKb();
+  const { kb } = idx;
   const { ships } = useStoreState();
-  const flagship = workflow.get(kb.workflows.default);
+  const library = useMemo(() => libraryShips(idx, LIBRARY_EPOCH), [idx]);
+  // Acceptance 1: exactly one ship, the default. The other library workflows are templates in the Commission dialog (T8).
+  const flagship = library.ships.find((s) => s.id === kb.workflows.default);
   const skills = skillCount(kb);
 
   return (
@@ -94,7 +133,7 @@ export function HangarPage() {
             Stub · arrives in T8
           </span>
         </div>
-        {flagship ? <ShipCard workflow={flagship} /> : <p className="state-line">The default ship is missing from the library.</p>}
+        {flagship ? <ShipCard ship={flagship} /> : <p className="state-line">The default ship is missing from the library.</p>}
       </section>
 
       <section aria-labelledby="drydock-h" className="drydock">

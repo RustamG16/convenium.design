@@ -17,10 +17,10 @@ if (!root) throw new Error('#root missing');
 
 createRoot(root).render(
   <StrictMode>
-    <StoreProvider>
-      <KbProvider>
+    <KbProvider>
+      <StoreProvider>
         <RouterProvider router={router()} />
-      </KbProvider>
-    </StoreProvider>
+      </StoreProvider>
+    </KbProvider>
   </StrictMode>,
 );

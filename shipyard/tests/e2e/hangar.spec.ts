@@ -39,6 +39,10 @@ test('Hangar shows exactly one ship, SS Full Run, read from the knowledge base',
   for (const c of defaultCrew) await expect(page.getByTestId('crew-chips')).toContainText(c.name);
   await expect(page.getByTestId('crew-chips')).not.toContainText(kb.crew.find((c) => c.id === 'gauge')!.name);
 
+  // Hull integrity is computed by pre-flight on the converted ship; the default ship is clean.
+  await expect(page.getByTestId('hull-ring')).toHaveAttribute('aria-label', /Hull integrity 100 percent, 14 of 14 checks passed/);
+  await expect(cards.first()).toContainText('Pre-flight is clean');
+
   // The count is read from the KB, never hard-coded.
   await expect(page.getByTestId('skill-count')).toHaveText(String(kb.skills.length));
 

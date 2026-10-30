@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from 'react';
+import { useKbStatus } from '../kb/context';
 import { browserStorage, readPersisted, writePersisted, type PersistBanner } from './persist';
 import { createStore, initialState, toPersisted, type Store, type StoreState } from './store';
 
@@ -9,12 +10,19 @@ interface StoreContextValue {
 
 const StoreContext = createContext<StoreContextValue | null>(null);
 
+/** Mount below <KbProvider>: actions that build or edit ships read the knowledge base from it. */
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const kb = useKbStatus();
   const value = useMemo<StoreContextValue>(() => {
     const storage = browserStorage();
     const read = readPersisted(storage);
     return { store: createStore(initialState(read.state)), banner: read.banner };
   }, []);
+
+  const index = kb.state === 'ready' ? kb.index : undefined;
+  useEffect(() => {
+    value.store.setEnv(index ? { idx: index } : undefined);
+  }, [value, index]);
 
   useEffect(() => {
     const storage = browserStorage();
