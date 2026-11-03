@@ -32,9 +32,11 @@ export interface CrewMemberProps {
   heads?: Map<string, THREE.Object3D>;
   /** Worn artifacts follow the bones (and the orbit ring circles above the head) unless false. */
   artifacts?: boolean;
+  /** Called once the figure that will stay on screen is mounted (the GLB, or the stand-in when there is no file or it failed). */
+  onLoaded?: () => void;
 }
 
-export function CrewMember({ member, reduced, attention = 1, scale = 1, faceCamera = 0, yaw: baseYaw = 0, outline = null, heads, artifacts = true }: CrewMemberProps) {
+export function CrewMember({ member, reduced, attention = 1, scale = 1, faceCamera = 0, yaw: baseYaw = 0, outline = null, heads, artifacts = true, onLoaded }: CrewMemberProps) {
   const { scene, animations } = useGLTF(withBase(member.model.glb!));
   // Clone the skinned hierarchy, then stand it on the floor, centred, at the identity's height.
   const clone = useMemo(() => {
@@ -51,6 +53,9 @@ export function CrewMember({ member, reduced, attention = 1, scale = 1, faceCame
     return wrap;
   }, [scene, member.model.heightM]);
   const group = useRef<THREE.Group>(null);
+  useEffect(() => {
+    onLoaded?.();
+  }, [clone, onLoaded]);
   const { actions, mixer } = useAnimations(animations, group);
   const invalidate = useThree((st) => st.invalidate);
 
@@ -178,8 +183,11 @@ export function CrewMember({ member, reduced, attention = 1, scale = 1, faceCame
 }
 
 /** The stand-in: a capsule in the member's pigment with a visor, bobbing slowly. */
-export function ProceduralCrew({ member, reduced, scale = 1, artifacts = true }: { member: SceneMember; reduced: boolean; scale?: number; artifacts?: boolean }) {
+export function ProceduralCrew({ member, reduced, scale = 1, artifacts = true, onLoaded }: { member: SceneMember; reduced: boolean; scale?: number; artifacts?: boolean; onLoaded?: () => void }) {
   const group = useRef<THREE.Group>(null);
+  useEffect(() => {
+    onLoaded?.();
+  }, [onLoaded]);
   const h = member.model.heightM;
   useFrame((state) => {
     if (!group.current || reduced) return;
@@ -209,12 +217,14 @@ export function ProceduralCrew({ member, reduced, scale = 1, artifacts = true }:
  * stand-in shows while it loads and if the file fails), the procedural stand-in otherwise.
  */
 export function CrewFigure(props: CrewMemberProps) {
-  const { member, reduced, artifacts } = props;
-  const fallback = <ProceduralCrew member={member} reduced={reduced} artifacts={artifacts} />;
-  if (!member.model.glb) return fallback;
+  const { member, reduced, artifacts, onLoaded } = props;
+  // The stand-in shown while the file streams does not report "loaded"; the one that replaces a failed or absent file does.
+  const loading = <ProceduralCrew member={member} reduced={reduced} artifacts={artifacts} />;
+  const final = <ProceduralCrew member={member} reduced={reduced} artifacts={artifacts} onLoaded={onLoaded} />;
+  if (!member.model.glb) return final;
   return (
-    <Suspense fallback={fallback}>
-      <ModelBoundary fallback={fallback}>
+    <Suspense fallback={loading}>
+      <ModelBoundary fallback={final}>
         <CrewMember {...props} />
       </ModelBoundary>
     </Suspense>

@@ -7,15 +7,20 @@ import * as THREE from 'three';
 import { buildArtifact, familyMaterial, isFamilyId, orbitAt, type FamilyId } from './families';
 import { tiltOf, variantOf } from './variant';
 
-/** Pose by anchor (06 section 5): held 1, worn 0.7, floating 0.8. */
-export type Pose = 'held' | 'worn' | 'floating';
-export const POSE_SCALE: Record<Pose, number> = { held: 1, worn: 0.7, floating: 0.8 };
+/**
+ * Pose by anchor (06 section 5): held 1, worn 0.7, floating 0.8. `crown` is the head anchor's pose
+ * (T6, director defect 1): smaller than worn, so a head artifact is a small piece of gear above the
+ * brow and the face stays the subject.
+ */
+export type Pose = 'held' | 'worn' | 'floating' | 'crown';
+export const POSE_SCALE: Record<Pose, number> = { held: 1, worn: 0.7, floating: 0.8, crown: 0.5 };
 /**
  * Family meshes are modelled at hand size (about 10 to 25 cm). On a 2 m crew member that reads as
- * a speck, so every artifact is drawn at this multiple of its modelled size (the pose scales above
+ * a speck, so every artifact is drawn at this multiple of its modelled size (T4 used 1.8, which read as
+ * clutter at nine artifacts: 1.25 keeps each one legible and the character the subject) (the pose scales above
  * apply on top). One number, not per family, so relative sizes stay as modelled.
  */
-export const ARTIFACT_SCALE = 1.8;
+export const ARTIFACT_SCALE = 1.25;
 /** Active artifact: a slow turn, 0.25 revolutions per second (06 section 5). */
 export const ACTIVE_RPS = 0.25;
 

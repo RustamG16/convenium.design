@@ -103,7 +103,7 @@ for (const member of ['captain', 'engineer'] as const) {
     expect(stats.differing, 'share of non-background pixels').toBeGreaterThan(0.05);
     expect(stats.colours, 'distinct colours').toBeGreaterThan(150);
     // Artifacts on the body: every worn skill the DOM lists is in the scene graph.
-    const listed = await page.locator('[data-testid="loadout-rack"] li.ship-art[data-anchor]').evaluateAll((els) => els.map((e) => e.getAttribute('data-skill')));
+    const listed = await page.locator('[data-testid="worn-list"] li[data-anchor]').evaluateAll((els) => els.map((e) => e.getAttribute('data-skill')));
     const scene = await turntableScene(page);
     expect(listed.length).toBeGreaterThan(0);
     for (const skill of listed) expect(scene?.skills, `${skill} on the body`).toContain(skill);

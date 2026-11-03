@@ -80,7 +80,7 @@ test('the lab draws every registry skill through ArtifactMesh, with a glyph in t
   expect(families.size).toBe(11);
   await page.waitForTimeout(3000);
   const stats = await pixelStats(page, sheet);
-  expect(stats.differing).toBeGreaterThan(0.03);
+  expect(stats.differing, 'share of non-background pixels (artifacts drawn smaller since T6)').toBeGreaterThan(0.015);
   expect(stats.colours).toBeGreaterThan(150);
   await sheet.screenshot({ path: resolve(SHOTS, 't5-all-artifacts.png') });
   expect(errors).toEqual([]);

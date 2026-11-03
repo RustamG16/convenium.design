@@ -12,7 +12,7 @@ import type { Anchor } from '../../domain/schema';
 import type { SceneMember, WornArtifact } from '../crew';
 import { ArtifactMesh, ACTIVE_RPS, type Pose } from './ArtifactMesh';
 
-export const POSE_OF_ANCHOR: Record<Anchor, Pose> = { hand: 'held', offhand: 'held', head: 'worn', back: 'worn', belt: 'worn', orbit: 'floating' };
+export const POSE_OF_ANCHOR: Record<Anchor, Pose> = { hand: 'held', offhand: 'held', head: 'crown', back: 'worn', belt: 'worn', orbit: 'floating' };
 
 type V3 = [number, number, number];
 
@@ -28,8 +28,8 @@ type V3 = [number, number, number];
 export const BONE_TUNE: Record<Exclude<Anchor, 'orbit'>, { rotation: V3; offset: V3 }> = {
   hand: { rotation: [-0.55, -0.5, 2.9], offset: [0, -0.04, 0.02] },
   offhand: { rotation: [-0.4, 0.55, 3.04], offset: [0, -0.04, 0.02] },
-  // above the brow, not over the face: the head bone sits at the neck's top
-  head: { rotation: [0, 0, 0], offset: [0, 0.16, -0.03] },
+  // above the crown, not over the face (T6): the head bone sits at the neck's top, so +0.3 m clears the head
+  head: { rotation: [0, 0, 0], offset: [0, 0.3, -0.06] },
   back: { rotation: [0, 0, 0], offset: [0, 0.1, -0.02] },
   belt: { rotation: [0, 0, 0], offset: [0, 0, 0.02] },
 };
@@ -96,25 +96,42 @@ export function BoneArtifacts({ member, clone, animate }: { member: SceneMember;
   );
 }
 
-/** Orbit slots: artifacts circling a point above the head, radius 0.45 m by default, 0.25 revolutions per second. */
+/** Orbit radius and height over the head (T6, director defect 2): tighter than the registry's 0.45 m at +0.1 m, so the pair reads as gear beside the crown, not saucers across the room. */
+export const ORBIT_RADIUS = 0.34;
+export const ORBIT_LIFT = 0.2;
+
+/**
+ * Orbit slots: artifacts circling a point above the head, 0.25 revolutions per second. The ring turns
+ * the positions only; each artifact is counter-rotated so its face keeps toward the viewer (the old
+ * tilt turned with the ring and showed a flat disc edge-on half the time, which read as a saucer).
+ */
 export function OrbitArtifacts({ member, heightM, animate }: { member: SceneMember; heightM: number; animate: boolean }) {
   const ring = useRef<THREE.Group>(null);
+  const facing = useRef<(THREE.Group | null)[]>([]);
   const orbiters = member.loadout.filter((a) => a.anchor === 'orbit');
   const angle = useRef(0);
   useFrame((_, dt) => {
     if (animate) angle.current += ACTIVE_RPS * Math.PI * 2 * dt;
     if (ring.current) ring.current.rotation.y = angle.current;
+    for (const f of facing.current) if (f) f.rotation.y = -angle.current;
   });
   if (orbiters.length === 0) return null;
   return (
-    <group ref={ring} position={[0, heightM + 0.1, 0]} name="orbit-ring">
-      {orbiters.map((a) => {
-        const r = a.slot.radius ?? 0.45;
+    <group ref={ring} position={[0, heightM + ORBIT_LIFT, 0]} name="orbit-ring">
+      {orbiters.map((a, i) => {
+        const r = (a.slot.radius ?? 0.45) * (ORBIT_RADIUS / 0.45);
         const phase = (a.index / Math.max(2, orbiters.length)) * Math.PI * 2 + Math.PI / 2;
         return (
-          // tilted toward the viewer so a lens or a ring shows its face, not its edge
-          <group key={`${a.index}-${a.skill}`} position={[Math.cos(phase) * r, 0, Math.sin(phase) * r]} rotation={[0.9, 0, 0]}>
-            <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose="floating" animate={animate} active={a.skill === member.active} />
+          <group key={`${a.index}-${a.skill}`} position={[Math.cos(phase) * r, 0, Math.sin(phase) * r]}>
+            <group
+              ref={(g) => {
+                facing.current[i] = g;
+              }}
+            >
+              <group rotation={[0.5, 0, 0]}>
+                <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose="floating" animate={animate} active={a.skill === member.active} />
+              </group>
+            </group>
           </group>
         );
       })}

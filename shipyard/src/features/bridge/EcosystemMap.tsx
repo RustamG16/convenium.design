@@ -51,7 +51,7 @@ export default function EcosystemMap({ ship, crew, activeId, onSelect }: Ecosyst
           zoomOnScroll={false}
           minZoom={0.4}
           maxZoom={1.4}
-          proOptions={{ hideAttribution: true }}
+          proOptions={{ hideAttribution: false }}
           onNodeClick={(_, n) => onSelect(n.id)}
         >
           <Background variant={BackgroundVariant.Dots} gap={28} size={1} color="#2B2525" />

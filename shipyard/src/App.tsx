@@ -1,5 +1,7 @@
 import { NavLink, Outlet } from 'react-router';
 import { CommissionToast } from './features/logbook/CommissionToast';
+import { EquipProvider } from './features/armory/equip';
+import { NoticeProvider } from './features/shared/notices';
 import { KbGate } from './kb/context';
 import { usePersistBanner } from './store/context';
 
@@ -12,7 +14,7 @@ const BANNER_TEXT = {
 export function App() {
   const banner = usePersistBanner();
   return (
-    <>
+    <NoticeProvider>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -34,9 +36,11 @@ export function App() {
         </p>
       )}
       <KbGate>
-        <Outlet />
+        <EquipProvider>
+          <Outlet />
+        </EquipProvider>
       </KbGate>
       <CommissionToast />
-    </>
+    </NoticeProvider>
   );
 }

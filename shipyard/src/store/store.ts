@@ -10,9 +10,11 @@
  * from outcomes (see ./outcomes.ts), so browsing and clicking cannot.
  */
 import type { KbIndex } from '../kb/artifacts';
-import { blankShip, cloneShip } from '../domain/ship';
+import { blankShip, cloneShip, libraryShip, LIBRARY_EPOCH } from '../domain/ship';
+import { dismiss, editCharacter, recruit, seat, type CharacterPatch, type RecruitInput } from '../domain/crew';
+import { addItem, applyTemplate, deleteItem, duplicateItem, editItem, moveItem, type GatePatch, type StagePatch } from '../domain/voyage';
 import { equip, fromHold, move, toHold, unequip, type EquipOptions } from '../domain/loadout';
-import type { Anchor, LogEntry, Ship } from '../domain/schema';
+import type { Anchor, LogEntry, Ship, VoyageItem } from '../domain/schema';
 import { grantCommissions } from './outcomes';
 
 export const STATE_VERSION = 1 as const;
@@ -59,6 +61,17 @@ export type Action =
   | { type: 'loadout/fromHold'; shipId: string; member: string; skill: string; opts?: EquipOptions }
   | { type: 'ship/rename'; id: string; name: string }
   | { type: 'ship/delete'; id: string }
+  | { type: 'ship/restoreDefault'; id: string }
+  | { type: 'crew/recruit'; shipId: string; input: RecruitInput }
+  | { type: 'crew/edit'; shipId: string; member: string; patch: CharacterPatch }
+  | { type: 'crew/dismiss'; shipId: string; member: string }
+  | { type: 'crew/station'; shipId: string; member: string; station: number }
+  | { type: 'voyage/add'; shipId: string; item: VoyageItem; at?: number }
+  | { type: 'voyage/edit'; shipId: string; index: number; patch: StagePatch | GatePatch }
+  | { type: 'voyage/move'; shipId: string; from: number; to: number }
+  | { type: 'voyage/duplicate'; shipId: string; index: number }
+  | { type: 'voyage/delete'; shipId: string; index: number }
+  | { type: 'voyage/applyTemplate'; shipId: string; workflow: string; mode: 'append' | 'replace' }
   | { type: 'codex/inspect'; skill: string }
   | { type: 'log/add'; shipId: string; entry: LogEntry }
   | { type: 'ui/introSeen'; shipId: string }
@@ -105,7 +118,7 @@ export function uniqueShipId(taken: Iterable<string>, base: string): string {
 }
 
 /** A refused equip leaves the ship as it was; the UI shows the reason from `equip()` itself. */
-function okShip(result: { ok: true; ship: Ship } | { ok: false }): Ship | null {
+function okShip(result: { ok: true; ship: Ship } | { ok: false; reason?: string }): Ship | null {
   return result.ok ? result.ship : null;
 }
 
@@ -164,6 +177,39 @@ function applyAction(state: StoreState, action: Action, at: string, env?: Env): 
     }
     case 'ship/delete':
       return { ...state, ships: state.ships.filter((s) => s.id !== action.id) };
+    case 'ship/restoreDefault':
+      // Back to the template the ship came from (library workflow, or blank). Id and name stay; the library itself is never touched.
+      return edit(
+        state,
+        action.id,
+        (s) => {
+          if (!env) return null;
+          const workflow = s.origin?.workflow;
+          const fresh = workflow ? libraryShip(env.idx, workflow, LIBRARY_EPOCH) : s.origin?.kind === 'blank' ? blankShip(env.idx, { id: s.id, name: s.name }, at) : null;
+          return fresh ? { ...fresh, id: s.id, name: s.name, class: 'custom', origin: s.origin, logbook: [], createdAt: s.createdAt, updatedAt: at } : null;
+        },
+        at,
+      );
+    case 'crew/recruit':
+      return edit(state, action.shipId, (s) => (env ? okShip(recruit(env.idx, s, action.input)) : null), at);
+    case 'crew/edit':
+      return edit(state, action.shipId, (s) => okShip(editCharacter(s, action.member, action.patch)), at);
+    case 'crew/dismiss':
+      return edit(state, action.shipId, (s) => okShip(dismiss(s, action.member)), at);
+    case 'crew/station':
+      return edit(state, action.shipId, (s) => okShip(seat(s, action.member, action.station)), at);
+    case 'voyage/add':
+      return edit(state, action.shipId, (s) => okShip(addItem(s, action.item, action.at)), at);
+    case 'voyage/edit':
+      return edit(state, action.shipId, (s) => okShip(editItem(s, action.index, action.patch)), at);
+    case 'voyage/move':
+      return edit(state, action.shipId, (s) => okShip(moveItem(s, action.from, action.to)), at);
+    case 'voyage/duplicate':
+      return edit(state, action.shipId, (s) => okShip(duplicateItem(s, action.index)), at);
+    case 'voyage/delete':
+      return edit(state, action.shipId, (s) => okShip(deleteItem(s, action.index)), at);
+    case 'voyage/applyTemplate':
+      return edit(state, action.shipId, (s) => (env ? okShip(applyTemplate(env.idx, s, action.workflow, action.mode)) : null), at);
     case 'codex/inspect':
       return state.codex.includes(action.skill) ? state : { ...state, codex: [...state.codex, action.skill] };
     case 'log/add': {
