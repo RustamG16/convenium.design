@@ -62,6 +62,8 @@ export type Action =
   | { type: 'ship/rename'; id: string; name: string }
   | { type: 'ship/delete'; id: string }
   | { type: 'ship/restoreDefault'; id: string }
+  | { type: 'ship/doctrine'; shipId: string; doctrine: string | null }
+  | { type: 'ship/module'; shipId: string; module: string; on: boolean }
   | { type: 'crew/recruit'; shipId: string; input: RecruitInput }
   | { type: 'crew/edit'; shipId: string; member: string; patch: CharacterPatch }
   | { type: 'crew/dismiss'; shipId: string; member: string }
@@ -187,6 +189,19 @@ function applyAction(state: StoreState, action: Action, at: string, env?: Env): 
           const workflow = s.origin?.workflow;
           const fresh = workflow ? libraryShip(env.idx, workflow, LIBRARY_EPOCH) : s.origin?.kind === 'blank' ? blankShip(env.idx, { id: s.id, name: s.name }, at) : null;
           return fresh ? { ...fresh, id: s.id, name: s.name, class: 'custom', origin: s.origin, logbook: [], createdAt: s.createdAt, updatedAt: at } : null;
+        },
+        at,
+      );
+    case 'ship/doctrine':
+      return edit(state, action.shipId, (s) => ((s.doctrine ?? null) === action.doctrine ? null : { ...s, doctrine: action.doctrine }), at);
+    case 'ship/module':
+      return edit(
+        state,
+        action.shipId,
+        (s) => {
+          const has = s.modules?.includes(action.module) ?? false;
+          if (has === action.on) return null;
+          return { ...s, modules: action.on ? [...(s.modules ?? []), action.module] : (s.modules ?? []).filter((m) => m !== action.module) };
         },
         at,
       );

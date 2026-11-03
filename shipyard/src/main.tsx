@@ -5,6 +5,7 @@ import './styles/tokens.css';
 import './styles/global.css';
 import './styles/shipyard.css';
 import './styles/bridge.css';
+import './styles/armory.css';
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

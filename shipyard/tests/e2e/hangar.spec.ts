@@ -60,11 +60,13 @@ test('How it works? carries the honest promise', async ({ page }) => {
 
 test('every route resolves on hash history; screens not built yet are labelled stubs', async ({ page }) => {
   const problems = trackConsole(page);
-  // Armory (T7) and Voyage (T8) are still stubs; the others are real screens (board, bridge, pre-flight, logbook).
-  for (const hash of ['#/armory', '#/ship/ss-full-run/voyage']) {
+  // Voyage (T8) is still a stub; the others are real screens (armory, board, bridge, pre-flight, logbook).
+  for (const hash of ['#/ship/ss-full-run/voyage']) {
     await page.goto(`/${hash}`);
     await expect(page.getByTestId('stub-page')).toContainText('Stub');
   }
+  await page.goto('/#/armory');
+  await expect(page.getByTestId('armory-page')).toBeVisible();
   await page.goto('/#/logbook');
   await expect(page.getByRole('heading', { level: 1, name: 'Logbook' })).toBeVisible();
   await page.goto('/#/ship/ss-full-run/preflight');

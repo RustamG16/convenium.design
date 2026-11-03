@@ -1,0 +1,68 @@
+/* ---------- T7: Armory ---------- */
+.armory-page-head { margin-bottom: var(--s5); }
+.armory-page-head .page-title { font-size: var(--section); max-width: 22ch; }
+.armory-page { max-width: var(--content); }
+kbd { padding: 1px 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; }
+
+.tabs { display: flex; gap: var(--s1); border-bottom: 1px solid var(--border); flex: 1; }
+.tab { min-height: var(--hit); padding: 0 var(--s4); background: transparent; border: 0; border-bottom: 2px solid transparent; font-size: var(--label); font-weight: 600; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--muted); }
+.tab[data-state='active'] { color: var(--cotton); border-bottom-color: var(--cotton); }
+.armory-head { gap: var(--s3); margin-bottom: var(--s4); flex-wrap: nowrap; }
+
+/* >= 1200: 280 filters / 1fr grid / 420 inspector */
+.armory-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s4); align-items: start; }
+.armory-body[data-inline] { grid-template-columns: 280px minmax(0, 1fr) var(--drawer-w); }
+.armory-side { position: sticky; top: var(--s4); gap: var(--s5); }
+.armory-inspector { position: sticky; top: var(--s4); max-height: calc(100dvh - 2 * var(--s4)); overflow: auto; padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); }
+.armory-filters-sheet { margin-bottom: var(--s3); }
+.armory-filters-sheet summary { display: inline-flex; list-style: none; }
+.armory-filters-sheet[open] > summary { margin-bottom: var(--s3); }
+.armory-filters { display: grid; gap: var(--s3); }
+.armory-target { padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); margin-bottom: var(--s3); }
+.armory-main { min-width: 0; }
+
+.art-grid-scroll { height: clamp(420px, calc(100dvh - 260px), 900px); overflow: auto; position: relative; padding-right: 2px; }
+.armory[data-variant='drawer'] .art-grid-scroll { height: clamp(360px, calc(100dvh - 340px), 720px); }
+.art-grid { list-style: none; margin: 0; padding: 0; position: relative; }
+.art-grid > li { position: absolute; width: calc((100% - (var(--cols) - 1) * 12px) / var(--cols)); height: var(--row-h); }
+.art-card { display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: 'tile name' 'tile id' 'meta meta' 'desc desc'; column-gap: var(--s2); row-gap: 2px; align-content: start; width: 100%; height: 100%; padding: var(--s3); text-align: left; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-panel); touch-action: pan-y; user-select: none; position: relative; transition: transform var(--t-micro) var(--ease), border-color var(--t-micro) var(--ease), box-shadow var(--t-micro) var(--ease); }
+.art-card:hover { transform: translateY(-2px); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 35%, transparent); }
+@media (prefers-reduced-motion: reduce) { .art-card:hover { transform: none; } }
+.art-card[aria-pressed='true'] { border-color: var(--cotton); }
+.art-card[data-tier='core'] { border-width: 2px; }
+.art-card[data-tier='library'] { border-style: dashed; }
+.art-card[data-tier='dormant'] { border-style: dotted; }
+.art-card-tile { grid-area: tile; display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-control); background: color-mix(in srgb, var(--c) 14%, var(--bg)); }
+.art-card-name { grid-area: name; font-weight: 600; font-size: 14px; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.art-card-id { grid-area: id; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.art-card-meta { grid-area: meta; display: flex; gap: var(--s2); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-top: var(--s1); }
+.art-card-phase { padding: 0 var(--s2); border: 1px solid var(--hairline); border-radius: var(--r-pill); }
+.art-card-desc { grid-area: desc; font-size: 12px; color: var(--muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.art-card-wearers { position: absolute; right: var(--s3); top: var(--s3); display: flex; gap: 2px; }
+.wearer { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--bg); }
+
+.art-detail-view { aspect-ratio: 4 / 3; border-radius: var(--r-panel); background: radial-gradient(120% 90% at 50% 100%, color-mix(in oklab, var(--c) 18%, #141010) 0%, #0f0c0c 70%); overflow: hidden; }
+.art-detail-view .artifact-inspector { height: 100%; }
+.art-detail-glyph { display: grid; place-items: center; height: 100%; }
+.art-detail-glyph svg { width: 96px; height: 96px; }
+.art-detail-id { font-size: 13px; color: var(--muted); }
+.art-facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--s1) var(--s3); margin: 0; font-size: 14px; }
+.art-facts dt { color: var(--muted); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; padding-top: 2px; }
+.art-facts dd { margin: 0; overflow-wrap: anywhere; }
+.plain-list { margin: 0; padding-left: var(--s4); display: grid; gap: var(--s1); font-size: 14px; }
+.mod-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--s3); }
+.mod-card { display: grid; gap: var(--s2); align-content: start; padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); }
+.mod-card[data-carried], .mod-card[data-fitted] { border-color: var(--cotton); }
+.mod-name { margin: 0; font-size: 16px; }
+.mod-status { text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; }
+.dialog-sheet { width: min(720px, calc(100vw - 2 * var(--s4))); }
+
+/* the drawer on the bridge replaces the identity column while it is open */
+.armory-drawer { padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); }
+
+@media (max-width: 1199px) { .armory-body[data-inline] { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 767px) {
+  .dialog-sheet { top: 0; left: 0; transform: none; width: 100vw; height: 100dvh; max-height: none; border-radius: 0; }
+  .armory-drawer { position: fixed; inset: 0; z-index: 50; border-radius: 0; overflow: auto; padding-bottom: 104px; }
+  .art-card { padding: var(--s2) var(--s3); }
+}

@@ -32,6 +32,11 @@ export function useIsMobile(): boolean {
   return useSyncExternalStore(subscribeWidth, () => window.innerWidth < 768, () => false);
 }
 
+/** True when the window is at least `px` wide (1200 and 768 are the layout breakpoints of DESIGN.md). */
+export function useMinWidth(px: number): boolean {
+  return useSyncExternalStore(subscribeWidth, () => window.innerWidth >= px, () => true);
+}
+
 let webglSupport: boolean | null = null;
 /** WebGL availability, probed once per page; false means the DOM fallbacks render instead. */
 export function hasWebGL(): boolean {

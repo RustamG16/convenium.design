@@ -25,6 +25,7 @@ const board = async () => ({ Component: (await import('./features/board/BoardPag
 const lab = async () => ({ Component: (await import('./features/lab/LabPage')).default });
 const preflightPage = async () => ({ Component: (await import('./features/preflight/PreflightPage')).default });
 const logbookPage = async () => ({ Component: (await import('./features/logbook/LogbookPage')).default });
+const armoryPage = async () => ({ Component: (await import('./features/armory/ArmoryPage')).default });
 const bridge = async () => ({ Component: (await import('./features/bridge/BridgePage')).default });
 
 export const routes = [
@@ -44,7 +45,7 @@ export const routes = [
       { path: 'ship/:id/bridge', lazy: bridge },
       { path: 'ship/:id/voyage', element: <ShipStub screen="Voyage" task="T8" note="The stage track with gate buoys." /> },
       { path: 'ship/:id/preflight', lazy: preflightPage },
-      { path: 'armory', element: <StubPage title="Armory" route="#/armory" task="T7" note="The knowledge base: every skill as an artifact you can equip." /> },
+      { path: 'armory', lazy: armoryPage },
       { path: 'lab', lazy: lab },
       { path: 'logbook', lazy: logbookPage },
       { path: '*', element: <StubPage title="Not found" route="#/" task="n/a" note="No such screen." /> },

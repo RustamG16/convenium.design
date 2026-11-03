@@ -23,6 +23,7 @@ import { useDispatch, useStoreState } from '../../store/context';
 import { uniqueShipId } from '../../store/store';
 import { useEquip, useEquipTarget } from '../armory/equip';
 import { useShip } from '../shared/useShip';
+import { ArmoryView } from '../armory/ArmoryView';
 import { LoadoutRack } from './LoadoutRack';
 import { RecruitDialog } from './RecruitDialog';
 import { CrewRail, DismissButton, IdentityCard, IdentityEditor } from './ShipCards';
@@ -42,6 +43,7 @@ export default function BridgePage() {
   const [sceneFailed, setSceneFailed] = useState(false);
   const [editing, setEditing] = useState(false);
   const [recruiting, setRecruiting] = useState(false);
+  const [armoryOpen, setArmoryOpen] = useState(false);
   const [snap, setSnap] = useState<'peek' | 'mid' | 'full'>('peek');
 
   const crew = useMemo(() => (ship ? sceneCrew(idx, ship) : []), [idx, ship]);
@@ -149,12 +151,16 @@ export default function BridgePage() {
           </p>
         </aside>
         <div className="ship-profile-main stack">
-          {editing && !readOnly ? (
+          {armoryOpen && !readOnly ? (
+            <div className="armory-drawer" data-testid="armory-drawer" role="region" aria-label="Armory">
+              <ArmoryView variant="drawer" ship={ship} member={raw} onClose={() => setArmoryOpen(false)} />
+            </div>
+          ) : editing && !readOnly ? (
             <IdentityEditor key={member.id} ship={ship} member={member} onDone={() => setEditing(false)} />
           ) : (
             <IdentityCard member={member} evidence={`KB ${idx.kb.sourceHash.slice(0, 8)}`} access={agent?.access} model={agent?.model} />
           )}
-          {!readOnly && !editing && <DismissButton ship={ship} member={member} />}
+          {!readOnly && !editing && !armoryOpen && <DismissButton ship={ship} member={member} />}
         </div>
         <div className="rack-sheet" data-snap={snap} data-testid="rack-sheet">
           <button type="button" className="rack-handle" onClick={() => setSnap((v) => (v === 'peek' ? 'mid' : v === 'mid' ? 'full' : 'peek'))} aria-expanded={snap !== 'peek'} data-testid="rack-handle">
@@ -168,7 +174,7 @@ export default function BridgePage() {
             active={member.active}
             readOnly={readOnly}
             focusSkill={params.get('skill')}
-            onOpenArmory={(a?: Anchor) => navigate(`/armory?ship=${ship.id}&member=${member.id}${a ? `&anchor=${a}` : ''}`)}
+            onOpenArmory={() => setArmoryOpen((v) => !v)}
           />
         </div>
       </div>
