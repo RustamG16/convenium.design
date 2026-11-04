@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// One project at a time: software WebGL is heavy. Select with --project; default is desktop only.
+// One project at a time: software WebGL is heavy. The default is desktop; the 360 px phone runs only
+// when asked: `PW_PHONE=1 npx playwright test`.
 const baseURL = process.env.PW_BASE_URL ?? 'http://localhost:5173';
+const phone = process.env.PW_PHONE === '1';
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -16,7 +18,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     ...(process.env.PW_CHROMIUM_PATH ? { launchOptions: { executablePath: process.env.PW_CHROMIUM_PATH } } : {}),
   },
-  projects: [{ name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } }],
+  projects: phone
+    ? [{ name: 'phone', testMatch: /phone\.spec\.ts/, use: { ...devices['Pixel 5'], viewport: { width: 360, height: 740 }, hasTouch: true } }]
+    : [{ name: 'desktop', testIgnore: /phone\.spec\.ts/, use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } }],
   ...(process.env.PW_BASE_URL
     ? {}
     : {

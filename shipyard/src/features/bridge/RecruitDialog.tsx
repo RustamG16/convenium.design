@@ -45,7 +45,7 @@ export function RecruitDialog({ ship, onClose, onRecruited }: { ship: Ship; onCl
             </label>
             <fieldset className="menu-group"><legend className="label">Body</legend>
               <div className="choice-row">
-                {BODY_IDS.map((b) => <label key={b} className="choice"><input type="radio" name="rbody" checked={body === b} onChange={() => setBody(b)} data-testid={`recruit-body-${b}`} /><span>{b === 'standin' ? 'Stand-in' : b}</span></label>)}
+                {BODY_IDS.map((b) => <label key={b} className="choice"><input type="radio" name="rbody" checked={body === b} onChange={() => setBody(b)} data-testid={`recruit-body-${b}`} /><span>{b === 'standin' ? 'Stand-in' : b.charAt(0).toUpperCase() + b.slice(1)}</span></label>)}
               </div>
             </fieldset>
             <fieldset className="menu-group"><legend className="label">Pigment</legend>

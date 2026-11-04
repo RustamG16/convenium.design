@@ -11,7 +11,7 @@ textarea.field { min-height: 88px; resize: vertical; }
 .menu-radio { display: flex; align-items: center; gap: var(--s2); min-height: var(--hit); }
 .menu-radio input, .choice input { width: 20px; height: 20px; accent-color: var(--cotton); }
 .choice-row { display: flex; flex-wrap: wrap; gap: var(--s2); }
-.choice { display: inline-flex; align-items: center; gap: var(--s2); min-height: var(--hit); padding: 0 var(--s3); border: 1px solid var(--border); border-radius: var(--r-pill); text-transform: capitalize; }
+.choice { display: inline-flex; align-items: center; gap: var(--s2); min-height: var(--hit); padding: 0 var(--s3); border: 1px solid var(--border); border-radius: var(--r-pill); }
 .choice:has(input:checked) { border-color: var(--cotton); }
 .swatch { position: relative; display: inline-grid; place-items: center; width: var(--hit); height: var(--hit); }
 .swatch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
@@ -80,3 +80,17 @@ textarea.field { min-height: 88px; resize: vertical; }
 @media (max-width: 767px) {
   .toast-region { bottom: 52px; z-index: 25; }
 }
+
+/* ---------- T8: hangar fleet ring, drydock, commission dialog ---------- */
+.fleet-stage { margin-top: var(--s5); border: 1px solid var(--hairline); border-radius: var(--r-panel); background: radial-gradient(120% 120% at 50% 100%, #2a2320 0%, var(--ink) 70%); overflow: hidden; }
+.fleet-ring { height: 340px; width: 100%; }
+.fleet-ring canvas { width: 100% !important; height: 100% !important; }
+.fleet-ring-loading { display: grid; place-items: center; color: var(--muted); }
+.fleet-ring-loading .hull { width: 240px; }
+@media (max-width: 767px) { .fleet-ring { height: 220px; } }
+.ship-card[data-focused] { border-color: var(--border); }
+.drydock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: var(--s5); }
+.drydock-grid .ship-card { max-width: none; }
+.card-actions { align-items: stretch; }
+.import-problems { padding: var(--s3); border: 1px solid var(--chili-soft); border-radius: var(--r-control); }
+.class-badge { border-color: color-mix(in srgb, var(--c, var(--border)) 60%, transparent); }

@@ -13,7 +13,7 @@ import type { KbIndex } from '../kb/artifacts';
 import { blankShip, cloneShip, libraryShip, LIBRARY_EPOCH } from '../domain/ship';
 import { dismiss, editCharacter, recruit, seat, type CharacterPatch, type RecruitInput } from '../domain/crew';
 import { addItem, applyTemplate, deleteItem, duplicateItem, editItem, moveItem, type GatePatch, type StagePatch } from '../domain/voyage';
-import { equip, fromHold, move, toHold, unequip, type EquipOptions } from '../domain/loadout';
+import { equip, fromHold, move, sanitizeShip, toHold, unequip, type EquipOptions } from '../domain/loadout';
 import type { Anchor, LogEntry, Ship, VoyageItem } from '../domain/schema';
 import { grantCommissions } from './outcomes';
 
@@ -167,8 +167,11 @@ function applyAction(state: StoreState, action: Action, at: string, env?: Env): 
     case 'ship/add':
       return { ...state, ships: [...state.ships.filter((s) => s.id !== action.ship.id), action.ship] };
     case 'ship/import': {
-      const id = uniqueShipId(state.ships.map((s) => s.id), action.ship.id);
-      return { ...state, ships: [...state.ships, { ...action.ship, id, origin: { kind: 'import', from: action.ship.id }, updatedAt: at }] };
+      const taken = [...state.ships.map((s) => s.id), ...(env?.idx.kb.workflows.ships.map((w) => w.id) ?? [])];
+      const id = uniqueShipId(taken, action.ship.id);
+      // An imported ship is the owner's: custom class, sockets brought inside capacity, never a library id.
+      const incoming = { ...action.ship, id, class: 'custom' as const, origin: { kind: 'import' as const, from: action.ship.id }, updatedAt: at };
+      return { ...state, ships: [...state.ships, env ? sanitizeShip(env.idx, incoming) : incoming] };
     }
     case 'ship/replace':
       return { ...state, ships: mapShip(state, action.ship.id, () => ({ ...action.ship, updatedAt: at })) };

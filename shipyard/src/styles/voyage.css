@@ -1,0 +1,44 @@
+/* ---------- T8: voyage planner. >= 1200: 1fr track + 360 inspector; 768-1199 track full width, inspector as a sheet; < 768 vertical list ---------- */
+.voyage-tools { gap: var(--s2); margin-bottom: var(--s4); align-items: center; }
+.voyage-template { display: inline-flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+.voyage-template .field { width: auto; min-width: 200px; }
+.voyage-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s4); align-items: start; }
+.voyage-layout[data-wide] { grid-template-columns: minmax(0, 1fr) var(--panel-w); }
+.voyage-inspector { position: sticky; top: var(--s4); max-height: calc(100dvh - 2 * var(--s4)); overflow: auto; padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); }
+
+.voyage-track { list-style: none; margin: 0; padding: var(--s5) var(--s2) var(--s4); display: flex; align-items: stretch; gap: var(--s4); overflow-x: auto; position: relative; background: linear-gradient(var(--border), var(--border)) 0 50% / 100% 1px no-repeat; }
+.voyage-item { flex: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s1); align-content: start; position: relative; min-width: 0; }
+.voyage-stage { width: 268px; }
+.voyage-gate { width: 148px; }
+.voyage-item[data-dragging] { opacity: 0.45; }
+.voyage-item[data-over]::before { content: ''; position: absolute; inset: -6px; border: 2px dashed var(--cotton); border-radius: var(--r-panel); pointer-events: none; }
+
+.stage-card { display: grid; gap: var(--s2); align-content: start; min-height: 220px; padding: var(--s3) var(--s4) var(--s4); background: var(--surface); border: 1px solid var(--border); border-top: 4px solid var(--phase, var(--muted)); border-radius: var(--r-panel); cursor: pointer; }
+.stage-card:hover { background: var(--elevated); }
+.stage-card[data-selected], .gate-card[data-selected] { border-color: var(--cotton); }
+.stage-phase { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.stage-title { font-family: var(--font-serif); font-size: 19px; line-height: 1.2; overflow-wrap: anywhere; }
+.stage-crew { display: inline-flex; gap: var(--s2); align-items: center; font-size: 13px; }
+.stage-art { display: inline-grid; grid-template-columns: 24px minmax(0, 1fr); gap: var(--s2); align-items: center; font-size: 13px; padding: var(--s1) var(--s2); border: 1px dashed color-mix(in srgb, var(--c) 55%, transparent); border-radius: var(--r-control); }
+.stage-out { font-size: 12px; font-family: ui-monospace, monospace; color: var(--muted); overflow-wrap: anywhere; }
+.stage-stop { font-size: 12px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+.gate-card { display: grid; justify-items: center; gap: var(--s1); padding: var(--s3); min-height: 160px; text-align: center; background: transparent; border: 1px dashed var(--muted); border-radius: var(--r-panel); cursor: pointer; align-content: center; }
+.buoy { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--cotton); font-family: var(--font-display); font-variation-settings: var(--display-axes); font-size: 20px; background: var(--bg); }
+.gate-name { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.gate-label { font-size: 13px; overflow-wrap: anywhere; }
+
+.item-actions { display: flex; flex-wrap: wrap; gap: var(--s1); justify-content: center; }
+.item-btn { min-width: var(--hit); min-height: var(--hit); background: transparent; border: 1px solid var(--hairline); border-radius: var(--r-control); font-size: 16px; }
+.item-btn:hover:not(:disabled) { border-color: var(--muted); background: var(--surface); }
+.item-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.runplan-row { margin: 0; padding: var(--s3); max-height: 280px; overflow: auto; background: var(--bg); border: 1px solid var(--hairline); border-radius: var(--r-control); font-size: 12px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@media (max-width: 767px) {
+  .voyage-track { flex-direction: column; overflow-x: visible; background: linear-gradient(var(--border), var(--border)) 22px 0 / 1px 100% no-repeat; padding-left: var(--s6); }
+  .voyage-stage, .voyage-gate { width: 100%; }
+  .gate-card { min-height: 0; grid-auto-flow: column; justify-content: start; justify-items: start; align-items: center; gap: var(--s3); text-align: left; }
+  .item-actions { justify-content: flex-start; flex-wrap: wrap; }
+  .stage-card { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .stage-card, .gate-card { transition: none; } }

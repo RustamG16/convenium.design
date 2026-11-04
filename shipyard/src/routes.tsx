@@ -7,11 +7,6 @@ import { shouldSkipBoarding } from './scene/tourModel';
 import { useStoreState } from './store/context';
 
 /** Hash history, so a static host (or a file next to the repo) serves every route (06 section 4). */
-function ShipStub({ screen, task, note }: { screen: string; task: string; note: string }) {
-  const { id = '' } = useParams();
-  return <StubPage title={`${screen}: ${id}`} route={`#/ship/${id}/${screen.toLowerCase()}`} task={task} note={note} />;
-}
-
 /** Opening a ship: the boarding walk the first time (with WebGL), the bridge otherwise and afterwards. */
 function ShipEntry() {
   const { id = '' } = useParams();
@@ -26,6 +21,7 @@ const lab = async () => ({ Component: (await import('./features/lab/LabPage')).d
 const preflightPage = async () => ({ Component: (await import('./features/preflight/PreflightPage')).default });
 const logbookPage = async () => ({ Component: (await import('./features/logbook/LogbookPage')).default });
 const armoryPage = async () => ({ Component: (await import('./features/armory/ArmoryPage')).default });
+const voyagePage = async () => ({ Component: (await import('./features/voyage/VoyagePage')).default });
 const bridge = async () => ({ Component: (await import('./features/bridge/BridgePage')).default });
 
 export const routes = [
@@ -43,7 +39,7 @@ export const routes = [
       { path: 'ship/:id', element: <ShipEntry /> },
       { path: 'ship/:id/board', lazy: board },
       { path: 'ship/:id/bridge', lazy: bridge },
-      { path: 'ship/:id/voyage', element: <ShipStub screen="Voyage" task="T8" note="The stage track with gate buoys." /> },
+      { path: 'ship/:id/voyage', lazy: voyagePage },
       { path: 'ship/:id/preflight', lazy: preflightPage },
       { path: 'armory', lazy: armoryPage },
       { path: 'lab', lazy: lab },

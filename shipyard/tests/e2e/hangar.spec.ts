@@ -15,6 +15,8 @@ const defaultCrew = kb.crew.filter((c) => flagship.stages.some((s) => s.crew?.in
 function trackConsole(page: import('@playwright/test').Page) {
   const problems: string[] = [];
   page.on('console', (m: ConsoleMessage) => {
+    // The hangar's fleet ring loads three/R3F; R3F 9.8 still constructs THREE.Clock, which three 0.186 warns about once. Upstream, not ours; every other warning still fails.
+    if (/THREE\.Clock: This module has been deprecated/.test(m.text())) return;
     if (m.type() === 'error' || m.type() === 'warning') problems.push(`${m.type()}: ${m.text()}`);
   });
   page.on('pageerror', (e) => problems.push(`pageerror: ${e.message}`));
@@ -58,13 +60,11 @@ test('How it works? carries the honest promise', async ({ page }) => {
   await expect(page.getByText('Nothing here runs an agent; it writes the plan a session runs.')).toBeVisible();
 });
 
-test('every route resolves on hash history; screens not built yet are labelled stubs', async ({ page }) => {
+test('every route resolves on hash history and no screen is a stub', async ({ page }) => {
   const problems = trackConsole(page);
-  // Voyage (T8) is still a stub; the others are real screens (armory, board, bridge, pre-flight, logbook).
-  for (const hash of ['#/ship/ss-full-run/voyage']) {
-    await page.goto(`/${hash}`);
-    await expect(page.getByTestId('stub-page')).toContainText('Stub');
-  }
+  // Every screen is built now: armory, voyage, board, bridge, pre-flight and logbook; nothing is a stub.
+  await page.goto('/#/ship/ss-full-run/voyage');
+  await expect(page.getByTestId('voyage-page')).toBeVisible();
   await page.goto('/#/armory');
   await expect(page.getByTestId('armory-page')).toBeVisible();
   await page.goto('/#/logbook');
