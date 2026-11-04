@@ -148,3 +148,14 @@
 - **Fixed on the way:** an invalid-DOM warning (`HullRing` div inside a `p`) in the voyage header, caught by the e2e's console watch; gate buoys were clipped by the next card (grid track sized to its action row).
 - **Not done:** the T10 motion rows (equip arrival arc, hull sweep); Flip between grid and inspector; a combined drag of a whole stage run; pre-flight's stale-library diff.
 - Full Playwright suite before this commit (desktop project, one at a time): 63 passed, 0 failed (8.3 min); the phone project (`PW_PHONE=1`): 1 passed. `hangar.spec.ts` now ignores the single upstream `THREE.Clock` deprecation warning the fleet ring's three/R3F import prints; every other console warning still fails it.
+
+## 2026-11-04 — Director review after T6–T8 (open defects for T10/T11, not yet fixed)
+
+Verified by the director: typecheck, lint, 228 unit tests, `test:plans` (4/4 CLEAN), root `verify.py` CLEAN, `library/` changed only by T1. Viewed `t6-bridge-captain`, `t7-armory`, `t8-hangar`, `t8-voyage` at 1440. The head-artifact and clutter defects from T4 are fixed (face clear, gear reads as gear).
+
+Open, for the finish pass (T11) unless motion (T10) owns them:
+1. **Hangar is the weakest screen.** One small hull in a large empty canvas; the gold floor ring is offset below and to the side of the hull instead of under it. The owner asked for "3D view as in ArkhEthos": the hangar must hold its frame like the ArkhEthos universe hangar ring (hull scale, ring under hull, camera framing).
+2. **Armory grid clips:** the virtualised grid stops at about 730 px with dead space below it at 1440×900, and card text is truncated mid-word ("Gyroscope of Animation..."). The filter heading renders as "EQUIPTO" (missing space). Faint ghost text sits behind the site header at the left.
+3. **Voyage track:** the fourth card is cut at the inspector edge with no visible affordance that the track scrolls; check that the horizontal scroll is discoverable and keyboard-reachable.
+4. **Bridge turntable:** the figure is small in its card (about 55% of the card height) and the orbit items read as loose dots. Keep the face clear.
+- T12 (optional proposals export) has no row in `00-run-plan.md`; it is not run in this build.
