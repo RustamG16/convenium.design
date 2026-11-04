@@ -1,0 +1,73 @@
+/* The motion contract of DESIGN.md (T10). Numbers come from tokens.css, which tests/unit/motion.test.ts
+   keeps equal to src/lib/motion.ts. Transform and opacity only. Reduced motion is the right-hand column
+   of the contract, written out under each block; global.css additionally caps every duration at 120 ms. */
+
+/* Hover artifact card: lift 2px and the family glow 0 -> 0.35 (a layer that fades, so only opacity animates). */
+.art-card::after { content: ''; position: absolute; inset: -1px; border-radius: inherit; box-shadow: 0 0 14px var(--c); opacity: 0; pointer-events: none; transition: opacity var(--t-micro) var(--ease); }
+@media (hover: hover) and (pointer: fine) {
+  .art-card:hover { transform: translateY(-2px); }
+  .art-card:hover::after { opacity: 0.35; }
+}
+.art-card:focus-visible::after { opacity: 0.35; }
+@media (prefers-reduced-motion: reduce) {
+  .art-card:hover { transform: none; }
+  .art-card::after { transition-duration: var(--t-reduced); }
+}
+
+/* Pick up: scale 1.04 and a tonal raise in 120 ms; no shadow. Reduced: no scale. */
+.art-card[data-lifted], .hold-chip[data-lifted], .socket[data-lifted] { background: var(--raised); transition: transform var(--t-pick) var(--ease), background-color var(--t-pick) var(--ease); }
+.art-card[data-lifted], .art-card[data-lifted]:hover { transform: scale(1.04); }
+.hold-chip[data-lifted] { transform: scale(1.04); }
+.socket[data-lifted] { scale: 1.04; }
+@media (prefers-reduced-motion: reduce) {
+  .art-card[data-lifted], .art-card[data-lifted]:hover, .hold-chip[data-lifted] { transform: none; }
+  .socket[data-lifted] { scale: none; }
+}
+
+/* Cards enter staggered, 45 ms apart, the first dozen only; nothing waits for them (they take input at once). */
+.art-card[data-enter] { animation: card-in var(--t-micro) var(--ease) backwards; animation-delay: calc(var(--i) * var(--stagger)); }
+@keyframes card-in { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .art-card[data-enter] { animation: none; } }
+
+/* Valid anchor under a drag: the ring pulses 1.0 -> 1.12 at 1.6 Hz and the label names the anchor.
+   Reduced: a static ring and the words "Drop to equip". */
+.socket { overflow: visible; }
+.socket[data-hover]::before, .body-drop-ring { animation: socket-pulse var(--t-pulse) ease-in-out infinite; }
+.socket[data-hover]::before { content: ''; position: absolute; inset: -7px; border: 2px solid var(--cotton); border-radius: inherit; pointer-events: none; }
+@keyframes socket-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.socket-label, .socket-reason { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); z-index: 5; width: max-content; max-width: 190px; padding: 2px var(--s2); background: var(--raised); color: var(--cotton); border-radius: var(--r-control); font-size: 11px; letter-spacing: 0.04em; line-height: 1.3; text-align: center; pointer-events: none; }
+.socket-reason { border: 1px solid var(--chili-soft); }
+@media (prefers-reduced-motion: reduce) {
+  .socket[data-hover]::before, .body-drop-ring { animation: none; }
+}
+
+/* Equip, 2D: the socket flashes for 80 ms and the chip lands in 240 ms (both driven from LoadoutRack). */
+.socket-flash { position: absolute; inset: -2px; border-radius: inherit; background: var(--cotton); opacity: 0; pointer-events: none; }
+.socket-chip { display: grid; place-items: center; }
+
+/* Unequip: the ghost of the artifact fades and shrinks to 0.85 in 160 ms. */
+.socket-ghost { pointer-events: none; z-index: 4; }
+
+/* Invalid drop: the ghost shakes 2 px twice in 180 ms while it returns. */
+/* The ghost follows the pointer 1:1: no transition, also under the reduced-motion duration cap of global.css. */
+.drag-ghost { transition: none !important; }
+
+/* Active in its stage: the one active artifact orbits at 0.25 rps inside its 3 px family rim. Others rest. */
+.socket[data-active]::after { content: ''; position: absolute; inset: -7px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle at 50% 0, var(--c) 0 2.5px, transparent 3px); animation: socket-orbit var(--t-orbit) linear infinite; }
+@keyframes socket-orbit { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .socket[data-active]::after { animation: none; display: none; } }
+
+/* Toasts and notices: enter and leave in 240 ms (panel); reduced: opacity only. */
+.notice[data-leaving], .toast[data-leaving] { opacity: 0; transform: translateY(-8px); pointer-events: none; }
+.toast { transition: opacity var(--t-panel) var(--ease), transform var(--t-panel) var(--ease); animation: toast-in var(--t-panel) var(--ease); }
+.toast[data-leaving] { transform: translateY(8px); }
+@keyframes notice-in { from { opacity: 0; transform: translateY(-8px); } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) {
+  .notice[data-leaving], .toast[data-leaving] { transform: none; }
+  @keyframes notice-in { from { opacity: 0; } }
+  @keyframes toast-in { from { opacity: 0; } }
+}
+
+/* Pre-flight: the hull lights (driven by GSAP) start dark; the row tick is a 400 ms WAAPI tint in PreflightPage. */
+.hull-light { fill: var(--cotton); opacity: 0; pointer-events: none; }

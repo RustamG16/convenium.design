@@ -5,9 +5,11 @@
 // follows the baked working loop. The rig's Armature is scaled 0.01 (centimetres) and the clone is
 // scaled again to the identity's height, so each mount cancels the bone's world scale and the
 // artifact is a true size in metres.
-import { createPortal, useFrame } from '@react-three/fiber';
-import { Fragment, useMemo, useRef } from 'react';
+import { createPortal, useFrame, useThree } from '@react-three/fiber';
+import gsap from 'gsap';
+import { Fragment, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
+import { EQUIP_EASE, isReducedMotion, MOTION, recordMotion } from '../../lib/motion';
 import type { Anchor } from '../../domain/schema';
 import type { SceneMember, WornArtifact } from '../crew';
 import { ArtifactMesh, ACTIVE_RPS, type Pose } from './ArtifactMesh';
@@ -35,6 +37,99 @@ export const BONE_TUNE: Record<Exclude<Anchor, 'orbit'>, { rotation: V3; offset:
 };
 
 const tmp = new THREE.Vector3();
+
+/** Keys of the artifacts that arrive after the figure mounted: those are equips, and fly in. The ones present at mount are simply there. */
+function useFresh(keys: string[]): Set<string> {
+  const [initial] = useState(() => new Set(keys));
+  return new Set(keys.filter((k) => !initial.has(k)));
+}
+
+/** Where an arriving artifact starts, relative to its anchor: 0.4 m away, up and to the side. */
+const ARRIVAL_FROM = new THREE.Vector3(0.55, 0.45, 0.7).normalize().multiplyScalar(MOTION.equip.arcM);
+/** The path bows 0.3 of its length off the straight line, so it reads as an arc. */
+const ARC_LIFT = MOTION.equip.arcM * 0.3;
+
+/**
+ * Equip, 3D: the artifact flies along a 0.4 m arc to its anchor in 520 ms, `back.out(1.6)` (the only
+ * overshoot in the product). Reduced motion: it is placed at once and fades in over 120 ms. Interruptible:
+ * unmounting kills the tween. The group carries `userData.arrival` for the scene test hook.
+ */
+function Arrival({ fresh, skill, children }: { fresh: boolean; skill: string; children: ReactNode }) {
+  const group = useRef<THREE.Group>(null);
+  const invalidate = useThree((s) => s.invalidate);
+  useLayoutEffect(() => {
+    const g = group.current;
+    if (!fresh || !g) return;
+    if (isReducedMotion()) {
+      const swapped: { mesh: THREE.Mesh; original: THREE.Material }[] = [];
+      g.traverse((o) => {
+        const mesh = o as THREE.Mesh;
+        if (mesh.isMesh && !Array.isArray(mesh.material)) {
+          swapped.push({ mesh, original: mesh.material });
+          const m = mesh.material.clone();
+          m.transparent = true;
+          m.opacity = 0;
+          mesh.material = m;
+        }
+      });
+      const fade = { v: 0 };
+      g.userData.arrival = { variant: 'opacity', ms: MOTION.reduced, state: 'running' };
+      const done = () => {
+        for (const { mesh, original } of swapped) {
+          (mesh.material as THREE.Material).dispose();
+          mesh.material = original;
+        }
+        g.userData.arrival = { ...(g.userData.arrival as object), state: 'done' };
+        invalidate();
+      };
+      const tween = gsap.to(fade, {
+        v: 1,
+        duration: MOTION.reduced / 1000,
+        ease: 'none',
+        onUpdate: () => {
+          for (const { mesh } of swapped) (mesh.material as THREE.Material).opacity = fade.v;
+          invalidate();
+        },
+        onComplete: done,
+      });
+      recordMotion('equip-3d', MOTION.reduced, { skill, variant: 'opacity' });
+      return () => {
+        tween.kill();
+        if (g.userData.arrival?.state === 'running') done();
+      };
+    }
+    const t = { v: 0 };
+    g.userData.arrival = { variant: 'arc', ms: MOTION.equip.ms, ease: EQUIP_EASE, arcM: MOTION.equip.arcM, state: 'flying' };
+    const place = () => {
+      const u = t.v;
+      g.position.copy(ARRIVAL_FROM).multiplyScalar(1 - u);
+      g.position.y += ARC_LIFT * Math.sin(Math.PI * Math.min(1, Math.max(0, u)));
+      invalidate();
+    };
+    place();
+    const tween = gsap.to(t, {
+      v: 1,
+      duration: MOTION.equip.ms / 1000,
+      ease: EQUIP_EASE,
+      onUpdate: place,
+      onComplete: () => {
+        g.position.set(0, 0, 0);
+        g.userData.arrival = { ...(g.userData.arrival as object), state: 'done' };
+        invalidate();
+      },
+    });
+    recordMotion('equip-3d', MOTION.equip.ms, { skill, variant: 'arc', ease: EQUIP_EASE, arcM: MOTION.equip.arcM });
+    return () => {
+      tween.kill();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <group ref={group} name={`arrival-${skill}`}>
+      {children}
+    </group>
+  );
+}
 
 /** A group in a bone, sized in metres whatever the bone's own scale; its children sit in the upright frame. */
 function BoneMount({ bone, offset, rotation, children }: { bone: THREE.Object3D; offset: V3; rotation: V3; children: React.ReactNode }) {
@@ -74,6 +169,8 @@ export function BoneArtifacts({ member, clone, animate }: { member: SceneMember;
     for (const a of member.loadout) if (a.anchor !== 'orbit' && !out.has(a.slot.bone)) out.set(a.slot.bone, findBone(clone, a.slot.bone));
     return out;
   }, [member.loadout, clone]);
+  const keyOf = (a: WornArtifact) => `${a.anchor}-${a.index}-${a.skill}`;
+  const fresh = useFresh(member.loadout.map(keyOf));
   return (
     <>
       {member.loadout
@@ -85,9 +182,11 @@ export function BoneArtifacts({ member, clone, animate }: { member: SceneMember;
           const o = slotOffset(a);
           const k = member.model.heightM / 1.8;
           return (
-            <Fragment key={`${a.anchor}-${a.index}-${a.skill}`}>
+            <Fragment key={keyOf(a)}>
               <BoneMount bone={bone} offset={[(o[0] + tune.offset[0]) * k, (o[1] + tune.offset[1]) * k, (o[2] + tune.offset[2]) * k]} rotation={tune.rotation}>
-                <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose={POSE_OF_ANCHOR[a.anchor]} animate={animate} active={a.skill === member.active} />
+                <Arrival fresh={fresh.has(keyOf(a))} skill={a.skill}>
+                  <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose={POSE_OF_ANCHOR[a.anchor]} animate={animate} active={a.skill === member.active} />
+                </Arrival>
               </BoneMount>
             </Fragment>
           );
@@ -109,6 +208,7 @@ export function OrbitArtifacts({ member, heightM, animate }: { member: SceneMemb
   const ring = useRef<THREE.Group>(null);
   const facing = useRef<(THREE.Group | null)[]>([]);
   const orbiters = member.loadout.filter((a) => a.anchor === 'orbit');
+  const fresh = useFresh(orbiters.map((a) => `${a.index}-${a.skill}`));
   const angle = useRef(0);
   useFrame((_, dt) => {
     if (animate) angle.current += ACTIVE_RPS * Math.PI * 2 * dt;
@@ -129,7 +229,9 @@ export function OrbitArtifacts({ member, heightM, animate }: { member: SceneMemb
               }}
             >
               <group rotation={[0.5, 0, 0]}>
-                <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose="floating" animate={animate} active={a.skill === member.active} />
+                <Arrival fresh={fresh.has(`${a.index}-${a.skill}`)} skill={a.skill}>
+                  <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose="floating" animate={animate} active={a.skill === member.active} />
+                </Arrival>
               </group>
             </group>
           </group>
@@ -159,13 +261,16 @@ export function standInOffset(a: Pick<WornArtifact, 'anchor' | 'index'>, h: numb
 }
 
 export function StandInArtifacts({ member, h, animate }: { member: SceneMember; h: number; animate: boolean }) {
+  const fresh = useFresh(member.loadout.filter((a) => a.anchor !== 'orbit').map((a) => `${a.anchor}-${a.index}-${a.skill}`));
   return (
     <>
       {member.loadout
         .filter((a) => a.anchor !== 'orbit')
         .map((a) => (
           <group key={`${a.anchor}-${a.index}-${a.skill}`} position={standInOffset(a, h)}>
-            <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose={POSE_OF_ANCHOR[a.anchor]} animate={animate} active={a.skill === member.active} />
+            <Arrival fresh={fresh.has(`${a.anchor}-${a.index}-${a.skill}`)} skill={a.skill}>
+              <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose={POSE_OF_ANCHOR[a.anchor]} animate={animate} active={a.skill === member.active} />
+            </Arrival>
           </group>
         ))}
       <OrbitArtifacts member={member} heightM={h} animate={animate} />

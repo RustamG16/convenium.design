@@ -1,6 +1,7 @@
 // One artifact in 3D: a family mesh (shared geometry, one shared material per family), a per-skill
 // variant and tilt, and the pose the anchor asks for. `ArtifactMesh` is what the Turntable, the
 // boarding walk and the Armory inspector (T7) all draw. Motion stops when `animate` is false.
+import { MOTION } from '../../lib/motion';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
@@ -22,7 +23,7 @@ export const POSE_SCALE: Record<Pose, number> = { held: 1, worn: 0.7, floating: 
  */
 export const ARTIFACT_SCALE = 1.25;
 /** Active artifact: a slow turn, 0.25 revolutions per second (06 section 5). */
-export const ACTIVE_RPS = 0.25;
+export const ACTIVE_RPS = MOTION.active.rps;
 
 export interface ArtifactMeshProps {
   /** family id from the knowledge base; an unknown family draws nothing */

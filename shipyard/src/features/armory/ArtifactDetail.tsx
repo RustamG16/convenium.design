@@ -1,10 +1,12 @@
 // The Armory inspector (06 section 4.4): the artifact on a slow turntable (its own small canvas, only
 // while an artifact is open; the large family glyph without WebGL), its lore and registry facts, who
 // routes it, which slots it can fill and what that changes, "Equip to..." and "Copy skill path".
-import { lazy, Suspense, useState, type CSSProperties } from 'react';
+import { lazy, Suspense, useRef, useState, type CSSProperties } from 'react';
 import { TruthLabel } from '../../components/TruthLabel';
 import type { KbIndex } from '../../kb/artifacts';
 import type { KbSkill } from '../../kb/schema';
+import { Flip, gsap, useGSAP } from '../../lib/gsap';
+import { easeDefault, isReducedMotion, MOTION, recordMotion } from '../../lib/motion';
 import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
 import { isFamilyId } from '../../scene/artifacts/families';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
@@ -19,6 +21,31 @@ export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill })
   const reduced = useReducedMotion();
   const [failed, setFailed] = useState(false);
   const [path, setPath] = useState<string | null>(null);
+  const root = useRef<HTMLElement>(null);
+  // Grid -> inspector: the card's tile travels to the inspector's tile (GSAP Flip, 240 ms, the default ease).
+  // Reduced motion: it simply appears there. Interruptible: a new selection remounts this and kills the tween.
+  useGSAP(
+    () => {
+      const tile = root.current?.querySelector<HTMLElement>('[data-testid="detail-tile"]');
+      const card = document.querySelector<HTMLElement>(`[data-testid="art-grid"] [data-skill="${CSS.escape(skill.id)}"] .art-card-tile`);
+      if (!tile || !card || isReducedMotion()) return;
+      gsap.set(tile, { clearProps: 'transform' });
+      const natural = Flip.getState(tile);
+      Flip.fit(tile, card, { scale: true });
+      tile.setAttribute('data-flipping', '');
+      Flip.from(natural, { duration: MOTION.panel / 1000, ease: easeDefault, scale: true, onComplete: () => {
+          tile.removeAttribute('data-flipping');
+          gsap.set(tile, { clearProps: 'transform' });
+        },
+      });
+      recordMotion('flip', MOTION.panel, { skill: skill.id });
+      return () => {
+        tile.removeAttribute('data-flipping');
+        gsap.set(tile, { clearProps: 'transform' });
+      };
+    },
+    { scope: root, dependencies: [skill.id] },
+  );
   const a = skill.artifact;
   const tier = idx.kb.tiers.find((t) => t.id === a.tier);
   const webgl = hasWebGL() && !force2d() && !failed;
@@ -33,7 +60,7 @@ export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill })
     }
   };
   return (
-    <article className="art-detail stack" data-testid="art-detail" data-skill={skill.id} style={{ ['--c' as string]: a.pigment } as CSSProperties}>
+    <article ref={root} className="art-detail stack" data-testid="art-detail" data-skill={skill.id} style={{ ['--c' as string]: a.pigment } as CSSProperties}>
       <div className="art-detail-view" data-testid="art-detail-view">
         {webgl ? (
           <Suspense fallback={<div className="art-detail-glyph" aria-hidden="true">{isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} />}</div>}>
@@ -47,7 +74,10 @@ export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill })
       </div>
       <header className="stack-sm">
         <p className="label">{a.familyName} · <span data-rim={tier?.rim}>{tier?.label ?? a.tier}</span> <TruthLabel truth="Verified" detail="from the registry" /></p>
-        <h2 className="card-title">{a.name}</h2>
+        <div className="art-detail-title">
+          <span className="art-detail-tile" data-testid="detail-tile" aria-hidden="true">{isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} />}</span>
+          <h2 className="card-title">{a.name}</h2>
+        </div>
         <code className="art-detail-id">{skill.id}</code>
         {a.lore && <p className="prose-sm">{a.lore}</p>}
       </header>

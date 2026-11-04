@@ -79,6 +79,12 @@
   --t-camera: 700ms;
   --t-reduced: 120ms;
   --stagger: 45ms;
+  --t-pick: 120ms;
+  --t-flash: 80ms;
+  --t-chip: 240ms;
+  --t-pulse: 625ms; /* 1.6 Hz */
+  --t-orbit: 4s; /* 0.25 rps */
+  --t-shake: 180ms;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   /* delta: equip arrival is GSAP back.out(1.6), the only overshoot in the product (set in code). */
 

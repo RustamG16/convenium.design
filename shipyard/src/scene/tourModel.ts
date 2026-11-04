@@ -77,10 +77,9 @@ export function moveOf(held: ReadonlySet<WalkKey>): { forward: number; side: num
   const axis = (pos: WalkKey, neg: WalkKey) => (held.has(pos) ? 1 : 0) - (held.has(neg) ? 1 : 0);
   return { forward: axis('forward', 'back'), side: axis('right', 'left'), turn: axis('turnRight', 'turnLeft') };
 }
-/** Walking pace (m/s), turning pace (rad/s), both doubled by Shift; the autopilot's pace (m/s). */
+/** Walking pace (m/s) and turning pace (rad/s), both doubled by Shift. The autopilot is timed (700 ms a leg), not paced. */
 export const WALK_SPEED = 2.2;
 export const TURN_SPEED = 1.9;
-export const AUTO_SPEED = 3.2;
 
 
 export type KeyAction = { type: 'go'; index: number } | { type: 'skip' } | null;

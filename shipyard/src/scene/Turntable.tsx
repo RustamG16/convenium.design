@@ -9,6 +9,7 @@ import type { Anchor } from '../domain/schema';
 import { ANCHOR_IDS } from '../domain/schema';
 import { ORBIT_LIFT, standInOffset } from './artifacts/WornArtifacts';
 import { useCallback, useMemo, useRef, useState, type CSSProperties, type MutableRefObject } from 'react';
+import { MOTION } from '../lib/motion';
 import { PortraitFace } from '../components/Portrait';
 import { CrewFigure } from './CrewMember';
 import type { SceneMember } from './crew';
@@ -102,7 +103,7 @@ export function Turntable({ member, reduced, onContextLost, onReady, probe }: { 
           <circleGeometry args={[member.model.heightM * 0.45, 48]} />
           <meshStandardMaterial color="#1a1515" roughness={1} />
         </mesh>
-        <OrbitControls enablePan={false} enableZoom={false} autoRotate={!reduced} autoRotateSpeed={1} minPolarAngle={0.9} maxPolarAngle={1.6} target={[0, h * 0.5, 0]} makeDefault />
+        <OrbitControls enablePan={false} enableZoom={false} autoRotate={!reduced} autoRotateSpeed={MOTION.turntable.rpm} minPolarAngle={MOTION.turntable.polarMin} maxPolarAngle={MOTION.turntable.polarMax} target={[0, h * 0.5, 0]} makeDefault />
       </Canvas>
       <div className="ship-turntable-veil" data-testid="turntable-veil" data-hidden={ready} aria-hidden="true">
         <PortraitFace member={member} />

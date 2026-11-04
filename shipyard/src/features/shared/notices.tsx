@@ -3,6 +3,7 @@
 // 120-240 ms fade. Dismisses itself after 8 s (the undo-toast contract); Undo and `U` / Ctrl+Z stay
 // available as long as the undo stack has the step. Never an achievement, never a score.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { MOTION, usePresence } from '../../lib/motion';
 import { useDispatch, useStoreState } from '../../store/context';
 
 export interface Notice {
@@ -20,7 +21,7 @@ interface NoticeApi {
 }
 
 const NoticeContext = createContext<NoticeApi | null>(null);
-export const NOTICE_MS = 8000;
+export const NOTICE_MS = MOTION.unequip.undoMs;
 
 export function useNotify(): NoticeApi['notify'] {
   const ctx = useContext(NoticeContext);
@@ -73,17 +74,19 @@ export function NoticeProvider({ children }: { children: ReactNode }) {
   }, [past.length, undo]);
 
   const api = useMemo<NoticeApi>(() => ({ notify, dismiss }), [notify, dismiss]);
+  // The notice enters and leaves in 240 ms; a new one takes over at once.
+  const { value: shown, leaving } = usePresence(notice, MOTION.panel);
   return (
     <NoticeContext.Provider value={api}>
       {children}
       <div className="notice-region" role="status" aria-live="polite" data-testid="notice-region">
-        {notice && (
-          <div className="notice" data-tone={notice.tone} data-testid="notice" key={notice.id}>
+        {shown && (
+          <div className="notice" data-tone={shown.tone} data-leaving={leaving || undefined} data-testid="notice" key={shown.id}>
             <p className="notice-text">
-              {notice.text}
-              {notice.note && <span className="notice-note"> {notice.note}</span>}
+              {shown.text}
+              {shown.note && <span className="notice-note"> {shown.note}</span>}
             </p>
-            {notice.undo && past.length > 0 && (
+            {shown.undo && past.length > 0 && !leaving && (
               <button type="button" className="btn btn-quiet btn-sm" onClick={undo} data-testid="notice-undo">
                 Undo
               </button>

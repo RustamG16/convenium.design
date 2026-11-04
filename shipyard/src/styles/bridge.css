@@ -27,18 +27,15 @@ textarea.field { min-height: 88px; resize: vertical; }
 .picker-item code { font-size: 12px; color: var(--muted); }
 .picker-item:hover { border-color: var(--c, var(--muted)); }
 .notice-region { position: fixed; z-index: 70; top: calc(var(--header-h) + var(--s2)); left: 50%; transform: translateX(-50%); width: min(560px, calc(100vw - 2 * var(--s3))); pointer-events: none; }
-.notice { pointer-events: auto; display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; padding: var(--s3) var(--s4); background: var(--elevated); border: 1px solid var(--border); border-radius: var(--r-panel); animation: notice-in var(--t-micro) var(--ease); }
+.notice { pointer-events: auto; display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; padding: var(--s3) var(--s4); background: var(--elevated); border: 1px solid var(--border); border-radius: var(--r-panel); transition: opacity var(--t-panel) var(--ease), transform var(--t-panel) var(--ease); animation: notice-in var(--t-panel) var(--ease); }
 .notice[data-tone='warn'] { border-color: var(--chili-soft); }
 .notice-text { margin: 0; flex: 1 1 220px; font-size: 14px; }
 .notice-note { color: var(--muted); }
-@keyframes notice-in { from { opacity: 0; } to { opacity: 1; } }
 .drag-ghost { position: fixed; left: 0; top: 0; z-index: 90; pointer-events: none; display: grid; grid-template-columns: 24px auto; gap: 0 var(--s2); align-items: center; padding: var(--s2) var(--s3); background: var(--raised); border: 1px solid var(--c, var(--cotton)); border-radius: var(--r-control); font-size: 13px; transform: translate(-200px, -200px); }
 .drag-ghost-hint { grid-column: 1 / -1; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
 .body-drop { position: relative; }
 .body-drop-ring { position: absolute; width: 48px; height: 48px; margin: -24px 0 0 -24px; border: 2px solid var(--cotton); border-radius: 50%; pointer-events: none; }
 .body-drop-ring span { position: absolute; top: 52px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 2px var(--s2); background: var(--raised); border-radius: var(--r-pill); font-size: 11px; }
-@media (prefers-reduced-motion: no-preference) { .body-drop-ring { animation: ring-pulse 625ms ease-in-out infinite alternate; } }
-@keyframes ring-pulse { from { scale: 1; } to { scale: 1.12; } }
 
 .anchor-diagram { display: grid; gap: var(--s3); }
 .anchor-figure { position: relative; width: min(100%, 260px); aspect-ratio: 2 / 3; margin-inline: auto; color: var(--border); }

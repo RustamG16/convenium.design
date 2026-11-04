@@ -4,7 +4,8 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { approach } from './common';
 import { EYE } from './stations';
-import { AUTO_SPEED, LOOK_PITCH, TURN_SPEED, WALK_SPEED } from './tourModel';
+import { easeDefault, MOTION, recordMotion } from '../lib/motion';
+import { LOOK_PITCH, TURN_SPEED, WALK_SPEED } from './tourModel';
 import { floorAt, type P2, type WalkMap } from './walk';
 
 /** Shortest signed difference between two angles, in (-π, π]. */
@@ -31,6 +32,10 @@ export class Walker {
   /** Autopilot: the points still to walk and the view to settle on at the end. */
   private path: P2[] = [];
   private goal: { yaw: number; pitch: number } | null = null;
+  /** The timed leg of the autopilot: seconds elapsed, metres walked and the leg's length. */
+  private leg = { t: 0, done: 0, len: 0 };
+  /** The last finished leg (test and inspection hook): how long it took on the simulated clock, and its length. */
+  lastLeg: { seconds: number; length: number } | null = null;
 
   /** The floor map of this ship's layout: collision, routes and the waypoint views. */
   readonly map: WalkMap;
@@ -63,10 +68,21 @@ export class Walker {
       ({ yaw: this.yaw, pitch: this.pitch } = viewOf(i));
       this.path = [];
       this.goal = null;
+      recordMotion('camera', 0, { cut: true });
       return;
     }
     this.path = route(this.pos, target);
     this.goal = viewOf(i);
+    // Between stations the camera takes 700 ms, whatever the distance; walking by hand keeps 2.2 m/s.
+    let len = 0;
+    let from: P2 = this.pos;
+    for (const p of this.path) {
+      len += Math.hypot(p.x - from.x, p.z - from.z);
+      from = p;
+    }
+    this.leg = { t: 0, done: 0, len };
+    this.lastLeg = null;
+    recordMotion('camera', MOTION.camera, { length: len });
   }
   stop() {
     this.path = [];
@@ -93,23 +109,32 @@ export class Walker {
     }
 
     if (this.path.length) {
-      const t = this.path[0];
-      const dx = t.x - this.pos.x;
-      const dz = t.z - this.pos.z;
-      const d = Math.hypot(dx, dz);
-      const stepLen = AUTO_SPEED * dt;
-      if (d <= stepLen || reduced) {
-        this.pos.x = t.x;
-        this.pos.z = t.z;
-        this.path.shift();
-      } else {
-        this.pos.x += (dx / d) * stepLen;
-        this.pos.z += (dz / d) * stepLen;
-        // Face the way you walk; the last leg already turns toward the station.
-        const ahead = this.path.length === 1 && this.goal ? this.goal.yaw : Math.atan2(-dx, -dz);
-        this.yaw += angleDelta(this.yaw, ahead) * Math.min(1, dt * 6);
-        this.pitch = approach(this.pitch, 0, dt, 4, false);
+      this.leg.t += dt;
+      const progress = reduced ? 1 : Math.min(1, this.leg.t / (MOTION.camera / 1000));
+      let budget = easeDefault(progress) * this.leg.len - this.leg.done;
+      while (this.path.length && budget > 0) {
+        const t = this.path[0];
+        const dx = t.x - this.pos.x;
+        const dz = t.z - this.pos.z;
+        const d = Math.hypot(dx, dz);
+        if (d <= budget || progress === 1) {
+          this.pos.x = t.x;
+          this.pos.z = t.z;
+          this.path.shift();
+          budget -= d;
+          this.leg.done += d;
+        } else {
+          this.pos.x += (dx / d) * budget;
+          this.pos.z += (dz / d) * budget;
+          this.leg.done += budget;
+          budget = 0;
+          // Face the way you walk; the last leg already turns toward the station.
+          const ahead = this.path.length === 1 && this.goal ? this.goal.yaw : Math.atan2(-dx, -dz);
+          this.yaw += angleDelta(this.yaw, ahead) * Math.min(1, dt * 6);
+          this.pitch = approach(this.pitch, 0, dt, 4, false);
+        }
       }
+      if (this.path.length === 0) this.lastLeg = { seconds: this.leg.t, length: this.leg.len };
     } else if (this.goal) {
       const dy = angleDelta(this.yaw, this.goal.yaw);
       const k = reduced ? 1 : Math.min(1, dt * 5);

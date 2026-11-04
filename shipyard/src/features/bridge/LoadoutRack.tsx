@@ -3,7 +3,7 @@
 // the ArkhEthos Skills slots row) and the ship's hold. Every drag has a keyboard twin: `E` on an
 // artifact opens the Equip menu, `Delete` takes it off, Enter on an empty socket opens the picker.
 // A library ship is a read-only template: the sockets show what is worn and say how to edit.
-import { useMemo, useState, type CSSProperties } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { TruthLabel } from '../../components/TruthLabel';
 import { entryIndex, isWorn, totalCapacity } from '../../domain/loadout';
@@ -11,6 +11,8 @@ import { ANCHOR_IDS, type Anchor, type Member, type Ship } from '../../domain/sc
 import type { KbIndex } from '../../kb/artifacts';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { isFamilyId } from '../../scene/artifacts/families';
+import { EASE_CSS, isReducedMotion, MOTION, recordMotion, takeDrop } from '../../lib/motion';
+import { useReducedMotion } from '../../lib/preferences';
 import { useDispatch } from '../../store/context';
 import { useArtifactHandlers, useEquip } from '../armory/equip';
 import { useNotify } from '../shared/notices';
@@ -69,7 +71,11 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
 }) {
   const dispatch = useDispatch();
   const notify = useNotify();
-  const { drag } = useEquip();
+  const { drag, invalid } = useEquip();
+  const reduced = useReducedMotion();
+  const chip = useRef<HTMLSpanElement>(null);
+  const flash = useRef<HTMLSpanElement>(null);
+  const was = useRef({ who: `${ship.id}:${member.id}`, skill });
   const art = skill ? idx.skill.get(skill) : undefined;
   const spec = idx.kb.anchors[anchor];
   const slotLabel = spec.capacity > 1 ? `${spec.label} slot ${index + 1}` : `${spec.label} slot`;
@@ -77,7 +83,32 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
   const handlers = useArtifactHandlers(skill ?? '', ship.id, member.id, { kind: 'worn', memberId: member.id });
   const hovered = drag?.hover?.via === 'socket' && drag.hover.memberId === member.id && drag.hover.anchor === anchor;
   const drop = !readOnly ? { 'data-drop-anchor': anchor, 'data-drop-ship': ship.id, 'data-drop-member': member.id } : {};
+  const lifted = Boolean(skill && drag?.source.kind === 'worn' && drag.skill === skill && drag.source.memberId === member.id);
+  const refused = invalid && invalid.memberId === member.id && invalid.anchor === anchor && (invalid.index === undefined ? index === 0 : invalid.index === index) ? invalid.reason : null;
   const [x, y] = SPOT[anchor][index];
+
+  // Equip, 2D: the socket flashes for 80 ms and the chip lands in 240 ms (from the drop point when there was a drop).
+  // Reduced motion: the chip is simply there, with a 120 ms opacity change.
+  useLayoutEffect(() => {
+    const who = `${ship.id}:${member.id}`;
+    const before = was.current;
+    was.current = { who, skill };
+    const el = chip.current;
+    if (!skill || !el || before.who !== who || before.skill === skill) return;
+    if (reduced || isReducedMotion()) {
+      el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION.reduced });
+      recordMotion('equip-2d', MOTION.reduced, { skill, variant: 'opacity' });
+      return;
+    }
+    const at = takeDrop();
+    const r = el.getBoundingClientRect();
+    const dx = at ? at.x - (r.left + r.width / 2) : 0;
+    const dy = at ? at.y - (r.top + r.height / 2) : 0;
+    el.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${at ? MOTION.pickUp.scale : MOTION.unequip.scale})`, opacity: at ? 1 : 0 }, { transform: 'none', opacity: 1 }], { duration: MOTION.equip.chipMs, easing: EASE_CSS });
+    flash.current?.animate([{ opacity: 0 }, { opacity: 0.8 }, { opacity: 0 }], { duration: MOTION.equip.socketFlashMs, easing: 'linear' });
+    recordMotion('equip-2d', MOTION.equip.chipMs, { skill, flashMs: MOTION.equip.socketFlashMs, fromDrop: Boolean(at) });
+  }, [skill, ship.id, member.id, reduced]);
+
   return (
     <button
       type="button"
@@ -91,10 +122,12 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
       data-active={active || undefined}
       data-hover={hovered || undefined}
       data-droppable={drag && !readOnly ? '' : undefined}
+      data-lifted={lifted || undefined}
       aria-label={label}
       aria-pressed={skill ? selected : undefined}
       style={{ left: `${x}%`, top: `${y}%`, ['--c' as string]: art?.artifact.pigment } as CSSProperties}
       {...drop}
+      data-drop-index={!readOnly ? index : undefined}
       {...(skill && !readOnly ? handlers : {})}
       onClick={() => (skill ? onSelect(skill) : readOnly ? undefined : onEmpty())}
       onKeyDown={(e) => {
@@ -113,7 +146,18 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
         } else handlers.onKeyDown(e);
       }}
     >
-      {art && isFamilyId(art.artifact.family) ? <FamilyGlyph family={art.artifact.family} pigment={art.artifact.pigment} /> : skill ? <span aria-hidden="true">?</span> : <span className="socket-plus" aria-hidden="true">{readOnly ? "" : "+"}</span>}
+      {skill && <span className="socket-flash" ref={flash} aria-hidden="true" />}
+      {art && isFamilyId(art.artifact.family) ? <span className="socket-chip" ref={chip}><FamilyGlyph family={art.artifact.family} pigment={art.artifact.pigment} /></span> : skill ? <span className="socket-chip" ref={chip} aria-hidden="true">?</span> : <span className="socket-plus" aria-hidden="true">{readOnly ? "" : "+"}</span>}
+      {hovered && (
+        <span className="socket-label" data-testid="socket-label" aria-hidden="true">
+          {reduced ? `Drop to equip: ${spec.label}` : spec.label}
+        </span>
+      )}
+      {refused && (
+        <span className="socket-reason" data-testid="socket-reason">
+          {refused}
+        </span>
+      )}
     </button>
   );
 }
@@ -124,11 +168,44 @@ export function AnchorDiagram(props: Omit<LoadoutRackProps, 'focusSkill' | 'onOp
   const dispatch = useDispatch();
   const notify = useNotify();
   const { openMenu } = useEquip();
+  const figure = useRef<HTMLDivElement>(null);
+  const seen = useRef<{ who: string; sockets: Map<string, { skill: string; html: string; left: string; top: string; c: string }> }>({ who: '', sockets: new Map() });
+  // Unequip: a worn artifact that leaves the member fades to 0 and shrinks to 0.85 in 160 ms (a ghost of the socket, then gone).
+  // One that merely moved to another socket is not a departure. Reduced motion: opacity only.
+  useLayoutEffect(() => {
+    const fig = figure.current;
+    if (!fig) return;
+    const who = `${ship.id}:${member.id}`;
+    const sockets = new Map<string, { skill: string; html: string; left: string; top: string; c: string }>();
+    fig.querySelectorAll<HTMLElement>('.socket[data-skill]').forEach((el) => {
+      sockets.set(el.dataset.testid ?? '', { skill: el.dataset.skill ?? '', html: el.querySelector('.socket-chip')?.innerHTML ?? '', left: el.style.left, top: el.style.top, c: el.style.getPropertyValue('--c') });
+    });
+    if (seen.current.who === who) {
+      for (const [key, was] of seen.current.sockets) {
+        if (sockets.get(key)?.skill === was.skill || member.loadout.some((e) => e.skill === was.skill)) continue;
+        const g = document.createElement('span');
+        g.className = 'socket socket-ghost';
+        g.setAttribute('aria-hidden', 'true');
+        g.setAttribute('data-testid', 'unequip-ghost');
+        g.setAttribute('data-filled', '');
+        g.style.left = was.left;
+        g.style.top = was.top;
+        g.style.setProperty('--c', was.c);
+        g.innerHTML = was.html;
+        fig.appendChild(g);
+        const reduced = isReducedMotion();
+        const a = g.animate(reduced ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: `scale(${MOTION.unequip.scale})` }], { duration: reduced ? MOTION.reduced : MOTION.unequip.ms, easing: EASE_CSS, fill: 'forwards' });
+        a.finished.then(() => g.remove(), () => g.remove());
+        recordMotion('unequip', reduced ? MOTION.reduced : MOTION.unequip.ms, { skill: was.skill, scale: reduced ? 1 : MOTION.unequip.scale });
+      }
+    }
+    seen.current = { who, sockets };
+  });
   const sel = picked && isWorn(member, picked) ? picked : null;
   const selArt = sel ? idx.skill.get(sel) : undefined;
   return (
     <div className="anchor-diagram" data-testid="anchor-diagram">
-      <div className="anchor-figure" data-drop-hold={undefined}>
+      <div className="anchor-figure" ref={figure}>
         <Silhouette />
         {ANCHOR_IDS.flatMap((anchor) =>
           Array.from({ length: idx.kb.anchors[anchor].capacity }, (_, i) => {
@@ -204,10 +281,11 @@ function SlotRows({ idx, ship, member, readOnly }: { idx: KbIndex; ship: Ship; m
 
 function HoldRow({ idx, ship, member, skill, readOnly }: { idx: KbIndex; ship: Ship; member: Member; skill: string; readOnly: boolean }) {
   const h = useArtifactHandlers(skill, ship.id, member.id, { kind: 'hold' });
+  const { drag } = useEquip();
   const a = idx.skill.get(skill);
   return (
     <li>
-      <button type="button" className="hold-chip" data-testid="hold-chip" data-skill={skill} disabled={readOnly} style={{ ['--c' as string]: a?.artifact.pigment } as CSSProperties} {...h} aria-label={`${a?.artifact.name ?? skill} in the hold. Press E to equip it to ${member.character.name}.`}>
+      <button type="button" className="hold-chip" data-testid="hold-chip" data-skill={skill} data-lifted={(drag?.source.kind === 'hold' && drag.skill === skill) || undefined} disabled={readOnly} style={{ ['--c' as string]: a?.artifact.pigment } as CSSProperties} {...h} aria-label={`${a?.artifact.name ?? skill} in the hold. Press E to equip it to ${member.character.name}.`}>
         {a && isFamilyId(a.artifact.family) && <FamilyGlyph family={a.artifact.family} pigment={a.artifact.pigment} />}
         <span>{a?.artifact.name ?? skill}</span>
       </button>

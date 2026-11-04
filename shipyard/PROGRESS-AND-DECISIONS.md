@@ -168,3 +168,32 @@ Open, for the finish pass (T11) unless motion (T10) owns them:
 - Glyphs reviewed against recipe and registry pigments: all 11 conform, no change to `glyphs.tsx`.
 - Open for the owner at Gate C (not decided): adopt meshopt crew GLBs (about 5.4 MB reported vs 10.1 MB now)? Requires re-measuring the manifest and re-checking bones.
 - No generation, purchase or download.
+
+## 2026-11-04 - T10 Motion pass (design-engineer, motion phase, emil-design-eng)
+
+- **One source of truth.** `src/lib/motion.ts` holds every motion number (160 / 240 / 700 ms, stagger 45, the default ease and its bezier solver, `back.out(1.6)`, the row numbers); `src/lib/feel.ts` holds the tiers (small 150-200, medium 400-700, large <= 900 and once per ship; no score, no running total); `src/styles/motion.css` holds the CSS rows, with the extra `--t-*` tokens in `tokens.css`. `tests/unit/motion.test.ts` reads DESIGN.md and tokens.css as text and fails when any number disagrees. `recordMotion()` (dev server only) leaves a record in `window.__motion` for each motion that runs, which the e2e asserts.
+- **Reduced motion** is `prefers-reduced-motion` only: the app has no preference of its own. 3D stays (0 rpm, on-demand frames, camera cuts).
+- **Deviations / calls.** (1) Camera: the autopilot was paced (3.2 m/s); it is now a timed leg of 700 ms on the default ease whatever the distance (`AUTO_SPEED` removed). Manual walking keeps 2.2 m/s, Shift x2. A long hop is fast by design of the contract. (2) The hover glow is a pseudo-element whose opacity goes 0 to 0.35 (box-shadow is not animated). (3) Pick up also lifts hold chips and worn sockets. (4) `global.css` caps every transition at 120 ms under reduced motion, which made the drag ghost lag; `.drag-ghost` now has `transition: none !important` (a real defect found by the 1:1 test). (5) The grid -> inspector Flip runs on selection; closing the sheet is a plain fade (no reverse flip). (6) Only the first 12 cards stagger, once, so a 101-card grid never makes anyone wait. (7) "First clean pre-flight" sweep is remembered in its own key (`convenium.shipyard.feel.v1`), not in the store schema; a visit under reduced motion neither plays nor marks it. (8) New artifacts fly in when they appear after the figure mounted; artifacts present at mount just stand there. (9) Under dev StrictMode some effects run twice, so records can repeat; tests allow it.
+- **Not touched:** the finish-pass defects (Hangar framing, Armory grid clipping, Voyage scroll, turntable figure size).
+
+### T10 motion table
+
+| Row | Implemented in | Verified normal | Verified reduced |
+|---|---|---|---|
+| Hover lift + glow | `motion.css` `.art-card` / `::after` | computed transform `translateY(-2px)`, `::after` opacity 0.35, transition 0.16 s | transform none, transition 0.12 s, glow 0.35 |
+| Pick up | `equip.tsx` `drag.source`, `data-lifted`, `motion.css` | transform `scale(1.04)`, transition 0.12 s; ghost within 1 px of pointer + 12 at three points | transform none; ghost still 1:1 |
+| Valid anchor pulse | `LoadoutRack` `Socket` (`data-hover`, label), `motion.css` `socket-pulse` | animation `socket-pulse` 0.625 s (1.6 Hz), label "Back" | animation none, label "Drop to equip: Back" |
+| Equip 3D | `WornArtifacts` `Arrival` (GSAP, `back.out(1.6)`) | record 520 ms arc 0.4 m; per-frame distance peaks 0.3-0.55 m, ends 0 | record 120 ms opacity; distance always 0 |
+| Equip 2D | `Socket` layout effect (WAAPI chip 240, flash 80, from drop point) | record 240 / 80, fromDrop, chip transform none | record 120 ms opacity |
+| Invalid drop | `equip.tsx` `returnGhost`, `showInvalid`, `socket-reason` | record 240 / 2 px x2 / 180 ms, clone removed, reason line visible, nothing moved | record 0 ms, no clone, reason line visible |
+| Unequip | `AnchorDiagram` exit ghost, `notices.tsx` | record 160 ms scale 0.85, ghost removed; notice with Undo, leaves in 240 ms, gone by itself after 8 s, `U` restores | record 120 ms scale 1 |
+| Active in stage | `motion.css` `socket-orbit`, `ArtifactMesh` `ACTIVE_RPS` | rim `0 0 0 3px`, orbit 4 s (0.25 rps) | orbit none, rim kept |
+| Check flips | `HullRing` `CountUp` + ring fill, `PreflightPage` row tint | undo on the pre-flight page: records ring-fill 400, count 400, row flip; ring ends 100 | no ring-fill, count or row records; the ring ends at 100 at once |
+| Clean pre-flight | `PreflightPage` GSAP timeline, `HullDiagram` lights, `feel.ts` | record 900 ms, lights in order crew, stages, parallel, gates, library; plays once, not on revisit or reload | final state and the line, no sweep, not marked |
+| Camera | `Walker.goTo/step` | leg 0.70-0.85 s simulated; retarget mid-leg; key press stops it | record `cut`, 0 ms |
+| Turntable | `Turntable.tsx` from `MOTION.turntable` | controls: speed 1, polar 0.9-1.6, pan off, loop always | autoRotate off, loop demand |
+| Grid <-> inspector Flip, stagger, toasts | `ArtifactDetail` (Flip), `ArtifactGrid`, `usePresence` | Flip 240; delays 0, 45, 90, 135, 180 ms; notice and commission toast enter and leave 240 ms | no Flip, no stagger, 120 ms capped |
+
+Rows not demonstrated: none. The 3D arrival and the sweep are asserted by records plus scene state, not by pixels.
+
+T10 gates: typecheck, lint, 252 unit tests, test:plans 4/4 CLEAN, full desktop Playwright 79 passed (18.0 min; a first full run had 2 scene tests fail under load and pass alone, then the whole suite passed on rerun), root verify.py CLEAN.

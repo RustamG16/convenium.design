@@ -1,7 +1,7 @@
 import type { Check, HullGroup } from '../../domain/preflight';
 import { groupStatus, StatusMark } from './StatusMark';
 
-/** Stern to bow: the order the hull lights in (the sweep itself belongs to the motion pass). */
+/** Stern to bow: the order the hull lights in (the clean-pre-flight sweep lights them in this order). */
 export const HULL_PANELS: { group: HullGroup; name: string; x: number }[] = [
   { group: 'crew', name: 'Crew', x: 104 },
   { group: 'stages', name: 'Stages', x: 166 },
@@ -62,6 +62,7 @@ export function HullDiagram({ checks }: { checks: Check[] }) {
               <rect x={x} y={PANEL_Y + PANEL_H - fillH} width={PANEL_W} height={fillH} rx="4" fill="var(--cotton)" opacity={p.status === 'pass' ? 0.9 : 0.5} />
               {p.status === 'block' && <rect x={x} y={PANEL_Y} width={PANEL_W} height={PANEL_H} rx="4" fill="url(#pf-hatch)" opacity="0.8" />}
               <rect x={x} y={PANEL_Y} width={PANEL_W} height={PANEL_H} rx="4" fill="none" stroke={edge} strokeWidth={p.status === 'block' ? 3 : 1.5} strokeDasharray={dash} />
+              <rect className="hull-light" data-light={group} x={x} y={PANEL_Y} width={PANEL_W} height={PANEL_H} rx="4" />
             </g>
           );
         })}

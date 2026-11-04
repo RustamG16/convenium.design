@@ -13,6 +13,7 @@ import { useKb } from '../../kb/context';
 import { useDispatch, useStoreState } from '../../store/context';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { isFamilyId } from '../../scene/artifacts/families';
+import { isReducedMotion, MOTION, noteDrop, recordMotion, EASE_CSS } from '../../lib/motion';
 import { useNotify } from '../shared/notices';
 
 export interface EquipTarget {
@@ -24,7 +25,17 @@ export interface Hover {
   memberId: string;
   anchor: Anchor | 'hold';
   via: 'socket' | 'body' | 'hold';
+  /** which socket of the anchor, when the pointer is on one */
+  index?: number;
 }
+/** The reason a drop was refused, shown under the socket it was dropped on. */
+export interface Invalid {
+  memberId: string;
+  anchor: Anchor | 'hold';
+  index?: number;
+  reason: string;
+}
+type RunResult = { ok: true } | { ok: false; reason: string } | { ok: 'pending' };
 /** A body drop zone answers: which of these anchors is nearest to the pointer. */
 export type BodyProbe = (clientX: number, clientY: number, candidates: Anchor[]) => Anchor | null;
 
@@ -38,8 +49,9 @@ interface EquipApi {
   target: EquipTarget | null;
   setTarget(t: EquipTarget | null): void;
   getShip(id: string): Ship | undefined;
-  drag: { skill: string; hover: Hover | null } | null;
-  requestEquip(req: { shipId: string; memberId: string; skill: string; anchor?: Anchor; source?: Source }): void;
+  drag: { skill: string; hover: Hover | null; source: Source } | null;
+  invalid: Invalid | null;
+  requestEquip(req: { shipId: string; memberId: string; skill: string; anchor?: Anchor; source?: Source }): RunResult;
   openMenu(req: { skill: string; shipId: string; memberId: string; source?: Source }): void;
   beginDrag(e: RPointerEvent, skill: string, source: Source): void;
   registerBody(memberId: string, probe: BodyProbe | null): void;
@@ -74,6 +86,7 @@ export function EquipProvider({ children }: { children: ReactNode }) {
   const notify = useNotify();
   const [target, setTarget] = useState<EquipTarget | null>(null);
   const [drag, setDrag] = useState<EquipApi['drag']>(null);
+  const [invalid, setInvalid] = useState<Invalid | null>(null);
   const [menu, setMenu] = useState<{ skill: string; shipId: string; memberId: string; source?: Source } | null>(null);
   const [full, setFull] = useState<{ shipId: string; memberId: string; skill: string; anchor: Anchor; source?: Source; occupants: string[] } | null>(null);
   const library = useMemo(() => libraryShips(idx, LIBRARY_EPOCH).ships, [idx]);
@@ -90,14 +103,18 @@ export function EquipProvider({ children }: { children: ReactNode }) {
   const nameOf = (skill: string) => idx.skill.get(skill)?.artifact.name ?? skill;
 
   const run = useCallback(
-    (req: { shipId: string; memberId: string; skill: string; anchor?: Anchor; source?: Source; onFull?: 'swap' | 'hold' }) => {
+    (req: { shipId: string; memberId: string; skill: string; anchor?: Anchor; source?: Source; onFull?: 'swap' | 'hold' }): RunResult => {
+      const refuse = (reason: string, note?: string): RunResult => {
+        notify(reason, { note, tone: 'warn' });
+        return { ok: false, reason };
+      };
       const ship = getShip(req.shipId);
-      if (!ship) return notify('That ship is not in the drydock.', { tone: 'warn' });
+      if (!ship) return refuse('That ship is not in the drydock.');
       if (isLibraryShip(ship) && !stateRef.current.ships.some((s) => s.id === ship.id)) {
-        return notify(`${ship.name} is a template and cannot be edited.`, { note: 'Clone it to edit.', tone: 'warn' });
+        return refuse(`${ship.name} is a template and cannot be edited.`, 'Clone it to edit.');
       }
       const member = ship.crew.find((m) => m.id === req.memberId);
-      if (!member) return notify('That crew member is not aboard.', { tone: 'warn' });
+      if (!member) return refuse('That crew member is not aboard.');
       const moving = req.source?.kind === 'worn' && req.source.memberId === req.memberId && isWorn(member, req.skill);
       const inHold = ship.hold?.includes(req.skill) ?? false;
       let probeShip = ship;
@@ -106,9 +123,9 @@ export function EquipProvider({ children }: { children: ReactNode }) {
       if (!result.ok) {
         if (result.code === 'anchor-full' && req.anchor) {
           setFull({ shipId: req.shipId, memberId: req.memberId, skill: req.skill, anchor: req.anchor, source: req.source, occupants: result.occupants });
-          return;
+          return { ok: 'pending' };
         }
-        return notify(result.reason, { tone: 'warn' });
+        return refuse(result.reason);
       }
       const opts = { anchor: req.anchor, onFull: req.onFull };
       if (moving) dispatch({ type: 'loadout/move', shipId: req.shipId, member: req.memberId, skill: req.skill, anchor: req.anchor ?? result.anchor, opts: { onFull: req.onFull } });
@@ -121,6 +138,7 @@ export function EquipProvider({ children }: { children: ReactNode }) {
         tone: result.notes.some((n) => n.severity !== 'info') ? 'warn' : 'info',
         undo: true,
       });
+      return { ok: true };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [idx, dispatch, getShip, notify],
@@ -135,7 +153,7 @@ export function EquipProvider({ children }: { children: ReactNode }) {
       const memberId = zone.dataset.dropMember ?? '';
       if (!shipId || !memberId) return null;
       if (zone.dataset.dropHold !== undefined) return { shipId, memberId, anchor: 'hold', via: 'hold' };
-      if (zone.dataset.dropAnchor) return { shipId, memberId, anchor: zone.dataset.dropAnchor as Anchor, via: 'socket' };
+      if (zone.dataset.dropAnchor) return { shipId, memberId, anchor: zone.dataset.dropAnchor as Anchor, via: 'socket', index: Number(zone.dataset.dropIndex ?? 0) };
       const ship = getShip(shipId);
       const member = ship?.crew.find((m) => m.id === memberId);
       const probe = bodies.current.get(memberId);
@@ -152,50 +170,112 @@ export function EquipProvider({ children }: { children: ReactNode }) {
     setDrag(null);
   }, []);
 
+  const lastPoint = useRef({ x: -200, y: -200 });
+  const invalidHandle = useRef(0);
+  const showInvalid = useCallback((inv: Invalid | null) => {
+    window.clearTimeout(invalidHandle.current);
+    setInvalid(inv);
+    if (inv) invalidHandle.current = window.setTimeout(() => setInvalid(null), 6000);
+  }, []);
+
+  /** A refused drop: the ghost shakes 2 px twice in 180 ms while it returns to where it came from in 240 ms. Reduced motion: it is simply gone. */
+  const returnGhost = useCallback((origin: HTMLElement | null) => {
+    const node = ghost.current;
+    if (!node || isReducedMotion()) {
+      recordMotion('invalid-drop', 0, { returned: false });
+      return;
+    }
+    const clone = node.cloneNode(true) as HTMLDivElement;
+    clone.setAttribute('data-returning', '');
+    clone.setAttribute('data-testid', 'drag-ghost-returning');
+    const from = `translate(${lastPoint.current.x + 12}px, ${lastPoint.current.y + 12}px)`;
+    clone.style.transform = from;
+    document.body.appendChild(clone);
+    const rect = origin?.isConnected ? origin.getBoundingClientRect() : null;
+    const home = rect ? `translate(${rect.left}px, ${rect.top}px)` : from;
+    const back = clone.animate([{ transform: from, opacity: 1 }, { transform: home, opacity: rect ? 1 : 0 }], { duration: MOTION.invalid.returnMs, easing: EASE_CSS, fill: 'forwards' });
+    const n = MOTION.invalid.shakeCount;
+    const px = MOTION.invalid.shakePx;
+    const offsets = ['0px 0px'];
+    for (let i = 0; i < n; i++) offsets.push(`${px}px 0px`, `${-px}px 0px`);
+    offsets.push('0px 0px');
+    clone.animate(offsets.map((translate) => ({ translate })), { duration: MOTION.invalid.shakeMs, easing: 'linear' });
+    back.finished.then(() => clone.remove(), () => clone.remove());
+    recordMotion('invalid-drop', MOTION.invalid.returnMs, { shakePx: px, shakeCount: n, shakeMs: MOTION.invalid.shakeMs, returned: Boolean(rect) });
+  }, []);
+
   const beginDrag = useCallback(
     (e: RPointerEvent, skill: string, source: Source) => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       const startX = e.clientX;
       const startY = e.clientY;
+      const origin = e.currentTarget as HTMLElement;
       const touch = e.pointerType === 'touch';
       let pressHandle = 0;
       let picked = false;
       const pickUp = () => {
         picked = true;
+        showInvalid(null);
         dragRef.current = { skill, source, hover: null };
-        setDrag({ skill, hover: null });
+        setDrag({ skill, hover: null, source });
+        recordMotion('pick-up', MOTION.pickUp.ms, { scale: MOTION.pickUp.scale });
+      };
+      const place = () => {
+        if (ghost.current) ghost.current.style.transform = `translate(${lastPoint.current.x + 12}px, ${lastPoint.current.y + 12}px)`;
       };
       const move = (ev: PointerEvent) => {
+        lastPoint.current = { x: ev.clientX, y: ev.clientY };
         if (!picked) {
           const far = Math.hypot(ev.clientX - startX, ev.clientY - startY) > MOVE_SLOP;
           if (touch && far) return stop(); // a scroll, not a pick-up
           if (!touch && far) pickUp();
           else return;
         }
-        if (ghost.current) ghost.current.style.transform = `translate(${ev.clientX + 12}px, ${ev.clientY + 12}px)`;
+        place();
         const h = hoverAt(ev.clientX, ev.clientY);
         const prev = dragRef.current?.hover;
-        if (dragRef.current && (prev?.anchor !== h?.anchor || prev?.memberId !== h?.memberId || prev?.via !== h?.via)) {
+        if (dragRef.current && (prev?.anchor !== h?.anchor || prev?.memberId !== h?.memberId || prev?.via !== h?.via || prev?.index !== h?.index)) {
           dragRef.current.hover = h;
-          setDrag({ skill, hover: h });
+          setDrag({ skill, hover: h, source });
         }
       };
       const up = (ev: PointerEvent) => {
         const hover = picked ? hoverAt(ev.clientX, ev.clientY) : null;
         const wasPicked = picked;
-        stop();
-        if (!wasPicked) return;
+        lastPoint.current = { x: ev.clientX, y: ev.clientY };
+        if (!wasPicked) return stop();
+        place();
         clickGuard.current = true;
         window.setTimeout(() => (clickGuard.current = false), 0);
-        if (!hover) return notify('Dropped nowhere: nothing changed.');
-        if (hover.anchor === 'hold') {
+        let refused = false;
+        let reason: string | null = null;
+        if (!hover) {
+          notify('Dropped nowhere: nothing changed.');
+          refused = true;
+        } else if (hover.anchor === 'hold') {
           if (source.kind === 'worn' && source.memberId) {
+            noteDrop(ev.clientX, ev.clientY);
             dispatch({ type: 'loadout/toHold', shipId: hover.shipId, member: source.memberId, skill });
             notify(`${nameOf(skill)} sent to the hold.`, { undo: true });
+          } else {
+            reason = 'Only a worn artifact can be sent to the hold.';
+            notify(reason, { tone: 'warn' });
+            refused = true;
           }
-          return;
+        } else {
+          noteDrop(ev.clientX, ev.clientY);
+          const r = run({ shipId: hover.shipId, memberId: hover.memberId, skill, anchor: hover.anchor, source });
+          if (r.ok === false) {
+            refused = true;
+            reason = r.reason;
+          }
         }
-        run({ shipId: hover.shipId, memberId: hover.memberId, skill, anchor: hover.anchor, source });
+        if (refused) {
+          // The ghost is cloned for its trip home before the dragged one unmounts.
+          returnGhost(origin);
+          if (hover && reason) showInvalid({ memberId: hover.memberId, anchor: hover.anchor, index: hover.index, reason });
+        }
+        stop();
       };
       const key = (ev: KeyboardEvent) => {
         if (ev.key === 'Escape') stop();
@@ -212,15 +292,16 @@ export function EquipProvider({ children }: { children: ReactNode }) {
       window.addEventListener('pointerup', up);
       window.addEventListener('pointercancel', stop);
       window.addEventListener('keydown', key);
+      lastPoint.current = { x: startX, y: startY };
       if (touch) {
         pressHandle = window.setTimeout(() => {
           pickUp();
-          if (ghost.current) ghost.current.style.transform = `translate(${startX + 12}px, ${startY + 12}px)`;
+          place();
         }, LONG_PRESS_MS);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [hoverAt, run, dispatch, notify, endDrag],
+    [hoverAt, run, dispatch, notify, endDrag, returnGhost, showInvalid],
   );
 
   // While something is picked up by touch, the page must not scroll under the finger.
@@ -238,6 +319,7 @@ export function EquipProvider({ children }: { children: ReactNode }) {
       setTarget,
       getShip,
       drag,
+      invalid,
       requestEquip: run,
       openMenu: setMenu,
       beginDrag,
@@ -251,7 +333,7 @@ export function EquipProvider({ children }: { children: ReactNode }) {
         return was;
       },
     }),
-    [target, getShip, drag, run, beginDrag],
+    [target, getShip, drag, invalid, run, beginDrag],
   );
 
   const draggedSkill = drag ? idx.skill.get(drag.skill) : undefined;
@@ -260,7 +342,7 @@ export function EquipProvider({ children }: { children: ReactNode }) {
       {children}
       {drag &&
         createPortal(
-          <div ref={ghost} className="drag-ghost" data-testid="drag-ghost" aria-hidden="true" style={{ ['--c' as string]: draggedSkill?.artifact.pigment }}>
+          <div ref={(el) => { ghost.current = el; if (el) el.style.transform = `translate(${lastPoint.current.x + 12}px, ${lastPoint.current.y + 12}px)`; }} className="drag-ghost" data-testid="drag-ghost" aria-hidden="true" style={{ ['--c' as string]: draggedSkill?.artifact.pigment }}>
             {draggedSkill && isFamilyId(draggedSkill.artifact.family) && <FamilyGlyph family={draggedSkill.artifact.family} pigment={draggedSkill.artifact.pigment} />}
             <span>{draggedSkill?.artifact.name ?? drag.skill}</span>
             <span className="drag-ghost-hint">{drag.hover ? (drag.hover.anchor === 'hold' ? 'Drop to send to the hold' : `Drop to equip: ${idx.kb.anchors[drag.hover.anchor].label}`) : 'Drop on a socket or the body'}</span>
