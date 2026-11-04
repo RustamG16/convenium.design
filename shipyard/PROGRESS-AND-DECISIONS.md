@@ -159,3 +159,12 @@ Open, for the finish pass (T11) unless motion (T10) owns them:
 3. **Voyage track:** the fourth card is cut at the inspector edge with no visible affordance that the track scrolls; check that the horizontal scroll is discoverable and keyboard-reachable.
 4. **Bridge turntable:** the figure is small in its card (about 55% of the card height) and the orbit items read as loose dots. Keep the face clear.
 - T12 (optional proposals export) has no row in `00-run-plan.md`; it is not run in this build.
+
+## 2026-11-04 - Assets phase (asset-producer)
+
+- Re-measured all 55 files in `public/media/` (bytes and full sha256): 12,410,762 bytes, every row matches the manifest, nothing outside it. Manifest Status set to `imported, verified 2026-11-04`; full sha256 appendix added.
+- Provenance recorded: imported from a read-only ArkhEthos snapshot at `4de85a8`, not the owner's checkout `4db3cf3` (meshopt-recompressed crew GLBs, fail the manifest).
+- `LICENSES.md` extended with per-piece kit packs, per-file sound sources, a not-relicensable note for crew assets, and provenance. Note: re-running the importer overwrites it.
+- Glyphs reviewed against recipe and registry pigments: all 11 conform, no change to `glyphs.tsx`.
+- Open for the owner at Gate C (not decided): adopt meshopt crew GLBs (about 5.4 MB reported vs 10.1 MB now)? Requires re-measuring the manifest and re-checking bones.
+- No generation, purchase or download.
