@@ -13,7 +13,7 @@ import { useArtifactHandlers, useEquip } from './equip';
 
 export const VIRTUALISE_ABOVE = 60;
 const GAP = 12;
-const ROW_H = 168;
+const ROW_H = 128;
 const OVERSCAN = 2;
 
 export interface GridProps {
@@ -59,13 +59,10 @@ function Card({ idx, skill, selected, onSelect, ship, enter }: { idx: KbIndex; s
       aria-label={`${a.name}, ${skill.id}, ${tier?.label ?? a.tier}, ${skill.phase} phase${wearers.length ? `, worn by ${wearers.map((m) => m.character.name).join(', ')}` : ''}. Press E to equip.`}
     >
       <span className="art-card-tile">{isFamilyId(a.family) ? <FamilyGlyph family={a.family} pigment={a.pigment} /> : null}</span>
-      <span className="art-card-name">{a.name}</span>
-      <code className="art-card-id">{skill.id}</code>
       <span className="art-card-meta">
-        <span className="art-card-tier" data-rim={tier?.rim}>{tier?.label ?? a.tier}</span>
-        <span className="art-card-phase">{skill.phase}</span>
+        {a.familyName} · <span className="art-card-tier" data-rim={tier?.rim}>{tier?.label ?? a.tier}</span>
       </span>
-      <span className="art-card-desc">{skill.description}</span>
+      <span className="art-card-name">{a.name}</span>
       {wearers.length > 0 && (
         <span className="art-card-wearers" aria-hidden="true">
           {wearers.slice(0, 5).map((m) => (

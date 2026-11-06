@@ -178,6 +178,7 @@ test('the bridge drawer: drag a card onto the 3D body; the nearest free anchor i
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/ship/ss-full-run/bridge?member=strategist');
   await page.getByTestId('clone-to-edit').click();
+  await page.getByTestId('clone-confirm').click();
   await expect(page.getByTestId('turntable')).toHaveAttribute('data-ready', 'true', { timeout: 60_000 });
   await page.getByTestId('open-armory').click();
   await expect(page.getByTestId('armory-drawer')).toBeVisible();
@@ -210,7 +211,7 @@ test('360 phone: the grid is two columns, the inspector is a full-screen sheet a
   await page.screenshot({ path: resolve(SHOTS, 't7-armory-360.png') });
   await card(page, 'gsap-core').click();
   await expect(page.getByTestId('inspector-sheet')).toBeVisible();
-  await page.getByTestId('detail-equip').click();
+  await page.getByTestId('detail-equip-menu').click();
   await page.getByTestId('equip-confirm').click();
   await page.getByTestId('inspector-close').click().catch(() => undefined);
   await expect(page.getByTestId('notice')).toContainText('Equipped');

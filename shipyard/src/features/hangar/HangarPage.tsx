@@ -81,7 +81,20 @@ function ShipCard({ ship, focused, onFocusShip, show3d }: { ship: Ship; focused:
       ) : (
         <p className="lock" data-testid="drydock-label">Drydock · yours{ship.origin?.from ? ` · from ${ship.origin.from}` : ''}</p>
       )}
-      {ship.summary && <p className="prose-sm">{ship.summary}</p>}
+      <div className="row card-actions" style={{ gap: 'var(--s2)' }}>
+        <Link className="btn btn-primary" to={`/ship/${ship.id}`} data-testid="open-ship">
+          Open the ship
+        </Link>
+        {!library && (
+          <Link className="btn btn-quiet" to={`/ship/${ship.id}/voyage`} data-testid="open-voyage">
+            Plan the voyage
+          </Link>
+        )}
+        <Link className="btn btn-quiet" to={`/ship/${ship.id}/preflight`} data-testid="open-preflight">
+          Pre-flight and export
+        </Link>
+      </div>
+      {ship.summary && <p className="prose-sm card-summary">{ship.summary}</p>}
       <ul className="chips" aria-label={`Crew of ${ship.name}`} data-testid="crew-chips">
         {ship.crew.map((m) => (
           <li key={m.id} className="chip" data-crew={m.id}>
@@ -114,36 +127,23 @@ function ShipCard({ ship, focused, onFocusShip, show3d }: { ship: Ship; focused:
           }}
         >
           <input className="field" style={{ flex: 1, minWidth: 160 }} value={draft} maxLength={48} onChange={(e) => setDraft(e.target.value)} aria-label={`New name for ${ship.name}`} data-testid="rename-input" autoFocus />
-          <button type="submit" className="btn btn-primary" data-testid="rename-save">Save</button>
+          <button type="submit" className="btn btn-quiet" data-testid="rename-save">Save</button>
           <button type="button" className="btn btn-quiet" onClick={() => setRenaming(false)}>Cancel</button>
         </form>
       ) : (
-        <div className="row card-actions" style={{ gap: 'var(--s2)' }}>
-          <Link className="btn btn-quiet" to={`/ship/${ship.id}`} data-testid="open-ship">
-            Open the ship
-          </Link>
-          {!library && (
-            <Link className="btn btn-quiet" to={`/ship/${ship.id}/voyage`} data-testid="open-voyage">
-              Plan the voyage
-            </Link>
-          )}
-          <Link className="btn btn-quiet" to={`/ship/${ship.id}/preflight`} data-testid="open-preflight">
-            Pre-flight and export
-          </Link>
-          {!library && (
-            <>
-              <button type="button" className="btn btn-quiet" onClick={() => { setDraft(ship.name); setRenaming(true); }} data-testid="rename">Rename</button>
-              {resettable && (
-                <button type="button" className="btn btn-quiet" data-testid="reset-ship" onClick={() => { dispatch({ type: 'ship/restoreDefault', id: ship.id }); notify(`${ship.name} reset to its template.`, { undo: true }); }}>
-                  Reset ship
-                </button>
-              )}
-              <button type="button" className="btn btn-quiet" data-testid="delete-ship" onClick={() => { dispatch({ type: 'ship/delete', id: ship.id }); notify(`${ship.name} deleted.`, { undo: true }); }}>
-                Delete
+        !library && (
+          <div className="row card-manage" style={{ gap: 'var(--s2)' }}>
+            <button type="button" className="btn btn-quiet btn-sm" onClick={() => { setDraft(ship.name); setRenaming(true); }} data-testid="rename">Rename</button>
+            {resettable && (
+              <button type="button" className="btn btn-quiet btn-sm" data-testid="reset-ship" onClick={() => { dispatch({ type: 'ship/restoreDefault', id: ship.id }); notify(`${ship.name} reset to its template.`, { undo: true }); }}>
+                Reset ship
               </button>
-            </>
-          )}
-        </div>
+            )}
+            <button type="button" className="btn btn-quiet btn-sm" data-testid="delete-ship" onClick={() => { dispatch({ type: 'ship/delete', id: ship.id }); notify(`${ship.name} deleted.`, { undo: true }); }}>
+              Delete
+            </button>
+          </div>
+        )
       )}
     </article>
   );
@@ -168,55 +168,58 @@ export function HangarPage() {
 
   return (
     <main id="main" className="page hangar">
-      <header className="hangar-head">
-        <h1 className="display">Shipyard</h1>
-        <p className="lede">Fit out a ship, choose its crew, hang the skills on their bodies, and export the plan a session runs.</p>
-        <Popover.Root>
-          <Popover.Trigger className="pill" data-testid="how-it-works">
-            How it works?
-          </Popover.Trigger>
-          <Popover.Portal>
-            <Popover.Content className="popover" sideOffset={8} align="start">
-              <ol>
-                <li>A ship is a workflow. Its crew are the agents; a crew member&rsquo;s artifacts are the skills they may be handed.</li>
-                <li>Equip skills, plan the voyage, and watch pre-flight say what would break.</li>
-                <li>Export a ship that passes pre-flight and paste its plan into a session.</li>
-              </ol>
-              <p className="promise">Nothing here runs an agent; it writes the plan a session runs.</p>
-              <Popover.Arrow className="popover-arrow" />
-            </Popover.Content>
-          </Popover.Portal>
-        </Popover.Root>
-      </header>
+      <div className="hangar-top" data-stage={show3d || undefined}>
+        {show3d && (
+          <div className="fleet-stage" data-testid="fleet-stage">
+            <Suspense fallback={<div className="fleet-ring fleet-ring-loading" aria-hidden="true"><HullSilhouette hull={flagship?.hull} /></div>}>
+              <FleetRing
+                ships={items}
+                focusId={focus}
+                reduced={reduced}
+                onContextLost={() => setLost(true)}
+                onPick={(id) => {
+                  setFocusId(id);
+                  document.querySelector<HTMLElement>(`[data-ship="${id}"] [data-testid="open-ship"]`)?.focus();
+                }}
+              />
+            </Suspense>
+          </div>
+        )}
+        <div className="hangar-side">
+          <header className="hangar-head">
+            <h1 className="display">Shipyard</h1>
+            <p className="lede">Fit out a ship, choose its crew, hang the skills on their bodies, and export the plan a session runs.</p>
+            <Popover.Root>
+              <Popover.Trigger className="pill" data-testid="how-it-works">
+                How it works
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Content className="popover" sideOffset={8} align="start">
+                  <ol>
+                    <li>A ship is a workflow. Its crew are the agents; a crew member&rsquo;s artifacts are the skills they may be handed.</li>
+                    <li>Equip skills, plan the voyage, and watch pre-flight say what would break.</li>
+                    <li>Export a ship that passes pre-flight and paste its plan into a session.</li>
+                  </ol>
+                  <p className="promise">Nothing here runs an agent; it writes the plan a session runs.</p>
+                  <Popover.Arrow className="popover-arrow" />
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root>
+          </header>
 
-      {show3d && (
-        <div className="fleet-stage" data-testid="fleet-stage">
-          <Suspense fallback={<div className="fleet-ring fleet-ring-loading" aria-hidden="true"><HullSilhouette hull={flagship?.hull} /></div>}>
-            <FleetRing
-              ships={items}
-              focusId={focus}
-              reduced={reduced}
-              onContextLost={() => setLost(true)}
-              onPick={(id) => {
-                setFocusId(id);
-                document.querySelector<HTMLElement>(`[data-ship="${id}"] [data-testid="open-ship"]`)?.focus();
-              }}
-            />
-          </Suspense>
+          <section aria-labelledby="fleet-h" className="fleet">
+            <div className="section-row">
+              <h2 id="fleet-h" className="section-head">
+                Fleet
+              </h2>
+              <button type="button" className="btn btn-quiet" onClick={() => setDialog({ mode: 'blank' })} data-testid="commission">
+                Commission a ship
+              </button>
+            </div>
+            {flagship ? <ShipCard ship={flagship} focused={focus === flagship.id} onFocusShip={setFocusId} show3d={show3d} /> : <p className="state-line">The default ship is missing from the library.</p>}
+          </section>
         </div>
-      )}
-
-      <section aria-labelledby="fleet-h" className="fleet">
-        <div className="section-row">
-          <h2 id="fleet-h" className="section-head">
-            Fleet
-          </h2>
-          <button type="button" className="btn btn-primary" onClick={() => setDialog({ mode: 'blank' })} data-testid="commission">
-            Commission a ship
-          </button>
-        </div>
-        {flagship ? <ShipCard ship={flagship} focused={focus === flagship.id} onFocusShip={setFocusId} show3d={show3d} /> : <p className="state-line">The default ship is missing from the library.</p>}
-      </section>
+      </div>
 
       <section aria-labelledby="drydock-h" className="drydock">
         <h2 id="drydock-h" className="section-head">
@@ -225,8 +228,8 @@ export function HangarPage() {
         {ships.length === 0 ? (
           <div className="empty" data-testid="drydock-empty">
             <p className="prose">Your drydock is empty. Clone SS Full Run to start.</p>
-            <button type="button" className="btn btn-quiet" onClick={() => setDialog({ mode: 'clone' })} data-testid="clone-default">
-              Clone SS Full Run
+            <button type="button" className="btn btn-quiet btn-next" onClick={() => setDialog({ mode: 'clone' })} data-testid="clone-default">
+              Next step: Clone SS Full Run
             </button>
           </div>
         ) : (

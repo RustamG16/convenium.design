@@ -79,12 +79,29 @@ textarea.field { min-height: 88px; resize: vertical; }
 }
 
 /* ---------- T8: hangar fleet ring, drydock, commission dialog ---------- */
-.fleet-stage { margin-top: var(--s5); border: 1px solid var(--hairline); border-radius: var(--r-panel); background: radial-gradient(120% 120% at 50% 100%, #2a2320 0%, var(--ink) 70%); overflow: hidden; }
-.fleet-ring { height: 340px; width: 100%; }
+/* T11: the stage and the fleet card share the first viewport (1440x900): hull left, title and card right. */
+.hangar-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
+.hangar-top[data-stage] { grid-template-columns: minmax(0, 1fr) 480px; align-items: stretch; }
+.hangar-side { min-width: 0; }
+.hangar-side .hangar-head .lede { margin: var(--s3) 0; font-size: 18px; }
+.hangar-side .fleet { margin-top: var(--s4); }
+.hangar-side .section-row { margin-bottom: var(--s3); }
+.hangar-side .section-head { font-size: 24px; }
+.fleet-stage { position: relative; min-height: 320px; border: 1px solid var(--hairline); border-radius: var(--r-panel); background: radial-gradient(90% 90% at 50% 70%, #2a2320 0%, var(--ink) 75%); overflow: hidden; }
+.hangar-top[data-stage] .fleet-stage { height: min(calc(100svh - var(--header-h) - 2 * var(--s6)), 780px); min-height: 480px; }
+.fleet-ring { position: absolute; inset: 0; }
 .fleet-ring canvas { width: 100% !important; height: 100% !important; }
 .fleet-ring-loading { display: grid; place-items: center; color: var(--muted); }
-.fleet-ring-loading .hull { width: 240px; }
-@media (max-width: 767px) { .fleet-ring { height: 220px; } }
+.fleet-ring-loading .hull { width: 60%; }
+@media (max-width: 1199px) {
+  .hangar-top[data-stage] { grid-template-columns: minmax(0, 1fr); }
+  .hangar-top[data-stage] .fleet-stage { height: 360px; min-height: 0; order: 2; }
+}
+@media (max-width: 767px) { .hangar-top[data-stage] .fleet-stage { height: 240px; } }
+.hangar .ship-card { max-width: none; padding: var(--s4); gap: var(--s2); }
+.hangar .card-summary { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.hangar .ship-card .chips { gap: var(--s1); }
+.btn-next { justify-self: start; }
 .ship-card[data-focused] { border-color: var(--border); }
 .drydock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: var(--s5); }
 .drydock-grid .ship-card { max-width: none; }

@@ -188,7 +188,7 @@ export function BoardTour({ ship, reduced, quality, lite, sound, onSound, onSkip
             </p>
           ))}
 
-        <button type="button" className="btn btn-quiet ship-skip" onClick={onSkip} data-testid="skip-to-bridge">
+        <button type="button" className="btn btn-text ship-skip" onClick={onSkip} data-testid="skip-to-bridge">
           Skip to bridge
         </button>
 
@@ -219,13 +219,7 @@ export function BoardTour({ ship, reduced, quality, lite, sound, onSound, onSkip
         {lite ? (
           <WalkPad press={press} />
         ) : (
-          <p className="ship-keys" data-testid="walk-keys" aria-hidden="true">
-            <kbd>W</kbd>
-            <kbd>A</kbd>
-            <kbd>S</kbd>
-            <kbd>D</kbd> walk <kbd>←</kbd>
-            <kbd>→</kbd> turn <kbd>Shift</kbd> run · {lockable ? 'mouse to look, click to talk' : 'drag to look'} · <kbd>Space</kbd> next stop
-          </p>
+          <ControlsDisclosure lockable={lockable} />
         )}
 
         <article className="ship-wp-card panel-glass" key={wp?.id ?? 'bridge'} data-testid="waypoint-card" data-kind={member ? 'station' : (wp?.id ?? 'bridge')} aria-live="polite" style={{ ['--c' as string]: member?.pigment ?? '#C9473F' } as CSSProperties}>
@@ -438,5 +432,56 @@ function WalkPad({ press }: { press: (key: WalkKey, on: boolean) => void }) {
         </button>
       ))}
     </div>
+  );
+}
+
+const CONTROLS_KEY = 'convenium.shipyard.ui.controlsSeen';
+
+/**
+ * The walking controls, one "Controls" disclosure (simplicity brief B1). On a first visit it is open for
+ * 4 s or until the first key is pressed, then it closes and stays closed; it is always one click away and
+ * the summary is a real button, so the keyboard reaches it.
+ */
+function ControlsDisclosure({ lockable }: { lockable: boolean }) {
+  const [open, setOpen] = useState(() => {
+    try {
+      return window.localStorage.getItem(CONTROLS_KEY) !== '1';
+    } catch {
+      return true;
+    }
+  });
+  const closeFirst = useRef(open);
+  useEffect(() => {
+    if (!closeFirst.current) return;
+    const done = () => {
+      closeFirst.current = false;
+      setOpen(false);
+      try {
+        window.localStorage.setItem(CONTROLS_KEY, '1');
+      } catch {
+        /* storage unavailable: it shows again next visit */
+      }
+    };
+    const closeAfter = window.setTimeout(done, 4000);
+    const onKey = (e: KeyboardEvent) => {
+      if (/^(w|a|s|d|arrow\w+| )$/i.test(e.key)) done();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.clearTimeout(closeAfter);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, []);
+  return (
+    <details className="ship-controls" open={open} onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)} data-testid="controls">
+      <summary className="btn btn-quiet btn-sm">Controls</summary>
+      <p className="ship-keys" data-testid="walk-keys">
+        <kbd>W</kbd>
+        <kbd>A</kbd>
+        <kbd>S</kbd>
+        <kbd>D</kbd> walk <kbd>&larr;</kbd>
+        <kbd>&rarr;</kbd> turn <kbd>Shift</kbd> run · {lockable ? 'mouse to look, click to talk' : 'drag to look'} · <kbd>Space</kbd> next stop
+      </p>
+    </details>
   );
 }

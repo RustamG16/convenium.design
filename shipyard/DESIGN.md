@@ -45,9 +45,15 @@ carries tier, status or validity alone — each also has a word and a shape.
 
 | Breakpoint | Bridge (crew profile) | Armory | Voyage planner |
 |---|---|---|---|
-| ≥ 1200px | 320 turntable+rail / 1fr identity / 360 rack | 280 filters / 1fr grid (min card 200px) / 420 inspector | 1fr stage track + 360 stage inspector |
-| 768–1199 | two columns, turntable above card, rack below | filters as a sheet, grid + inspector as drawer | track full width, inspector as drawer |
-| < 768 | stacked; rack becomes bottom sheet (snap 40% / 92%); anchors as list | grid 2 columns; inspector full-screen sheet | vertical stage list; inspector full-screen sheet |
+| ≥ 1200px | 0.95fr turntable+rail (min 360) / 1fr identity / 360 rack; Hangar: 1fr hull stage / 480 title + fleet card | one filter row (search + three selects), then the grid at full width (min card 220px); a 420 column (target loadout, then inspector) opens beside it only when there is a ship to equip to or a card is picked | track wraps into rows (never a sideways scroll) + 360 stage inspector |
+| 768–1199 | two columns, turntable above card, rack below; Hangar: card, then stage | filters and loadout as sheets, inspector as a sheet | track wraps at full width, inspector as a sheet |
+| < 768 | stacked; rack becomes bottom sheet (snap 40% / 92%); anchors as list | grid 2 columns (min 150); inspector full-screen sheet | vertical stage list; inspector full-screen sheet |
+
+Every ship screen (Bridge, Voyage, Pre-flight) carries one sub-nav: **Bridge · Voyage · Pre-flight** (current marked), a readiness pill (ring and "14 of 14", Verified) and the next-goal button, with Replay the walk, Logbook and Back to the hangar in a quiet More. On a library template one slim line ("Template, read-only") holds Clone to edit.
+
+## Button hierarchy
+
+One filled primary per view, one next goal, at most two levels of detail. Primary = cotton fill (`.btn-primary`); secondary = outline (`.btn-quiet`); tertiary = text (`.btn-text`). Hangar: Open the ship. Boarding walk: Walk in. Bridge: Equip a skill (a template: Clone to edit). Armory: Equip to the member (no ship yet: Clone SS Full Run). Voyage: Add stage (a template: Clone to edit). Pre-flight: Copy kickoff prompt; downloads and Save are a quiet Files group. Numbers are unchanged.
 
 ## Gamification (committed numbers — gamified-ui, decision 5)
 

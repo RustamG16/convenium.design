@@ -10,7 +10,7 @@ import type { Ship } from '../../domain/schema';
 import { useDispatch } from '../../store/context';
 import { useNotify } from '../shared/notices';
 import { SkewBadge } from '../../components/SkewBadge';
-import { TruthLabel, type Truth } from '../../components/TruthLabel';
+import { TruthLabel } from '../../components/TruthLabel';
 import type { SceneMember } from '../../scene/crew';
 
 export function CrewRail({ crew, activeId, onSelect }: { crew: readonly SceneMember[]; activeId: string | null; onSelect: (id: string) => void }) {
@@ -36,50 +36,83 @@ export function CrewRail({ crew, activeId, onSelect }: { crew: readonly SceneMem
   );
 }
 
+const PROFILE_KEY = 'convenium.shipyard.ui.profileOpen';
+const readProfileOpen = (): boolean => {
+  try {
+    return window.localStorage.getItem(PROFILE_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Identity first (simplicity brief R1): name, role, model tier and one line. The lore lists sit behind
+ * one "Profile" disclosure, closed by default and remembered. The Verified label is stated once, on the
+ * agent line; the Simulated label once, on the Profile summary.
+ */
 export function IdentityCard({ member, evidence, access, model }: { member: SceneMember; evidence?: string; access?: string; model?: string }) {
+  const [open, setOpen] = useState(readProfileOpen);
+  const hasLore = Boolean(member.species || member.essence || member.plainMeaning || member.strengths.length || member.blindSpots.length || member.motivations.length || member.growthPaths.length);
   return (
     <article className="ship-identity stack" style={{ ['--c' as string]: member.pigment } as CSSProperties} data-testid="identity-card">
-      <header className="stack" style={{ gap: 'var(--s1)' }}>
-        <div className="row" style={{ gap: 'var(--s2)', flexWrap: 'wrap', alignItems: 'center' }}>
-          <SkewBadge>Station {member.station}</SkewBadge>
-          <TruthLabel truth="Verified" detail={evidence ? `agent ${member.agent}, ${evidence}` : `agent ${member.agent}`} />
-        </div>
-        <h2 className="section-title ship-identity-name">{member.name}</h2>
-        <p className="muted sheet-line">{member.role.title}</p>
+      <header className="stack" style={{ gap: 'var(--s2)' }}>
+        <SkewBadge>Station {member.station}</SkewBadge>
+        <h2 className="ship-identity-role">
+          <span className="sr-only">{member.name}, </span>
+          {member.role.title}
+        </h2>
         <p className="agent-chip" data-testid="agent-chip">
           <code>{member.agent}</code>
           {access && <span>{access === 'write' ? 'Can write files' : 'Read-only'}</span>}
           {model && <span>Model tier: {model}</span>}
-          <TruthLabel truth="Verified" detail="from the agent file" />
+          <TruthLabel truth="Verified" detail={evidence ? `from the agent file, ${evidence}` : 'from the agent file'} />
         </p>
-        {member.species && <p className="ship-identity-species">{member.species}</p>}
       </header>
-      {member.essence && <p className="ship-identity-essence">{member.essence}</p>}
       {member.analogy && (
         <blockquote className="ship-identity-line">
-          <p>“{member.analogy}”</p>
-          <footer className="muted sheet-line">{member.plainMeaning}</footer>
+          <p>&ldquo;{member.analogy}&rdquo;</p>
         </blockquote>
       )}
-      {(member.strengths.length > 0 || member.blindSpots.length > 0) && (
-        <div className="ship-identity-grid">
-          <Facet title="Strengths" items={member.strengths} />
-          <Facet title="Blind spots (hypotheses)" items={member.blindSpots} truth="Simulated" />
-          <Facet title="Motivations" items={member.motivations} />
-          <Facet title="Growth paths" items={member.growthPaths} />
-        </div>
+      {hasLore && (
+        <details
+          className="ship-profile-more"
+          data-testid="profile-details"
+          open={open}
+          onToggle={(e) => {
+            const now = (e.currentTarget as HTMLDetailsElement).open;
+            setOpen(now);
+            try {
+              window.localStorage.setItem(PROFILE_KEY, now ? '1' : '0');
+            } catch {
+              /* storage unavailable: the choice lasts for this visit only */
+            }
+          }}
+        >
+          <summary className="btn btn-quiet btn-sm">
+            Profile <TruthLabel truth="Simulated" detail="narrative, not a measurement" />
+          </summary>
+          <div className="stack" style={{ marginTop: 'var(--s3)' }}>
+            {member.species && <p className="ship-identity-species">{member.species}</p>}
+            {member.essence && <p className="ship-identity-essence">{member.essence}</p>}
+            {member.plainMeaning && <p className="muted sheet-line">{member.plainMeaning}</p>}
+            <div className="ship-identity-grid">
+              <Facet title="Strengths" items={member.strengths} />
+              <Facet title="Blind spots" items={member.blindSpots} />
+              <Facet title="Motivations" items={member.motivations} />
+              <Facet title="Growth paths" items={member.growthPaths} />
+            </div>
+          </div>
+        </details>
       )}
     </article>
   );
 }
 
-function Facet({ title, items, truth = 'Simulated' }: { title: string; items: readonly string[]; truth?: Truth }) {
+function Facet({ title, items }: { title: string; items: readonly string[] }) {
   if (items.length === 0) return null;
   return (
     <section className="ship-facet">
-      <h3 className="label">
-        {title} <TruthLabel truth={truth} />
-      </h3>
+      <h3 className="label">{title}</h3>
       <ul className="ship-facet-list">
         {items.map((t) => (
           <li key={t}>{t}</li>

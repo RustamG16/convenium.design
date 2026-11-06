@@ -35,6 +35,7 @@ const skillsOnBody = (page: Page) =>
 async function cloneFrom(page: Page, member: string) {
   await page.goto(`/#/ship/ss-full-run/bridge?member=${member}`);
   await page.getByTestId('clone-to-edit').click();
+  await page.getByTestId('clone-confirm').click();
   await expect(page).toHaveURL(/ship\/ss-full-run-copy\/bridge/);
   await expect(page.getByTestId('template-banner')).toHaveCount(0);
 }
@@ -43,11 +44,15 @@ test('acceptance 1: cleared storage shows exactly one ship; its bridge is a read
   await page.goto('/#/');
   await expect(page.getByTestId('ship-card')).toHaveCount(1);
   await page.goto('/#/ship/ss-full-run/bridge?member=captain');
-  await expect(page.getByTestId('template-banner')).toContainText('template');
+  await expect(page.getByTestId('template-banner')).toContainText(/template/i);
   await expect(page.getByTestId('crew-profile')).toHaveAttribute('data-readonly', 'true');
   await expect(page.locator('nav[aria-label="Crew"] li')).toHaveCount(7);
-  await expect(page.getByTestId('recruit')).toHaveCount(0);
-  await expect(page.getByTestId('equip-skill')).toHaveCount(0);
+  // Edit gestures exist on a template but only open the Clone to edit dialog; nothing changes (simplicity.spec covers the landing).
+  await page.getByTestId('equip-skill').click();
+  await expect(page.getByTestId('clone-dialog')).toBeVisible();
+  await page.getByTestId('clone-cancel').click();
+  await expect(page.getByTestId('crew-profile')).toHaveAttribute('data-readonly', 'true');
+  await expect(page.locator('[data-testid="anchor-diagram"] [data-drop-anchor]')).toHaveCount(0);
 });
 
 test('seven bodies: the face stays clear of the head artifact (screenshots, looked at)', async ({ page }) => {
@@ -182,7 +187,10 @@ test('mouse drag from the hold onto a socket equips; the 3D body highlights the 
   await page.mouse.move(cb.x + cb.width / 2, cb.y + cb.height / 2);
   await page.mouse.down();
   await page.mouse.move(cb.x + 20, cb.y - 40, { steps: 4 });
-  await page.mouse.move(body.x + body.width * 0.5, body.y + body.height * 0.2, { steps: 8 });
+  // The turntable card is taller than the viewport now: aim at a point of it that is on screen (below the 64 px header).
+  const top = Math.max(body.y, 80);
+  const bottom = Math.min(body.y + body.height, 880);
+  await page.mouse.move(body.x + body.width * 0.5, top + (bottom - top) * 0.3, { steps: 8 });
   await expect(page.getByTestId('body-drop-ring')).toBeVisible();
   await expect(page.getByTestId('drag-ghost')).toContainText('Drop to equip');
   await page.mouse.up();

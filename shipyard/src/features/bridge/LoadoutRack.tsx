@@ -27,6 +27,8 @@ export interface LoadoutRackProps {
   /** `?skill=` from a pre-flight Fix link: that socket is selected */
   focusSkill?: string | null;
   onOpenArmory: (anchor?: Anchor) => void;
+  /** a read-only ship: an edit gesture asks to clone instead of editing */
+  onLocked?: () => void;
 }
 
 /** Socket positions on the silhouette, in percent of the diagram box. */
@@ -129,12 +131,12 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
       {...drop}
       data-drop-index={!readOnly ? index : undefined}
       {...(skill && !readOnly ? handlers : {})}
-      onClick={() => (skill ? onSelect(skill) : readOnly ? undefined : onEmpty())}
+      onClick={() => (skill ? onSelect(skill) : onEmpty())}
       onKeyDown={(e) => {
         if (!skill) {
           if (e.key === 'e' || e.key === 'E') {
             e.preventDefault();
-            if (!readOnly) onEmpty();
+            onEmpty();
           }
           return;
         }
@@ -147,7 +149,7 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
       }}
     >
       {skill && <span className="socket-flash" ref={flash} aria-hidden="true" />}
-      {art && isFamilyId(art.artifact.family) ? <span className="socket-chip" ref={chip}><FamilyGlyph family={art.artifact.family} pigment={art.artifact.pigment} /></span> : skill ? <span className="socket-chip" ref={chip} aria-hidden="true">?</span> : <span className="socket-plus" aria-hidden="true">{readOnly ? "" : "+"}</span>}
+      {art && isFamilyId(art.artifact.family) ? <span className="socket-chip" ref={chip}><FamilyGlyph family={art.artifact.family} pigment={art.artifact.pigment} /></span> : skill ? <span className="socket-chip" ref={chip} aria-hidden="true">?</span> : <span className="socket-plus" aria-hidden="true">+</span>}
       {hovered && (
         <span className="socket-label" data-testid="socket-label" aria-hidden="true">
           {reduced ? `Drop to equip: ${spec.label}` : spec.label}
@@ -162,7 +164,7 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
   );
 }
 
-export function AnchorDiagram(props: Omit<LoadoutRackProps, 'focusSkill' | 'onOpenArmory'> & { focusSkill?: string | null; onEmpty: (anchor: Anchor) => void }) {
+export function AnchorDiagram(props: Omit<LoadoutRackProps, 'focusSkill' | 'onOpenArmory' | 'onLocked'> & { focusSkill?: string | null; onEmpty: (anchor: Anchor) => void }) {
   const { idx, ship, member, active, readOnly, onEmpty } = props;
   const [picked, setPicked] = useState<string | null>(props.focusSkill ?? null);
   const dispatch = useDispatch();
@@ -235,7 +237,7 @@ export function AnchorDiagram(props: Omit<LoadoutRackProps, 'focusSkill' | 'onOp
   );
 }
 
-function SlotRows({ idx, ship, member, readOnly }: { idx: KbIndex; ship: Ship; member: Member; readOnly: boolean }) {
+function SlotRows({ idx, ship, member, readOnly, onLocked }: { idx: KbIndex; ship: Ship; member: Member; readOnly: boolean; onLocked?: () => void }) {
   const { requestEquip } = useEquip();
   const slots = useMemo(() => idx.kb.slots.filter((s) => s.runtimeOwner === member.agent), [idx, member.agent]);
   if (slots.length === 0) return null;
@@ -247,32 +249,35 @@ function SlotRows({ idx, ship, member, readOnly }: { idx: KbIndex; ship: Ship; m
         const current = options.find((s) => isWorn(member, s)) ?? '';
         const anchorOf = (s: string) => member.loadout.find((e) => e.skill === s)?.anchor;
         return (
-          <label key={slot.id} className="slot-row">
+          <div key={slot.id} className="slot-row" role="group" aria-label={`Slot ${slot.name}`} data-testid={`slot-${slot.id}`} data-current={current || undefined}>
             <span className="slot-name">{slot.name}</span>
-            <span className="muted sheet-line">{slot.question}</span>
-            <select
-              value={current}
-              disabled={readOnly}
-              data-testid={`slot-${slot.id}`}
-              aria-label={`Swap artifact in slot ${slot.name}`}
-              onChange={(e) => {
-                const skill = e.target.value;
-                if (!skill) return;
-                const old = current ? anchorOf(current) : undefined;
-                // The new one takes the old one's socket; the old one goes to the hold.
-                requestEquip({ shipId: ship.id, memberId: member.id, skill, anchor: old });
-              }}
-            >
-              {current === '' && <option value="">Not worn: pick one</option>}
-              {options.map((s) => (
-                <option key={s} value={s}>
-                  {idx.skill.get(s)?.artifact.name ?? s}
-                  {s === slot.default ? ' (default)' : ''}
-                  {isWorn(member, s) ? '' : ' · not worn'}
-                </option>
-              ))}
-            </select>
-          </label>
+            <span className="muted sheet-line">{current === '' ? `Empty. Choose a ${slot.name} artifact.` : slot.question}</span>
+            <span className="slot-choices">
+              {options.map((s) => {
+                const worn = s === current;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    className="btn btn-quiet btn-sm slot-choice"
+                    aria-pressed={worn}
+                    data-skill={s}
+                    data-testid={`slot-${slot.id}-${s}`}
+                    onClick={() => {
+                      if (readOnly) return onLocked?.();
+                      if (worn) return;
+                      const old = current ? anchorOf(current) : undefined;
+                      // The new one takes the old one's socket; the old one goes to the hold.
+                      requestEquip({ shipId: ship.id, memberId: member.id, skill: s, anchor: old });
+                    }}
+                  >
+                    {idx.skill.get(s)?.artifact.name ?? s}
+                    {s === slot.default ? ' (default)' : ''}
+                  </button>
+                );
+              })}
+            </span>
+          </div>
         );
       })}
     </section>
@@ -326,7 +331,7 @@ export function SkillPicker({ idx, anchor, onPick, onClose }: { idx: KbIndex; an
   );
 }
 
-export function LoadoutRack({ idx, ship, member, active, readOnly, focusSkill, onOpenArmory }: LoadoutRackProps) {
+export function LoadoutRack({ idx, ship, member, active, readOnly, focusSkill, onOpenArmory, onLocked }: LoadoutRackProps) {
   const { requestEquip } = useEquip();
   const [picker, setPicker] = useState<{ anchor?: Anchor } | null>(null);
   const worn = member.loadout.length;
@@ -341,17 +346,16 @@ export function LoadoutRack({ idx, ship, member, active, readOnly, focusSkill, o
       <p className="muted sheet-line" data-testid="rack-count">
         <span className="num">{worn}</span> of <span className="num">{capacity}</span> sockets worn
       </p>
-      <AnchorDiagram idx={idx} ship={ship} member={member} active={active} readOnly={readOnly} focusSkill={focusSkill} onEmpty={(a) => setPicker({ anchor: a })} />
-      {!readOnly && (
-        <div className="row" style={{ gap: 'var(--s2)' }}>
-          <button type="button" className="btn btn-primary" data-testid="equip-skill" onClick={() => setPicker({})}>Equip a skill</button>
-          <button type="button" className="btn btn-quiet" data-testid="open-armory" onClick={() => onOpenArmory()}>Open Armory</button>
-        </div>
-      )}
+      <AnchorDiagram idx={idx} ship={ship} member={member} active={active} readOnly={readOnly} focusSkill={focusSkill} onEmpty={(a) => (readOnly ? onLocked?.() : setPicker({ anchor: a }))} />
+      <div className="row" style={{ gap: 'var(--s2)' }}>
+        {/* On a template the edit gestures ask to clone first; "Clone to edit" is then the one filled button. */}
+        <button type="button" className={readOnly ? 'btn btn-quiet' : 'btn btn-primary'} data-testid="equip-skill" onClick={() => (readOnly ? onLocked?.() : setPicker({}))}>Equip a skill</button>
+        {!readOnly && <button type="button" className="btn btn-quiet" data-testid="open-armory" onClick={() => onOpenArmory()}>Open Armory</button>}
+      </div>
       <ol className="sr-only" aria-label="Worn artifacts, by anchor" data-testid="worn-list">
         {ANCHOR_IDS.flatMap((a) => member.loadout.filter((e) => e.anchor === a).sort((x, y) => entryIndex(x) - entryIndex(y)).map((e) => <li key={e.skill} data-skill={e.skill} data-anchor={a}>{idx.kb.anchors[a].label}: {idx.skill.get(e.skill)?.artifact.name ?? e.skill}</li>))}
       </ol>
-      <SlotRows idx={idx} ship={ship} member={member} readOnly={readOnly} />
+      <SlotRows idx={idx} ship={ship} member={member} readOnly={readOnly} onLocked={onLocked} />
       <section className="ship-anchor" aria-label={`Ship hold, ${hold.length} artifacts`} data-testid="hold" data-drop-hold="" data-drop-ship={ship.id} data-drop-member={member.id}>
         <h3 className="label">Ship&rsquo;s hold <span className="num">{hold.length}</span></h3>
         {hold.length === 0 ? <p className="muted sheet-line">Nothing spare aboard. Drop an artifact here to keep it for later.</p> : (

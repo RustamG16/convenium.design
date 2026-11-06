@@ -63,7 +63,7 @@ export function Turntable({ member, reduced, onContextLost, onReady, probe }: { 
   const hasOrbit = member.loadout.some((a) => a.anchor === 'orbit');
   // The frame is the body plus the orbit ring when something circles the head.
   const h = member.model.heightM + (hasOrbit ? ORBIT_ROOM : 0);
-  const camera = useMemo(() => ({ position: [0, h * 0.6, h * 2.0] as [number, number, number], fov: 32, near: 0.05, far: 50 }), [h]);
+  const camera = useMemo(() => ({ position: [0, h * 0.6, h * 1.78] as [number, number, number], fov: 32, near: 0.05, far: 50 }), [h]);
   // Loading state: the design sheet fills the card until the model that stays on screen has mounted.
   const figureKey = `${member.id}:${member.body}`;
   const [readyKey, setReadyKey] = useState('');
@@ -103,7 +103,7 @@ export function Turntable({ member, reduced, onContextLost, onReady, probe }: { 
           <circleGeometry args={[member.model.heightM * 0.45, 48]} />
           <meshStandardMaterial color="#1a1515" roughness={1} />
         </mesh>
-        <OrbitControls enablePan={false} enableZoom={false} autoRotate={!reduced} autoRotateSpeed={MOTION.turntable.rpm} minPolarAngle={MOTION.turntable.polarMin} maxPolarAngle={MOTION.turntable.polarMax} target={[0, h * 0.5, 0]} makeDefault />
+        <OrbitControls enablePan={false} enableZoom={false} autoRotate={!reduced} autoRotateSpeed={MOTION.turntable.rpm} minPolarAngle={MOTION.turntable.polarMin} maxPolarAngle={MOTION.turntable.polarMax} target={[0, h * 0.52, 0]} makeDefault />
       </Canvas>
       <div className="ship-turntable-veil" data-testid="turntable-veil" data-hidden={ready} aria-hidden="true">
         <PortraitFace member={member} />

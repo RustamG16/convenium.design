@@ -12,6 +12,7 @@ import { largeSeen, markLargeSeen, playLarge } from '../../lib/feel';
 import { gsap, useGSAP } from '../../lib/gsap';
 import { easeDefault, isReducedMotion, MOTION, recordMotion } from '../../lib/motion';
 import { useKb } from '../../kb/context';
+import { ShipNav } from '../shared/ShipNav';
 import { useShip } from '../shared/useShip';
 import { ExportPanel } from './ExportPanel';
 import { fixTarget } from './fix';
@@ -166,12 +167,8 @@ export default function PreflightPage() {
           Pre-flight · {ship.name} · {ship.class}
         </p>
         <h1 className="page-title">Pre-flight</h1>
-        <p className="pf-links">
-          <Link to={`/ship/${ship.id}/bridge`}>Bridge</Link>
-          <Link to={`/ship/${ship.id}/voyage`}>Voyage</Link>
-          <Link to="/logbook">Logbook</Link>
-        </p>
       </header>
+      <ShipNav ship={ship} current="preflight" showNext={false} />
 
       <p className="sr-only" role="status" aria-live="polite" data-testid="preflight-live">
         {live}
@@ -207,7 +204,7 @@ export default function PreflightPage() {
             <p className="cleared" data-testid="cleared">
               Cleared for departure
             </p>
-            <button type="button" className="btn btn-primary" onClick={focusExport} data-testid="goal-export">
+            <button type="button" className="btn btn-quiet" onClick={focusExport} data-testid="goal-export">
               Export
             </button>
           </div>

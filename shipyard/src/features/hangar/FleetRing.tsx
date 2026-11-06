@@ -18,7 +18,10 @@ export interface FleetItem {
   pigment: string;
 }
 
-const RING_RADIUS = 2.3;
+const RING_RADIUS = 3.4;
+/** Hull length in scene units; the camera is set so a hull seen side-on fills about 80% of the stage width. */
+const HULL_LENGTH = 3.6;
+const RING_Y = -0.5;
 
 function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment: string; spin: boolean; focused: boolean; onPick: () => void }) {
   const { scene } = useGLTF(withBase(`/media/ships/${hull}.glb`));
@@ -37,7 +40,7 @@ function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment:
     clone.position.sub(box.getCenter(new THREE.Vector3()));
     const wrap = new THREE.Group();
     wrap.add(clone);
-    wrap.scale.setScalar(3.1 / longest);
+    wrap.scale.setScalar(HULL_LENGTH / longest);
     return wrap;
   }, [scene]);
   useEffect(() => () => disposeMaterials(model), [model]);
@@ -58,8 +61,8 @@ function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment:
         <primitive object={model} />
       </group>
       {focused && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.95, 0]}>
-          <ringGeometry args={[1.5, 1.54, 64]} />
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, RING_Y, 0]}>
+          <ringGeometry args={[1.95, 2.0, 96]} />
           <meshBasicMaterial color={pigment} toneMapped={false} />
         </mesh>
       )}
@@ -108,11 +111,11 @@ export default function FleetRing({ ships, focusId, reduced, onPick, onContextLo
       <Canvas
         dpr={[1, 1.5]}
         frameloop={reduced ? 'demand' : 'always'}
-        camera={{ position: [0, 1.3, 5.6], fov: 32, near: 0.1, far: 40 }}
+        camera={{ position: [0, 1.5, 6.4], fov: 32, near: 0.1, far: 40 }}
         gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
         onCreated={({ gl, scene, camera }) => {
           if (import.meta.env.DEV) (window as unknown as { __fleet?: unknown }).__fleet = { scene, camera };
-          camera.lookAt(0, 0, 0);
+          camera.lookAt(0, -0.15, 0);
           gl.domElement.addEventListener('webglcontextlost', (e) => {
             e.preventDefault();
             onContextLost?.();

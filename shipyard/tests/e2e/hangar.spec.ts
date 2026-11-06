@@ -54,7 +54,7 @@ test('Hangar shows exactly one ship, SS Full Run, read from the knowledge base',
   expect(problems).toEqual([]);
 });
 
-test('How it works? carries the honest promise', async ({ page }) => {
+test('How it works carries the honest promise', async ({ page }) => {
   await page.goto('/');
   await page.getByTestId('how-it-works').click();
   await expect(page.getByText('Nothing here runs an agent; it writes the plan a session runs.')).toBeVisible();

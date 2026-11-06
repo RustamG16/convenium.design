@@ -395,3 +395,9 @@ textarea.input {
 .truth[data-truth='User-reported'] {
   border-style: dashed;
 }
+
+/* T11 (P2): the kickoff prompt is the one filled button; the files are a quiet group. */
+.export-primary { display: grid; gap: var(--s2); }
+.export-primary .btn { width: 100%; }
+.export-files { margin: 0; padding: var(--s3) 0 0; border: 0; border-top: 1px solid var(--hairline); display: grid; gap: var(--s2); }
+.export-files legend { padding: 0 var(--s2) 0 0; }

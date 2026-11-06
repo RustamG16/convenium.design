@@ -182,9 +182,8 @@ test('boarding walk: runs on SS Full Run, crew at their stations, walks to the p
   await expect(page.locator('[data-testid="ship-intro"] canvas')).toHaveCount(1);
   // The kit and the crew load; the canvas is not blank.
   await expect.poll(async () => p.glb.filter((g) => g.url.includes('/media/ship-kit/')).length, { timeout: 120_000 }).toBeGreaterThan(8);
-  await page.waitForTimeout(3000);
-  const stats = await pixelStats(page, page.locator('[data-testid="ship-intro"] canvas'));
-  expect(stats.colours).toBeGreaterThan(200);
+  // Condition, not a sleep: the canvas has drawn once it holds more than 200 colours (a loaded run needs longer than a quiet one).
+  await expect.poll(async () => (await pixelStats(page, page.locator('[data-testid="ship-intro"] canvas'))).colours, { timeout: 60_000, message: 'the boarding canvas is not blank' }).toBeGreaterThan(200);
   // Walk in: the autopilot carries the camera down the corridor and the card follows.
   const z0 = await page.evaluate(() => (window as unknown as { __ship: { walker: { pos: { z: number } } } }).__ship.walker.pos.z);
   await page.getByTestId('waypoint-next').click();
@@ -193,8 +192,9 @@ test('boarding walk: runs on SS Full Run, crew at their stations, walks to the p
   expect(z1).toBeLessThan(z0 - 3);
   await expect(page.getByTestId('pipeline')).toBeVisible();
   // Loading budget: the captain and the two stations before him first (3.5 MB), the other four after.
+  // The other four are requested after the first three finish, so wait for them (a loaded machine is slower), do not count at once.
+  await expect.poll(() => p.crewOrder.length, { timeout: 120_000, message: 'all seven crew GLBs are requested' }).toBe(7);
   expect(p.crewOrder.slice(0, 3).sort()).toEqual(['captain', 'critic', 'engineer']);
-  expect(p.crewOrder).toHaveLength(7);
   for (const g of p.glb) expect(g.status, g.url).toBe(200);
   expect(p.errors).toEqual([]);
 });
@@ -214,9 +214,9 @@ test('boarding walk, reduced motion: every stop arrives at once; the bridge show
   await page.getByTestId('rail-captain').click();
   await expect(intro).toHaveAttribute('data-waypoint', 'captain', { timeout: 30_000 });
   await expect(page.getByTestId('waypoint-card')).toContainText('Welcome aboard');
-  await page.waitForTimeout(5000);
+  // Condition, not a sleep: the welcome frame is drawn once it holds 300+ colours and most of it differs from flat.
+  await expect.poll(async () => (await pixelStats(page, page.locator('[data-testid="ship-intro"] canvas'))).colours, { timeout: 60_000 }).toBeGreaterThan(300);
   const stats = await pixelStats(page, page.locator('[data-testid="ship-intro"] canvas'));
-  expect(stats.colours).toBeGreaterThan(300);
   expect(stats.differing).toBeGreaterThan(0.2);
   await page.screenshot({ path: resolve(SHOTS, 't4-board-1440.png') });
   // The walk ends on the bridge: the captain's profile opens.
@@ -238,6 +238,7 @@ test('the walk plays once per ship: opening the ship again goes to the bridge', 
   await page.goto('/#/ship/ss-full-run');
   await expect(page).toHaveURL(/#\/ship\/ss-full-run\/bridge/);
   // Replay from the bridge.
+  await page.getByTestId('ship-more').click();
   await page.getByTestId('replay-walk').click();
   await expect(page).toHaveURL(/#\/ship\/ss-full-run\/board/);
 });

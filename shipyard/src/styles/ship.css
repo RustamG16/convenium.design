@@ -381,10 +381,10 @@
   border-color: color-mix(in srgb, var(--cotton) 55%, transparent);
 }
 /* WASD hint, bottom-left on desktop. */
+.ship-controls { position: absolute; left: var(--s3); bottom: var(--s3); z-index: 3; display: flex; flex-direction: column-reverse; gap: var(--s2); align-items: flex-start; }
+.ship-controls > summary { list-style: none; cursor: pointer; background: rgba(27, 23, 23, 0.84); }
+.ship-controls > summary::-webkit-details-marker { display: none; }
 .ship-keys {
-  position: absolute;
-  left: var(--s3);
-  bottom: var(--s3);
   margin: 0;
   display: flex;
   align-items: center;
@@ -413,6 +413,7 @@
   margin-left: -1px;
 }
 @media (pointer: coarse) {
+  .ship-controls,
   .ship-keys,
   .ship-look-hint {
     display: none;
@@ -796,10 +797,10 @@
 
 
 /* ---------- Crew profile (the bridge) ---------- */
-/* Grid: 320 / 1fr / 360 at >= 1200; two columns 768-1199 (the rack drops below); stacked under 768. */
+/* Grid: turntable 0.95fr (min 360) / identity 1fr / 360 rack at >= 1200; two columns 768-1199 (the rack drops below); stacked under 768. */
 .ship-profile {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(360px, 0.95fr) minmax(0, 1fr) var(--panel-w);
   gap: var(--s4);
   align-items: start;
 }
@@ -898,3 +899,32 @@
 .react-flow__attribution { background: transparent !important; font-size: 10px; letter-spacing: 0.04em; opacity: 0.6; }
 .react-flow__attribution a { color: var(--muted); text-decoration: none; }
 .react-flow__attribution a:hover { color: var(--text); text-decoration: underline; }
+
+/* ---------- T11: simplicity pass. One primary per view, one sub-nav, one template line. ---------- */
+.ship-subnav { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); flex-wrap: wrap; margin: 0 0 var(--s4); border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+.ship-subnav-links ul { display: flex; gap: var(--s1); list-style: none; margin: 0; padding: 0; }
+.ship-subnav-link { text-decoration: none; display: inline-flex; align-items: center; min-height: var(--hit); padding: 0 var(--s4); border-bottom: 2px solid transparent; font-size: var(--label); font-weight: 600; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--muted); }
+.ship-subnav-link:hover { color: var(--cotton); }
+.ship-subnav-link[aria-current='page'] { color: var(--cotton); border-bottom-color: var(--cotton); }
+.ship-subnav-side { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; position: relative; padding: var(--s1) 0; }
+.ready-pill { display: inline-flex; align-items: center; gap: var(--s2); margin: 0; padding: 0 var(--s3); min-height: 36px; border: 1px solid var(--hairline); border-radius: var(--r-pill); font-size: var(--stat); color: var(--muted); }
+.ready-pill .num { color: var(--cotton); }
+.ship-more { position: relative; }
+.ship-more > summary { list-style: none; cursor: pointer; }
+.ship-more > summary::-webkit-details-marker { display: none; }
+.ship-more-menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 20; display: grid; gap: var(--s1); min-width: 200px; padding: var(--s2); background: var(--elevated); border: 1px solid var(--border); border-radius: var(--r-panel); }
+.template-line { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); flex-wrap: wrap; margin: 0 0 var(--s4); padding: var(--s2) var(--s4); border: 1px dashed var(--muted); border-radius: var(--r-panel); font-size: 14px; }
+.template-line .btn { min-height: var(--hit); }
+.ship-identity-role { margin: 0; font-family: var(--font-serif); font-weight: 400; font-size: 26px; line-height: 1.2; }
+.ship-identity > header > .skew-badge { justify-self: start; }
+.ship-profile-more > summary { list-style: none; cursor: pointer; display: inline-flex; gap: var(--s2); align-items: center; }
+.ship-profile-more > summary::-webkit-details-marker { display: none; }
+.eco-disclosure { margin-top: var(--s2); }
+.eco-disclosure > summary { list-style: none; cursor: pointer; }
+.eco-disclosure[open] > summary { margin-bottom: var(--s3); }
+.slot-choices { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.slot-choice[aria-pressed='true'] { border-color: var(--cotton); background: var(--elevated); }
+@media (max-width: 767px) {
+  .ship-subnav-link { padding: 0 var(--s3); }
+  .ship-more-menu { right: auto; left: 0; }
+}

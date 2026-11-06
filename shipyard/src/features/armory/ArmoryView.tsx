@@ -23,11 +23,11 @@ export interface ArmoryViewProps {
   /** an artifact to show open at first (a link from pre-flight or the codex) */
   initialSkill?: string | null;
   onClose?: () => void;
-  /** the equip target panel: the left column when there is one, above the grid otherwise */
-  targetPanel?: ReactNode;
+  /** the target member's loadout (a drop target): the right column beside the grid when there is an editable ship */
+  sidePanel?: ReactNode;
 }
 
-export function ArmoryView({ variant, ship, member, initialSkill = null, onClose, targetPanel }: ArmoryViewProps) {
+export function ArmoryView({ variant, ship, member, initialSkill = null, onClose, sidePanel }: ArmoryViewProps) {
   const idx = useKb();
   const dispatch = useDispatch();
   const { codex } = useStoreState();
@@ -52,16 +52,16 @@ export function ArmoryView({ variant, ship, member, initialSkill = null, onClose
   }, [selected, idx, dispatch]);
 
   const inlineInspector = variant === 'page' && wide;
-  const wideSide = variant === 'page' && wide;
+  const page = variant === 'page';
+  const hasAside = inlineInspector && Boolean(skill || sidePanel);
   const searchField = (
       <label className="field-row" key="search">
         <span className="label">Search</span>
         <input className="field" type="search" value={filters.q} onChange={(e) => set({ q: e.target.value })} placeholder="Name, skill id or description" data-testid="armory-search" aria-label="Search artifacts" />
       </label>
   );
-  const filtersPanel = (
-    <div className="armory-filters stack-sm" data-testid="armory-filters">
-      {wideSide && searchField}
+  const selects = (
+    <>
       <label className="field-row">
         <span className="label">Category</span>
         <select className="field" value={filters.family ?? ''} onChange={(e) => set({ family: e.target.value || null })} data-testid="filter-family">
@@ -69,7 +69,7 @@ export function ArmoryView({ variant, ship, member, initialSkill = null, onClose
           {families.map((f) => <option key={f.id} value={f.id}>{f.name} ({counts.get(f.id) ?? 0})</option>)}
         </select>
       </label>
-      {variant === 'page' && (
+      {page && (
         <>
           <label className="field-row">
             <span className="label">Phase</span>
@@ -87,6 +87,10 @@ export function ArmoryView({ variant, ship, member, initialSkill = null, onClose
           </label>
         </>
       )}
+    </>
+  );
+  const checks = (
+    <>
       <label className="menu-radio">
         <input type="checkbox" checked={filters.fits} disabled={!member} onChange={(e) => set({ fits: e.target.checked })} data-testid="filter-fits" />
         <span>{member ? `Fits ${member.character.name}` : 'Fits the selected member'}</span>
@@ -96,6 +100,14 @@ export function ArmoryView({ variant, ship, member, initialSkill = null, onClose
         <span>Not yet inspected</span>
       </label>
       <button type="button" className="btn btn-quiet btn-sm" onClick={() => setFilters(NO_FILTERS)} data-testid="filter-clear">Clear filters</button>
+    </>
+  );
+  // Page: one row above the grid (search plus the three selects, then the two toggles). Under 1200 it sits in a sheet.
+  const filtersPanel = (
+    <div className="armory-filters armory-filters-row" data-testid="armory-filters">
+      {page && wide && searchField}
+      {selects}
+      {checks}
     </div>
   );
 
@@ -104,11 +116,11 @@ export function ArmoryView({ variant, ship, member, initialSkill = null, onClose
       <p className="muted sheet-line" data-testid="armory-count" aria-live="polite">
         <span className="num">{list.length}</span> of <span className="num">{idx.kb.skills.length}</span> artifacts
       </p>
-      <ArtifactGrid idx={idx} skills={list} selected={selected} onSelect={setSelected} ship={ship} minCard={phone ? 150 : 200} />
+      <ArtifactGrid idx={idx} skills={list} selected={selected} onSelect={setSelected} ship={ship} minCard={phone ? 150 : 220} />
     </>
   );
 
-  const inspector = skill ? <ArtifactDetail key={skill.id} idx={idx} skill={skill} /> : <p className="state-line" data-testid="detail-empty">Pick an artifact to inspect it.</p>;
+  const inspector = skill ? <ArtifactDetail key={skill.id} idx={idx} skill={skill} /> : null;
 
   return (
     <div className="armory" data-variant={variant} data-testid="armory">
@@ -121,10 +133,18 @@ export function ArmoryView({ variant, ship, member, initialSkill = null, onClose
           </Tabs.List>
           {onClose && <button type="button" className="btn btn-quiet btn-sm" onClick={onClose} data-testid="armory-close">Close Armory</button>}
         </div>
-        <Tabs.Content value="artifacts" className="armory-body" data-inline={inlineInspector || undefined}>
-          {variant === 'page' && wide ? <aside className="armory-side stack" aria-label="Filters and target">{targetPanel}{filtersPanel}</aside> : <details className="armory-filters-sheet" open={variant === 'drawer'}><summary className="btn btn-quiet btn-sm">Filters</summary>{filtersPanel}</details>}
-          <div className="armory-main">{!wideSide && targetPanel}{!wideSide && searchField}{artifacts}</div>
-          {inlineInspector && <aside className="armory-inspector" aria-label="Inspector">{inspector}</aside>}
+        <Tabs.Content value="artifacts" className="armory-body" data-aside={hasAside || undefined}>
+          {page && wide ? filtersPanel : <details className="armory-filters-sheet" open={variant === 'drawer'}><summary className="btn btn-quiet btn-sm">Filters</summary>{filtersPanel}</details>}
+          <div className="armory-grid-col">
+            <div className="armory-main">{!(page && wide) && searchField}{artifacts}</div>
+            {hasAside && (
+              <aside className="armory-inspector" aria-label="Loadout and inspector">
+                {sidePanel}
+                {inspector}
+              </aside>
+            )}
+          </div>
+          {!inlineInspector && sidePanel && <details className="armory-loadout-sheet" open={!phone}><summary className="btn btn-quiet btn-sm">Loadout</summary>{sidePanel}</details>}
         </Tabs.Content>
         <Tabs.Content value="charts"><ChartsTab ship={ship} /></Tabs.Content>
         <Tabs.Content value="modules"><ModulesTab ship={ship} /></Tabs.Content>

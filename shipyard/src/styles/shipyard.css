@@ -10,8 +10,7 @@
   gap: var(--s5);
   min-height: var(--header-h);
   padding: 0 var(--s5);
-  background: rgba(27, 23, 23, 0.86);
-  backdrop-filter: blur(8px);
+  background: var(--bg); /* opaque: scrolled content never ghosts through the header */
   border-bottom: 1px solid var(--hairline);
 }
 .site-header .brand {
@@ -408,3 +407,7 @@
     max-width: none;
   }
 }
+
+/* T11: text button, the quietest weight (a skip, a dismissal). Still a 44px target. */
+.btn-text { background: transparent; border-color: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+.btn-text:hover:not(:disabled) { color: var(--cotton); background: transparent; }

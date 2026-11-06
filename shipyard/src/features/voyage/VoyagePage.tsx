@@ -5,10 +5,8 @@
 // `?stage=<id>`. A library ship is a read-only template ("Clone to edit").
 import * as Dialog from '@radix-ui/react-dialog';
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 import '../../styles/voyage.css';
-import { HullRing } from '../../components/HullRing';
-import { preflight } from '../../domain/preflight';
 import { isGate, isStage, type VoyageItem } from '../../domain/schema';
 import { isLibraryShip, LIBRARY_EPOCH, libraryShips } from '../../domain/ship';
 import { newGate, newStage } from '../../domain/voyage';
@@ -17,8 +15,8 @@ import { useMinWidth } from '../../lib/preferences';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { isFamilyId } from '../../scene/artifacts/families';
 import { useDispatch, useStoreState } from '../../store/context';
-import { uniqueShipId } from '../../store/store';
 import { useNotify } from '../shared/notices';
+import { ShipNav, TemplateLine, useCloneToEdit } from '../shared/ShipNav';
 import { useShip } from '../shared/useShip';
 import { StageInspector } from './StageInspector';
 
@@ -30,7 +28,6 @@ export default function VoyagePage() {
   const idx = useKb();
   const dispatch = useDispatch();
   const notify = useNotify();
-  const navigate = useNavigate();
   const { ships: stored } = useStoreState();
   const [params, setParams] = useSearchParams();
   const wide = useMinWidth(1200);
@@ -40,12 +37,13 @@ export default function VoyagePage() {
   const trackRef = useRef<HTMLOListElement>(null);
   const library = useMemo(() => libraryShips(idx, LIBRARY_EPOCH).ships, [idx]);
   const readOnly = ship ? isLibraryShip(ship) && !stored.some((s) => s.id === ship.id) : true;
-  const report = useMemo(() => (ship ? preflight(idx, ship) : null), [idx, ship]);
 
   const stageParam = params.get('stage');
   const selected = ship ? ship.voyage.findIndex((v) => isStage(v) && v.id === stageParam) : -1;
   const [gateSel, setGateSel] = useState<number | null>(null);
   const sel = selected >= 0 ? selected : gateSel;
+  // Any edit gesture on a template opens the one-step dialog, then lands in the clone on this screen with this stage selected.
+  const clone = useCloneToEdit(ship, (newId) => `/ship/${newId}/voyage${stageParam ? `?stage=${encodeURIComponent(stageParam)}` : ''}`);
 
   const select = useCallback(
     (index: number | null) => {
@@ -85,12 +83,6 @@ export default function VoyagePage() {
     );
   }
 
-  const cloneToEdit = () => {
-    const name = `${ship.name} copy`;
-    const newId = uniqueShipId([...stored.map((x) => x.id), ...idx.kb.workflows.ships.map((w) => w.id)], name);
-    dispatch({ type: 'ship/clone', source: ship, name });
-    navigate(`/ship/${newId}/voyage`);
-  };
   const move = (from: number, to: number) => {
     if (readOnly || to < 0 || to >= ship.voyage.length || from === to) return;
     dispatch({ type: 'voyage/move', shipId: ship.id, from, to });
@@ -160,28 +152,17 @@ export default function VoyagePage() {
 
   return (
     <main id="main" className="page voyage-page" data-testid="voyage-page" data-ship={ship.id} data-readonly={readOnly || undefined}>
-      <header className="ship-head row" style={{ justifyContent: 'space-between', alignItems: 'flex-end', gap: 'var(--s3)' }}>
-        <div>
-          <p className="label">{ship.name} · voyage</p>
-          <h1 className="page-title ship-page-title">Voyage planner</h1>
-          <p className="muted sheet-line">{ship.voyage.filter(isStage).length} stages · {ship.voyage.filter(isGate).length} gates · trail {ship.trail ?? 'abridged'}</p>
-        </div>
-        <div className="row" style={{ gap: 'var(--s3)' }}>
-          {report && (
-            <div className="integrity" data-testid="voyage-integrity">
-              <HullRing percent={report.integrity} passed={report.passed} applicable={report.applicable} blockers={report.blockers} />
-              <span className="stat">{report.next ? `Next: ${report.next.id} ${report.next.reason}` : 'Pre-flight is clean.'}</span>
-            </div>
-          )}
-          <Link className="btn btn-quiet" to={`/ship/${ship.id}/preflight`} data-testid="to-preflight">Pre-flight and export</Link>
-          <Link className="btn btn-quiet" to={`/ship/${ship.id}/bridge`}>Bridge</Link>
-        </div>
+      <header className="ship-head">
+        <p className="label">{ship.name} · voyage</p>
+        <h1 className="page-title ship-page-title">Voyage planner</h1>
+        <p className="muted sheet-line">{ship.voyage.filter(isStage).length} stages · {ship.voyage.filter(isGate).length} gates · trail {ship.trail ?? 'abridged'}</p>
       </header>
+      <ShipNav ship={ship} current="voyage" />
+      {readOnly && <TemplateLine ship={ship} onClone={clone.ask} />}
       {readOnly && (
-        <p className="template-banner" role="note" data-testid="template-banner">
-          <span>{ship.name} is a template: read the voyage, change nothing. Clone it to edit.</span>
-          <button type="button" className="btn btn-primary" onClick={cloneToEdit} data-testid="clone-to-edit">Clone to edit</button>
-        </p>
+        <div className="voyage-tools row" role="toolbar" aria-label="Voyage tools">
+          <button type="button" className="btn btn-quiet" onClick={clone.ask} data-testid="add-stage">Add stage</button>
+        </div>
       )}
       {!readOnly && (
         <div className="voyage-tools row" role="toolbar" aria-label="Voyage tools">
@@ -285,6 +266,7 @@ export default function VoyagePage() {
           )
         )}
       </div>
+      {clone.dialog}
     </main>
   );
 }

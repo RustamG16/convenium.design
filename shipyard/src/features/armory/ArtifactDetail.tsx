@@ -10,13 +10,15 @@ import { easeDefault, isReducedMotion, MOTION, recordMotion } from '../../lib/mo
 import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
 import { isFamilyId } from '../../scene/artifacts/families';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
+import { useStoreState } from '../../store/context';
 import { useNotify } from '../shared/notices';
+import { compareEquip } from './compare';
 import { useEquip } from './equip';
 
 const Inspector = lazy(() => import('../../scene/artifacts/ArtifactInspector').then((m) => ({ default: m.ArtifactInspector })));
 
 export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill }) {
-  const { target, openMenu, getShip } = useEquip();
+  const { target, openMenu, getShip, requestEquip } = useEquip();
   const notify = useNotify();
   const reduced = useReducedMotion();
   const [failed, setFailed] = useState(false);
@@ -49,8 +51,13 @@ export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill })
   const a = skill.artifact;
   const tier = idx.kb.tiers.find((t) => t.id === a.tier);
   const webgl = hasWebGL() && !force2d() && !failed;
-  const ship = target ? getShip(target.shipId) : undefined;
+  // Subscribe to the store so the compare strip and "worn by" follow an equip made from this very panel.
+  const { ships: stored } = useStoreState();
+  const ship = target ? (stored.find((s) => s.id === target.shipId) ?? getShip(target.shipId)) : undefined;
   const wearers = ship?.crew.filter((m) => m.loadout.some((e) => e.skill === skill.id)) ?? [];
+  const member = ship?.crew.find((m) => m.id === target?.memberId);
+  const cmp = ship && member ? compareEquip(idx, ship, member.id, skill.id) : null;
+  const anchorLabel = cmp?.anchor ? idx.kb.anchors[cmp.anchor].label : '';
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(skill.skillPath);
@@ -61,6 +68,49 @@ export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill })
   };
   return (
     <article ref={root} className="art-detail stack" data-testid="art-detail" data-skill={skill.id} style={{ ['--c' as string]: a.pigment } as CSSProperties}>
+      <header className="stack-sm">
+        <p className="label">{a.familyName} · <span data-rim={tier?.rim}>{tier?.label ?? a.tier}</span> <TruthLabel truth="Verified" detail="from the registry" /></p>
+        <div className="art-detail-title">
+          <span className="art-detail-tile" data-testid="detail-tile" aria-hidden="true">{isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} />}</span>
+          <h2 className="card-title">{a.name}</h2>
+        </div>
+        <code className="art-detail-id">{skill.id}</code>
+        {a.lore && <p className="prose-sm">{a.lore}</p>}
+      </header>
+      <section className="art-compare" data-testid="art-compare" aria-label="What equipping does">
+        {!member || !cmp ? (
+          <p className="muted sheet-line">Choose a ship you can edit to equip this. A library ship is a template: clone it first.</p>
+        ) : cmp.already ? (
+          <p className="sheet-line" data-testid="compare-line">{member.character.name} already carries this.</p>
+        ) : cmp.error ? (
+          <p className="sheet-line" data-testid="compare-line">{cmp.error}</p>
+        ) : (
+          <>
+            <p className="sheet-line" data-testid="compare-place">
+              {cmp.replaces ? <>Replaces <strong>{idx.skill.get(cmp.replaces)?.artifact.name ?? cmp.replaces}</strong> on {anchorLabel}.</> : <>Fills an empty socket: {anchorLabel}.</>}
+            </p>
+            <p className="sheet-line" data-testid="compare-preflight">
+              {cmp.addsBlockers + cmp.addsWarnings === 0
+                ? `Pre-flight: no change.${cmp.reasons.length ? ` Note: ${cmp.reasons.join(', ')}.` : ''}`
+                : `Pre-flight: adds ${cmp.addsBlockers ? `${cmp.addsBlockers} ${cmp.addsBlockers === 1 ? 'blocker' : 'blockers'}` : `${cmp.addsWarnings} ${cmp.addsWarnings === 1 ? 'warning' : 'warnings'}`}${cmp.reasons.length ? `: ${cmp.reasons.join(', ')}` : ''}.`}
+            </p>
+          </>
+        )}
+        <div className="row" style={{ gap: 'var(--s2)' }}>
+          <button
+            type="button"
+            className={target ? 'btn btn-primary' : 'btn btn-quiet'}
+            data-testid="detail-equip"
+            disabled={!target || Boolean(cmp?.already)}
+            onClick={() => target && cmp?.anchor && requestEquip({ shipId: target.shipId, memberId: target.memberId, skill: skill.id, anchor: cmp.anchor })}
+          >
+            Equip to {member?.character.name ?? 'a crew member'}
+          </button>
+          <button type="button" className="btn btn-quiet" data-testid="detail-equip-menu" disabled={!target} onClick={() => target && openMenu({ skill: skill.id, shipId: target.shipId, memberId: target.memberId })}>
+            Choose a socket
+          </button>
+        </div>
+      </section>
       <div className="art-detail-view" data-testid="art-detail-view">
         {webgl ? (
           <Suspense fallback={<div className="art-detail-glyph" aria-hidden="true">{isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} />}</div>}>
@@ -72,15 +122,6 @@ export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill })
           </div>
         )}
       </div>
-      <header className="stack-sm">
-        <p className="label">{a.familyName} · <span data-rim={tier?.rim}>{tier?.label ?? a.tier}</span> <TruthLabel truth="Verified" detail="from the registry" /></p>
-        <div className="art-detail-title">
-          <span className="art-detail-tile" data-testid="detail-tile" aria-hidden="true">{isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} />}</span>
-          <h2 className="card-title">{a.name}</h2>
-        </div>
-        <code className="art-detail-id">{skill.id}</code>
-        {a.lore && <p className="prose-sm">{a.lore}</p>}
-      </header>
       <p className="prose-sm">{skill.description}</p>
       <dl className="art-facts">
         <dt>Phase</dt><dd>{skill.phase}</dd>
@@ -101,19 +142,7 @@ export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill })
         </section>
       )}
       {wearers.length > 0 && <p className="sheet-line" data-testid="worn-by">Worn by {wearers.map((m) => m.character.name).join(', ')} on {ship?.name}.</p>}
-      <div className="row" style={{ gap: 'var(--s2)' }}>
-        <button
-          type="button"
-          className="btn btn-primary"
-          data-testid="detail-equip"
-          disabled={!target}
-          onClick={() => target && openMenu({ skill: skill.id, shipId: target.shipId, memberId: target.memberId })}
-        >
-          Equip to...
-        </button>
-        <button type="button" className="btn btn-quiet" onClick={copy} data-testid="copy-path">Copy skill path</button>
-      </div>
-      {!target && <p className="muted sheet-line">Choose a ship you can edit to equip this. A library ship is a template: clone it first.</p>}
+      <button type="button" className="btn btn-text" onClick={copy} data-testid="copy-path">Copy skill path</button>
       {path && <input className="field" readOnly value={path} aria-label="Skill path" onFocus={(e) => e.currentTarget.select()} data-testid="path-field" />}
     </article>
   );

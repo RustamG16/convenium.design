@@ -6,7 +6,8 @@
 .voyage-layout[data-wide] { grid-template-columns: minmax(0, 1fr) var(--panel-w); }
 .voyage-inspector { position: sticky; top: var(--s4); max-height: calc(100dvh - 2 * var(--s4)); overflow: auto; padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); }
 
-.voyage-track { list-style: none; margin: 0; padding: var(--s5) var(--s2) var(--s4); display: flex; align-items: stretch; gap: var(--s4); overflow-x: auto; position: relative; background: linear-gradient(var(--border), var(--border)) 0 50% / 100% 1px no-repeat; }
+/* T11 (V1): the track wraps into rows, so no card is ever hidden behind a sideways scroll. */
+.voyage-track { list-style: none; margin: 0; padding: var(--s2) 0 var(--s4); display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--s4); position: relative; }
 .voyage-item { flex: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s1); align-content: start; position: relative; min-width: 0; }
 .voyage-stage { width: 268px; }
 .voyage-gate { width: 148px; }
@@ -35,7 +36,7 @@
 .runplan-row { margin: 0; padding: var(--s3); max-height: 280px; overflow: auto; background: var(--bg); border: 1px solid var(--hairline); border-radius: var(--r-control); font-size: 12px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 
 @media (max-width: 767px) {
-  .voyage-track { flex-direction: column; overflow-x: visible; background: linear-gradient(var(--border), var(--border)) 22px 0 / 1px 100% no-repeat; padding-left: var(--s6); }
+  .voyage-track { flex-direction: column; flex-wrap: nowrap; background: linear-gradient(var(--border), var(--border)) 22px 0 / 1px 100% no-repeat; padding-left: var(--s6); }
   .voyage-stage, .voyage-gate { width: 100%; }
   .gate-card { min-height: 0; grid-auto-flow: column; justify-content: start; justify-items: start; align-items: center; gap: var(--s3); text-align: left; }
   .item-actions { justify-content: flex-start; flex-wrap: wrap; }

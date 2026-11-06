@@ -221,6 +221,9 @@ export default function LogbookPage() {
       <header>
         <h1 className="page-title">Logbook</h1>
         <p className="lede">What your ships have done, in your own files. Every row says where it comes from.</p>
+        <p className="prose-sm" data-testid="truth-legend">
+          What the labels mean: <strong>Verified</strong> is computed from the library or a file you exported; <strong>Simulated</strong> is narrative or a curiosity count, not a measurement of skill; <strong>User-reported</strong> is pasted by you and not checked here; <strong>Unavailable</strong> means the source does not carry the number.
+        </p>
       </header>
 
       <CommissionsRail granted={commissions} />

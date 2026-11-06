@@ -131,26 +131,32 @@ export function ExportPanel({ ship, report }: Props) {
         </p>
       )}
 
-      <div className="export-buttons">
-        <button type="button" className="btn btn-primary" disabled={blocked} aria-describedby={blocked ? 'export-blocked' : undefined} onClick={downloadShip} data-testid="download-ship">
-          Download ship.json
-        </button>
-        <button type="button" className="btn btn-primary" disabled={blocked || needPath} aria-describedby={blocked ? 'export-blocked' : `${pathId}-help`} onClick={downloadPlan} data-testid="download-plan">
-          Download 00-run-plan.md
-        </button>
-        <button type="button" className="btn btn-quiet" disabled={blocked || needPath} aria-describedby={blocked ? 'export-blocked' : `${pathId}-help`} onClick={copyKickoff} data-testid="copy-kickoff">
+      <div className="export-primary">
+        <button type="button" className="btn btn-primary" disabled={blocked || needPath} aria-describedby={blocked ? 'export-blocked' : `${pathId}-help`} onClick={copyKickoff} data-testid="copy-kickoff">
           Copy kickoff prompt
         </button>
-        {import.meta.env.DEV ? (
-          <button type="button" className="btn btn-quiet" disabled={blocked} aria-describedby={blocked ? 'export-blocked' : undefined} onClick={save} data-testid="save-ship">
-            Save to shipyard/ships/
-          </button>
-        ) : (
-          <p className="prose-sm" data-testid="save-dev-only">
-            Saving to shipyard/ships/ is available on the dev server only.
-          </p>
-        )}
+        <p className="prose-sm">The one thing a session needs: paste it and the session runs your plan.</p>
       </div>
+      <fieldset className="export-files" data-testid="export-files">
+        <legend className="label">Files</legend>
+        <div className="export-buttons">
+          <button type="button" className="btn btn-quiet" disabled={blocked} aria-describedby={blocked ? 'export-blocked' : undefined} onClick={downloadShip} data-testid="download-ship">
+            Download ship.json
+          </button>
+          <button type="button" className="btn btn-quiet" disabled={blocked || needPath} aria-describedby={blocked ? 'export-blocked' : `${pathId}-help`} onClick={downloadPlan} data-testid="download-plan">
+            Download 00-run-plan.md
+          </button>
+          {import.meta.env.DEV ? (
+            <button type="button" className="btn btn-quiet" disabled={blocked} aria-describedby={blocked ? 'export-blocked' : undefined} onClick={save} data-testid="save-ship">
+              Save to shipyard/ships/
+            </button>
+          ) : (
+            <p className="prose-sm" data-testid="save-dev-only">
+              Saving to shipyard/ships/ is available on the dev server only.
+            </p>
+          )}
+        </div>
+      </fieldset>
 
       <p className="pf-message" role="status" data-testid="export-message">
         {message}
