@@ -33,7 +33,7 @@
   aspect-ratio: 4 / 5;
   width: 100%;
   /* the feet stay above the fold at 1440×900 (critic residue): the stage shortens; the figure is framed by height, so it stays whole */
-  max-height: max(380px, calc(100svh - 390px));
+  max-height: max(380px, calc(100svh - 370px));
   border-radius: 12px;
   background: radial-gradient(120% 90% at 50% 100%, color-mix(in oklab, var(--c, #3a2f2b) 18%, #141010) 0%, #0f0c0c 70%);
   border: 1px solid color-mix(in oklab, currentColor 12%, transparent);

@@ -375,7 +375,7 @@ The v1 open items n1 and n3–n5 move into T16; n2 moves into T24 (A1).
   - it lifts after a 1.5 s grace when the loader never reports work;
   - at 8 s it offers **Enter without 3D** (the bridge) or **Retry**.
 - **Residues:**
-  - the turntable is clamped to `max(380px, 100svh − 390px)`, so the feet and plinth show at
+  - the turntable is clamped to `max(380px, 100svh − 370px)`, so the feet and plinth show at
     1440×900;
   - a back rim light and a lifted hemisphere ground colour on the turntable;
   - `scroll-padding-bottom: 72px` on the phone waypoint card (WCAG 2.4.11);

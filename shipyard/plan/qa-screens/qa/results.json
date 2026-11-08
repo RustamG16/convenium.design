@@ -43,10 +43,10 @@
    ],
    "bridge-captain": [
     "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
-    "warning: [.WebGL-0x13c00c99400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "warning: [.WebGL-0x13c00c99400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "warning: [.WebGL-0x13c00c99400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-    "warning: [.WebGL-0x13c00c99400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    "warning: [.WebGL-0x3a8c00c9d400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x3a8c00c9d400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x3a8c00c9d400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x3a8c00c9d400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
    ],
    "bridge-engineer": [
     "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
