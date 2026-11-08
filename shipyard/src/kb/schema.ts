@@ -48,35 +48,54 @@ export const kbSkillSchema = z.object({
   slots: z.array(z.object({ slot: z.string(), changes: z.string() })),
 });
 
+/**
+ * v2 (live library): an agent added by hand or by the Forge may omit model, phase and priority. The
+ * generator writes them as null; these defaults keep the whole knowledge base loading (a refusal here
+ * blanks every screen) and the UI says "inherit" / "unphased" in words.
+ */
+export const AGENT_DEFAULT_PRIORITY = 50;
 export const kbAgentSchema = z.object({
   id: z.string(),
   description: z.string(),
   access: z.enum(['read-only', 'write']),
-  model: z.enum(['opus', 'sonnet', 'haiku']),
+  model: z
+    .enum(['opus', 'sonnet', 'haiku', 'inherit'])
+    .nullish()
+    .transform((v) => v ?? 'inherit'),
   routes: z.array(z.string()),
-  phase: z.string(),
-  priority: z.number(),
-  activateWhen: z.string(),
+  phase: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? null),
+  priority: z
+    .number()
+    .nullish()
+    .transform((v) => v ?? AGENT_DEFAULT_PRIORITY),
+  activateWhen: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? ''),
 });
 
 export const kbCrewSchema = z.object({
   id: z.string(),
   name: z.string(),
-  glyph: z.string(),
-  species: z.string(),
-  essence: z.string(),
+  glyph: z.string().default(''),
+  species: z.string().default(''),
+  essence: z.string().default(''),
   role: z.object({ title: z.string(), agent: z.string() }),
-  station: z.number().int().min(1).max(8),
+  /** the console's station number; a ship seats at most 8, but the library may hold more agents (v2) */
+  station: z.number().int().min(1).max(32),
   phase: z.string(),
   strengths: z.array(z.string()).default([]),
   blindSpots: z.array(z.object({ hypothesis: z.string(), truth: z.string().optional() })).default([]),
   motivations: z.array(z.string()).default([]),
   growthPaths: z.array(z.string()).default([]),
   related: z.array(z.string()),
-  analogy: z.string(),
-  plainMeaning: z.string(),
+  analogy: z.string().default(''),
+  plainMeaning: z.string().default(''),
   pigment: hex,
-  working: z.string(),
+  working: z.string().default(''),
 });
 
 export const kbStageSchema = z.object({

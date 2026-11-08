@@ -12,7 +12,7 @@ import type { KbIndex } from '../kb/artifacts';
 import type { KbAgent } from '../kb/schema';
 import { ConversionError, convertWorkflow } from './conversion';
 import { placement } from './loadout';
-import { BODY_IDS, isStage, type AgentId, type Character, type LoadoutEntry, type Member, type Ship, type VoyageItem } from './schema';
+import { displayHull, isKnownBody, isStage, type Character, type LoadoutEntry, type Member, type Ship, type VoyageItem } from './schema';
 
 /** Skills a member may be handed, in priority order, before capacity is applied. */
 export function derivedSkillOrder(idx: KbIndex, agent: KbAgent | undefined, stageSkills: string[]): string[] {
@@ -49,7 +49,7 @@ export function defaultLoadout(idx: KbIndex, agentId: string, stageSkills: strin
 export function characterFromCrew(idx: KbIndex, crewId: string): Character {
   const c = idx.crew.get(crewId);
   if (!c) throw new Error(`no crew entry ${crewId}`);
-  const body = (BODY_IDS as readonly string[]).includes(c.id) && c.id !== 'standin' ? (c.id as Character['body']) : 'standin';
+  const body = isKnownBody(c.id) && c.id !== 'standin' ? c.id : 'standin';
   return { fromCrew: c.id, name: c.name, species: c.species, essence: c.essence, analogy: c.analogy, body, pigment: c.pigment, glyph: c.glyph };
 }
 
@@ -57,7 +57,7 @@ export function characterFromCrew(idx: KbIndex, crewId: string): Character {
 export function memberFromCrew(idx: KbIndex, crewId: string, stageSkills: string[]): { member: Member; overflow: string[] } {
   const c = idx.crew.get(crewId);
   if (!c) throw new Error(`no crew entry ${crewId}`);
-  const base: Member = { id: c.id, agent: c.role.agent as AgentId, character: characterFromCrew(idx, crewId), station: c.station, loadout: [] };
+  const base: Member = { id: c.id, agent: c.role.agent, character: characterFromCrew(idx, crewId), station: c.station, loadout: [] };
   const { loadout, overflow } = defaultLoadout(idx, c.role.agent, stageSkills, base);
   return { member: { ...base, loadout }, overflow };
 }
@@ -145,7 +145,7 @@ export function blankShip(idx: KbIndex, input: NewShipInput, at: string): Ship {
     name: input.name.slice(0, 48),
     class: 'custom',
     origin: { kind: 'blank' },
-    hull: 'ship-e',
+    hull: displayHull(undefined, input.id),
     trail: 'abridged',
     kbHash: idx.kb.sourceHash,
     crew: [member],

@@ -2,9 +2,16 @@
 // stroke, the family pigment as a 0.2 fill. Decorative: the artifact's name carries the meaning,
 // so each glyph is aria-hidden and sits beside text.
 import type { ReactNode } from 'react';
-import type { FamilyId } from './familyIds';
+import { drawFamily, type DrawFamily, type FamilyId } from './familyIds';
 
-const SHAPES: Record<FamilyId, ReactNode> = {
+const SHAPES: Record<DrawFamily, ReactNode> = {
+  // v2 fallback for a family with no glyph yet: a faceted stone in a ring
+  relic: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 6 16 12l-4 6-4-6z" />
+    </>
+  ),
   // faceted lens in a ring
   lens: (
     <>
@@ -98,12 +105,14 @@ const SHAPES: Record<FamilyId, ReactNode> = {
   ),
 };
 
-export function FamilyGlyph({ family, pigment, size = 24 }: { family: FamilyId; pigment: string; size?: number }) {
+/** `family` may be any id: one without a glyph draws as the relic (v2). */
+export function FamilyGlyph({ family, pigment, size = 24 }: { family: string; pigment: string; size?: number }) {
+  const shape = drawFamily(family);
   return (
-    <svg className="glyph" data-family={family} width={size} height={size} viewBox="0 0 24 24" fill={pigment} fillOpacity={0.2} stroke="var(--cotton, #edebdd)" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" aria-hidden="true" focusable="false">
-      {SHAPES[family]}
+    <svg className="glyph" data-family={shape} width={size} height={size} viewBox="0 0 24 24" fill={pigment} fillOpacity={0.2} stroke="var(--cotton, #edebdd)" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" aria-hidden="true" focusable="false">
+      {SHAPES[shape]}
     </svg>
   );
 }
 
-export const GLYPH_FAMILIES = Object.keys(SHAPES) as FamilyId[];
+export const GLYPH_FAMILIES = (Object.keys(SHAPES) as DrawFamily[]).filter((f): f is FamilyId => f !== 'relic');

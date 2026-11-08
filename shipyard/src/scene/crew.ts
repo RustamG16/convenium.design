@@ -4,8 +4,8 @@
 // library). Artifacts are resolved here too: the scene never looks a skill up.
 import type { KbIndex } from '../kb/artifacts';
 import type { Anchor, Member, Ship } from '../domain/schema';
-import { isStage } from '../domain/schema';
-import { BODIES, type BodyId } from './bodies';
+import { isKnownBody, isStage } from '../domain/schema';
+import { bodyOf, type BodyId } from './bodies';
 
 export interface WornArtifact {
   skill: string;
@@ -62,7 +62,7 @@ export function wornArtifacts(idx: KbIndex, member: Member): WornArtifact[] {
 export function sceneMember(idx: KbIndex, ship: Ship, member: Member): SceneMember {
   const ch = member.character;
   const crew = ch.fromCrew ? idx.crew.get(ch.fromCrew) : undefined;
-  const body = BODIES[ch.body] ?? BODIES.standin;
+  const body = bodyOf(ch.body);
   const active = ship.voyage.find((v) => isStage(v) && v.member === member.id && v.activeSkill);
   return {
     id: member.id,
@@ -81,7 +81,7 @@ export function sceneMember(idx: KbIndex, ship: Ship, member: Member): SceneMemb
     blindSpots: (crew?.blindSpots ?? []).map((b) => b.hypothesis),
     motivations: crew?.motivations ?? [],
     growthPaths: crew?.growthPaths ?? [],
-    body: ch.body,
+    body: isKnownBody(ch.body) ? ch.body : 'standin',
     model: { glb: body.glb, sheet: body.sheet, heightM: body.heightM },
     recruit: !ch.fromCrew,
     active: active && isStage(active) ? active.activeSkill : null,

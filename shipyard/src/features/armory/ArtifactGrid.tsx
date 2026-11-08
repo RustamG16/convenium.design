@@ -6,7 +6,6 @@ import type { Ship } from '../../domain/schema';
 import type { KbIndex } from '../../kb/artifacts';
 import type { KbSkill } from '../../kb/schema';
 import { MOTION } from '../../lib/motion';
-import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { useNotify } from '../shared/notices';
 import { useArtifactHandlers, useEquip } from './equip';
@@ -58,7 +57,7 @@ function Card({ idx, skill, selected, onSelect, ship, enter }: { idx: KbIndex; s
       onClick={onSelect}
       aria-label={`${a.name}, ${skill.id}, ${tier?.label ?? a.tier}, ${skill.phase} phase${wearers.length ? `, worn by ${wearers.map((m) => m.character.name).join(', ')}` : ''}. Press E to equip.`}
     >
-      <span className="art-card-tile">{isFamilyId(a.family) ? <FamilyGlyph family={a.family} pigment={a.pigment} /> : null}</span>
+      <span className="art-card-tile"><FamilyGlyph family={a.family} pigment={a.pigment} /></span>
       <span className="art-card-meta">
         {a.familyName} · <span className="art-card-tier" data-rim={tier?.rim}>{tier?.label ?? a.tier}</span>
       </span>

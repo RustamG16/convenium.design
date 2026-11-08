@@ -14,7 +14,6 @@ import { useKb } from '../../kb/context';
 import { TruthLabel } from '../../components/TruthLabel';
 import { useMinWidth } from '../../lib/preferences';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
-import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { useDispatch, useStoreState } from '../../store/context';
 import { useNotify } from '../shared/notices';
 import { ShipNav, TemplateLine, useCloneToEdit } from '../shared/ShipNav';
@@ -240,7 +239,7 @@ export default function VoyagePage() {
                   <span className="stage-title">{stageNo(i)}. {item.label}</span>
                   <span className="stage-crew"><span className="dot" style={{ background: member?.character.pigment ?? 'var(--muted)' }} aria-hidden="true" />{member ? member.character.name : `${item.member} (not aboard)`}</span>
                   <span className="stage-art" data-testid="stage-art">
-                    {skill && isFamilyId(skill.artifact.family) ? <FamilyGlyph family={skill.artifact.family} pigment={skill.artifact.pigment} /> : <span className="glyph" />}
+                    {skill ? <FamilyGlyph family={skill.artifact.family} pigment={skill.artifact.pigment} /> : <span className="glyph" />}
                     <span>{skill ? skill.artifact.name : item.activeSkill ? `${item.activeSkill} (retired)` : 'No artifact'}</span>
                   </span>
                   <span className="stage-out">{item.outputs[0]}{item.outputs.length > 1 ? ` +${item.outputs.length - 1}` : ''}</span>

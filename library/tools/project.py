@@ -375,10 +375,23 @@ def build_shipyard(dry):
                        "routes": routes, "phase": act.group(1) if act else None,
                        "priority": int(act.group(2)) if act else None,
                        "activateWhen": when.group(1).strip() if when else None})
+    # v2 (Shipyard live library): an unknown family or route is a loud failure that names every
+    # problem, never a silent skip -- a skill that vanished from the knowledge base looked like a UI bug.
+    problems = [f"skill {r['id']}: category {r['category']!r} has no artifact family in artifacts.json"
+                for r in REG if r["category"] not in families]
+    reg_ids = {r["id"] for r in REG}
+    ext_path = os.path.join(reg_dir, "external-skills.json")
+    ext = json.load(open(ext_path, encoding="utf-8")) if os.path.isfile(ext_path) else {}
+    external = set(ext.get("plugin", [])) | set(ext.get("builtin", []))
+    problems += [f"agent {name}: route {sk!r} is neither a registry skill nor a declared external skill"
+                 for sk, names in routed_by.items() if sk not in reg_ids and sk not in external for name in names]
+    if problems:
+        print("  shipyard knowledge base NOT written:")
+        for pr in problems:
+            print(f"   - {pr}")
+        return False
     skills = []
     for r in REG:
-        if r["category"] not in families:     # verify.py names this as a failure; do not crash the rebuild
-            continue
         skills.append({"id": r["id"], "name": r["name"], "phase": r["phase"], "group": r["group"],
                        "category": r["category"], "hosts": r["hosts"], "status": r["status"],
                        "defaultOn": bool(r.get("defaultOn")), "description": " ".join(r["description"].split()),

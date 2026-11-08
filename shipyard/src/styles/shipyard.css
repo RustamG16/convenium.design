@@ -164,8 +164,37 @@
 }
 
 .fleet,
-.drydock {
+.drydock,
+.blocks {
   margin-top: var(--s7);
+}
+/* v2: library workflows that cannot become a ship yet — hulls on blocks, dashed like a dormant tier */
+.blocks-grid {
+  list-style: none;
+  margin: var(--s4) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: var(--s4);
+}
+.blocks-card {
+  border: 1px dashed var(--border);
+  border-radius: var(--r-panel, 10px);
+  padding: var(--s4);
+  background: var(--surface);
+  display: grid;
+  gap: var(--s2);
+}
+.blocks-card .card-title {
+  margin: 0;
+}
+.blocks-problems {
+  margin: 0;
+  padding-left: var(--s4);
+  color: var(--cotton);
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 .section-row {
   display: flex;

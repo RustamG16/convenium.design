@@ -57,7 +57,9 @@ export interface PreflightReport {
   next: Check | null;
 }
 
-const TIER = { opus: 3, sonnet: 2, haiku: 1 } as const;
+const TIER = { opus: 3, sonnet: 2, haiku: 1, inherit: 0 } as const;
+/** `inherit` runs at the session's model, unknown here: it never triggers a tier warning (a false positive is a bug). */
+const known = (m: keyof typeof TIER) => m !== 'inherit';
 const WRITE_PLANS = /^(00-run-plan|06-build-plan)\.md$/;
 const basename = (p: string) => p.split('/').pop() ?? p;
 const RANK: Record<Severity, number> = { info: 1, warn: 2, block: 3 };
@@ -278,10 +280,12 @@ const RULES: Rule[] = [
       const builders = stages.filter((s) => s.phase === 'build').map((s) => agentOf(s.member)).filter((a): a is KbAgent => !!a);
       const critics = stages.filter((s) => s.phase === 'verify' && agentOf(s.member)?.id === 'independent-critic');
       if (builders.length === 0 || critics.length === 0) return { na: 'No builder or no critic stage.' };
-      const top = Math.max(...builders.map((a) => TIER[a.model]));
+      const tiers = builders.filter((a) => known(a.model)).map((a) => TIER[a.model]);
+      if (tiers.length === 0) return { na: 'Every builder inherits the session model.' };
+      const top = Math.max(...tiers);
       return critics.flatMap((s): Finding[] => {
         const a = agentOf(s.member)!;
-        return TIER[a.model] < top ? [{ severity: 'warn', reason: `${member(s.member)?.character.name ?? s.member} scores at ${a.model}, below the builder's tier.`, fix: stageFix(s) }] : [];
+        return known(a.model) && TIER[a.model] < top ? [{ severity: 'warn', reason: `${member(s.member)?.character.name ?? s.member} scores at ${a.model}, below the builder's tier.`, fix: stageFix(s) }] : [];
       });
     },
   },

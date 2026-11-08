@@ -26,8 +26,8 @@ export interface Part {
   instances?: { position: V3; rotation: V3 }[];
 }
 
-import type { FamilyId } from './familyIds';
-export { FAMILY_IDS, isFamilyId, type FamilyId } from './familyIds';
+export { FAMILY_IDS, isFamilyId, type FamilyId, RELIC, drawFamily, type DrawFamily } from './familyIds';
+import type { DrawFamily } from './familyIds';
 export const TRIANGLE_BUDGET = 600;
 
 const HALF_PI = Math.PI / 2;
@@ -241,12 +241,20 @@ function orrery(v: Variant): Part[] {
   ];
 }
 
-const BUILD: Record<FamilyId, (v: Variant) => Part[]> = { lens, wrench, gyroscope, projector, quill, seal, spyglass, calipers, gearbox, codex, orrery };
+function relic(v: Variant): Part[] {
+  // The fallback for a family with no recipe yet (v2): a faceted stone held in a ring.
+  return [
+    { geometry: new THREE.OctahedronGeometry([0.034, 0.03, 0.036, 0.032][v], 0), kind: 'main' },
+    { geometry: torus(0.05, 0.003, 3, 20), kind: 'main', rotation: [HALF_PI + [0.2, 0.5, 0.3, 0.7][v], 0, 0] },
+  ];
+}
+
+const BUILD: Record<DrawFamily, (v: Variant) => Part[]> = { lens, wrench, gyroscope, projector, quill, seal, spyglass, calipers, gearbox, codex, orrery, relic };
 
 const cache = new Map<string, Part[]>();
 
 /** The parts of one family variant. Built once and shared: geometry is never mutated after this. */
-export function familyParts(family: FamilyId, variant: Variant): Part[] {
+export function familyParts(family: DrawFamily, variant: Variant): Part[] {
   const key = `${family}:${variant}`;
   let parts = cache.get(key);
   if (!parts) {
@@ -264,7 +272,7 @@ const materials = new Map<string, THREE.MeshStandardMaterial>();
 const cones = new Map<string, THREE.MeshBasicMaterial>();
 
 /** The family's single shared material: metalness 0.6, roughness 0.35, emissive = pigment at 0.6. */
-export function familyMaterial(family: FamilyId, pigment: string): THREE.MeshStandardMaterial {
+export function familyMaterial(family: DrawFamily, pigment: string): THREE.MeshStandardMaterial {
   const key = `${family}|${pigment}`;
   let m = materials.get(key);
   if (!m) {
@@ -303,7 +311,7 @@ export interface Artifact {
 }
 
 /** One artifact object: meshes over the shared geometry and material. Dispose nothing here: both are shared. */
-export function buildArtifact(family: FamilyId, variant: Variant, pigment: string): Artifact {
+export function buildArtifact(family: DrawFamily, variant: Variant, pigment: string): Artifact {
   const group = new THREE.Group();
   group.name = `artifact-${family}-${variant}`;
   const main = familyMaterial(family, pigment);

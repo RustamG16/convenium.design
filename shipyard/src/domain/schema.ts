@@ -9,24 +9,23 @@
 import { z } from 'zod';
 
 export const ANCHOR_IDS = ['hand', 'offhand', 'head', 'back', 'belt', 'orbit'] as const;
-export const AGENT_IDS = [
-  'design-director',
-  'brand-strategist',
-  'visual-analyst',
-  'independent-critic',
-  'design-engineer',
-  'asset-producer',
-  'analytics-specialist',
-  'fleet-measurer',
-] as const;
+/**
+ * v2 (live library): agent, body and hull ids are slugs, not closed lists. The knowledge base says which
+ * agents exist; an id it does not know loads as "retired" and fails pre-flight, exactly like an unknown
+ * skill. BODY_IDS and HULL_IDS below are the *known* media (the files shipped in public/media), offered
+ * as choices; an unknown body renders as the stand-in and an unknown hull as ship-a.
+ */
+export const SLUG = /^[a-z][a-z0-9-]{1,47}$/;
+/** Bodies with media in public/media/crew (plus the procedural stand-in): the choices offered. */
 export const BODY_IDS = ['captain', 'strategist', 'analyst', 'critic', 'engineer', 'producer', 'metrics', 'standin'] as const;
 export const PHASE_IDS = ['always', 'diagnose', 'direct', 'prepare', 'build', 'verify'] as const;
+/** Hulls with media in public/media/ships: the choices offered. */
 export const HULL_IDS = ['ship-a', 'ship-b', 'ship-c', 'ship-d', 'ship-e'] as const;
 export const CLASS_IDS = ['flagship', 'abridged', 'retrofit', 'fleet', 'custom'] as const;
 export const TRAIL_IDS = ['full', 'abridged', 'fleet'] as const;
 
 export const anchorId = z.enum(ANCHOR_IDS);
-export const agentId = z.enum(AGENT_IDS);
+export const agentId = z.string().regex(SLUG);
 
 const isoDate = z.string().refine((s) => !Number.isNaN(Date.parse(s)), 'must be an ISO date-time');
 
@@ -42,7 +41,7 @@ export const characterSchema = z.object({
   species: z.string().max(160).optional(),
   essence: z.string().max(400).optional(),
   analogy: z.string().max(200).optional(),
-  body: z.enum(BODY_IDS),
+  body: z.string().regex(SLUG),
   pigment: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
   glyph: z.string().max(4).optional(),
 });
@@ -100,7 +99,8 @@ export const shipSchema = z.strictObject({
   schema: z.literal('shipyard.ship.v1'),
   id: z.string().regex(/^[a-z][a-z0-9-]{1,47}$/),
   name: z.string().min(1).max(48),
-  class: z.enum(CLASS_IDS),
+  /** an unknown class (a workflow from a newer library) reads as custom, never a load failure */
+  class: z.enum(CLASS_IDS).catch('custom'),
   origin: z
     .object({
       kind: z.enum(['library', 'clone', 'blank', 'import']),
@@ -109,7 +109,7 @@ export const shipSchema = z.strictObject({
     })
     .optional(),
   summary: z.string().max(400).optional(),
-  hull: z.enum(HULL_IDS).optional(),
+  hull: z.string().regex(SLUG).optional(),
   trail: z.enum(TRAIL_IDS).optional(),
   doctrine: z.string().nullable().optional(),
   modules: z.array(z.string()).optional(),
@@ -125,6 +125,22 @@ export const shipSchema = z.strictObject({
 
 export type Anchor = z.infer<typeof anchorId>;
 export type AgentId = z.infer<typeof agentId>;
+export type KnownBody = (typeof BODY_IDS)[number];
+export type KnownHull = (typeof HULL_IDS)[number];
+export const isKnownBody = (b: string): b is KnownBody => (BODY_IDS as readonly string[]).includes(b);
+export const isKnownHull = (h: string): h is KnownHull => (HULL_IDS as readonly string[]).includes(h);
+/**
+ * The hull a ship is drawn with (v2, critic n2). `ship-e` is retired from display: the file is an upright
+ * rigged figure that read as a creature beside the four hulls. A ship saved with it, a blank ship, or a
+ * hull id this build has no file for draws as one of ship-a..d, picked from the ship id so it is stable.
+ */
+export const DISPLAY_HULLS = ['ship-a', 'ship-b', 'ship-c', 'ship-d'] as const;
+export function displayHull(hull: string | undefined, shipId: string): (typeof DISPLAY_HULLS)[number] {
+  if (hull && (DISPLAY_HULLS as readonly string[]).includes(hull)) return hull as (typeof DISPLAY_HULLS)[number];
+  let h = 0;
+  for (const ch of shipId) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return DISPLAY_HULLS[h % DISPLAY_HULLS.length];
+}
 export type Phase = (typeof PHASE_IDS)[number];
 export type LoadoutEntry = z.infer<typeof loadoutEntrySchema>;
 export type Character = z.infer<typeof characterSchema>;

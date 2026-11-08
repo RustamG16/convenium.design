@@ -3,6 +3,7 @@
 // Nothing here writes to library/: a clone is a custom copy, an import is validated with the ship
 // schema and refused with its list of problems.
 import * as Dialog from '@radix-ui/react-dialog';
+import { isDerivedWorkflow } from '../../domain/conversion';
 import { useId, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { LIBRARY_EPOCH, libraryShips } from '../../domain/ship';
@@ -81,7 +82,7 @@ export function CommissionDialog({ onClose, initialMode = 'clone', initialSource
               <span className="label">Clone</span>
               <select className="field" value={source} onChange={(e) => setSource(e.target.value)} data-testid="clone-source">
                 <optgroup label="Library workflows (templates)">
-                  {library.ships.map((s) => <option key={s.id} value={s.id}>{s.name} · {s.class}</option>)}
+                  {library.ships.map((s) => <option key={s.id} value={s.id}>{s.name} · {s.class}{isDerivedWorkflow(s.origin?.workflow) ? ' · derived voyage' : ''}</option>)}
                 </optgroup>
                 {ships.length > 0 && (
                   <optgroup label="Your ships">

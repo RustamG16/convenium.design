@@ -12,7 +12,6 @@ import { isLibraryShip, LIBRARY_EPOCH, libraryShips } from '../../domain/ship';
 import { useKb } from '../../kb/context';
 import { useDispatch, useStoreState } from '../../store/context';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
-import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { isReducedMotion, MOTION, noteDrop, recordMotion, EASE_CSS } from '../../lib/motion';
 import { useNotify } from '../shared/notices';
 
@@ -343,7 +342,7 @@ export function EquipProvider({ children }: { children: ReactNode }) {
       {drag &&
         createPortal(
           <div ref={(el) => { ghost.current = el; if (el) el.style.transform = `translate(${lastPoint.current.x + 12}px, ${lastPoint.current.y + 12}px)`; }} className="drag-ghost" data-testid="drag-ghost" aria-hidden="true" style={{ ['--c' as string]: draggedSkill?.artifact.pigment }}>
-            {draggedSkill && isFamilyId(draggedSkill.artifact.family) && <FamilyGlyph family={draggedSkill.artifact.family} pigment={draggedSkill.artifact.pigment} />}
+            {draggedSkill && <FamilyGlyph family={draggedSkill.artifact.family} pigment={draggedSkill.artifact.pigment} />}
             <span>{draggedSkill?.artifact.name ?? drag.skill}</span>
             <span className="drag-ghost-hint">{drag.hover ? (drag.hover.anchor === 'hold' ? 'Drop to send to the hold' : `Drop to equip: ${idx.kb.anchors[drag.hover.anchor].label}`) : 'Drop on a socket or the body'}</span>
           </div>,

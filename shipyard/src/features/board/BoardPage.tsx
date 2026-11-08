@@ -19,7 +19,6 @@ import { TruthLabel } from '../../components/TruthLabel';
 import type { Ship } from '../../domain/schema';
 import { useKb } from '../../kb/context';
 import { force2d, hasWebGL, useIsMobile, useReducedMotion } from '../../lib/preferences';
-import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { sceneCrew, screenLines, type SceneMember } from '../../scene/crew';
 import { ShipScene } from '../../scene/ShipScene';
@@ -343,7 +342,7 @@ export function BoardTour({ ship, reduced, quality, lite, sound, onSound, onSkip
                       <ul className="ship-carry">
                         {member.loadout.map((a) => (
                           <li key={a.skill} data-active={a.skill === member.active || undefined}>
-                            {isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} size={18} />}
+                            {<FamilyGlyph family={a.family} pigment={a.pigment} size={18} />}
                             <span>{a.name}</span>
                             <code>{a.skill}</code>
                           </li>

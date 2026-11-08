@@ -3,7 +3,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState, type CSSProperties } from 'react';
 import { memberSlug, MAX_CREW, SWATCHES, suggestBody, suggestPigment } from '../../domain/crew';
-import { AGENT_IDS, BODY_IDS, type AgentId, type Character, type Ship } from '../../domain/schema';
+import { BODY_IDS, type AgentId, type Character, type Ship } from '../../domain/schema';
 import { useKb } from '../../kb/context';
 import { useDispatch } from '../../store/context';
 import { useNotify } from '../shared/notices';
@@ -39,7 +39,7 @@ export function RecruitDialog({ ship, onClose, onRecruited }: { ship: Ship; onCl
             <label className="field-row"><span className="label">Name</span><input className="field" required maxLength={40} value={name} onChange={(e) => setName(e.target.value)} data-testid="recruit-name" autoFocus /></label>
             <label className="field-row"><span className="label">Runtime agent</span>
               <select className="field" value={agent} onChange={(e) => setAgent(e.target.value as AgentId)} data-testid="recruit-agent">
-                {AGENT_IDS.map((a) => <option key={a} value={a}>{a} ({idx.agent.get(a)?.access === 'write' ? 'writes' : 'read-only'}, {idx.agent.get(a)?.model})</option>)}
+                {idx.kb.agents.map((x) => x.id).map((a) => <option key={a} value={a}>{a} ({idx.agent.get(a)?.access === 'write' ? 'writes' : 'read-only'}, {idx.agent.get(a)?.model})</option>)}
               </select>
               <span className="muted sheet-line">{desc.slice(0, 220)}</span>
             </label>

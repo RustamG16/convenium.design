@@ -8,7 +8,7 @@ import { Link } from 'react-router';
 import { HullRing } from '../../components/HullRing';
 import { TruthLabel } from '../../components/TruthLabel';
 import { preflight } from '../../domain/preflight';
-import type { Ship } from '../../domain/schema';
+import { displayHull, type Ship } from '../../domain/schema';
 import { isLibraryShip, LIBRARY_EPOCH, libraryShips } from '../../domain/ship';
 import { skillCount } from '../../kb/artifacts';
 import { useKb } from '../../kb/context';
@@ -64,7 +64,7 @@ function ShipCard({ ship, focused, onFocusShip, show3d }: { ship: Ship; focused:
       onMouseEnter={() => onFocusShip(ship.id)}
       onFocusCapture={() => onFocusShip(ship.id)}
     >
-      {!show3d && <HullSilhouette hull={ship.hull} />}
+      {!show3d && <HullSilhouette hull={displayHull(ship.hull, ship.id)} />}
       <div className="ship-card-head">
         <h3 id={`ship-${ship.id}`} className="card-title">
           {ship.name}
@@ -163,7 +163,7 @@ export function HangarPage() {
   const [lost, setLost] = useState(false);
   const fleet = useMemo(() => (flagship ? [flagship, ...ships] : ships), [flagship, ships]);
   const show3d = hasWebGL() && !force2d() && !lost;
-  const items = useMemo(() => fleet.map((s) => ({ id: s.id, hull: s.hull ?? 'ship-e', pigment: CLASS_PIGMENT[s.class] })), [fleet]);
+  const items = useMemo(() => fleet.map((s) => ({ id: s.id, hull: displayHull(s.hull, s.id), pigment: CLASS_PIGMENT[s.class] })), [fleet]);
   const focus = focusId && fleet.some((s) => s.id === focusId) ? focusId : (fleet[0]?.id ?? null);
 
   return (
@@ -240,6 +240,37 @@ export function HangarPage() {
           </div>
         )}
       </section>
+
+      {library.unconverted.length > 0 && (
+        <section aria-labelledby="blocks-h" className="blocks" data-testid="on-the-blocks">
+          <h2 id="blocks-h" className="section-head">
+            On the blocks
+          </h2>
+          <p className="prose muted">Library workflows that cannot become a ship yet. Nothing is hidden: fix the problems below in the library and the hull launches on the next rebuild.</p>
+          <ul className="blocks-grid">
+            {library.unconverted.map((u) => {
+              const wf = idx.workflow.get(u.workflow);
+              return (
+                <li key={u.workflow} className="card blocks-card" data-testid="blocks-card" data-workflow={u.workflow}>
+                  <h3 className="card-title">{wf?.name ?? u.workflow}</h3>
+                  <p className="stat">
+                    {u.problems.length} problem{u.problems.length === 1 ? '' : 's'} <TruthLabel truth="Verified" detail="checked against the knowledge base" />
+                  </p>
+                  <ul className="blocks-problems">
+                    {u.problems.slice(0, 6).map((p) => (
+                      <li key={p}>{p}</li>
+                    ))}
+                    {u.problems.length > 6 && <li className="muted">and {u.problems.length - 6} more</li>}
+                  </ul>
+                  <p className="stat muted">
+                    Fix in <code>library/registry/workflows.json</code>
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       <p className="stat footer-line" data-testid="library-count">
         <span data-testid="skill-count">{skills}</span> skills in the library <TruthLabel truth="Verified" />

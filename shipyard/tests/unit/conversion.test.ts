@@ -109,8 +109,8 @@ describe('a workflow the table cannot convert is reported, not worked around', (
     throw new Error('expected a ConversionError');
   };
 
-  it('no table at all', () => {
-    expect(problemsOf({}, 'ss-abridged').join()).toContain('no conversion table');
+  it('no table at all: v2 derives one instead of refusing (see derive.test.ts)', () => {
+    expect(convertWorkflow(idx, 'ss-abridged', {}).table.derived).toBe(true);
   });
 
   it('a library stage with no row', () => {

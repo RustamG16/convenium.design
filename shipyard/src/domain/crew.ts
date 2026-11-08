@@ -6,7 +6,7 @@
  */
 import type { KbIndex } from '../kb/artifacts';
 import { defaultLoadout } from './ship';
-import { AGENT_IDS, BODY_IDS, type AgentId, type Character, type Member, type Ship } from './schema';
+import { BODY_IDS, isKnownBody, type AgentId, type Character, type Member, type Ship } from './schema';
 
 export const MAX_CREW = 8;
 
@@ -55,7 +55,7 @@ export function suggestPigment(ship: Ship): string {
 
 export function recruit(idx: KbIndex, ship: Ship, input: RecruitInput): CrewResult {
   if (ship.crew.length >= MAX_CREW) return { ok: false, reason: `A ship carries at most ${MAX_CREW} crew.` };
-  if (!(AGENT_IDS as readonly string[]).includes(input.agent)) return { ok: false, reason: `${input.agent} is not a runtime agent.` };
+  if (!idx.agent.has(input.agent)) return { ok: false, reason: `${input.agent} is not an agent in the library.` };
   const name = input.name.trim().slice(0, 40);
   if (!name) return { ok: false, reason: 'A recruit needs a name.' };
   const station = freeStation(ship);
@@ -98,7 +98,7 @@ export function editCharacter(ship: Ship, memberId: string, patch: CharacterPatc
   if (patch.essence !== undefined) next.essence = patch.essence.slice(0, 400);
   if (patch.analogy !== undefined) next.analogy = patch.analogy.slice(0, 200);
   if (patch.glyph !== undefined) next.glyph = patch.glyph.slice(0, 4);
-  if (patch.body !== undefined && (BODY_IDS as readonly string[]).includes(patch.body)) next.body = patch.body;
+  if (patch.body !== undefined && isKnownBody(patch.body)) next.body = patch.body;
   if (patch.pigment !== undefined && /^#[0-9A-Fa-f]{6}$/.test(patch.pigment)) next.pigment = patch.pigment;
   const updated: Member = { ...member, character: next };
   return { ok: true, member: updated, ship: { ...ship, crew: ship.crew.map((m) => (m.id === memberId ? updated : m)) } };

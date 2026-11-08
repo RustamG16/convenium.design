@@ -10,7 +10,6 @@ import { entryIndex, isWorn, totalCapacity } from '../../domain/loadout';
 import { ANCHOR_IDS, type Anchor, type Member, type Ship } from '../../domain/schema';
 import type { KbIndex } from '../../kb/artifacts';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
-import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { EASE_CSS, isReducedMotion, MOTION, recordMotion, takeDrop } from '../../lib/motion';
 import { useReducedMotion } from '../../lib/preferences';
 import { useDispatch } from '../../store/context';
@@ -153,7 +152,7 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
       }}
     >
       {skill && <span className="socket-flash" ref={flash} aria-hidden="true" />}
-      {art && isFamilyId(art.artifact.family) ? <span className="socket-chip" ref={chip}><FamilyGlyph family={art.artifact.family} pigment={art.artifact.pigment} /></span> : skill ? <span className="socket-chip" ref={chip} aria-hidden="true">?</span> : <span className="socket-plus" aria-hidden="true">+</span>}
+      {art ? <span className="socket-chip" ref={chip}><FamilyGlyph family={art.artifact.family} pigment={art.artifact.pigment} /></span> : skill ? <span className="socket-chip" ref={chip} aria-hidden="true">?</span> : <span className="socket-plus" aria-hidden="true">+</span>}
       {hovered && (
         <span className="socket-label" data-testid="socket-label" aria-hidden="true">
           {reduced ? `Drop to equip: ${spec.label}` : spec.label}
@@ -295,7 +294,7 @@ function HoldRow({ idx, ship, member, skill, readOnly }: { idx: KbIndex; ship: S
   return (
     <li>
       <button type="button" className="hold-chip" data-testid="hold-chip" data-skill={skill} data-lifted={(drag?.source.kind === 'hold' && drag.skill === skill) || undefined} disabled={readOnly} style={{ ['--c' as string]: a?.artifact.pigment } as CSSProperties} {...h} aria-label={`${a?.artifact.name ?? skill} in the hold. Press E to equip it to ${member.character.name}.`}>
-        {a && isFamilyId(a.artifact.family) && <FamilyGlyph family={a.artifact.family} pigment={a.artifact.pigment} />}
+        {a && <FamilyGlyph family={a.artifact.family} pigment={a.artifact.pigment} />}
         <span>{a?.artifact.name ?? skill}</span>
       </button>
     </li>
@@ -320,7 +319,7 @@ export function SkillPicker({ idx, anchor, onPick, onClose }: { idx: KbIndex; an
             {hits.map((s) => (
               <li key={s.id}>
                 <button type="button" className="picker-item" data-skill={s.id} onClick={() => onPick(s.id)} style={{ ['--c' as string]: s.artifact.pigment } as CSSProperties}>
-                  {isFamilyId(s.artifact.family) && <FamilyGlyph family={s.artifact.family} pigment={s.artifact.pigment} />}
+                  {<FamilyGlyph family={s.artifact.family} pigment={s.artifact.pigment} />}
                   <span>{s.artifact.name}</span>
                   <code>{s.id}</code>
                 </button>

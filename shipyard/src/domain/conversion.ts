@@ -47,6 +47,8 @@ export interface ConversionTable {
   scoped?: boolean;
   hull: NonNullable<Ship['hull']>;
   rows: Row[];
+  /** v2: built by deriveTable from the KB, not authored; the UI labels the ship "Derived voyage" */
+  derived?: boolean;
 }
 
 const DS = ['PRODUCT.md', 'DESIGN.md', 'design.json'];
@@ -210,6 +212,72 @@ export const CONVERSION_TABLES: Record<string, ConversionTable> = {
   [SS_MOBILE_FLEET.workflow]: SS_MOBILE_FLEET,
 };
 
+const CLASS_OF: Record<string, Ship['class']> = { flagship: 'flagship', abridged: 'abridged', retrofit: 'retrofit', fleet: 'fleet' };
+const DERIVED_HULLS = ['ship-a', 'ship-b', 'ship-c', 'ship-d'] as const;
+const slug32 = (s: string) => s.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^[^a-z]+/, '').slice(0, 32).replace(/-+$/, '');
+
+/**
+ * v2 (live library): a conversion table derived from the knowledge base, for a workflow nobody wrote a
+ * table for (one added to workflows.json by hand, by Claude, or by the Forge). The authored tables above
+ * still win. Rules, each visible in the result so nothing is invented quietly:
+ * - one row per crew member a stage names; several crew on one stage become one parallel wave;
+ * - the row's skill is the member's agent's first route whose registry phase equals the stage phase,
+ *   else the agent's first route, else none;
+ * - the stage's artifacts are dealt to its rows in order; a row left without one writes `<row>.md`;
+ * - inputs chain from the previous stage's outputs; the stop is "<outputs> written".
+ * The result goes through the same checks as an authored table, so a gap still lands in dry dock.
+ */
+export function deriveTable(workflow: KbWorkflow, idx: KbIndex): ConversionTable {
+  const rows: Row[] = [];
+  let previous: string[] = [];
+  let wave = 0;
+  for (const s of workflow.stages) {
+    if (!isKbStage(s)) {
+      rows.push({ gate: s.gate });
+      continue;
+    }
+    const crew = s.crew.length ? s.crew : [];
+    const many = crew.length > 1;
+    if (many) wave += 1;
+    const outputsOf = crew.map((): string[] => []);
+    s.artifacts.forEach((a, i) => outputsOf[i % Math.max(1, crew.length)]?.push(a));
+    const stageOutputs: string[] = [];
+    crew.forEach((member, i) => {
+      const agent = idx.agent.get(idx.crew.get(member)?.role.agent ?? '');
+      const routes = agent?.routes.filter((r) => idx.skill.has(r)) ?? [];
+      const skill = routes.find((r) => idx.skill.get(r)?.phase === s.phase) ?? routes[0] ?? null;
+      const id = slug32(many ? `${s.id}-${member}` : s.id) || `stage-${rows.length + 1}`;
+      const outputs = outputsOf[i].length ? outputsOf[i] : [`${id}.md`];
+      stageOutputs.push(...outputs);
+      rows.push({
+        from: s.id,
+        id,
+        member,
+        skill,
+        ...(previous.length ? { inputs: previous } : {}),
+        outputs,
+        stop: `${outputs.map(basename).join(', ')} written`,
+        ...(many ? { parallel: true, wave } : {}),
+      });
+    });
+    if (stageOutputs.length) previous = stageOutputs;
+  }
+  let h = 0;
+  for (const ch of workflow.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const cls = CLASS_OF[workflow.class] ?? 'custom';
+  return {
+    workflow: workflow.id,
+    class: cls,
+    trail: cls === 'fleet' ? 'fleet' : cls === 'flagship' ? 'full' : 'abridged',
+    hull: DERIVED_HULLS[h % DERIVED_HULLS.length],
+    rows,
+    derived: true,
+  };
+}
+
+/** True when this library workflow's ship comes from deriveTable, not an authored table. */
+export const isDerivedWorkflow = (workflowId: string | undefined, tables: Record<string, ConversionTable> = CONVERSION_TABLES): boolean => !!workflowId && !tables[workflowId];
+
 export class ConversionError extends Error {
   readonly workflow: string;
   readonly problems: string[];
@@ -235,8 +303,7 @@ const basename = (p: string) => p.split('/').pop() ?? p;
 export function convertWorkflow(idx: KbIndex, workflowId: string, tables: Record<string, ConversionTable> = CONVERSION_TABLES): Converted {
   const workflow = idx.workflow.get(workflowId);
   if (!workflow) throw new ConversionError(workflowId, ['no such workflow in the library']);
-  const table = tables[workflowId];
-  if (!table) throw new ConversionError(workflowId, ['no conversion table (add one to src/domain/conversion.ts)']);
+  const table = tables[workflowId] ?? deriveTable(workflow, idx);
 
   const problems: string[] = [];
   const kbStages = new Map<string, KbStage>();

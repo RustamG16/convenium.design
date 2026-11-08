@@ -1,9 +1,9 @@
 // The eight bodies a crew member can wear: the seven owner-generated GLBs and the procedural
 // stand-in. Heights are the ArkhEthos crew identities' `model.heightM`; the files and sheets are
 // the imported media (public/media/crew/*, plan/05-asset-manifest.md). `standin` has no file.
-import type { Character } from '../domain/schema';
+import type { KnownBody } from '../domain/schema';
 
-export type BodyId = Character['body'];
+export type BodyId = KnownBody;
 
 export interface Body {
   /** base-free path of the rigged GLB, or null for the stand-in */
@@ -26,3 +26,8 @@ export const BODIES: Record<BodyId, Body> = {
 
 /** Every body GLB path, for preloading and the network assertion in the e2e. */
 export const BODY_GLBS = Object.values(BODIES).flatMap((b) => (b.glb ? [b.glb] : []));
+
+/** The body for any id: a known body, else the stand-in (an id from a newer library or a hand-edited file). */
+export function bodyOf(id: string): Body {
+  return (BODIES as Record<string, Body | undefined>)[id] ?? BODIES.standin;
+}

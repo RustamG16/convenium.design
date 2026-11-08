@@ -182,6 +182,8 @@ test('voyage planner: add, edit, reorder (drag and Alt+Arrow), duplicate, delete
 test('acceptance 4 and the chain: commission, rename, recruit, equip, edit the voyage, pre-flight, export, verify.py CLEAN, library/ unchanged', async ({ page }) => {
   test.setTimeout(240_000);
   const errors = watch(page);
+  // library/ is compared before and after, so an owner's uncommitted library edits do not fail the chain
+  const libraryBefore = spawnSync('git', ['status', '--porcelain', '--', 'library'], { cwd: REPO, encoding: 'utf8' }).stdout;
   await page.setViewportSize({ width: 1440, height: 900 });
   // acceptance 1 first: cleared storage is exactly one ship, seven crew
   await page.goto('/#/');
@@ -247,7 +249,7 @@ test('acceptance 4 and the chain: commission, rename, recruit, equip, edit the v
   rmSync(dir, { recursive: true, force: true });
   // library/ is untouched
   const git = spawnSync('git', ['status', '--porcelain', '--', 'library'], { cwd: REPO, encoding: 'utf8' });
-  expect(git.stdout.trim(), 'git status of library/').toBe('');
+  expect(git.stdout, 'git status of library/ changed during the chain').toBe(libraryBefore);
   // the commissions that came from real actions
   const s = await stored(page);
   for (const id of ['first-ship', 'first-recruit', 'first-off-route', 'first-export']) expect(s.commissions[id], id).toBeTruthy();

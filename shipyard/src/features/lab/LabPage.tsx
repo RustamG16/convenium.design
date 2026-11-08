@@ -8,7 +8,6 @@ import { lazy, Suspense, useMemo, useState } from 'react';
 import '../../styles/ship.css';
 import { TruthLabel } from '../../components/TruthLabel';
 import { equip } from '../../domain/loadout';
-import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { useKb } from '../../kb/context';
 import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
@@ -77,7 +76,7 @@ export default function LabPage() {
           {specs.map((s) => (
             <li key={s.skill} data-skill={s.skill} data-family={s.family}>
               <button type="button" className="lab-glyph-btn" aria-pressed={picked === s.skill} onClick={() => setPicked(s.skill)} title={s.skill}>
-                {isFamilyId(s.family) ? <FamilyGlyph family={s.family} pigment={s.pigment} size={22} /> : null}
+                <FamilyGlyph family={s.family} pigment={s.pigment} size={22} />
                 <span>{s.skill}</span>
               </button>
             </li>
@@ -95,7 +94,7 @@ export default function LabPage() {
               <ArtifactInspector artifact={pickedSpec} reduced={reduced} />
             </Suspense>
           ) : (
-            isFamilyId(pickedSpec.family) && <FamilyGlyph family={pickedSpec.family} pigment={pickedSpec.pigment} size={160} />
+            <FamilyGlyph family={pickedSpec.family} pigment={pickedSpec.pigment} size={160} />
           )}
           <p className="stat" data-testid="lab-picked">
             {pickedSpec.skill} · {pickedSpec.family}
@@ -157,7 +156,7 @@ export default function LabPage() {
                 <ul className="lab-worn" data-testid="lab-worn" aria-label={`${member.name} wears`}>
                   {member.loadout.map((a) => (
                     <li key={a.skill} data-skill={a.skill} data-anchor={a.anchor}>
-                      {isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} size={20} />}
+                      {<FamilyGlyph family={a.family} pigment={a.pigment} size={20} />}
                       <span>{a.name}</span>
                       <code>{a.skill}</code>
                       <span className="label">{a.anchor}</span>

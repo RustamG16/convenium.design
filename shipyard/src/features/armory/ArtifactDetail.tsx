@@ -8,7 +8,6 @@ import type { KbSkill } from '../../kb/schema';
 import { Flip, gsap, useGSAP } from '../../lib/gsap';
 import { easeDefault, isReducedMotion, MOTION, recordMotion } from '../../lib/motion';
 import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
-import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { useStoreState } from '../../store/context';
 import { useNotify } from '../shared/notices';
@@ -71,7 +70,7 @@ export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill })
       <header className="stack-sm">
         <p className="label">{a.familyName} · <span data-rim={tier?.rim}>{tier?.label ?? a.tier}</span> <TruthLabel truth="Verified" detail="from the registry" /></p>
         <div className="art-detail-title">
-          <span className="art-detail-tile" data-testid="detail-tile" aria-hidden="true">{isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} />}</span>
+          <span className="art-detail-tile" data-testid="detail-tile" aria-hidden="true">{<FamilyGlyph family={a.family} pigment={a.pigment} />}</span>
           <h2 className="card-title">{a.name}</h2>
         </div>
         <code className="art-detail-id">{skill.id}</code>
@@ -113,12 +112,12 @@ export function ArtifactDetail({ idx, skill }: { idx: KbIndex; skill: KbSkill })
       </section>
       <div className="art-detail-view" data-testid="art-detail-view">
         {webgl ? (
-          <Suspense fallback={<div className="art-detail-glyph" aria-hidden="true">{isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} />}</div>}>
+          <Suspense fallback={<div className="art-detail-glyph" aria-hidden="true">{<FamilyGlyph family={a.family} pigment={a.pigment} />}</div>}>
             <Inspector artifact={{ skill: skill.id, family: a.family, pigment: a.pigment }} reduced={reduced} onContextLost={() => setFailed(true)} />
           </Suspense>
         ) : (
           <div className="art-detail-glyph" data-testid="art-detail-glyph" role="img" aria-label={`${a.familyName} glyph`}>
-            {isFamilyId(a.family) && <FamilyGlyph family={a.family} pigment={a.pigment} />}
+            {<FamilyGlyph family={a.family} pigment={a.pigment} />}
           </div>
         )}
       </div>

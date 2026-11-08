@@ -390,3 +390,59 @@ The v1 open items n1 and n3–n5 move into T16; n2 moves into T24 (A1).
 
 **Not run:** the phone project, and the full QA sweep (both deferred to T25). n2 (ship-e) is
 still visible; it is T24.
+
+## T17: data-driven ids, derived voyages, governance 1:1 (2026-11-08)
+
+- **Governance (approved with the v2 plan):** `verify.py` drops `SANCTIONED_AGENTS`.
+  - Every `library/agents/*.md` must be a slug and map 1:1 onto a `crew.json` member; it fails on
+    a missing, an extra or a duplicate member.
+  - The run plan accepts any agent that has a library file, plus `director`.
+  - `library/agents/README.md` says so.
+  - Negative check run: an agent file with no crew member fails verify.
+- **Generator:** `project.py shipyard` halts with a named list of problems (a category with no
+  artifact family, a route that is neither a registry skill nor external) instead of skipping
+  silently. The KB is not written.
+- **Schema:**
+  - agent ids are a slug regex, not a closed list;
+  - bodies and hulls are slugs, with known-body / known-hull guards;
+  - an unknown class reads as `custom`;
+  - KB agent fields default (model `inherit`, phase null, priority 50).
+  - PF-11 ignores `inherit`.
+- **Fallbacks:**
+  - an unknown artifact family draws as the generic `relic` mesh and glyph;
+  - an unknown body falls back to the standin;
+  - an unknown or missing hull (and ship-e) displays as one of hulls a–d, picked by a hash of the
+    ship id.
+  - **n2 is closed at zero cost:** ship-e stays on disk and is no longer shown, so paid asset A1
+    is optional.
+- **Derived voyages:** a workflow with no authored conversion table gets one from `deriveTable`.
+  - Each stage takes its crew, and several crew on a stage become a parallel wave.
+  - The skill is the agent's route in the stage's phase.
+  - Artifacts chain from stage to stage.
+  - The commission list marks these "derived voyage". Authored tables still win.
+  - Workflows that still cannot convert show in the Hangar under **On the blocks**, with their
+    problems.
+- **Tests:**
+  - the unit helpers read a pinned KB (`tests/unit/fixtures/kb-pinned.json`), so counts no longer
+    move with `library/`;
+  - `live-kb.test.ts` checks invariants on the live file;
+  - `derive.test.ts` covers derivation.
+  - The voyage chain e2e now compares `git status library/` before and after the run, rather
+    than requiring a clean tree.
+- **Deviations from the plan:**
+  - bodies and hulls stay typed modules (with fallbacks), not `public/*.json` manifests;
+  - no persist v2 migration was needed, because the v1 data still parses.
+
+**Verified:**
+
+- typecheck and lint clean, and vitest 269/269, on T17's files (checked before the v2 drafts
+  were added);
+- `verify.py` CLEAN;
+- the full desktop Playwright run: 97 passed, 12 skipped, and 1 failed, the chain's clean-library
+  assertion. The failure came from these uncommitted library edits; after the fix that spec was
+  rerun alone and passed.
+
+**Not run:** the phone project.
+
+The working tree also holds unimported v2 drafts for T18–T23 (`dev/`, `domain/trial.ts`,
+`regatta.ts`, `LibraryBanner.tsx`), which this commit leaves out.

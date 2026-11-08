@@ -5,7 +5,7 @@ import { MOTION } from '../../lib/motion';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { buildArtifact, familyMaterial, isFamilyId, orbitAt, type FamilyId } from './families';
+import { buildArtifact, drawFamily, familyMaterial, orbitAt } from './families';
 import { tiltOf, variantOf } from './variant';
 
 /**
@@ -26,7 +26,7 @@ export const ARTIFACT_SCALE = 1.25;
 export const ACTIVE_RPS = MOTION.active.rps;
 
 export interface ArtifactMeshProps {
-  /** family id from the knowledge base; an unknown family draws nothing */
+  /** family id from the knowledge base; an unknown family draws as the relic (v2) */
   family: string;
   pigment: string;
   /** the skill id: its hash picks the variant and the tilt */
@@ -49,8 +49,8 @@ function haloMaterial(pigment: string) {
 }
 
 export function ArtifactMesh({ family, pigment, skill, pose = 'held', animate = true, active = false }: ArtifactMeshProps) {
-  const known = isFamilyId(family);
-  const art = useMemo(() => (known ? buildArtifact(family as FamilyId, variantOf(skill), pigment) : null), [known, family, skill, pigment]);
+  const draw = drawFamily(family);
+  const art = useMemo(() => buildArtifact(draw, variantOf(skill), pigment), [draw, skill, pigment]);
   const turn = useRef<THREE.Group>(null);
   const invalidate = useThree((s) => s.invalidate);
   const clock = useRef(0);
@@ -59,8 +59,8 @@ export function ArtifactMesh({ family, pigment, skill, pose = 'held', animate = 
   }, [art, invalidate, animate]);
   useEffect(() => {
     // The family material is shared and lives for the page; only the per-instance meshes are dropped with the group.
-    if (known) familyMaterial(family as FamilyId, pigment);
-  }, [known, family, pigment]);
+    familyMaterial(draw, pigment);
+  }, [draw, pigment]);
 
   useFrame((_, dt) => {
     if (!art || !animate) return;

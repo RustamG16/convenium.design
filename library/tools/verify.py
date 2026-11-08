@@ -10,7 +10,7 @@ Library checks:
   3. phase, hosts and status are valid; `enabled` agrees with phase
   4. descriptions are real text (not empty, not a bare YAML `|` / `>` marker)
   5. routed skills carry a runtimePrompt
-  6. library/agents holds exactly the sanctioned agents
+  6. library/agents files are slugs and map one-to-one onto crew.json members
   7. every agent `skills:` entry is a registry id or a declared external skill, and is
      projected for every host the agent runs on
   8. every slots.json / presets.json skill reference is a registry id
@@ -39,10 +39,17 @@ REGISTRY = os.path.join(LIB, "registry")
 VALID_PHASES = {"always", "diagnose", "direct", "prepare", "build", "verify", "unrouted"}
 VALID_HOSTS = {"claude", "codex", "studio"}
 VALID_STATUS = {"active", "stub", "manual"}
-SANCTIONED_AGENTS = {
-    "visual-analyst", "independent-critic", "asset-producer", "design-engineer",
-    "analytics-specialist", "design-director", "brand-strategist", "fleet-measurer",
-}
+# v2 governance (owner, 2026-11-08): the agent set is no longer a fixed list. It is the set of
+# agent files in library/agents/ (slug-named), and crew.json must map one-to-one onto it, so an agent
+# added through the Shipyard Forge (or by hand) is governed by the same checks as the original eight.
+AGENT_SLUG = re.compile(r"^[a-z][a-z0-9-]{1,47}$")
+
+
+def library_agents():
+    d = os.path.join(LIB, "agents")
+    return {f[:-3] for f in os.listdir(d) if f.endswith(".md") and f != "README.md"}
+
+
 REQUIRED_FILES = [
     "README.md", "START-HERE.md", "PROMPT.md", "CLAUDE.md", "USAGE.md", "AGENTS.md",
     "ARCHITECTURE.md", "ARCHITECTURE-ESSENTIALS.md", ".codex/config.toml",
@@ -159,12 +166,11 @@ def check_library():
     external = set(ext.get("plugin", [])) | set(ext.get("builtin", []))
 
     agents_dir = os.path.join(LIB, "agents")
-    present = {f[:-3] for f in os.listdir(agents_dir) if f.endswith(".md") and f != "README.md"}
-    for a in sorted(present - SANCTIONED_AGENTS):
-        bad.append(f"unsanctioned agent file in library/agents: {a}.md")
-    for a in sorted(SANCTIONED_AGENTS - present):
-        bad.append(f"missing sanctioned agent file: {a}.md")
-    for a in sorted(present & SANCTIONED_AGENTS):
+    present = library_agents()
+    for a in sorted(present):
+        if not AGENT_SLUG.match(a):
+            bad.append(f"agent file name is not a slug (a-z, 0-9, -): {a}.md")
+    for a in sorted(present):
         fm = frontmatter(read(os.path.join(agents_dir, f"{a}.md")))
         if fm_field(fm, "name") != a:
             bad.append(f"agent {a}: frontmatter name mismatch")
@@ -193,9 +199,12 @@ def check_library():
     crew = json.load(open(os.path.join(REGISTRY, "crew.json"), encoding="utf-8")).get("crew", [])
     crew_ids = {m["id"] for m in crew}
     crew_agents = [m["role"]["agent"] for m in crew]
-    if sorted(crew_agents) != sorted(SANCTIONED_AGENTS):
-        bad.append("crew.json: crew members must map one-to-one onto the sanctioned agents "
-                   f"(got {sorted(crew_agents)})")
+    for a in sorted(set(crew_agents) - present):
+        bad.append(f"crew.json: crew member for agent {a!r} has no library/agents/{a}.md")
+    for a in sorted(present - set(crew_agents)):
+        bad.append(f"crew.json: agent {a} has no crew member (every agent file needs exactly one)")
+    for a in sorted({x for x in crew_agents if crew_agents.count(x) > 1}):
+        bad.append(f"crew.json: agent {a} has more than one crew member")
     if len({m["station"] for m in crew}) != len(crew):
         bad.append("crew.json: stations must be unique")
     for m in crew:
@@ -377,7 +386,7 @@ def check_project(path):
 
 
 def check_plan(path):
-    """`00-run-plan.md`: the fenced json block must name only sanctioned agents, one registered
+    """`00-run-plan.md`: the fenced json block must name only agents that have a library/agents file (or 'director'), one registered
     skill (or null) per phase, an output and a stop condition. This is what makes the
     activation protocol in AGENTS.md checkable instead of prose."""
     txt = read(path)
@@ -396,8 +405,8 @@ def check_plan(path):
             bad.append(f"plan {pid}: duplicate phase id")
         seen.add(pid)
         agent = ph.get("agent")
-        if agent not in SANCTIONED_AGENTS and agent != "director":
-            bad.append(f"plan {pid}: agent {agent!r} is not sanctioned (or 'director')")
+        if agent not in library_agents() and agent != "director":
+            bad.append(f"plan {pid}: agent {agent!r} has no library/agents file (or use 'director')")
         sk = ph.get("skill")
         if isinstance(sk, list):
             bad.append(f"plan {pid}: one skill per phase, got a list")
