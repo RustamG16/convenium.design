@@ -118,3 +118,116 @@ library ships are not persisted (rebuilt from KB), only custom ships and per-shi
 `vite.config.ts` registers `POST /__shipyard/save` (dev server only, `apply: 'serve'`): validates
 with the same zod schema, writes `shipyard/ships/<id>.ship.json` (id pattern enforced; no path
 traversal), returns the path. Production build has no write path.
+
+---
+
+## v2: live library, Forge, trials, Regatta (2026-11-08)
+
+Extends the sections above. Read `PRODUCT.md § v2` first for the why. **No new runtime
+dependency:**
+
+- Vite's own watcher plus `server.ws` handle live reload.
+- `node:child_process` runs `project.py`, `verify.py` and the trial CLI.
+- `git diff --no-index` renders Forge diffs.
+
+### Live library flow
+
+```
+library/** edit (owner, Claude, or the Forge)
+   │  Vite watcher (dev only) → ws 'shipyard:kb-stale' → banner "Library changed · Rebuild"
+   │  Rebuild = POST /__shipyard/rebuild → project.py all && verify.py   (or Claude runs it)
+   ▼
+public/data/knowledge-base.json changes → 300 ms debounce → ws 'shipyard:kb'
+   ▼
+KbProvider: refetch ?v=<sourceHash> → zod → indexKb → new idx
+   │  on failure: keep the last good idx and show a toast
+   ▼
+StoreProvider.setEnv(idx) → library ships rebuilt; custom ships re-validated
+   (unknown agent → retired; unknown skill → retired artifact)
+```
+
+**Data-driven ids:**
+
+- Agent and skill ids are slug-validated, not enumerated.
+- Bodies and hulls resolve through authored manifests: `public/media/crew/bodies.json` and
+  `public/media/ships/hulls.json`.
+- A workflow with no authored conversion table gets `deriveTable(workflow, idx)`, which produces
+  a *Derived voyage*.
+- A workflow that still fails becomes a dry-dock card. The generator fails loudly on an unknown
+  family or route instead of skipping it.
+- `verify.py` swaps its fixed agent list for a 1:1 mapping from agent files to `crew.json`
+  (owner-approved governance change).
+
+### Dev-server middleware (all `apply: 'serve'`; none in the production bundle)
+
+| Route | Does | Guards |
+|---|---|---|
+| `POST /__shipyard/save` | (v1) writes `ships/<id>.ship.json` | id pattern, origin |
+| `POST /__shipyard/rebuild` | `project.py all` + `verify.py`, returns the logs | mutex, origin |
+| `POST /__shipyard/forge/preview` | zod-validates an agent, skill or workflow op; renders the target files in memory; returns the unified diff, the file hashes and a token | slug, collision, tier, routes, family |
+| `POST /__shipyard/forge/apply` | token → writes the allow-listed files → rebuild + verify → restores the bytes and regenerates on failure; returns `git diff --stat`; **never commits** | token, hash precondition, refuses dirty targets, mutex, allow-list (`library/agents/<slug>.md`, `library/skills/<cat>/<slug>/SKILL.md`, `library/registry/{skills.registry,crew,workflows}.json`), typed id to delete |
+| `POST /__shipyard/trial/estimate` | a token range from earlier Verified runs, or tier defaults (Estimate) | none |
+| `POST /__shipyard/trial/start` | copies `fixtures/projects/<id>` to OS temp, writes the plan and the kickoff prompt, spawns `$CLAUDE_BIN -p --output-format stream-json --max-turns N --allowedTools …` | typed confirmation, one trial at a time, turn and wall-clock caps, never passes permission-bypass flags |
+| `GET /__shipyard/trial/events` | SSE of the stream; also written to `trials/<id>/log.ndjson` | none |
+| `POST /__shipyard/trial/cancel` | kills the process tree (`taskkill /T /F` on win32) | none |
+
+The middleware lives in `shipyard/dev/*.ts`, which `vite.config.ts` imports. An e2e test asserts
+that the preview build makes no `/__shipyard` request.
+
+### Trials and scoring
+
+- `fixtures/briefs/*.json` (zod): `needs`, `constraints`, `requiredArtifacts`, `fixtureProject`.
+- `src/domain/trial.ts simulate(ship, brief, idx)` is pure and deterministic. It reuses
+  `preflight()` and returns per-stage events plus a 100-point rubric:
+
+  | Criterion | Points |
+  |---|---|
+  | Coverage | 35 |
+  | Artifacts | 15 |
+  | Gates | 15 |
+  | Pre-flight | 20 |
+  | Economy | 10 |
+  | Clarity | 5 |
+
+  It is labelled Simulated.
+- Live trial result:
+  - `run.json` goes through `features/logbook/runJson.ts`, plus `verify.py --plan`. Both are
+    **Verified**.
+  - An optional critic headless run returns zod-validated JSON, labelled **Model-judged**.
+- Records carry the ship hash and the KB `sourceHash`; a mismatch marks them stale. They are
+  stored under `trials` in persisted state v2 and, on the dev server, in
+  `shipyard/trials/<id>/result.json`.
+- **Rating** = the mean of the last 3 Verified scores per (ship, brief). There is no Elo. The
+  leaderboard is per brief and overall.
+
+### State v2
+
+- New actions: `kb/reloaded`, `crew/override`, `ship/fork`, `trial/record|delete`,
+  `regatta/create|run`.
+- Persisted `{ version: 2, …v1, trials: TrialRecord[], regattas: Regatta[] }`. `persist.ts`
+  migrates v1 to v2 (empty trials).
+- Crew members gain `override?: { model?, skill?, promptAddendum? }`. `export.ts` writes it into
+  `00-run-plan.md` (model per spawn) and the kickoff prompt. PF-16 validates it.
+
+### New features and scenes
+
+- `features/forge/`: Radix Tabs for Agents, Skills and Workflows; form → diff → apply → log.
+- `features/regatta/`: setup, results and leaderboard.
+- `features/trials/`: the launch dialog and the log drawer.
+- `scene/Arena.tsx`: the regatta course. It reuses the FleetRing hulls and the ShipScene
+  lighting. Progress comes only from simulator or stream events. Under reduced motion it becomes
+  a static board.
+- The Forge workbench reuses `Turntable` and `WornArtifacts`.
+
+### 3D assets
+
+- Paid Higgsfield assets are approved **one at a time** against a recorded `get_cost`, in
+  `plan/05-asset-manifest.md`.
+- Each runs through generate → `scripts/import-arkhethos-media.mjs`-style import (triangle and
+  byte budgets) → `LICENSES.md`.
+- The remote Blender scene builder may assemble the arena from its catalog.
+- **Not used:**
+  - Spline: a runtime dependency plus a network fetch.
+  - Generated video: not needed.
+
+three.js and R3F stay the only engine.

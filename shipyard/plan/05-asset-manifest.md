@@ -189,3 +189,29 @@ The 7 crew GLBs in this manifest total 10,117,192 bytes (about 10.1 MB of the 12
 | `ships/ship-c.glb` | 90056 | `232f741f38ab9a3595b44e011280ec06a0530c879cca16913fe1d5a8bb433288` |
 | `ships/ship-d.glb` | 149300 | `129f41f243db7c0f599159cecb5f4c4287ab81d3bfb580471ca55e4385aa279b` |
 | `ships/ship-e.glb` | 116528 | `cba7d6040d8a468be1fcb31d6e76b391106a3bc2fbdebbf41dbab5b38811ba13` |
+
+---
+
+## v2: paid-asset quotes (2026-11-08). **None is approved; each needs its own owner yes**
+
+The owner's rule (`CLAUDE.md` rule 6) is that each asset is approved one at a time against the
+recorded quote. The quotes below come from Higgsfield `generate_3d` with `get_cost: true`; no job
+was submitted. The account balance when quoted was 439.17 credits (plan "plus"). Each asset
+generated must also:
+
+- pass the import budgets (≤ 30k triangles, ≤ 2 MB GLB);
+- get a row in `LICENSES.md` ("owner-generated, Higgsfield, <date>").
+
+| # | Asset | Why | Model and params | Quote | Status |
+|---|---|---|---|---|---|
+| A1 | Hull replacing `ships/ship-e.glb` (critic n2) | ship-e is an upright rigged figure, not a hull | `tripo_3d`, text, `face_limit` 10000 | **5 credits** | Not approved. First try the CC0 kit and hulls already in the repo (free) |
+| A1′ | the same, alternative | Use if Tripo's hull reads badly | `meshy_v6_text_to_3d`, `mode` full, lowpoly, 8000 polys | **25 credits** | Not approved |
+| A2 | One neutral rigged recruit body (`fleet-measurer`, Forge-created agents; pigment-tinted) | Recruits are a capsule stand-in today | `meshy_v6_text_to_3d`, `mode` full, a-pose, `enable_rigging`, 1.7 m, 20k polys | **25 credits** | Not approved. Prototype against the existing clips before approving any more bodies |
+| A3 | Arena environment (course, buoys, harbour) | The Regatta scene | Remote Blender scene builder (3D Jutsu) from its curated catalog | **No get_cost quote available** for scene-builder runs | Not approved. Will ask before creating the project; the procedural R3F fallback costs nothing |
+| A4 | Per-agent bodies | Only on a separate request | `meshy_v6_text_to_3d` rigged | 25 credits each (A2 rate) | Not requested |
+
+**Excluded:**
+
+- Seedance video and Spline, as decided in `PRODUCT.md § v2`.
+- The procedural fallbacks: the arena buoys and course, and the existing capsule stand-in. These
+  ship whatever the answers are, so v2 is complete with **0 credits** spent.

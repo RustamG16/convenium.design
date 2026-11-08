@@ -13,6 +13,11 @@ specific to Shipyard.
 5. `ship/index.html` (the 2D console) stays and stays true; Shipyard is a second consumer of the
    same registry, not a replacement.
 6. Assets come from the owner's local ArkhEthos checkout (CC0 kit + owned crew GLBs) via
-   `shipyard/scripts/import-arkhethos-media.mjs`; no paid generation without a new owner request.
+   `shipyard/scripts/import-arkhethos-media.mjs`. **Paid generation (Higgsfield) is approved per
+   asset (owner, 2026-11-08):** record `get_cost` in `plan/05-asset-manifest.md`, wait for the
+   owner's yes for that asset, then generate. Never batch-approve.
 7. Evidence for this build (QA screens, finish review) goes in `shipyard/plan/` as
    `07-qa.md` and `10-finish-review.md`, not in a repo-level `.olympus/`.
+8. v2 (live library, Forge, trials, Regatta) is specified in `PRODUCT.md § v2`,
+   `ARCHITECTURE.md § v2` and `plan/12-build-plan-v2.md`. The Forge and live trials are
+   dev-server only; the deployed build never writes or runs anything.

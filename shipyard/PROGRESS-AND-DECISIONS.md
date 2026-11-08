@@ -334,3 +334,30 @@ Open, and out of the fix-cycle budget, so they go to the owner at Gate C:
 - n3: orbit items stack at the turntable angle;
 - n4: two fix labels still show ids;
 - n5: loading-veil edge cases (a possible 20 s veil; no screen-reader status).
+
+## T15: v2 documents (2026-11-08)
+
+The owner replaced Gate C with v2: live library, Forge, trials, Regatta and game 3D. The owner's
+decisions:
+
+- **Trials:** dry and live.
+- **Compare:** full game scoring.
+- **Write-back:** dev-server write-back.
+- **Paid 3D:** approved per asset.
+- **Governance:** the change to `verify.py`'s agent list was approved with the plan.
+
+Written:
+
+- `PRODUCT.md § v2`: the amended non-goals, the ethics gate v2 and the adversarial pass.
+- `ARCHITECTURE.md § v2`.
+- `CLAUDE.md` rules 6 and 8.
+- `plan/12-build-plan-v2.md` (T15–T26).
+- `plan/00-run-plan.md`, rewritten for v2 and checked CLEAN with `verify.py --plan`.
+- `05-asset-manifest.md § v2`, with Higgsfield quotes from `get_cost` only:
+  - A1 hull: 5 credits (Tripo) or 25 (Meshy);
+  - A2 rigged recruit: 25;
+  - A3 arena: not quotable.
+
+  Nothing is approved and nothing was generated.
+
+The v1 open items n1 and n3–n5 move into T16; n2 moves into T24 (A1).
