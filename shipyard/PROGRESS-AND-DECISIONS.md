@@ -361,3 +361,32 @@ Written:
   Nothing is approved and nothing was generated.
 
 The v1 open items n1 and n3–n5 move into T16; n2 moves into T24 (A1).
+
+## T16: critic quick wins (2026-11-08)
+
+- **n1 (hangar):** `fitWidth` is capped so the focused hull keeps at least 55% of the stage width
+  (`MIN_FOCUS_FILL`). Far hulls crop at the edges, behind a 9% edge mask.
+- **n3 (orbit):** the resting orbiters spread evenly across a 162° front arc (`orbitPhase`).
+  Alternate items sit 0.07 higher; the active lift is 0.15.
+- **n4 (fix labels):** `fixNames(ship, idx)` gives the stage label, the member's name and the
+  artifact's name. An id shows only for an unknown item.
+- **n5 (veil):**
+  - it is now a `role=status` polite region and ends with "<ship> is ready";
+  - it lifts after a 1.5 s grace when the loader never reports work;
+  - at 8 s it offers **Enter without 3D** (the bridge) or **Retry**.
+- **Residues:**
+  - the turntable is clamped to `max(380px, 100svh − 390px)`, so the feet and plinth show at
+    1440×900;
+  - a back rim light and a lifted hemisphere ground colour on the turntable;
+  - `scroll-padding-bottom: 72px` on the phone waypoint card (WCAG 2.4.11);
+  - the identity role is 22px / 20px phone.
+
+**Verified:**
+
+- typecheck and lint clean;
+- unit tests 257/257 (5 new in `quick-wins.test.ts`);
+- e2e desktop: bridge, hangar, preflight, simplicity and scene 61/61;
+- screens rechecked by eye: `hangar-1440`, `bridge-captain-1440`.
+
+**Not run:** the phone project, and the full QA sweep (both deferred to T25). n2 (ship-e) is
+still visible; it is T24.

@@ -92,6 +92,11 @@ textarea.field { min-height: 88px; resize: vertical; }
 .fleet-stage { position: relative; min-height: 320px; border: 1px solid var(--hairline); border-radius: var(--r-panel); background: radial-gradient(90% 90% at 50% 70%, #2a2320 0%, var(--ink) 75%); overflow: hidden; }
 .hangar-top[data-stage] .fleet-stage { height: min(calc(100svh - var(--header-h) - 2 * var(--s6)), 780px); min-height: 480px; }
 .fleet-ring { position: absolute; inset: 0; }
+/* Far hulls crop at the stage edges (critic n1); the edges fade them out instead of cutting them. */
+.fleet-ring[data-count]:not([data-count="1"]) {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+}
 .fleet-ring canvas { width: 100% !important; height: 100% !important; }
 .fleet-ring-loading { display: grid; place-items: center; color: var(--muted); }
 .fleet-ring-loading .hull { width: 60%; }

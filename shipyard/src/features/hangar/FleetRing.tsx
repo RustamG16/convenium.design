@@ -29,15 +29,20 @@ const FIT_SINGLE = 4.5;
 /** Focus ring under the front hull: wider than half the hull, so a turning hull stays inside it. */
 const FOCUS_RING = [2.25, 2.3] as const;
 
+/** The focused hull never fills less than this share of the stage width (v2, critic n1). */
+export const MIN_FOCUS_FILL = 0.55;
+
 /**
  * Width in scene units that must stay in frame (finish review M4). One ship: FIT_SINGLE. More: every
- * hull's widest sideways reach on the ring, plus a hull length, so neighbours are whole, not clipped.
+ * hull's widest sideways reach on the ring, plus a hull length, so neighbours are whole, not clipped —
+ * but capped (critic n1) so the focused hull keeps at least MIN_FOCUS_FILL of the stage; far hulls then
+ * crop at the edges, where the stage fades them out (`.fleet-ring` mask).
  */
 export function fitWidth(n: number): number {
   if (n <= 1) return FIT_SINGLE;
   let reach = 0;
   for (let i = 0; i < n; i++) reach = Math.max(reach, Math.abs(Math.sin((i / n) * Math.PI * 2)) * RING_RADIUS);
-  return Math.max(FIT_SINGLE, 2 * reach + HULL_LENGTH);
+  return Math.min(HULL_LENGTH / MIN_FOCUS_FILL, Math.max(FIT_SINGLE, 2 * reach + HULL_LENGTH));
 }
 
 function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment: string; spin: boolean; focused: boolean; onPick: () => void }) {

@@ -206,7 +206,18 @@ export const ORBIT_LIFT = 0.2;
  * its face toward the viewer (a flat disc seen edge-on read as a saucer).
  */
 export const ACTIVE_ORBIT_WIDEN = 1.2;
-export const ACTIVE_ORBIT_LIFT = 0.06;
+/** v2 (critic n3): 0.06 let the active path cross the resting items at the turntable angle; 0.15 clears them. */
+export const ACTIVE_ORBIT_LIFT = 0.15;
+/** Resting items spread across the front arc (162°) facing the camera, not the full circle, where the back half hid behind the head and the front half stacked. */
+export const ORBIT_FRONT_ARC = Math.PI * 0.9;
+/** Every other resting item sits this much higher, so neighbours never share a silhouette. */
+export const ORBIT_STAGGER = 0.07;
+
+/** The resting angle of orbiter i of n: evenly across the front arc, centred on the viewer (π/2 = +z). */
+export function orbitPhase(i: number, n: number): number {
+  const t = n <= 1 ? 0.5 : i / (n - 1);
+  return Math.PI / 2 + (t - 0.5) * ORBIT_FRONT_ARC;
+}
 
 export function OrbitArtifacts({ member, heightM, animate }: { member: SceneMember; heightM: number; animate: boolean }) {
   const pivots = useRef<(THREE.Group | null)[]>([]);
@@ -214,7 +225,7 @@ export function OrbitArtifacts({ member, heightM, animate }: { member: SceneMemb
   const orbiters = member.loadout.filter((a) => a.anchor === 'orbit');
   const fresh = useFresh(orbiters.map((a) => `${a.index}-${a.skill}`));
   const angle = useRef(0);
-  const phaseOf = (i: number) => (orbiters[i].index / Math.max(2, orbiters.length)) * Math.PI * 2 + Math.PI / 2;
+  const phaseOf = (i: number) => orbitPhase(i, orbiters.length);
   useFrame((_, dt) => {
     if (animate) angle.current += ACTIVE_RPS * Math.PI * 2 * dt;
     orbiters.forEach((a, i) => {
@@ -236,7 +247,7 @@ export function OrbitArtifacts({ member, heightM, animate }: { member: SceneMemb
         return (
           <group
             key={`${a.index}-${a.skill}`}
-            position={[0, active ? ACTIVE_ORBIT_LIFT : 0, 0]}
+            position={[0, active ? ACTIVE_ORBIT_LIFT : i % 2 ? ORBIT_STAGGER : 0, 0]}
             rotation={[0, -phaseOf(i), 0]}
             ref={(g) => {
               pivots.current[i] = g;

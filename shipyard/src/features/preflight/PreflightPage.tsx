@@ -17,12 +17,13 @@ import { useStoreState } from '../../store/context';
 import { ShipNav } from '../shared/ShipNav';
 import { useShip } from '../shared/useShip';
 import { ExportPanel } from './ExportPanel';
-import { fixTarget } from './fix';
+import { fixNames, fixTarget } from './fix';
 import { HullDiagram } from './HullDiagram';
 import { StatusMark } from './StatusMark';
 
 function FixLink({ shipId, check, finding, ship, primary }: { shipId: string; check: Check; finding: Finding; ship: Ship; primary?: boolean }) {
-  const target = fixTarget(shipId, check, finding, (id) => ship.crew.find((m) => m.id === id)?.character.name ?? id);
+  const idx = useKb();
+  const target = fixTarget(shipId, check, finding, fixNames(ship, idx));
   if (!target) return null;
   return (
     <Link className={`btn ${primary ? 'btn-primary' : 'btn-quiet'} pf-fix`} to={target.to} data-testid="fix-link">

@@ -35,30 +35,60 @@ import { PHASE_LABEL, pipelineOf } from './pipeline';
 
 /** Longest the loading veil stays up: past this the scene shows whatever it has, never a stuck veil. */
 const LOADING_MAX_MS = 20_000;
+/** When the loader never reports work (every GLB already cached), the veil lifts after this grace (critic n5). */
+const LOADING_IDLE_GRACE_MS = 1_500;
+/** After this long the veil offers a way out: enter the bridge without 3D, or retry (critic n5). */
+const LOADING_SLOW_MS = 8_000;
 
 /**
  * Cold load (finish review): the corridor's GLBs take a few seconds, and the stage was plain black
  * meanwhile. The veil names what is coming with a progress line, and lifts once the loader has started
- * and gone idle, or after LOADING_MAX_MS. It covers only the stage: the card, Skip and the rail work at once.
+ * and gone idle, once the loader has stayed idle for a short grace, or after LOADING_MAX_MS. It covers
+ * only the stage: the card, Skip and the rail work at once. It is a polite status region, so a screen
+ * reader hears "Loading" and then "Ready" (v2, critic n5).
  */
-function LoadingVeil({ name }: { name: string }) {
+function LoadingVeil({ name, onSkip }: { name: string; onSkip: () => void }) {
   const { active, progress, total } = useProgress();
-  const [timedOut, setTimedOut] = useState(false);
+  const [elapsed, setElapsed] = useState<'start' | 'grace' | 'slow' | 'max'>('start');
   const [seen, setSeen] = useState(false);
   useEffect(() => {
-    const t = window.setTimeout(() => setTimedOut(true), LOADING_MAX_MS);
-    return () => window.clearTimeout(t);
+    const ts = [
+      window.setTimeout(() => setElapsed((e) => (e === 'start' ? 'grace' : e)), LOADING_IDLE_GRACE_MS),
+      window.setTimeout(() => setElapsed((e) => (e === 'max' ? e : 'slow')), LOADING_SLOW_MS),
+      window.setTimeout(() => setElapsed('max'), LOADING_MAX_MS),
+    ];
+    return () => ts.forEach((t) => window.clearTimeout(t));
   }, []);
   // remembered during render (React's pattern for state derived from a changing input), not in an effect
   if (active && !seen) setSeen(true);
-  const done = timedOut || (seen && !active) || (total > 0 && !active && progress >= 100);
+  const done = elapsed === 'max' || (seen && !active) || (!seen && !active && elapsed !== 'start') || (total > 0 && !active && progress >= 100);
+  const slow = !done && elapsed === 'slow';
   return (
-    <p className="ship-loading" data-testid="scene-loading" data-done={done || undefined} aria-hidden="true" style={{ ['--p' as string]: String(Math.min(1, progress / 100)) } as CSSProperties}>
-      <span className="label">Boarding {name}</span>
-      <span className="ship-loading-bar">
-        <span />
-      </span>
-    </p>
+    <div className="ship-loading" data-testid="scene-loading" data-done={done || undefined} role="status" aria-live="polite" style={{ ['--p' as string]: String(Math.min(1, progress / 100)) } as CSSProperties}>
+      {done ? (
+        <span className="sr-only">{name} is ready.</span>
+      ) : (
+        <>
+          <span className="label">Boarding {name}</span>
+          <span className="ship-loading-bar" aria-hidden="true">
+            <span />
+          </span>
+          {slow && (
+            <span className="ship-loading-slow">
+              <span className="prose">The ship is taking a while to load.</span>
+              <span className="ship-loading-actions">
+                <button type="button" className="btn btn-primary" onClick={onSkip} data-testid="enter-without-3d">
+                  Enter without 3D
+                </button>
+                <button type="button" className="btn btn-quiet" onClick={() => window.location.reload()}>
+                  Retry
+                </button>
+              </span>
+            </span>
+          )}
+        </>
+      )}
+    </div>
   );
 }
 
@@ -208,7 +238,7 @@ export function BoardTour({ ship, reduced, quality, lite, sound, onSound, onSkip
   return (
     <div className="ship-intro" data-testid="ship-intro" data-waypoint={wp?.id ?? 'bridge'}>
       <div className="ship-intro-stage" ref={stage} data-look={lockable ? 'capture' : 'drag'}>
-        <LoadingVeil name={ship.name} />
+        <LoadingVeil name={ship.name} onSkip={onSkip} />
         <ShipScene crew={crew} layout={layout} walker={walker} reduced={reduced} quality={quality} activeMember={member?.id ?? null} welcome={last} lite={lite} screens={screens} talking={talkingHere} bubble={bubble} found={found} waypoint={index ?? stop} sound={sound} onPick={pick} onInspect={inspect} onContextLost={onContextLost} />
         {lockable &&
           (captured ? (

@@ -15,7 +15,7 @@ import { force2d, hasWebGL } from '../../lib/preferences';
 import { useDispatch } from '../../store/context';
 import { uniqueShipId } from '../../store/store';
 import { useStoreState } from '../../store/context';
-import { fixTarget } from '../preflight/fix';
+import { fixNames, fixTarget } from '../preflight/fix';
 
 export type ShipScreen = 'bridge' | 'voyage' | 'preflight';
 
@@ -96,7 +96,7 @@ export function ShipNav({ ship, current, showNext = true }: { ship: Ship; curren
   const webgl = hasWebGL() && !force2d();
   const next = report.next;
   const finding = next?.findings.find((f) => f.severity === next.status) ?? next?.findings[0];
-  const fix = next && finding ? fixTarget(ship.id, next, finding, (id) => ship.crew.find((m) => m.id === id)?.character.name ?? id) : null;
+  const fix = next && finding ? fixTarget(ship.id, next, finding, fixNames(ship, idx)) : null;
   const nextTo = report.applicable === 0 ? `${base}/bridge` : (fix?.to ?? `${base}/preflight`);
   const nextLabel = report.applicable === 0 ? 'Add a crew member' : next ? (fix?.label ?? 'Open Pre-flight') : 'Ready to export'; // the fix in words, not a check code (finish review m2)
   const items: { id: ShipScreen; label: string; testid?: string }[] = [

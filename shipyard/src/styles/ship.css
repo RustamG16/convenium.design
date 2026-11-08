@@ -32,6 +32,8 @@
 .ship-turntable {
   aspect-ratio: 4 / 5;
   width: 100%;
+  /* the feet stay above the fold at 1440×900 (critic residue): the stage shortens; the figure is framed by height, so it stays whole */
+  max-height: max(380px, calc(100svh - 390px));
   border-radius: 12px;
   background: radial-gradient(120% 90% at 50% 100%, color-mix(in oklab, var(--c, #3a2f2b) 18%, #141010) 0%, #0f0c0c 70%);
   border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
@@ -333,6 +335,19 @@
 .ship-loading[data-done] {
   opacity: 0;
   pointer-events: none;
+}
+.ship-loading-slow {
+  display: grid;
+  justify-items: center;
+  gap: var(--s2);
+  margin-top: var(--s3);
+  pointer-events: auto;
+}
+.ship-loading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s2);
 }
 .ship-loading-bar {
   width: 160px;
@@ -832,6 +847,8 @@
     bottom: calc(var(--s2) + env(safe-area-inset-bottom, 0px));
     max-height: 60svh;
     overflow: auto;
+    /* a chip reached by Tab or scrolled to stops above the pinned actions, never under them (critic residue; WCAG 2.4.11) */
+    scroll-padding-bottom: 72px;
     width: auto;
     gap: var(--s2);
     padding: var(--s3);
@@ -974,7 +991,8 @@
 .ship-more-menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 20; display: grid; gap: var(--s1); min-width: 200px; padding: var(--s2); background: var(--elevated); border: 1px solid var(--border); border-radius: var(--r-panel); }
 .template-line { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); flex-wrap: wrap; margin: 0 0 var(--s4); padding: var(--s2) var(--s4); border: 1px dashed var(--muted); border-radius: var(--r-panel); font-size: 14px; }
 .template-line .btn { min-height: var(--hit); }
-.ship-identity-role { margin: 0; font-family: var(--font-serif); font-weight: 400; font-size: 26px; line-height: 1.2; }
+.ship-identity-role { margin: 0; font-family: var(--font-serif); font-weight: 400; font-size: 22px; line-height: 1.25; } /* the card-title token (DESIGN.md: 22 / 20px); was 26 (critic residue) */
+@media (max-width: 767px) { .ship-identity-role { font-size: 20px; } }
 .ship-identity > header > .skew-badge { justify-self: start; }
 .ship-profile-more > summary { list-style: none; cursor: pointer; display: inline-flex; gap: var(--s2); align-items: center; }
 .ship-profile-more > summary::-webkit-details-marker { display: none; }

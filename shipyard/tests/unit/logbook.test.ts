@@ -124,7 +124,7 @@ describe('fix links', () => {
   const check = { id: 'PF-03' };
   it('stage -> voyage?stage=, member -> bridge?member=, socket -> bridge?member=&skill=', () => {
     expect(fixTarget('s', check, { severity: 'block', reason: 'r', fix: { kind: 'stage', id: 'build' } })?.to).toBe('/ship/s/voyage?stage=build');
-    expect(fixTarget('s', check, { severity: 'block', reason: 'r', fix: { kind: 'member', id: 'engineer' } }, () => 'Forge')).toEqual({ to: '/ship/s/bridge?member=engineer', label: 'Fix Forge' });
+    expect(fixTarget('s', check, { severity: 'block', reason: 'r', fix: { kind: 'member', id: 'engineer' } }, { member: () => 'Forge' })).toEqual({ to: '/ship/s/bridge?member=engineer', label: 'Fix Forge' });
     expect(fixTarget('s', check, { severity: 'info', reason: 'r', fix: { kind: 'socket', member: 'engineer', skill: 'gsap-core' } })?.to).toBe('/ship/s/bridge?member=engineer&skill=gsap-core');
   });
   it('ship-wide findings go to the screen that owns the rule; a finding without a fix has no link', () => {

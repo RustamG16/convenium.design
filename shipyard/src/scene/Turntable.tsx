@@ -93,10 +93,12 @@ export function Turntable({ member, reduced, onContextLost, onReady, probe }: { 
           <Lightformer form="rect" intensity={1.2} position={[-3, 1.5, 1]} scale={[3, 5, 1]} color={member.pigment} />
           <Lightformer form="rect" intensity={1.6} position={[0, 4, -3]} scale={[6, 2, 1]} color="#fff6ea" />
         </Environment>
-        <hemisphereLight args={['#fff6ea', '#2a2320', 2.4]} />
+        <hemisphereLight args={['#fff6ea', '#3a302b', 2.8]} />
         <directionalLight position={[2, 4, 3]} intensity={4} />
         <directionalLight position={[-3, 2, -2]} intensity={1.2} color={member.pigment} />
         <directionalLight position={[0, 3, -4]} intensity={1.4} />
+        {/* rim from behind the shoulder: separates a dark costume from the noir stage (critic residue, "murky captain") */}
+        <directionalLight position={[-1.6, 2.6, -3.2]} intensity={2.4} color="#fff2e0" />
         {probe && <AnchorProbe member={member} out={probe} />}
         <CrewFigure key={member.id} member={member} reduced={reduced} attention={0.6} onLoaded={loaded} />
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
