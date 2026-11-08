@@ -78,6 +78,17 @@ export interface DryTrial {
 }
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
+
+const FAILS = ' · fails: ';
+/** The pre-flight line of a dry score: the count, then the titles of the checks that warn or block. */
+export function preflightWhy(passed: number, applicable: number, failing: string[]): string {
+  return `${passed} of ${applicable} checks pass${failing.length ? `${FAILS}${failing.join('; ')}` : ''}`;
+}
+/** The failing check titles back out of a pre-flight line (its own format, above). */
+export function failingChecks(why: string): string[] {
+  const i = why.indexOf(FAILS);
+  return i < 0 ? [] : why.slice(i + FAILS.length).split('; ');
+}
 const base = (p: string) => (p.split('/').pop() ?? p).replace(/ per site$/, '');
 
 /** A stable hash of what a trial depends on in the ship: crew agents, voyage and loadouts (not names or colours). */
@@ -146,7 +157,7 @@ export function simulate(ship: Ship, brief: Brief, idx: KbIndex): DryTrial {
     coverage: { points: round1(35 * coverageFrac), max: 35, why: missingNeeds.length || offPhase.length ? `${brief.needs.length - missingNeeds.length} of ${brief.needs.length} needs met${offPhase.length ? `, ${offPhase.length} in another phase (half credit)` : ''}` : `all ${brief.needs.length} needs met in their phase` },
     artifacts: { points: round1(15 * artifactsFrac), max: 15, why: missingArtifacts.length ? `missing ${missingArtifacts.join(', ')}` : `all ${req.length} required artifacts produced` },
     gates: { points: round1(15 * gatesFrac), max: 15, why: missingGates.length ? `missing gate ${missingGates.join(', ')}` : brief.gates.length === 1 ? `gate ${brief.gates[0]} held` : `all ${brief.gates.length} gates held` },
-    preflight: { points: round1(20 * pfFrac), max: 20, why: `${pf.passed} of ${pf.applicable} checks pass` },
+    preflight: { points: round1(20 * pfFrac), max: 20, why: preflightWhy(pf.passed, pf.applicable, pf.checks.filter((c) => c.status === 'warn' || c.status === 'block').map((c) => c.title)) },
     economy: { points: economy, max: 10, why: `${tier} tier points against a budget of ${brief.budget.tierPoints}` },
     clarity: { points: clarity, max: 5, why: idle || repeats ? [idle ? `${idle} crew without a stage` : '', repeats ? `${repeats} skill opened twice` : ''].filter(Boolean).join(', ') : 'every member has a stage; no skill opened twice' },
   };

@@ -130,3 +130,22 @@ test('a tuned copy against its parent: the dry run says it cannot judge tuning (
   await expect(page.getByTestId('rg-arena')).toHaveAttribute('data-winners', '0');
   await expect(page.getByTestId('rg-lane-winner')).toHaveCount(0);
 });
+
+test('a critic tuned below the builder: the dry run names the pre-flight check it fails (re-review 3, new-f)', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/#/ship/ss-full-run/bridge?member=critic');
+  await page.getByTestId('tune').click();
+  await page.getByTestId('clone-confirm').click();
+  await expect(page).toHaveURL(/ss-full-run-copy\/bridge/);
+  await page.getByTestId('tune').click();
+  await page.getByTestId('tune-model-haiku').check();
+  await page.getByTestId('tune-save').click();
+  await page.goto('/#/regatta?brief=landing-refresh&ships=ss-full-run,ss-full-run-copy');
+  await page.reload();
+  await page.getByTestId('rg-start').click();
+  await page.getByTestId('rg-skip').click();
+  await expect(page.getByTestId('rg-head-winner')).toHaveAttribute('data-tuning-only', 'true');
+  // not "any gap is cost": the copy loses pre-flight points to a named tier rule
+  await expect(page.getByTestId('rg-head-twins')).toContainText("SS Full Run copy fails “The critic's model tier is at least the builder's”");
+  await expect(page.getByTestId('rg-arena')).toHaveAttribute('data-winners', '0');
+});

@@ -815,3 +815,34 @@ an arena frame-rate measurement. m12 (27 v1 PNGs) is still the owner's call.
 - fake-CLI 4/4;
 - production preview 2/2;
 - QA v2 recapture: 32 screens, axe 0, overflow 0.
+
+## T29: third re-review fix cycle (2026-11-08)
+
+The third re-review (`10-finish-review.md`, last section, HEAD `ec69d96`) scored **84 / 100**, up
+from 82. Each item:
+
+| # | Finding | Status |
+|---|---|---|
+| new-f | "Any gap between them is the tier's cost" is false when a tier fails a pre-flight rule (a haiku critic fails "The critic's model tier is at least the builder's") | **Fixed.** The dry pre-flight line now carries the failing check titles (`preflightWhy` / `failingChecks`, unit test). The twins note says what a dry run can and cannot say. It cannot say which tuning works better, but it holds a tier to the pre-flight rules and names the twin and the check it fails; any other gap is the tier's cost. A race of twins only shows that sentence under its head. The head, the "No winner" copy and the Tuning card now say a dry run "sees a tier only through its cost and the pre-flight rules", with the Tuning card adding "(a critic below the builder's tier fails one)". New e2e: a haiku-critic copy against its parent names the check. |
+| new-e | The finish buoy touches the hull | **Fixed.** Buoys sit 0.62 to the side and hulls are at most 0.8 wide, so half a hull (0.4) clears a gate gem (radius 0.15) on its own side and the next lane's buoys on the other (unit test). |
+| arena presence | The course used 43–52% of the stage width | **Fixed.** The stage now takes the course's own proportions (`aspect-ratio` from `arenaExtent`, 168 px minimum, `min(480px, 60svh)` maximum), at a 28° orthographic elevation. Margins are only what a hull needs: half a hull before the start, a hull and the pennant past the finish. The course fills about 80% of the stage width at 1440 and 1024, with hulls about twice their T28 size. x stays honest at any angle, because the camera is orthographic. |
+| new-g | `variantName`'s doc sat above `copyName` | **Fixed.** |
+| ship-c, n3, Hangar fold | Disclosed residues | **Unchanged.** |
+
+**Still not done:** a real live trial (no `claude` CLI here, and it needs the owner's go-ahead), and
+an arena frame-rate measurement. m12 is still the owner's call.
+
+**Verified:**
+
+- typecheck and lint clean;
+- vitest 320/320;
+- detector 0;
+- `test:plans` 4/4;
+- `verify.py` CLEAN;
+- full desktop Playwright 113 passed, 0 failed, 18 skipped;
+- phone 1/1;
+- production preview 2/2;
+- QA v2 recapture: 32 screens, axe 0, overflow 0.
+
+The fake-CLI live suite was not re-run in this cycle: T29 did not touch `dev/trial.ts` or the live
+dialog.

@@ -587,3 +587,86 @@ Design 32/40, usability 26/30, creativity 15/20, content 9/10.
 3. Fix new-c, so that a Verified score means work was done.
 4. One real smoke trial with the owner's approval. This remains the largest risk.
 5. Optional: the n3 discs, and keeping the Hangar hero in view at 1024.
+
+
+---
+
+# 10 — Finish review v2, third re-review after T28 (independent critic, award-rubric)
+
+**What the critic checked** (HEAD `ec69d96`, read-only)
+
+- **Read:** the 82 re-review in full and the two sections before it; PROGRESS § T28; the 07-qa T28 section; `results.json` (axe 0 and overflow 0 on all 32); the v2 PNGs (regatta-results at 1440, 1024 and 390, hangar-fleet-1440); `git diff 891ee5f ec69d96` for src, dev and tests; plan 12 § 2a.
+- **Re-ran:** `npm run typecheck` (clean) and `npx vitest run` (319/319, 29 files).
+- **Drove** the 5173 server at 1440 and 390 with swiftshader:
+  - a four-ship race, with arena captures at both widths;
+  - two clones from the Bridge: one with an addendum, one with the critic at haiku;
+  - six races: each copy against its parent; each copy in a mixed race with SS Abridged; the mixed race in reverse order; and all three twins together;
+  - the criteria table for the haiku twin.
+- **Did not:** call apply, start or rebuild; run Playwright suites (keyboard spec included) or the production preview; measure frame rate.
+
+(Transcribed by the director from the critic's report.)
+
+## 1. Verdict: **ship with fixes**
+
+T28 does what it claims:
+
+- The orthographic camera makes equal scores sit at equal x. In the mixed haiku race the 89.3 and 89 hulls line up.
+- Copies are numbered.
+- A tie between twins at the top now shows no winner anywhere.
+- A Verified score now needs at least one delivered file.
+
+What is left is polish and one wording error, not logic.
+
+## 2. Score: **84 / 100** (was 82; target 85)
+
+Design 33/40, usability 27/30, creativity 15/20, content 9/10.
+
+| Row | Score | Δ vs 82 | What works | What is weak |
+|---|---|---|---|---|
+| Hierarchy and composition | 8 | 0 | The race head, the twins note and the arena stack cleanly | Hangar fleet hulls overlap. The hero is below the fold at 1024 and 390 (disclosed) |
+| Type, colour, material | 8 | 0 | Lane-tinted hulls, one gold pennant | The arena is now a flat diagram that repeats the 2D course directly below it. Material barely reads |
+| Responsive intent | 9 | 0 | Arena fits at 390 (358×168); 0 px overflow | Hulls are about 15–20 CSS px at 390 |
+| Simplicity | 8 | 0 | No new controls | — |
+| 3D against ArkhEthos | 8 | +1 | Lead reads at a glance; start and finish lines are straight; one post lit | The course uses about 43–52% of the stage width because the height binds (`four-arena`). ship-c still reads as crossing its lane. Each lane's finish buoy touches its hull (new-e). n3 unchanged |
+| Gamification and ethics | 9 | +1 | Twin tie shows no winner, `data-winners=0`, no First marks, in both orders. A run that delivers no file scores 0 Verified | The twins note misstates why the twins' scores differ (new-f) |
+| Accessibility | 9 | 0 | Keyboard spec in place; axe 0 | Not run by the critic |
+| Fidelity to DESIGN / plan 12 | 8 | 0 | § 2a still holds | — |
+| Content and CTA coherence | 9 | 0 | Distinct copy names in the head, the course and the table | new-f |
+
+**Delivery risk: medium.** There has still been no real live trial.
+
+## 3. Second re-review's findings
+
+| # | Status | Evidence |
+|---|---|---|
+| new-a | **Fixed** | Clones landed at `ss-full-run-copy` and `ss-full-run-copy-2`, and the race shows "SS Full Run copy 2". `copyName` is used in ShipNav and Armory, with a unit test; names fit the 48-character limit |
+| new-b | **Fixed** | Mixed race with the addendum copy: "No winner: SS Full Run and SS Full Run copy tie at 89.3…", `data-winners=0`, `rg-lane-winner` 0. Same result in reverse order |
+| new-c | **Fixed** | `dev/trial.ts`: preflight and clarity are multiplied by `share`; the new unit test expects an empty `.olympus` to score 0. Residue: delivering half the files still scores 50 Verified, which is proportional and acceptable |
+| new-d | **Fixed** | `regatta.spec.ts:116,130` assert unconditionally |
+| n-e (perspective) | **Fixed** | Orthographic camera; `arenaZoom` has a unit test at three aspects; equal x for equal scores, checked on screen |
+| m4 (ship-c sliver) | **Improved, still visible** | Beam 0.9, so ship-c is larger, but in `four-arena` it still reads as crossing its lane rather than sailing down it (disclosed) |
+| n3, Hangar fold | Not changed (disclosed) | — |
+
+## 4. New findings (minor)
+
+- **new-e. The finish buoy collides with the hull.**
+  - `buoyX(n-1, n, reach)` equals the hull's final x. With `HULL_BEAM` 0.9 (half-beam 0.45), the octahedron at `BUOY_Z` 0.5 reaches in to 0.35.
+  - So in every lane the red required-gate gem overlaps the hull at the finish (`regatta-results-1440`, `four-arena`, `four-390-arena`).
+  - This contradicts the code comment at `Arena.tsx:141`, "a passing hull never hides one".
+  - *Fix:* spread buoys over `reach*(j+0.5)/n`, or set beam 0.8 with buoys at 0.6.
+- **new-f. "Any gap between them is the tier's cost" is false for a haiku critic.**
+  - Measured: the haiku copy gains economy (10 vs 9) but loses pre-flight (18.7 vs 20, "14 of 15 checks pass").
+  - The failing check is `preflight.ts:283`, "The critic's model tier is at least the builder's".
+  - So the dry run *does* judge this tier through pre-flight, and the parent's 0.3 lead is a real finding.
+  - It is mislabelled in three places: the twins note, the tuning-only "No winner" copy ("counts a tier only as cost") and `TuningCard`'s "counts the tier only as cost".
+  - *Fix:* when twins differ on pre-flight, name the failing check in the note, or reword it to "cost and tier checks". Keep "cannot read an addendum".
+- **new-g (hygiene).** `variant.ts:74` leaves `variantName`'s JSDoc sitting above `copyName`'s, so `variantName` has no doc of its own.
+
+## 5. Between this and 85+
+
+1. new-f: an honest twins note. This is the one wording that still miscommunicates (+1).
+2. Arena presence:
+   - fill the stage width, for example with a taller stage or a lower elevation (ortho keeps x honest), so hulls draw larger;
+   - fix new-e.
+3. One owner-approved real smoke trial. This remains the largest risk.
+4. Optional: n3 discs, the Hangar fleet overlap, the hero at 1024.

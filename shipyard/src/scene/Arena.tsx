@@ -32,12 +32,16 @@ export interface ArenaLane {
 const COURSE = 10;
 const LANE_GAP = 1.2;
 const HULL_LENGTH = 1.15;
-/** the widest a hull may be across its lane: clear of the buoys at BUOY_Z (re-review v2: wide-winged hulls read as sailing sideways) */
-const HULL_BEAM = 0.9;
+/**
+ * The widest a hull may be across its lane. Half of it (0.4) stays clear of a gate gem (0.15) at BUOY_Z
+ * on its own side and of the next lane's buoys on the other, so a hull never touches a buoy, even
+ * beside the last one at the finish (re-review 3, new-e).
+ */
+const HULL_BEAM = 0.8;
 /** buoys ride this far to one side of the hull's path */
-const BUOY_Z = 0.5;
-/** camera elevation: high enough that the lead reads across lanes at a glance (re-review v2, n-e), low enough to read the hulls */
-const ELEVATION = THREE.MathUtils.degToRad(40);
+const BUOY_Z = 0.62;
+/** camera elevation: the camera is orthographic, so x stays honest at any angle; 28° keeps the lanes shallow enough that the course fills the stage width (re-review 3) */
+const ELEVATION = THREE.MathUtils.degToRad(28);
 const CHILI = '#d73b3e';
 const COTTON = '#edebdd';
 const MUTED = '#8a7f78';
@@ -172,8 +176,14 @@ const CAMERA_DIST = 12;
  * posts' height.
  */
 export function arenaExtent(lanes: number): { width: number; height: number } {
-  return { width: COURSE + 2 * HULL_LENGTH + 0.4, height: lanes * LANE_GAP * Math.sin(ELEVATION) + 1.4 };
+  return { width: FINISH_X - START_X + LEAD_IN + RUN_OUT, height: lanes * LANE_GAP * Math.sin(ELEVATION) + 1.4 };
 }
+
+/** Room before the start (half a hull at rest) and past the finish (a whole hull plus the pennant). */
+const LEAD_IN = 0.75;
+const RUN_OUT = 1.45;
+/** The camera centres on the course plus its margins, which are wider past the finish. */
+const CENTER_X = (RUN_OUT - LEAD_IN) / 2;
 
 /** Pixels per scene unit that keep the whole course in frame at any stage aspect. */
 export function arenaZoom(px: { width: number; height: number }, lanes: number): number {
@@ -191,8 +201,8 @@ function Fit({ lanes }: { lanes: number }) {
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
     camera.zoom = arenaZoom(size, lanes);
-    camera.position.set(0, CAMERA_DIST * Math.sin(ELEVATION), CAMERA_DIST * Math.cos(ELEVATION));
-    camera.lookAt(0, 0.25, 0);
+    camera.position.set(CENTER_X, CAMERA_DIST * Math.sin(ELEVATION), CAMERA_DIST * Math.cos(ELEVATION));
+    camera.lookAt(CENTER_X, 0.25, 0);
     camera.updateProjectionMatrix();
     invalidate();
   }, [camera, size, lanes, invalidate]);
@@ -201,8 +211,10 @@ function Fit({ lanes }: { lanes: number }) {
 
 export default function Arena({ lanes, onContextLost }: { lanes: ArenaLane[]; onContextLost?: () => void }) {
   const z0 = -((lanes.length - 1) * LANE_GAP) / 2;
+  // the stage takes the course's own proportions, so there are no empty bands to fit around (re-review 3)
+  const e = arenaExtent(lanes.length);
   return (
-    <div className="rg-arena" data-testid="rg-arena" data-lanes={lanes.length} data-winners={lanes.filter((l) => l.winner).length} aria-hidden="true">
+    <div className="rg-arena" style={{ aspectRatio: `${e.width.toFixed(3)} / ${e.height.toFixed(3)}` }} data-testid="rg-arena" data-lanes={lanes.length} data-winners={lanes.filter((l) => l.winner).length} aria-hidden="true">
       <Canvas
         dpr={[1, 1.5]}
         orthographic

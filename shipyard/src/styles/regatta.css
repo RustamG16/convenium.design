@@ -99,10 +99,11 @@
 .rg-live-dialog .label code { text-transform: none; letter-spacing: 0; font-size: 13px; }
 
 /* the 3D arena: a picture of the course above it (decorative; the course carries the numbers) */
-.rg-arena { position: relative; height: clamp(220px, 34svh, 380px); border: 1px solid var(--border); border-radius: var(--r-panel); overflow: hidden;
+.rg-arena { position: relative; width: 100%; min-height: 168px; max-height: min(480px, 60svh); border: 1px solid var(--border); border-radius: var(--r-panel); overflow: hidden;
   background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--sw-4) 14%, var(--bg)), var(--bg)); }
 .rg-arena canvas { width: 100% !important; height: 100% !important; }
-@media (max-width: 640px) { .rg-arena { height: 168px; } }
+.rg-arena-loading { aspect-ratio: 3.3; }
+/* phones: the course's own proportions would be under 100 px tall; 168 px keeps the hulls readable */
 .rg-head-winner { margin: 0; font-size: 18px; line-height: 1.4; outline: none; }
 .rg-head-winner:focus-visible { outline: 2px solid var(--cotton); outline-offset: 4px; border-radius: 2px; }
 .rg-winner-chip { display: inline-block; margin-right: var(--s2); padding: 0 var(--s2); border: 1px solid var(--cotton); border-radius: var(--r-pill); font-size: 11px; letter-spacing: var(--track-label); text-transform: uppercase; vertical-align: 3px; }

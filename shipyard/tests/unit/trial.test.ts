@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { BRIEFS } from '../../src/domain/briefs';
 import { libraryShips, LIBRARY_EPOCH } from '../../src/domain/ship';
-import { CRITERIA, shipHash, simulate } from '../../src/domain/trial';
+import { CRITERIA, shipHash, simulate, failingChecks, preflightWhy } from '../../src/domain/trial';
 import { loadIndexFromDisk } from './helpers';
 
 const idx = loadIndexFromDisk();
@@ -51,5 +51,15 @@ describe('simulate', () => {
     const best = (brief: string) => Object.entries(table[brief]).sort((a, b) => b[1] - a[1])[0][0];
     expect(best('mobile-retrofit')).toBe('ss-mobile-retrofit');
     expect(best('fleet-audit')).toBe('ss-mobile-fleet');
+  });
+});
+
+describe('the pre-flight line names what fails (re-review 3, new-f)', () => {
+  it('round-trips the failing check titles, and stays the plain count when nothing fails', () => {
+    expect(preflightWhy(14, 14, [])).toBe('14 of 14 checks pass');
+    expect(failingChecks(preflightWhy(14, 14, []))).toEqual([]);
+    const why = preflightWhy(14, 15, ["The critic's model tier is at least the builder's"]);
+    expect(why.startsWith('14 of 15 checks pass')).toBe(true);
+    expect(failingChecks(why)).toEqual(["The critic's model tier is at least the builder's"]);
   });
 });

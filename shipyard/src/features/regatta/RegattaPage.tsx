@@ -16,7 +16,7 @@ import { BRIEFS } from '../../domain/briefs';
 import { compare, leaderboard, overall, recordFromDry, type Current, type TrialRecord } from '../../domain/regatta';
 import { displayHull, type Ship } from '../../domain/schema';
 import { libraryShips, LIBRARY_EPOCH } from '../../domain/ship';
-import { CRITERIA, shipHash, simulate, type Brief, type DryTrial, type TrialEvent } from '../../domain/trial';
+import { CRITERIA, shipHash, simulate, type Brief, type DryTrial, type TrialEvent, failingChecks } from '../../domain/trial';
 import { onlyTuningDiffers, tuningTwins } from '../../domain/variant';
 import { useKb } from '../../kb/context';
 import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
@@ -189,21 +189,40 @@ function arenaLanes(runs: DryTrial[], entrants: Ship[], step: number, winners: s
 
 /* ---------------------------------------------------------------------------------------- results */
 
-/** Names the entrants that differ only in tuning inside a mixed race: their gap is a tier's cost, not a judgement. */
-function TwinsNote({ twins, names, testId }: { twins: string[][]; names: Map<string, string>; testId: string }) {
+/**
+ * What a dry run can and cannot say about ships that differ only in tuning (re-review 3, new-f): it
+ * cannot say which tuning works better, but it does hold a tier to the pre-flight rules, so a twin that
+ * fails one is named with the check; any other gap is the tier's cost. `detailOnly` keeps just the
+ * pre-flight sentence (a race of twins only, whose head already says the rest).
+ */
+function twinsSentences(twins: string[][], runs: DryTrial[], names: Map<string, string>, detailOnly = false): string[] {
+  const pf = new Map(runs.map((r) => [r.ship, r.score.criteria.preflight]));
+  const name = (id: string) => names.get(id) ?? id;
+  const out: string[] = [];
+  for (const g of twins) {
+    const best = Math.max(...g.map((id) => pf.get(id)?.points ?? 0));
+    const lower = g.filter((id) => (pf.get(id)?.points ?? 0) < best);
+    const tier = lower.length
+      ? `The dry run does hold a tier to the pre-flight rules: ${lower.map((id) => `${name(id)} fails “${failingChecks(pf.get(id)?.why ?? '').join('” and “')}”`).join('; ')}. Any other gap is the tier’s cost.`
+      : 'Any gap between them is the tier’s cost.';
+    if (detailOnly) {
+      if (lower.length) out.push(tier);
+    } else out.push(`${g.map(name).join(' and ')} differ only in tuning: the dry run cannot say which tuning works better. ${tier} Run them live to compare.`);
+  }
+  return out;
+}
+
+function TwinsNote({ twins, runs, names, testId, detailOnly }: { twins: string[][]; runs: DryTrial[]; names: Map<string, string>; testId: string; detailOnly?: boolean }) {
+  const lines = twinsSentences(twins, runs, names, detailOnly);
+  if (!lines.length) return null;
   return (
     <p className="muted prose-sm" data-testid={testId}>
-      {twins.map((g, i) => (
-        <span key={g.join()}>
-          {i > 0 && ' '}
-          {g.map((id) => names.get(id) ?? id).join(' and ')} differ only in tuning: the dry run cannot judge between them, so any gap between them is the tier&rsquo;s cost. Run them live to compare.
-        </span>
-      ))}
+      {lines.join(' ')}
     </p>
   );
 }
 
-function Results({ runs, names, brief, entrants, tuningOnly, twinTie, twins }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief; entrants: Ship[]; tuningOnly: boolean; twinTie: boolean; twins: string[][] }) {
+function Results({ runs, names, brief, entrants, tuningOnly, twinTie, twins, allTwins }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief; entrants: Ship[]; tuningOnly: boolean; twinTie: boolean; twins: string[][]; allTwins: string[][] }) {
   const noWinner = tuningOnly || twinTie;
   const cmp = useMemo(() => compare(runs.map((r) => ({ ship: r.ship, total: r.score.total, criteria: r.score.criteria }))), [runs]);
   const winners = cmp.winners.map((w) => names.get(w) ?? w);
@@ -218,7 +237,7 @@ function Results({ runs, names, brief, entrants, tuningOnly, twinTie, twins }: {
       <p className="rg-winner" data-testid="rg-winner" data-tie={winners.length > 1 || undefined}>
         {tuningOnly ? (
           <>
-            No winner: these ships differ only in a model tier or an addendum. A dry run counts a tier only as cost and cannot read an addendum, so only a live run can compare them.
+            No winner: these ships differ only in a model tier or an addendum. A dry run sees a tier only through its cost and the pre-flight rules and cannot read an addendum, so only a live run can say which tuning works better.
           </>
         ) : twinTie ? (
           <>
@@ -234,7 +253,8 @@ function Results({ runs, names, brief, entrants, tuningOnly, twinTie, twins }: {
           </>
         )}
       </p>
-      {twins.length > 0 && <TwinsNote twins={twins} names={names} testId="rg-twins" />}
+      {twins.length > 0 && <TwinsNote twins={twins} runs={runs} names={names} testId="rg-twins" />}
+      {tuningOnly && <TwinsNote twins={allTwins} runs={runs} names={names} testId="rg-twins" detailOnly />}
       <div className="rg-table-wrap" tabIndex={0} role="region" aria-label="Score by criterion">
         <table className="rg-table" data-testid="rg-table">
           <thead>
@@ -445,7 +465,8 @@ export default function RegattaPage() {
   const winners = cmp?.winners ?? [];
   const raced = useMemo(() => (race ? race.runs.map((r) => entrants.find((s) => s.id === r.ship)).filter((s): s is Ship => !!s) : []), [race, entrants]);
   const tuningOnly = useMemo(() => onlyTuningDiffers(raced), [raced]);
-  const twins = useMemo(() => (tuningOnly ? [] : tuningTwins(raced)), [raced, tuningOnly]);
+  const allTwins = useMemo(() => tuningTwins(raced), [raced]);
+  const twins = tuningOnly ? [] : allTwins;
   // twins that tie at the top have not been told apart either: no winner then (re-review 2, new-b)
   const twinTie = !tuningOnly && winners.length > 1 && twins.some((g) => winners.every((w) => g.includes(w)));
   // a race with no judgeable winner shows none anywhere: not in the copy, the 2D course or the arena (re-review v2, N1)
@@ -517,7 +538,7 @@ export default function RegattaPage() {
                   {finished && cmp && (
                     <p ref={headRef} tabIndex={-1} className="rg-head-winner" data-testid="rg-head-winner" data-tuning-only={tuningOnly || undefined} data-no-winner={noWinner || undefined}>
                       {tuningOnly ? (
-                        <>These ships differ only in tuning, which a dry run cannot judge. Run them live to compare.</>
+                        <>These ships differ only in tuning. A dry run sees a tier only through its cost and the pre-flight rules and cannot read an addendum, so it cannot say which tuning works better. Run them live to compare.</>
                       ) : twinTie ? (
                         <>
                           No winner: {winners.map((w) => names.get(w) ?? w).join(' and ')} tie at <strong className="num">{fmt(cmp.topTotal)}</strong>, and they differ only in tuning, which a dry run cannot judge.
@@ -536,7 +557,8 @@ export default function RegattaPage() {
                       </button>
                     </p>
                   )}
-                  {finished && twins.length > 0 && <TwinsNote twins={twins} names={names} testId="rg-head-twins" />}
+                  {finished && twins.length > 0 && <TwinsNote twins={twins} runs={race.runs} names={names} testId="rg-head-twins" />}
+                  {finished && tuningOnly && <TwinsNote twins={allTwins} runs={race.runs} names={names} testId="rg-head-twins" detailOnly />}
                 </div>
                 <div className="row" style={{ gap: 'var(--s2)' }}>
                   {!finished && (
@@ -568,7 +590,7 @@ export default function RegattaPage() {
               </p>
               {finished && (
                 <div ref={resultsRef} tabIndex={-1} className="rg-results-focus">
-                  <Results runs={race.runs} names={names} brief={race.brief} entrants={entrants} tuningOnly={tuningOnly} twinTie={twinTie} twins={twins} />
+                  <Results runs={race.runs} names={names} brief={race.brief} entrants={entrants} tuningOnly={tuningOnly} twinTie={twinTie} twins={twins} allTwins={allTwins} />
                   <p className="muted sheet-line">
                     Saved as dry trial records.{' '}
                     <button type="button" className="btn btn-text btn-sm" onClick={() => setTab('board')}>

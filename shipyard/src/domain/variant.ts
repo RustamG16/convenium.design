@@ -70,7 +70,6 @@ export function addendumProblems(idx: KbIndex, member: Member, openedSkills: Rea
   return out;
 }
 
-/** "SS Full Run B", then C, D… — the first letter not already used by a ship of that name. */
 /** "X copy", then "X copy 2", "X copy 3": two copies of one ship never share a name (re-review 2, new-a). */
 export function copyName(name: string, taken: Iterable<string>): string {
   const used = new Set(taken);
@@ -79,6 +78,7 @@ export function copyName(name: string, taken: Iterable<string>): string {
   for (let n = 2; ; n++) if (!used.has(`${stem} ${n}`)) return `${stem} ${n}`;
 }
 
+/** "SS Full Run B", then C, D… — the first letter not already used by a ship of that name. */
 export function variantName(name: string, taken: Iterable<string>): string {
   const used = new Set(taken);
   const stem = name.replace(/ [B-Z]$/, '');

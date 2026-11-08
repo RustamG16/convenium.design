@@ -30,9 +30,9 @@ describe('arena course', () => {
     expect(hullScale(2, 0.5) * 2).toBeCloseTo(1.15);
     // wider than long: the beam caps it, so its wings stay inside the lane
     const s = hullScale(1, 2);
-    // 0.9 wide: inside the 1.0 between its own buoys and the next lane's (buoys 0.5 to the side, lanes 1.2 apart)
-    expect(s * 2).toBeCloseTo(0.9);
-    expect(s * 2).toBeLessThan(1);
+    // 0.8 wide: half (0.4) stays clear of a gate gem (radius 0.15) at 0.62 on either side
+    expect(s * 2).toBeCloseTo(0.8);
+    expect(s).toBeLessThan(0.62 - 0.15);
     expect(s * 1).toBeLessThan(1.15);
   });
 });
