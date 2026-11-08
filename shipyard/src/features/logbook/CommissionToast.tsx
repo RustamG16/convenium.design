@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { commissionById, newlyGranted, shouldAnnounce } from '../../domain/commissions';
 import { MOTION, usePresence } from '../../lib/motion';
@@ -21,8 +21,27 @@ export function CommissionToast() {
   }
 
   const { value: lines, leaving } = usePresence(shown.length > 0 ? shown : null, MOTION.panel);
+  // The toast stays until dismissed (it never closes by itself: ethics gate), so it must never sit on a control: while it is up,
+  // the page reserves its height at the bottom (--toast-space) and focus scrolling clears it (WCAG 2.4.11, T13).
+  const region = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const el = region.current;
+    if (!lines || !el) {
+      root.style.removeProperty('--toast-space');
+      return;
+    }
+    const set = () => root.style.setProperty('--toast-space', `${Math.ceil(el.getBoundingClientRect().height) + 32}px`);
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      root.style.removeProperty('--toast-space');
+    };
+  }, [lines]);
   return (
-    <div className="toast-region" role="status" aria-live="polite" data-testid="commission-toast-region">
+    <div className="toast-region" role="status" aria-live="polite" data-testid="commission-toast-region" ref={region}>
       {lines && (
         <div className="toast" data-leaving={leaving || undefined} data-testid="commission-toast">
           <p className="label">Commission granted</p>

@@ -13,7 +13,7 @@ import { newGate, newStage } from '../../domain/voyage';
 import { useKb } from '../../kb/context';
 import { useMinWidth } from '../../lib/preferences';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
-import { isFamilyId } from '../../scene/artifacts/families';
+import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { useDispatch, useStoreState } from '../../store/context';
 import { useNotify } from '../shared/notices';
 import { ShipNav, TemplateLine, useCloneToEdit } from '../shared/ShipNav';
@@ -147,7 +147,8 @@ export default function VoyagePage() {
     window.addEventListener('pointercancel', up);
   };
 
-  const inspector = sel !== null ? <StageInspector ship={ship} index={sel} /> : <p className="state-line" data-testid="inspector-empty">Pick a stage or a gate to read and edit it.</p>;
+  // Nothing picked: no inspector and no empty 360 px box. The track takes the full width (as the Armory does) until a stage or a gate is picked.
+  const inspector = sel !== null ? <StageInspector ship={ship} index={sel} onGuard={readOnly ? clone.ask : undefined} /> : null;
   const stageNo = (i: number) => ship.voyage.slice(0, i + 1).filter(isStage).length;
 
   return (
@@ -181,7 +182,7 @@ export default function VoyagePage() {
           )}
         </div>
       )}
-      <div className="voyage-layout" data-wide={wide || undefined}>
+      <div className="voyage-layout" data-wide={(wide && inspector) || undefined}>
         <ol className="voyage-track" ref={trackRef} aria-label="Voyage, stages and gates in order" data-testid="voyage-track">
           {ship.voyage.map((item, i) => {
             const isSel = sel === i;
@@ -250,7 +251,7 @@ export default function VoyagePage() {
           })}
         </ol>
         {wide ? (
-          <aside className="voyage-inspector" aria-label="Stage inspector">{inspector}</aside>
+          inspector && <aside className="voyage-inspector" aria-label="Stage inspector">{inspector}</aside>
         ) : (
           sel !== null && (
             <Dialog.Root open onOpenChange={(o) => !o && select(null)}>

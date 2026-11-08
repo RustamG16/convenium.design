@@ -10,7 +10,26 @@ import type { StagePatch, GatePatch } from '../../domain/voyage';
 import { useKb } from '../../kb/context';
 import { useDispatch } from '../../store/context';
 
-function CommitField({ label, value, onCommit, multiline, testId, hint }: { label: string; value: string; onCommit: (v: string) => void; multiline?: boolean; testId: string; hint?: string }) {
+/** On a template every control is read-only and any edit gesture asks to clone first (06 G2); nothing is cloned silently. */
+type Guard = (() => void) | undefined;
+const guardProps = (guard: Guard) =>
+  guard
+    ? {
+        'aria-readonly': true as const,
+        onMouseDown: (e: React.MouseEvent) => {
+          e.preventDefault();
+          guard();
+        },
+        onKeyDown: (e: React.KeyboardEvent) => {
+          if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || e.key.startsWith('Arrow')) {
+            e.preventDefault();
+            guard();
+          }
+        },
+      }
+    : {};
+
+function CommitField({ label, value, onCommit, multiline, testId, hint, guard }: { label: string; value: string; onCommit: (v: string) => void; multiline?: boolean; testId: string; hint?: string; guard?: Guard }) {
   const [draft, setDraft] = useState(value);
   const [seen, setSeen] = useState(value);
   if (seen !== value) {
@@ -22,23 +41,24 @@ function CommitField({ label, value, onCommit, multiline, testId, hint }: { labe
     <label className="field-row">
       <span className="label">{label}</span>
       {multiline ? (
-        <textarea className="field" rows={3} value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={commit} data-testid={testId} />
+        <textarea className="field" rows={3} value={draft} readOnly={!!guard} onChange={(e) => setDraft(e.target.value)} onBlur={commit} data-testid={testId} {...guardProps(guard)} />
       ) : (
-        <input className="field" value={draft} onChange={(e) => setDraft(e.target.value)} onBlur={commit} onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget.blur(), e.preventDefault())} data-testid={testId} />
+        <input className="field" value={draft} readOnly={!!guard} onChange={(e) => setDraft(e.target.value)} onBlur={commit} data-testid={testId} {...(guard ? guardProps(guard) : { onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && (e.currentTarget.blur(), e.preventDefault()) })} />
       )}
       {hint && <span className="muted sheet-line">{hint}</span>}
     </label>
   );
 }
 
-export function StageInspector({ ship, index }: { ship: Ship; index: number }) {
+export function StageInspector({ ship, index, onGuard }: { ship: Ship; index: number; onGuard?: () => void }) {
   const idx = useKb();
   const dispatch = useDispatch();
   const item = ship.voyage[index];
   if (!item) return <p className="state-line">Pick a stage to edit it.</p>;
+  const guard = onGuard;
   const edit = (patch: StagePatch | GatePatch) => dispatch({ type: 'voyage/edit', shipId: ship.id, index, patch });
 
-  if (item.kind === 'gate') return <GateForm gate={item} edit={edit} />;
+  if (item.kind === 'gate') return <GateForm gate={item} edit={edit} guard={onGuard} />;
   const stage: Stage = item;
   const member = ship.crew.find((m) => m.id === stage.member);
   const worn = member?.loadout ?? [];
@@ -56,16 +76,16 @@ export function StageInspector({ ship, index }: { ship: Ship; index: number }) {
         <p className="label">Stage {ship.voyage.slice(0, index + 1).filter((v) => v.kind === 'stage').length} · <code>{stage.id}</code></p>
         <h2 className="card-title">{stage.label}</h2>
       </header>
-      <CommitField label="Label" value={stage.label} onCommit={(v) => edit({ label: v })} testId="stage-label" />
+      <CommitField label="Label" value={stage.label} onCommit={(v) => edit({ label: v })} testId="stage-label" guard={guard} />
       <label className="field-row">
         <span className="label">Phase</span>
-        <select className="field" value={stage.phase} onChange={(e) => edit({ phase: e.target.value as Phase })} data-testid="stage-phase">
+        <select className="field" value={stage.phase} onChange={(e) => edit({ phase: e.target.value as Phase })} data-testid="stage-phase" {...guardProps(guard)}>
           {PHASE_IDS.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
       </label>
       <label className="field-row">
         <span className="label">Crew member</span>
-        <select className="field" value={stage.member} onChange={(e) => edit({ member: e.target.value, activeSkill: null })} data-testid="stage-member">
+        <select className="field" value={stage.member} onChange={(e) => edit({ member: e.target.value, activeSkill: null })} data-testid="stage-member" {...guardProps(guard)}>
           {!member && <option value={stage.member}>{stage.member} (not aboard)</option>}
           {ship.crew.map((m) => <option key={m.id} value={m.id}>{m.character.name} ({m.agent})</option>)}
         </select>
@@ -73,7 +93,7 @@ export function StageInspector({ ship, index }: { ship: Ship; index: number }) {
       </label>
       <label className="field-row">
         <span className="label">Active artifact (one per stage)</span>
-        <select className="field" value={stage.activeSkill ?? ''} onChange={(e) => edit({ activeSkill: e.target.value || null })} data-testid="stage-skill">
+        <select className="field" value={stage.activeSkill ?? ''} onChange={(e) => edit({ activeSkill: e.target.value || null })} data-testid="stage-skill" {...guardProps(guard)}>
           <option value="">None: the stage opens no skill</option>
           {!wornHas && stage.activeSkill && <option value={stage.activeSkill}>{stage.activeSkill} (not worn)</option>}
           {worn.map((e) => <option key={e.skill} value={e.skill}>{idx.skill.get(e.skill)?.artifact.name ?? e.skill} · {e.skill}</option>)}
@@ -85,28 +105,28 @@ export function StageInspector({ ship, index }: { ship: Ship; index: number }) {
         )}
         {worn.length === 0 && member && <span className="muted sheet-line">{member.character.name} wears nothing yet; equip something first.</span>}
       </label>
-      <CommitField label="Outputs (one per line)" value={stage.outputs.join('\n')} multiline testId="stage-outputs" onCommit={(v) => edit({ outputs: v.split('\n') })} hint="At least one." />
-      <CommitField label="Inputs (one per line)" value={(stage.inputs ?? []).join('\n')} multiline testId="stage-inputs" onCommit={(v) => edit({ inputs: v.split('\n').map((x) => x.trim()).filter(Boolean) })} />
-      <CommitField label="Stop condition" value={stage.stop} testId="stage-stop" onCommit={(v) => edit({ stop: v })} />
+      <CommitField label="Outputs (one per line)" value={stage.outputs.join('\n')} multiline testId="stage-outputs" guard={guard} onCommit={(v) => edit({ outputs: v.split('\n') })} hint="At least one." />
+      <CommitField label="Inputs (one per line)" value={(stage.inputs ?? []).join('\n')} multiline testId="stage-inputs" guard={guard} onCommit={(v) => edit({ inputs: v.split('\n').map((x) => x.trim()).filter(Boolean) })} />
+      <CommitField label="Stop condition" value={stage.stop} testId="stage-stop" guard={guard} onCommit={(v) => edit({ stop: v })} />
       <label className="menu-radio">
-        <input type="checkbox" checked={stage.parallel === true} onChange={(e) => edit({ parallel: e.target.checked })} data-testid="stage-parallel" />
+        <input type="checkbox" checked={stage.parallel === true} onChange={(e) => (guard ? guard() : edit({ parallel: e.target.checked }))} data-testid="stage-parallel" />
         <span>Runs in parallel with its neighbours</span>
       </label>
       {(ship.trail === 'fleet' || stage.wave !== undefined) && (
         <label className="field-row">
           <span className="label">Wave</span>
-          <input className="field" type="number" min={0} value={stage.wave ?? 0} onChange={(e) => edit({ wave: Number(e.target.value) })} data-testid="stage-wave" />
+          <input className="field" type="number" min={0} value={stage.wave ?? 0} onChange={(e) => (guard ? guard() : edit({ wave: Number(e.target.value) }))} data-testid="stage-wave" />
         </label>
       )}
       <section className="stack-sm" aria-label="Run plan row">
         <h3 className="label">Its run-plan row <TruthLabel truth="Verified" detail="what exports" /></h3>
-        <pre className="runplan-row" data-testid="runplan-row">{row}</pre>
+        <pre className="runplan-row" data-testid="runplan-row" tabIndex={0} aria-label="Run plan row, scrollable">{row}</pre>
       </section>
     </div>
   );
 }
 
-function GateForm({ gate, edit }: { gate: Gate; edit: (p: GatePatch) => void }) {
+function GateForm({ gate, edit, guard }: { gate: Gate; edit: (p: GatePatch) => void; guard?: Guard }) {
   return (
     <div className="stage-form stack" data-testid="gate-inspector">
       <header>
@@ -115,11 +135,11 @@ function GateForm({ gate, edit }: { gate: Gate; edit: (p: GatePatch) => void }) 
       </header>
       <label className="field-row">
         <span className="label">Letter or number</span>
-        <select className="field" value={gate.gate} onChange={(e) => edit({ gate: e.target.value })} data-testid="gate-letter">
+        <select className="field" value={gate.gate} onChange={(e) => edit({ gate: e.target.value })} data-testid="gate-letter" {...guardProps(guard)}>
           {[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'].map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </label>
-      <CommitField label="What the owner decides" value={gate.label} onCommit={(v) => edit({ label: v })} testId="gate-label" />
+      <CommitField label="What the owner decides" value={gate.label} onCommit={(v) => edit({ label: v })} testId="gate-label" guard={guard} />
       <p className="muted sheet-line">A gate stops the run until the owner decides. Pre-flight checks that the trail has the gates it needs, in order.</p>
     </div>
   );

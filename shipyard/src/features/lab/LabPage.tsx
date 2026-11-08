@@ -8,7 +8,7 @@ import { lazy, Suspense, useMemo, useState } from 'react';
 import '../../styles/ship.css';
 import { TruthLabel } from '../../components/TruthLabel';
 import { equip } from '../../domain/loadout';
-import { isFamilyId } from '../../scene/artifacts/families';
+import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { useKb } from '../../kb/context';
 import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';

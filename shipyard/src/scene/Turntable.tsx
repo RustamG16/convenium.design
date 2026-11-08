@@ -15,7 +15,7 @@ import { CrewFigure } from './CrewMember';
 import type { SceneMember } from './crew';
 
 /** Metres above the head the orbit ring needs in frame. */
-const ORBIT_ROOM = 0.35;
+const ORBIT_ROOM = 0.5;
 
 /** Where each anchor of the body is on screen right now, as fractions (0..1) of the canvas; read by the drag layer to find the nearest anchor. */
 export type AnchorScreen = Partial<Record<Anchor, { x: number; y: number }>>;

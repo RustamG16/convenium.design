@@ -372,7 +372,9 @@
   font-weight: 600;
 }
 
-/* Commission toast: a status line shown once, when a grant happens in front of the owner. It stays until dismissed. */
+/* Commission toast: a status line shown once, when a grant happens in front of the owner. It stays until dismissed,
+   so while it is up the page keeps --toast-space free at its foot and nothing can be stuck under it (T13). */
+body { padding-bottom: var(--toast-space, 0px); }
 .toast-region {
   position: fixed;
   left: var(--s5);

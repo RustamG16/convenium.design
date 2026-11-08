@@ -26,11 +26,9 @@ export interface Part {
   instances?: { position: V3; rotation: V3 }[];
 }
 
-export const FAMILY_IDS = ['lens', 'wrench', 'gyroscope', 'projector', 'quill', 'seal', 'spyglass', 'calipers', 'gearbox', 'codex', 'orrery'] as const;
-export type FamilyId = (typeof FAMILY_IDS)[number];
+import type { FamilyId } from './familyIds';
+export { FAMILY_IDS, isFamilyId, type FamilyId } from './familyIds';
 export const TRIANGLE_BUDGET = 600;
-
-export const isFamilyId = (s: string): s is FamilyId => (FAMILY_IDS as readonly string[]).includes(s);
 
 const HALF_PI = Math.PI / 2;
 

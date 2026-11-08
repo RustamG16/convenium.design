@@ -44,6 +44,10 @@ export function compareEquip(idx: KbIndex, ship: Ship, memberId: string, skillId
   if (!result.ok) return { ...none, anchor, replaces, error: result.reason };
   const before = preflight(idx, ship);
   const after = preflight(idx, result.ship);
-  const reasons = [...new Set(result.notes.map((n) => SHORT[n.code] ?? n.code))];
-  return { already: false, anchor, replaces, error: null, addsWarnings: Math.max(0, after.warnings - before.warnings), addsBlockers: Math.max(0, after.blockers - before.blockers), reasons };
+  const addsBlockers = Math.max(0, after.blockers - before.blockers);
+  const addsWarnings = Math.max(0, after.warnings - before.warnings);
+  // Name what really got worse: the checks that were not failing and now are (T13: a swap that removed a stage's active artifact was labelled "off-route"). With no change the equip notes are shown as a note.
+  const worse = after.checks.filter((c) => (c.status === 'block' || c.status === 'warn') && before.checks.find((b) => b.id === c.id)?.status !== c.status).map((c) => `${c.id} ${c.title.charAt(0).toLowerCase()}${c.title.slice(1)}`);
+  const reasons = addsBlockers + addsWarnings > 0 ? worse : [...new Set(result.notes.map((n) => SHORT[n.code] ?? n.code))];
+  return { already: false, anchor, replaces, error: null, addsWarnings, addsBlockers, reasons };
 }

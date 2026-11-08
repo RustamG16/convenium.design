@@ -10,7 +10,7 @@ import { entryIndex, isWorn, totalCapacity } from '../../domain/loadout';
 import { ANCHOR_IDS, type Anchor, type Member, type Ship } from '../../domain/schema';
 import type { KbIndex } from '../../kb/artifacts';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
-import { isFamilyId } from '../../scene/artifacts/families';
+import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { EASE_CSS, isReducedMotion, MOTION, recordMotion, takeDrop } from '../../lib/motion';
 import { useReducedMotion } from '../../lib/preferences';
 import { useDispatch } from '../../store/context';
@@ -87,6 +87,8 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
   const drop = !readOnly ? { 'data-drop-anchor': anchor, 'data-drop-ship': ship.id, 'data-drop-member': member.id } : {};
   const lifted = Boolean(skill && drag?.source.kind === 'worn' && drag.skill === skill && drag.source.memberId === member.id);
   const refused = invalid && invalid.memberId === member.id && invalid.anchor === anchor && (invalid.index === undefined ? index === 0 : invalid.index === index) ? invalid.reason : null;
+  // R4: while an artifact is carried, the anchors with no free place for it are dimmed (a drop there offers a swap, it is never refused).
+  const full = Boolean(drag && !readOnly && member.loadout.filter((e) => e.anchor === anchor && e.skill !== drag.skill).length >= spec.capacity);
   const [x, y] = SPOT[anchor][index];
 
   // Equip, 2D: the socket flashes for 80 ms and the chip lands in 240 ms (from the drop point when there was a drop).
@@ -121,9 +123,11 @@ function Socket({ idx, ship, member, anchor, index, skill, active, selected, rea
       data-skill={skill ?? undefined}
       data-filled={skill ? '' : undefined}
       data-tier={art?.artifact.tier}
+      data-retired={skill && !art ? '' : undefined}
       data-active={active || undefined}
       data-hover={hovered || undefined}
       data-droppable={drag && !readOnly ? '' : undefined}
+      data-full={full || undefined}
       data-lifted={lifted || undefined}
       aria-label={label}
       aria-pressed={skill ? selected : undefined}
@@ -337,6 +341,9 @@ export function LoadoutRack({ idx, ship, member, active, readOnly, focusSkill, o
   const worn = member.loadout.length;
   const capacity = totalCapacity(idx);
   const hold = ship.hold ?? [];
+  const retired = member.loadout.filter((e) => !idx.skill.has(e.skill));
+  const dispatch = useDispatch();
+  const notify = useNotify();
   return (
     <aside className="ship-rack stack" aria-label="Artifacts" data-testid="loadout-rack">
       <header className="ship-rack-head">
@@ -346,6 +353,21 @@ export function LoadoutRack({ idx, ship, member, active, readOnly, focusSkill, o
       <p className="muted sheet-line" data-testid="rack-count">
         <span className="num">{worn}</span> of <span className="num">{capacity}</span> sockets worn
       </p>
+      {retired.length > 0 && (
+        // DESIGN.md required state: an artifact whose skill left the registry is a greyed "Retired" chip, kept until removed.
+        <ul className="retired-list" data-testid="retired-list">
+          {retired.map((e) => (
+            <li key={e.skill}>
+              <span className="retired-chip">Retired</span> <code>{e.skill}</code> left the library.
+              {!readOnly && (
+                <button type="button" className="btn btn-quiet btn-sm" data-testid="retired-remove" onClick={() => { dispatch({ type: 'loadout/unequip', shipId: ship.id, member: member.id, skill: e.skill }); notify(`${e.skill} removed from ${member.character.name}.`, { undo: true }); }}>
+                  Remove
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
       <AnchorDiagram idx={idx} ship={ship} member={member} active={active} readOnly={readOnly} focusSkill={focusSkill} onEmpty={(a) => (readOnly ? onLocked?.() : setPicker({ anchor: a }))} />
       <div className="row" style={{ gap: 'var(--s2)' }}>
         {/* On a template the edit gestures ask to clone first; "Clone to edit" is then the one filled button. */}

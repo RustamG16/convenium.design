@@ -9,12 +9,12 @@ import { buildArtifact, familyMaterial, isFamilyId, orbitAt, type FamilyId } fro
 import { tiltOf, variantOf } from './variant';
 
 /**
- * Pose by anchor (06 section 5): held 1, worn 0.7, floating 0.8. `crown` is the head anchor's pose
+ * Pose by anchor (06 section 5; T13 enlarged them so each reads as its own object at 1440: held 1.2, worn 0.95, floating 1.7, the floating ones also carry a family-pigment rim). `crown` is the head anchor's pose
  * (T6, director defect 1): smaller than worn, so a head artifact is a small piece of gear above the
  * brow and the face stays the subject.
  */
 export type Pose = 'held' | 'worn' | 'floating' | 'crown';
-export const POSE_SCALE: Record<Pose, number> = { held: 1, worn: 0.7, floating: 0.8, crown: 0.5 };
+export const POSE_SCALE: Record<Pose, number> = { held: 1.2, worn: 0.95, floating: 1.7, crown: 0.7 };
 /**
  * Family meshes are modelled at hand size (about 10 to 25 cm). On a 2 m crew member that reads as
  * a speck, so every artifact is drawn at this multiple of its modelled size (T4 used 1.8, which read as
@@ -85,7 +85,7 @@ export function ArtifactMesh({ family, pigment, skill, pose = 'held', animate = 
       <group ref={turn}>
         <primitive object={art.group} />
       </group>
-      {active && <mesh geometry={HALO} material={haloMaterial(pigment)} rotation={[HALF_PI, 0, 0]} />}
+      {(active || pose === 'floating') && <mesh geometry={HALO} material={haloMaterial(pigment)} rotation={[HALF_PI, 0, 0]} />}
     </group>
   );
 }

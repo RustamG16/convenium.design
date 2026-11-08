@@ -132,7 +132,7 @@ export function ExportPanel({ ship, report }: Props) {
       )}
 
       <div className="export-primary">
-        <button type="button" className="btn btn-primary" disabled={blocked || needPath} aria-describedby={blocked ? 'export-blocked' : `${pathId}-help`} onClick={copyKickoff} data-testid="copy-kickoff">
+        <button type="button" className={`btn ${blocked ? 'btn-quiet' : 'btn-primary'}`} disabled={blocked || needPath} aria-describedby={blocked ? 'export-blocked' : `${pathId}-help`} onClick={copyKickoff} data-testid="copy-kickoff">
           Copy kickoff prompt
         </button>
         <p className="prose-sm">The one thing a session needs: paste it and the session runs your plan.</p>

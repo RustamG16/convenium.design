@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router';
 import { CommissionToast } from './features/logbook/CommissionToast';
 import { EquipProvider } from './features/armory/equip';
@@ -13,6 +14,17 @@ const BANNER_TEXT = {
 
 export function App() {
   const banner = usePersistBanner();
+  // WCAG 2.4.11: a sheet's focus trap moves focus with preventScroll, which can leave the focused control below the fold. Bring it back clear of the sticky bars.
+  useEffect(() => {
+    const onFocusIn = (e: FocusEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (!el || !el.closest?.('[role="dialog"]')) return;
+      const r = el.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > window.innerHeight) el.scrollIntoView({ block: 'nearest' });
+    };
+    document.addEventListener('focusin', onFocusIn);
+    return () => document.removeEventListener('focusin', onFocusIn);
+  }, []);
   return (
     <NoticeProvider>
       <a className="skip-link" href="#main">

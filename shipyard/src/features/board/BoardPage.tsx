@@ -18,7 +18,7 @@ import { TruthLabel } from '../../components/TruthLabel';
 import type { Ship } from '../../domain/schema';
 import { useKb } from '../../kb/context';
 import { force2d, hasWebGL, useIsMobile, useReducedMotion } from '../../lib/preferences';
-import { isFamilyId } from '../../scene/artifacts/families';
+import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { sceneCrew, screenLines, type SceneMember } from '../../scene/crew';
 import { ShipScene } from '../../scene/ShipScene';
@@ -361,9 +361,9 @@ export function BoardTour({ ship, reduced, quality, lite, sound, onSound, onSkip
 /** The crew as chips; a click walks you to that member's station. */
 function CrewChips({ crew, onPick, met }: { crew: readonly SceneMember[]; onPick: (id: string) => void; met?: ReadonlySet<string> }) {
   return (
-    <div className="world-chips" role="list" aria-label="Crew aboard">
+    <div className="world-chips" role="group" aria-label="Crew aboard">
       {crew.map((m) => (
-        <button key={m.id} type="button" role="listitem" className="world-chip ship-crew-chip" data-met={met?.has(m.id) || undefined} style={{ ['--c' as string]: m.pigment } as CSSProperties} onClick={() => onPick(m.id)} title={`${m.role.title}: walk me there`}>
+        <button key={m.id} type="button" className="world-chip ship-crew-chip" data-met={met?.has(m.id) || undefined} style={{ ['--c' as string]: m.pigment } as CSSProperties} onClick={() => onPick(m.id)} title={`${m.role.title}: walk me there`}>
           <span className="ship-chip-dot num" aria-hidden="true">
             {m.station}
           </span>

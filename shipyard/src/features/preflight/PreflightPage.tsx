@@ -19,11 +19,11 @@ import { fixTarget } from './fix';
 import { HullDiagram } from './HullDiagram';
 import { StatusMark } from './StatusMark';
 
-function FixLink({ shipId, check, finding, ship }: { shipId: string; check: Check; finding: Finding; ship: Ship }) {
+function FixLink({ shipId, check, finding, ship, primary }: { shipId: string; check: Check; finding: Finding; ship: Ship; primary?: boolean }) {
   const target = fixTarget(shipId, check, finding, (id) => ship.crew.find((m) => m.id === id)?.character.name ?? id);
   if (!target) return null;
   return (
-    <Link className="btn btn-quiet pf-fix" to={target.to} data-testid="fix-link">
+    <Link className={`btn ${primary ? 'btn-primary' : 'btn-quiet'} pf-fix`} to={target.to} data-testid="fix-link">
       {target.label}
     </Link>
   );
@@ -195,7 +195,8 @@ export default function PreflightPage() {
               <StatusMark status={next.status} /> <span className="pf-id">{next.id}</span> {next.reason}
             </p>
             <div className="pf-goal-actions">
-              {nextFinding && <FixLink shipId={ship.id} check={next} finding={nextFinding} ship={ship} />}
+              {/* a blocker makes its fix the screen's one primary; Export is off until then (simplicity brief: one primary, one next goal) */}
+              {nextFinding && <FixLink shipId={ship.id} check={next} finding={nextFinding} ship={ship} primary={!report.canExport} />}
               <p className="prose-sm">{report.canExport ? 'A warning does not stop an export.' : 'Export stays off until this is fixed.'}</p>
             </div>
           </>

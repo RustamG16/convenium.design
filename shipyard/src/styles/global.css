@@ -7,6 +7,9 @@
 html {
   color-scheme: dark;
   -webkit-text-size-adjust: 100%;
+  /* WCAG 2.4.11: a focused control scrolls into view clear of the sticky header (top) and the phone bottom sheet / tab handle (bottom). */
+  scroll-padding-top: calc(var(--header-h) + var(--s4));
+  scroll-padding-bottom: max(72px, var(--toast-space, 0px));
 }
 
 body {

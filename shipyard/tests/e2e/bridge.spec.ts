@@ -219,3 +219,27 @@ test('360 phone: the rack is a bottom sheet and the equip completes', async ({ p
   expect(overflow).toBeLessThanOrEqual(0);
   await page.screenshot({ path: resolve(SHOTS, 't6-bridge-360.png') });
 });
+
+test('required state: an artifact whose skill left the library is a greyed Retired chip, kept until removed, and Remove is undoable', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await cloneFrom(page, 'captain');
+  // Rewrite the saved clone so the captain's last worn artifact names a skill that is not in the registry, then reload.
+  await page.evaluate(() => {
+    const key = 'convenium.shipyard.v1';
+    const p = JSON.parse(window.localStorage.getItem(key)!);
+    const worn = p.ships.find((s: { id: string }) => s.id === 'ss-full-run-copy').crew[0].loadout;
+    worn[worn.length - 1].skill = 'skill-that-left-the-registry';
+    window.localStorage.setItem(key, JSON.stringify(p));
+  });
+  await page.goto('/?2d#/ship/ss-full-run-copy/bridge?member=captain');
+  const list = page.getByTestId('retired-list');
+  await expect(list).toContainText('Retired');
+  await expect(list).toContainText('skill-that-left-the-registry');
+  await expect(page.locator('.socket[data-retired]')).toHaveCount(1);
+  await expect(page.getByTestId('rack-count')).toContainText('9 of 9');
+  await list.getByTestId('retired-remove').click();
+  await expect(list).toHaveCount(0);
+  await expect(page.getByTestId('rack-count')).toContainText('8 of 9');
+  await page.getByTestId('notice-undo').click();
+  await expect(page.getByTestId('retired-list')).toContainText('skill-that-left-the-registry');
+});

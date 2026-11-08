@@ -12,7 +12,7 @@ import { isLibraryShip, LIBRARY_EPOCH, libraryShips } from '../../domain/ship';
 import { useKb } from '../../kb/context';
 import { useDispatch, useStoreState } from '../../store/context';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
-import { isFamilyId } from '../../scene/artifacts/families';
+import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { isReducedMotion, MOTION, noteDrop, recordMotion, EASE_CSS } from '../../lib/motion';
 import { useNotify } from '../shared/notices';
 

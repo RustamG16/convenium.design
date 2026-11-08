@@ -2,7 +2,7 @@
 // stroke, the family pigment as a 0.2 fill. Decorative: the artifact's name carries the meaning,
 // so each glyph is aria-hidden and sits beside text.
 import type { ReactNode } from 'react';
-import type { FamilyId } from './families';
+import type { FamilyId } from './familyIds';
 
 const SHAPES: Record<FamilyId, ReactNode> = {
   // faceted lens in a ring

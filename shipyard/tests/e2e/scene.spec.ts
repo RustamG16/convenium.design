@@ -178,7 +178,7 @@ test('boarding walk: runs on SS Full Run, crew at their stations, walks to the p
   const intro = page.getByTestId('ship-intro');
   await expect(intro).toBeVisible();
   await expect(intro).toHaveAttribute('data-waypoint', 'airlock');
-  await expect(page.getByTestId('boarding').getByRole('listitem')).toHaveCount(7);
+  await expect(page.getByTestId('boarding').getByRole('group', { name: 'Crew aboard' }).getByRole('button')).toHaveCount(7);
   await expect(page.locator('[data-testid="ship-intro"] canvas')).toHaveCount(1);
   // The kit and the crew load; the canvas is not blank.
   await expect.poll(async () => p.glb.filter((g) => g.url.includes('/media/ship-kit/')).length, { timeout: 120_000 }).toBeGreaterThan(8);

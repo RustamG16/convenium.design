@@ -196,7 +196,7 @@ export function BoneArtifacts({ member, clone, animate }: { member: SceneMember;
 }
 
 /** Orbit radius and height over the head (T6, director defect 2): tighter than the registry's 0.45 m at +0.1 m, so the pair reads as gear beside the crown, not saucers across the room. */
-export const ORBIT_RADIUS = 0.34;
+export const ORBIT_RADIUS = 0.4;
 export const ORBIT_LIFT = 0.2;
 
 /**
@@ -213,7 +213,8 @@ export function OrbitArtifacts({ member, heightM, animate }: { member: SceneMemb
   useFrame((_, dt) => {
     if (animate) angle.current += ACTIVE_RPS * Math.PI * 2 * dt;
     if (ring.current) ring.current.rotation.y = angle.current;
-    for (const f of facing.current) if (f) f.rotation.y = -angle.current;
+    // keeps toward the viewer within +-0.8 rad: enough turn that the mesh reads as an object, never edge-on
+    for (const f of facing.current) if (f) f.rotation.y = -angle.current + (animate ? 0.8 * Math.sin(angle.current * 2) : 0.5);
   });
   if (orbiters.length === 0) return null;
   return (

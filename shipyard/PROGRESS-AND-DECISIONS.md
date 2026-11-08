@@ -242,3 +242,58 @@ Rule enforced on every screen: one filled primary, one next goal, at most two le
 | Defects 1-5, C | see above | | |
 
 New e2e: `tests/e2e/simplicity.spec.ts` (one primary per screen on seven screens, sub-nav, clone-on-edit x2, compare strip, no clipped titles, Hangar first viewport, Voyage wrap at 1440 and 390, Controls disclosure, Profile disclosure, turntable size, Files group). `tests/e2e/finish-shots.spec.ts` writes the evidence images only when `SHOT_TAG` is set.
+
+## T13 — author QA (2026-11-08)
+
+**Who ran it.**
+- The design-engineer subagent started the pass on 2026-11-06 and captured most screens.
+- The session broke and the agent stopped with its fixes uncommitted.
+- The director finished the pass in the main session. That follows the owner's standing rule
+  (2026-11-06): one session builds, and subagents only read and review.
+- **Deviation from the run plan**, whose `author-qa` row names a sonnet design-engineer: the build
+  model for this phase became opus. The finish review stays an independent read-only subagent.
+
+**Report:** `plan/07-qa.md`. Evidence is in `plan/qa-screens/qa/`, with measurements in
+`results.json`. **Fix cycles: 1 of 2.**
+
+**Decisions**
+- **Pre-flight BLOCK word.** chili-soft is 4.24:1 on the raised panel, which fails at 12px. The
+  word is now cotton and the red stays in the 16px cross. Status is still a word plus a shape.
+- **Initial shell.** The Equip layer imported `isFamilyId` from `families.ts`, which imports three
+  at runtime, so three.core was in the first load (310.6 KB of the 300 KB budget). Ids moved to a
+  three-free `scene/artifacts/familyIds.ts`, re-exported by `families.ts`. Initial JS is now
+  209.7 KB gzip.
+- **Pre-flight primary.** While export is blocked, the next goal's Fix link is the one filled
+  primary and Copy kickoff prompt goes quiet (simplicity rule: one primary, one next goal). Tested
+  in `preflight.spec.ts`.
+- **Retired artifact (DESIGN.md required state).** Before: an unringed "?" with the word visible
+  only on selection. Now: a dotted greyed socket, plus a rack line "RETIRED `skill-id` left the
+  library", with Remove (undoable). Tested in `bridge.spec.ts`.
+- **Commission toast.** It stays until dismissed (ethics gate), so it must never cover a control.
+  While it is up, it sets `--toast-space` from its measured height, the body keeps that free at
+  its foot, and `scroll-padding-bottom` grows to match. It had covered Recruit; three journeys
+  failed on it.
+- **Detector.** The stripe borders became a full outline and a phase dot. The phone rack sheet's
+  height transition is kept, with an inline waiver and its reason: the sheet is `position: fixed`,
+  so nothing reflows. The detector reports 0 findings.
+- **Kept from the stopped agent's work:**
+  - the Hangar camera fit (`Fit`, ring centred and whole);
+  - artifact pose scales (held 1.2, worn 0.95, floating 1.7, crown 0.7), with rims on floating
+    artifacts and orbit radius 0.4 m;
+  - Voyage with no empty inspector until something is picked;
+  - template guards on the Voyage inspector (G2);
+  - full sockets dimmed while carrying an artifact (R4);
+  - the compare strip naming the checks that actually got worse;
+  - the crew chips as a labelled button group (an axe fix; `scene.spec.ts` updated to match);
+  - WCAG 2.4.11 scroll padding and the `focusin` scroll for dialogs.
+- **QA harness** (`tests/e2e/qa-run.spec.ts`, skipped without `QA_RUN`). Fixed its own defects:
+  - an impossible 10-item seed;
+  - waits with no timeout;
+  - one page reused across widths, so states now run one width per call via `QA_STATE_WIDTH`;
+  - states captured in `?2d`;
+  - the undo step dropped, because it is asserted elsewhere and was checked by hand.
+
+**Not done or not measured**
+- Foreground frame rate on the real GPU: no foreground browser was available.
+- One blank Hangar canvas in the hidden pane under GPU load: seen once, not reproduced.
+- Bridge orbit artifacts are large beside the head: left for the critic.

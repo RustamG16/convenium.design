@@ -20,8 +20,10 @@ export interface FleetItem {
 
 const RING_RADIUS = 3.4;
 /** Hull length in scene units; the camera is set so a hull seen side-on fills about 80% of the stage width. */
-const HULL_LENGTH = 3.6;
-const RING_Y = -0.5;
+const HULL_LENGTH = 3.9;
+const RING_Y = -0.42;
+const LOOK_Y = -0.3;
+const FIT_WIDTH = 4.5; // scene units that must stay in frame: the ring plus a margin, so it is never cut off
 
 function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment: string; spin: boolean; focused: boolean; onPick: () => void }) {
   const { scene } = useGLTF(withBase(`/media/ships/${hull}.glb`));
@@ -62,12 +64,29 @@ function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment:
       </group>
       {focused && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, RING_Y, 0]}>
-          <ringGeometry args={[1.95, 2.0, 96]} />
+          <ringGeometry args={[1.97, 2.02, 96]} />
           <meshBasicMaterial color={pigment} toneMapped={false} />
         </mesh>
       )}
     </group>
   );
+}
+
+/** Keeps the ring and hull centred and fully in frame at any stage aspect: the camera backs off only as far as it must. */
+function Fit() {
+  const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
+  const size = useThree((s) => s.size);
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    const aspect = size.width / Math.max(1, size.height);
+    const half = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const dist = Math.max(4.6, FIT_WIDTH / aspect / (2 * half));
+    camera.position.set(0, 1.25 * (dist / 6.4), dist);
+    camera.lookAt(0, LOOK_Y, 0);
+    camera.updateProjectionMatrix();
+    invalidate();
+  }, [camera, size.width, size.height, invalidate]);
+  return null;
 }
 
 function Ring({ ships, focusId, reduced, onPick }: { ships: FleetItem[]; focusId: string | null; reduced: boolean; onPick: (id: string) => void }) {
@@ -115,7 +134,7 @@ export default function FleetRing({ ships, focusId, reduced, onPick, onContextLo
         gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
         onCreated={({ gl, scene, camera }) => {
           if (import.meta.env.DEV) (window as unknown as { __fleet?: unknown }).__fleet = { scene, camera };
-          camera.lookAt(0, -0.15, 0);
+          camera.lookAt(0, LOOK_Y, 0);
           gl.domElement.addEventListener('webglcontextlost', (e) => {
             e.preventDefault();
             onContextLost?.();
@@ -129,6 +148,7 @@ export default function FleetRing({ ships, focusId, reduced, onPick, onContextLo
         </Environment>
         <hemisphereLight args={['#fff6ea', '#2a2320', 2]} />
         <directionalLight position={[2, 4, 3]} intensity={3} />
+        <Fit />
         <Ring ships={ships} focusId={focusId} reduced={reduced} onPick={onPick} />
       </Canvas>
     </div>

@@ -6,7 +6,7 @@ import type { Ship } from '../../domain/schema';
 import type { KbIndex } from '../../kb/artifacts';
 import type { KbSkill } from '../../kb/schema';
 import { MOTION } from '../../lib/motion';
-import { isFamilyId } from '../../scene/artifacts/families';
+import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { useNotify } from '../shared/notices';
 import { useArtifactHandlers, useEquip } from './equip';

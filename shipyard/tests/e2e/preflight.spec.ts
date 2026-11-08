@@ -202,8 +202,11 @@ test.describe('a ship with a blocker', () => {
     await page.getByTestId('only-problems').click();
     await expect(page.getByTestId('check-row')).toHaveCount(1);
 
-    // Fix jumps to the bridge for that member.
+    // Fix jumps to the bridge for that member. While export is blocked the fix is the screen's one filled primary.
     const fix = page.getByTestId('next-goal').getByTestId('fix-link');
+    await expect(fix).toHaveClass(/btn-primary/);
+    await expect(page.getByTestId('copy-kickoff')).not.toHaveClass(/btn-primary/);
+    await expect(page.locator('main .btn-primary:visible')).toHaveCount(1);
     await expect(fix).toHaveAttribute('href', `#/ship/${shipId}/bridge?member=${member}`);
     await fix.click();
     await expect(page).toHaveURL(new RegExp(`#/ship/${shipId}/bridge\\?member=${member}$`));

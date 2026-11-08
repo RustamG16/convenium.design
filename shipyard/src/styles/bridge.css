@@ -48,6 +48,7 @@ textarea.field { min-height: 88px; resize: vertical; }
 .socket[data-active] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 55%, transparent); }
 .socket[aria-pressed='true'] { outline: 2px solid var(--cotton); outline-offset: 2px; }
 .socket[data-droppable] { border-color: var(--cotton); }
+.socket[data-droppable][data-full]:not([data-hover]) { opacity: 0.4; border-style: dashed; } /* R4: no free place for the carried artifact; a drop swaps */
 .socket[data-hover] { background: var(--raised); outline: 3px solid var(--cotton); outline-offset: 2px; }
 @media (pointer: coarse) { .socket { width: var(--socket-touch); height: var(--socket-touch); margin: calc(var(--socket-touch) / -2) 0 0 calc(var(--socket-touch) / -2); } }
 .socket-plus { font-size: 20px; line-height: 1; }
@@ -61,9 +62,10 @@ textarea.field { min-height: 88px; resize: vertical; }
 .hold-chip { display: inline-flex; align-items: center; gap: var(--s2); min-height: var(--hit); padding: 0 var(--s3); background: var(--bg); border: 1px dashed color-mix(in srgb, var(--c, var(--muted)) 60%, transparent); border-radius: var(--r-pill); font-size: 13px; touch-action: pan-y; user-select: none; }
 .rack-handle { display: none; }
 
-/* < 768: the rack is a bottom sheet, snaps 40% / 92% (peek is the closed state) */
+/* < 768: the rack is a bottom sheet, snaps 40% / 92% (peek is the closed state). The height transition is kept on purpose: the sheet is position: fixed, so resizing it reflows nothing, it runs 240 ms on a tap only, and a transform would leave the lower part of the rack (and focus in it) off screen at the 40% snap. */
 @media (max-width: 767px) {
   .page.ship-page { padding-bottom: 104px; }
+  /* impeccable-disable-next-line layout-transition -- fixed-position sheet: a height change reflows nothing; a transform would leave the rack and its focus off screen at the 40% snap */
   .rack-sheet { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; height: 44px; max-height: 92dvh; overflow: hidden; background: var(--surface); border-top: 1px solid var(--border); border-radius: 16px 16px 0 0; display: flex; flex-direction: column; transition: height var(--t-panel) var(--ease); }
   .rack-sheet[data-snap='mid'] { height: 40dvh; }
   .rack-sheet[data-snap='full'] { height: 92dvh; }
@@ -108,3 +110,10 @@ textarea.field { min-height: 88px; resize: vertical; }
 .card-actions { align-items: stretch; }
 .import-problems { padding: var(--s3); border: 1px solid var(--chili-soft); border-radius: var(--r-control); }
 .class-badge { border-color: color-mix(in srgb, var(--c, var(--border)) 60%, transparent); }
+
+/* Required state: an artifact whose skill left the registry. Greyed, dotted, named "Retired" in words, kept until removed. */
+.socket[data-retired] { border: 2px dotted var(--muted); color: var(--muted); background: var(--surface); }
+.retired-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+.retired-list li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); font-size: 13px; color: var(--muted); }
+.retired-list code { color: var(--cotton); overflow-wrap: anywhere; }
+.retired-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 var(--s2); border: 1px dotted var(--muted); border-radius: var(--r-pill); font-size: var(--label); font-weight: 600; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--muted); }

@@ -1,0 +1,533 @@
+{
+ "shots-1440": {
+  "axe": {
+   "hangar": [],
+   "board": [],
+   "bridge-captain": [],
+   "bridge-engineer": [],
+   "bridge-custom": [],
+   "armory-noship": [],
+   "armory-custom": [],
+   "voyage": [],
+   "voyage-picked": [],
+   "preflight-clean": [],
+   "preflight-blocked": [],
+   "logbook": [],
+   "commission": []
+  },
+  "overflow": {
+   "hangar": 0,
+   "board": 0,
+   "bridge-captain": 0,
+   "bridge-engineer": 0,
+   "bridge-custom": 0,
+   "armory-noship": 0,
+   "armory-custom": 0,
+   "voyage": 0,
+   "voyage-picked": 0,
+   "preflight-clean": 0,
+   "preflight-blocked": 0,
+   "logbook": 0,
+   "commission": 0
+  },
+  "console": {
+   "hangar": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: [.WebGL-0x31e400420800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x31e400420800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x31e400420800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x31e400420800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+   ],
+   "board": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-captain": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-engineer": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-custom": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "armory-custom": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "commission": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ]
+  }
+ },
+ "shots-1024": {
+  "axe": {
+   "hangar": [],
+   "board": [],
+   "bridge-captain": [],
+   "bridge-engineer": [],
+   "bridge-custom": [],
+   "armory-noship": [],
+   "armory-custom": [],
+   "voyage": [],
+   "voyage-picked": [],
+   "preflight-clean": [],
+   "preflight-blocked": [],
+   "logbook": [],
+   "commission": []
+  },
+  "overflow": {
+   "hangar": 0,
+   "board": 0,
+   "bridge-captain": 0,
+   "bridge-engineer": 0,
+   "bridge-custom": 0,
+   "armory-noship": 0,
+   "armory-custom": 0,
+   "voyage": 0,
+   "voyage-picked": 0,
+   "preflight-clean": 0,
+   "preflight-blocked": 0,
+   "logbook": 0,
+   "commission": 0
+  },
+  "console": {
+   "hangar": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "board": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-captain": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-engineer": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-custom": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "armory-custom": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "commission": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ]
+  }
+ },
+ "shots-390": {
+  "axe": {
+   "hangar": [],
+   "board": [],
+   "bridge-captain": [],
+   "bridge-engineer": [],
+   "bridge-custom": [],
+   "armory-noship": [],
+   "armory-custom": [],
+   "voyage": [],
+   "voyage-picked": [],
+   "preflight-clean": [],
+   "preflight-blocked": [],
+   "logbook": [],
+   "commission": []
+  },
+  "overflow": {
+   "hangar": 0,
+   "board": 0,
+   "bridge-captain": 0,
+   "bridge-engineer": 0,
+   "bridge-custom": 0,
+   "armory-noship": 0,
+   "armory-custom": 0,
+   "voyage": 0,
+   "voyage-picked": 0,
+   "preflight-clean": 0,
+   "preflight-blocked": 0,
+   "logbook": 0,
+   "commission": 0
+  },
+  "console": {
+   "hangar": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "board": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-captain": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-engineer": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-custom": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "armory-custom": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "commission": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ]
+  }
+ },
+ "shots-360": {
+  "axe": {
+   "hangar": [],
+   "board": [],
+   "bridge-captain": [],
+   "bridge-engineer": [],
+   "bridge-custom": [],
+   "armory-noship": [],
+   "armory-custom": [],
+   "voyage": [],
+   "voyage-picked": [],
+   "preflight-clean": [],
+   "preflight-blocked": [],
+   "logbook": [],
+   "commission": []
+  },
+  "overflow": {
+   "hangar": 0,
+   "board": 0,
+   "bridge-captain": 0,
+   "bridge-engineer": 0,
+   "bridge-custom": 0,
+   "armory-noship": 0,
+   "armory-custom": 0,
+   "voyage": 0,
+   "voyage-picked": 0,
+   "preflight-clean": 0,
+   "preflight-blocked": 0,
+   "logbook": 0,
+   "commission": 0
+  },
+  "console": {
+   "hangar": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "board": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-captain": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-engineer": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "bridge-custom": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "armory-custom": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "commission": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ]
+  }
+ },
+ "focus-1440": {
+  "hangar": {
+   "stops": 44,
+   "problems": []
+  },
+  "board": {
+   "stops": 44,
+   "problems": []
+  },
+  "bridge": {
+   "stops": 44,
+   "problems": []
+  },
+  "armory": {
+   "stops": 60,
+   "problems": []
+  },
+  "voyage": {
+   "stops": 45,
+   "problems": []
+  },
+  "preflight": {
+   "stops": 43,
+   "problems": []
+  },
+  "logbook": {
+   "stops": 42,
+   "problems": []
+  }
+ },
+ "focus-1440-bridge,armory": {
+  "bridge": {
+   "stops": 44,
+   "problems": []
+  },
+  "armory": {
+   "stops": 60,
+   "problems": []
+  }
+ },
+ "focus-360": {
+  "hangar": {
+   "stops": 44,
+   "problems": []
+  },
+  "board": {
+   "stops": 43,
+   "problems": []
+  },
+  "bridge": {
+   "stops": 44,
+   "problems": []
+  },
+  "armory": {
+   "stops": 60,
+   "problems": []
+  },
+  "voyage": {
+   "stops": 45,
+   "problems": []
+  },
+  "preflight": {
+   "stops": 43,
+   "problems": []
+  },
+  "logbook": {
+   "stops": 42,
+   "problems": []
+  }
+ },
+ "focus-360-armory,voyage": {
+  "armory": {
+   "stops": 60,
+   "problems": []
+  },
+  "voyage": {
+   "stops": 45,
+   "problems": []
+  }
+ },
+ "focus-1024": {
+  "hangar": {
+   "stops": 44,
+   "problems": []
+  },
+  "board": {
+   "stops": 44,
+   "problems": []
+  },
+  "bridge": {
+   "stops": 44,
+   "problems": []
+  },
+  "armory": {
+   "stops": 60,
+   "problems": []
+  },
+  "voyage": {
+   "stops": 45,
+   "problems": []
+  },
+  "preflight": {
+   "stops": 43,
+   "problems": []
+  },
+  "logbook": {
+   "stops": 42,
+   "problems": []
+  }
+ },
+ "focus-390": {
+  "hangar": {
+   "stops": 44,
+   "problems": []
+  },
+  "board": {
+   "stops": 43,
+   "problems": []
+  },
+  "bridge": {
+   "stops": 44,
+   "problems": []
+  },
+  "armory": {
+   "stops": 60,
+   "problems": []
+  },
+  "voyage": {
+   "stops": 45,
+   "problems": []
+  },
+  "preflight": {
+   "stops": 43,
+   "problems": []
+  },
+  "logbook": {
+   "stops": 42,
+   "problems": []
+  }
+ },
+ "nowebgl": {
+  "none-hangar-1440": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 0,
+   "bodyText": 2183
+  },
+  "none-board-1440": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1514
+  },
+  "none-bridge-1440": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1489
+  },
+  "none-armory-detail-1440": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 2829
+  },
+  "console-none-1440": {},
+  "none-hangar-360": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 0,
+   "bodyText": 2183
+  },
+  "none-board-360": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1542
+  },
+  "none-bridge-360": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1517
+  },
+  "none-armory-detail-360": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1544
+  },
+  "console-none-360": {},
+  "lost-hangar-1440": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 0,
+   "bodyText": 2183
+  },
+  "lost-board-1440": {
+   "canvases": 1,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1514
+  },
+  "lost-bridge-1440": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1489
+  },
+  "lost-armory-detail-1440": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 2829
+  },
+  "console-lost-1440": {
+   "lost-hangar": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: [.WebGL-0x68c00424400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x68c00424400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x68c00424400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x68c00424400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "warning: THREE.WebGLRenderer: WEBGL_lose_context extension not supported."
+   ],
+   "lost-board": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.WebGLRenderer: WEBGL_lose_context extension not supported.",
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "lost-bridge": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.WebGLRenderer: WEBGL_lose_context extension not supported."
+   ],
+   "lost-armory-detail": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.WebGLRenderer: WEBGL_lose_context extension not supported."
+   ]
+  },
+  "lost-hangar-360": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 0,
+   "bodyText": 2183
+  },
+  "lost-board-360": {
+   "canvases": 1,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1542
+  },
+  "lost-bridge-360": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1517
+  },
+  "lost-armory-detail-360": {
+   "canvases": 0,
+   "main": true,
+   "anchors": 9,
+   "bodyText": 1544
+  },
+  "console-lost-360": {
+   "lost-hangar": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.WebGLRenderer: WEBGL_lose_context extension not supported."
+   ],
+   "lost-board": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.WebGLRenderer: WEBGL_lose_context extension not supported.",
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+   ],
+   "lost-bridge": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.WebGLRenderer: WEBGL_lose_context extension not supported."
+   ],
+   "lost-armory-detail": [
+    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
+    "warning: THREE.WebGLRenderer: WEBGL_lose_context extension not supported."
+   ]
+  }
+ },
+ "states-360": {
+  "empty blank ship": "visible",
+  "retired chip": "1",
+  "export blocked": "Blocked. Export is blocked by PF-03: Stage dna opens product-marketing, but Mira Sondh is not wearing it. Equip it first.",
+  "undo toast": "asserted in bridge.spec.ts, motion.spec.ts and voyage.spec.ts; checked by hand 2026-11-08",
+  "export blocked (PF-03)": "Blocked. Export is blocked by PF-03: Stage run-plan opens olympus-design-director, but Captain Oddvar Quill is not wearing it. Equip it first.",
+  "stale kb": "Library changed since this ship was saved. It was saved against deadbeef; the library is now 02a7ecac. None of its equipped skills has left the library; re-check its stages.",
+  "import invalid": "Not imported. This file is not a usable run.json:phase_counts: Invalid input: expected record, received stringtarget_project: Invalid input: expected string, re",
+  "loading kb 360": "Loading the library…",
+  "storage unavailable 360": "Browser storage is unavailable: ships last for this session only. Export a ship to keep it."
+ },
+ "states-1440": {
+  "empty blank ship": "visible",
+  "retired chip": "1",
+  "export blocked": "Blocked. Export is blocked by PF-03: Stage dna opens product-marketing, but Mira Sondh is not wearing it. Equip it first.",
+  "undo toast": "asserted in bridge.spec.ts, motion.spec.ts and voyage.spec.ts; checked by hand 2026-11-08",
+  "export blocked (PF-03)": "Blocked. Export is blocked by PF-03: Stage run-plan opens olympus-design-director, but Captain Oddvar Quill is not wearing it. Equip it first.",
+  "stale kb": "Library changed since this ship was saved. It was saved against deadbeef; the library is now 02a7ecac. None of its equipped skills has left the library; re-check its stages.",
+  "import invalid": "Not imported. This file is not a usable run.json:phase_counts: Invalid input: expected record, received stringtarget_project: Invalid input: expected string, re",
+  "loading kb 1440": "Loading the library…",
+  "storage unavailable 1440": "Browser storage is unavailable: ships last for this session only. Export a ship to keep it."
+ }
+}

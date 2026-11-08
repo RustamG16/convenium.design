@@ -8,7 +8,7 @@ import type { KbSkill } from '../../kb/schema';
 import { Flip, gsap, useGSAP } from '../../lib/gsap';
 import { easeDefault, isReducedMotion, MOTION, recordMotion } from '../../lib/motion';
 import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
-import { isFamilyId } from '../../scene/artifacts/families';
+import { isFamilyId } from '../../scene/artifacts/familyIds';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { useStoreState } from '../../store/context';
 import { useNotify } from '../shared/notices';
