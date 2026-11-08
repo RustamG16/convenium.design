@@ -13,7 +13,8 @@ const AT = '2026-11-08T00:00:00.000Z';
 describe('n1: the focused hull keeps its size', () => {
   it('never needs more than HULL_LENGTH / MIN_FOCUS_FILL of width, whatever the fleet size', () => {
     for (let n = 2; n <= 9; n++) expect(fitWidth(n)).toBeLessThanOrEqual(3.9 / MIN_FOCUS_FILL + 1e-9);
-    expect(fitWidth(1)).toBe(4.5);
+    // one ship: the focus ring (2 × 2.3) and a margin always fit (finish review v2, m1)
+    expect(fitWidth(1)).toBeGreaterThan(2 * 2.3 + 1);
   });
 });
 

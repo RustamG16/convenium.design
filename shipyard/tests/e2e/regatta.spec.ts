@@ -21,6 +21,11 @@ test('a two-ship dry regatta: course, results, labels, and an honest board', asy
   await expect(page.getByTestId('rg-results')).toBeVisible();
   await expect(page.getByTestId('rg-lane-total')).toHaveCount(2);
   await expect(page.getByTestId('rg-winner')).toContainText('SS Mobile Retrofit wins the dry run with 93.6 of 100');
+  // the result is said where the race is, and the course marks the winner in words (review v2, M3/M5)
+  await expect(page.getByTestId('rg-head-winner')).toContainText('SS Mobile Retrofit wins with 93.6 of 100');
+  await expect(page.getByTestId('rg-head-winner')).toBeFocused();
+  await expect(page.getByTestId('rg-lane-winner')).toHaveCount(1);
+  await expect(page.locator('[data-testid="rg-lane"][data-winner]')).toHaveAttribute('data-ship', 'ss-mobile-retrofit');
   await expect(page.getByTestId('rg-results')).toContainText('Simulated');
   const table = page.getByTestId('rg-table');
   await expect(table.locator('tbody tr')).toHaveCount(7); // six criteria and the total
@@ -83,4 +88,27 @@ test('a ship can be sent to the Regatta from its menu', async ({ page }) => {
   await page.getByTestId('to-regatta').click();
   await expect(page).toHaveURL(/#\/regatta\?ships=ss-full-run/);
   await expect(page.locator('[data-testid="rg-ship"][data-ship="ss-full-run"] input')).toBeChecked();
+});
+
+test('a tuned copy against its parent: the dry run says it cannot judge tuning (review v2, M1 and m7)', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/#/ship/ss-full-run/bridge?member=engineer');
+  await page.getByTestId('tune').click();
+  await page.getByTestId('clone-confirm').click();
+  await expect(page).toHaveURL(/ss-full-run-copy\/bridge/);
+  await page.getByTestId('tune').click();
+  await page.getByTestId('tune-addendum').fill('Cite one concrete defect per rubric row.');
+  await page.getByTestId('tune-save').click();
+  await expect(page.getByTestId('tuning-judged')).toContainText('cannot read an addendum');
+  await page.getByTestId('ship-more').click();
+  await page.getByTestId('to-regatta').click();
+  // the copy sails against the ship it came from
+  await expect(page.locator('[data-testid="rg-ship"][data-ship="ss-full-run"] input')).toBeChecked();
+  await expect(page.locator('[data-testid="rg-ship"][data-ship="ss-full-run-copy"] input')).toBeChecked();
+  await page.locator('[data-testid="rg-brief"][data-brief="landing-refresh"] input').check();
+  await page.getByTestId('rg-start').click();
+  await page.getByTestId('rg-skip').click();
+  await expect(page.getByTestId('rg-head-winner')).toHaveAttribute('data-tuning-only', 'true');
+  await expect(page.getByTestId('rg-winner')).toContainText('No winner');
+  await expect(page.getByTestId('rg-lane-winner')).toHaveCount(0);
 });

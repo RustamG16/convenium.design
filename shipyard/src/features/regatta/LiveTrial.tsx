@@ -37,7 +37,7 @@ interface LiveResult {
   tokens: number | null;
   truth: 'Verified' | 'Unavailable';
   dir: string;
-  score: { total: number; criteria: Record<string, { points: number; max: number; why: string }> } | null;
+  score: { total: number; reported: { points: number; max: number }; criteria: Record<string, { points: number; max: number; why: string; source: 'measured' | 'reported' }> } | null;
 }
 
 interface LogLine {
@@ -170,6 +170,7 @@ function LiveTrialDialog({ ship, brief, onClose }: { ship: Ship; brief: Brief; o
             truth: 'Verified',
             total: Math.min(100, Math.max(0, result.score.total)),
             criteria: result.score.criteria,
+            reported: result.score.reported,
             kbHash: sailed.current.kbHash,
             shipHash: sailed.current.shipHash,
             durationMs: Math.max(0, Math.round(result.durationMs)),
@@ -257,7 +258,7 @@ function LiveTrialDialog({ ship, brief, onClose }: { ship: Ship; brief: Brief; o
                 </div>
               </dl>
               <p className="prose-sm">
-                The run works on a scratch copy of the <code>{brief.fixtureProject}</code> project in your temp folder, never in this repository. Claude Code runs with its own permission prompts; nothing is bypassed. It uses your Claude account and counts against its usage.
+                The run works on a scratch copy of the <code>{brief.fixtureProject}</code> project in your temp folder, never in this repository. One Claude Code session follows the ship&rsquo;s plan; the plan&rsquo;s per-agent tiers and addenda are written into it, not spawned as separate agents. Tools outside this list are refused; nothing is bypassed. It uses your Claude account and counts against its usage.
               </p>
               {!phase.available ? (
                 <p role="alert" className="import-problems" data-testid="rg-live-unavailable">
@@ -298,12 +299,17 @@ function LiveTrialDialog({ ship, brief, onClose }: { ship: Ship; brief: Brief; o
           {phase.at === 'finished' && (
             <div className="rg-live-result" data-testid="rg-live-result" data-saved={phase.saved || undefined}>
               {phase.result.score && phase.saved ? (
-                <p>
-                  Scored <strong className="num">{phase.result.score.total}</strong> of 100 <TruthLabel truth="Verified" detail="from the files the run left" />. Saved as a live trial record; it counts on the leaderboard.
-                </p>
+                <>
+                  <p>
+                    Scored <strong className="num">{phase.result.score.total}</strong> of 100 <TruthLabel truth="Verified" detail="measured by the dev server" />: the files the run left, verify.py on its plan, its tokens and how it ended. Saved as a live trial record; this number counts on the leaderboard.
+                  </p>
+                  <p className="muted prose-sm" data-testid="rg-live-reported">
+                    The run also says it covered <span className="num">{phase.result.score.reported.points}</span> of {phase.result.score.reported.max} points of needs and gates <TruthLabel truth="Model-reported" detail="from its own run.json" />. Shown, never counted.
+                  </p>
+                </>
               ) : (
                 <p>
-                  {phase.cancelled ? 'Cancelled. ' : ''}No record saved: the run left no <code>.olympus/run.json</code>, so there is nothing to verify. <TruthLabel truth="Unavailable" />
+                  {phase.cancelled ? 'Cancelled. ' : ''}No record saved: only a run that ends cleanly is scored, so ships are compared on finished runs. <TruthLabel truth="Unavailable" />
                 </p>
               )}
               <p className="muted prose-sm">

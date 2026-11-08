@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { ALLOWED_TOOLS, estimate, FORBIDDEN_FLAGS, scoreLive, tokensFrom, trialArgs } from '../../dev/trial';
+import { ALLOWED_TOOLS, estimate, FORBIDDEN_FLAGS, pickBin, scoreLive, tokensFrom, trialArgs } from '../../dev/trial';
 
 describe('the trial command line', () => {
   it('never carries a permission-bypass flag, and allows files and search only', () => {
@@ -12,6 +12,13 @@ describe('the trial command line', () => {
     expect(argv).toContain('--max-turns 12');
     expect(argv).toContain(`--allowedTools ${ALLOWED_TOOLS.join(',')}`);
     expect(ALLOWED_TOOLS).not.toContain('Bash');
+  });
+
+  it('on Windows picks the .exe, then the .cmd, never the extensionless npm shim', () => {
+    expect(pickBin(['C:/npm/claude', 'C:/npm/claude.cmd'], true)).toBe('C:/npm/claude.cmd');
+    expect(pickBin(['C:/npm/claude', 'C:/npm/claude.cmd', 'C:/bin/claude.exe'], true)).toBe('C:/bin/claude.exe');
+    expect(pickBin(['C:/npm/claude'], true)).toBeNull();
+    expect(pickBin(['/usr/local/bin/claude', ''], false)).toBe('/usr/local/bin/claude');
   });
 });
 
@@ -48,11 +55,24 @@ describe('scoreLive', () => {
     expect(s.criteria.preflight.points).toBe(20);
     expect(s.criteria.economy.points).toBe(10);
     expect(s.criteria.clarity.points).toBe(5);
-    expect(s.total).toBe(75);
+    // Verified = the measured criteria only (artifacts, pre-flight, economy, clarity: 42.5 of 50), scaled to 100
+    expect(s.total).toBe(85);
+    // what the run says about itself (coverage, gates) is kept apart and never counted
+    expect(s.reported).toEqual({ points: 32.5, max: 50 });
+    expect(s.criteria.coverage.source).toBe('reported');
+    expect(s.criteria.gates.source).toBe('reported');
+    expect(s.criteria.artifacts.source).toBe('measured');
+  });
+
+  it('a gate counts only when the run says it passed, not on any word', () => {
+    writeFileSync(join(dir, '.olympus', 'run.json'), JSON.stringify({ phase_counts: {}, gate_c: 'skipped by headless mode' }));
+    expect(scoreLive(dir, brief, { high: 1000 }, 0, 800, true).criteria.gates.points).toBe(0);
   });
 
   it('reads token use from the stream-json result message only', () => {
     expect(tokensFrom({ type: 'result', usage: { input_tokens: 10, output_tokens: 5 } })).toBe(15);
+    // cache reads are not counted
+    expect(tokensFrom({ type: 'result', usage: { input_tokens: 10, output_tokens: 5, cache_read_input_tokens: 9000 } })).toBe(15);
     expect(tokensFrom({ type: 'assistant' })).toBeNull();
   });
 });

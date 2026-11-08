@@ -145,7 +145,7 @@ export function simulate(ship: Ship, brief: Brief, idx: KbIndex): DryTrial {
   const criteria: TrialScore['criteria'] = {
     coverage: { points: round1(35 * coverageFrac), max: 35, why: missingNeeds.length || offPhase.length ? `${brief.needs.length - missingNeeds.length} of ${brief.needs.length} needs met${offPhase.length ? `, ${offPhase.length} in another phase (half credit)` : ''}` : `all ${brief.needs.length} needs met in their phase` },
     artifacts: { points: round1(15 * artifactsFrac), max: 15, why: missingArtifacts.length ? `missing ${missingArtifacts.join(', ')}` : `all ${req.length} required artifacts produced` },
-    gates: { points: round1(15 * gatesFrac), max: 15, why: missingGates.length ? `missing gate ${missingGates.join(', ')}` : `all ${brief.gates.length} gates held` },
+    gates: { points: round1(15 * gatesFrac), max: 15, why: missingGates.length ? `missing gate ${missingGates.join(', ')}` : brief.gates.length === 1 ? `gate ${brief.gates[0]} held` : `all ${brief.gates.length} gates held` },
     preflight: { points: round1(20 * pfFrac), max: 20, why: `${pf.passed} of ${pf.applicable} checks pass` },
     economy: { points: economy, max: 10, why: `${tier} tier points against a budget of ${brief.budget.tierPoints}` },
     clarity: { points: clarity, max: 5, why: idle || repeats ? [idle ? `${idle} crew without a stage` : '', repeats ? `${repeats} skill opened twice` : ''].filter(Boolean).join(', ') : 'every member has a stage; no skill opened twice' },

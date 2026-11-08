@@ -1,11 +1,12 @@
 /** Every number shown carries where it comes from (06 section 7.6; v2 adds Estimate and Model-judged). */
-export type Truth = 'Verified' | 'Simulated' | 'Estimate' | 'Model-judged' | 'User-reported' | 'Unavailable';
+export type Truth = 'Verified' | 'Simulated' | 'Estimate' | 'Model-judged' | 'Model-reported' | 'User-reported' | 'Unavailable';
 
 const MEANING: Record<Truth, string> = {
   Verified: 'Computed from the library or a file you exported',
   Simulated: 'A narrative or a curiosity count, not a measurement of skill',
   Estimate: 'A forecast from earlier runs or per-tier defaults, not a measurement',
   'Model-judged': 'Scored by a model (the independent critic); shown beside the total, never added to it',
+  'Model-reported': 'Written by the run about itself; shown beside the score, never counted or ranked',
   'User-reported': 'Pasted by you; not checked here',
   Unavailable: 'The source does not carry this number',
 };

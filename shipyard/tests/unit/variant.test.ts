@@ -86,3 +86,17 @@ describe('variant names', () => {
 it('the default ship still has stages (sanity for the tests above)', () => {
   expect(fresh().voyage.filter(isStage).length).toBeGreaterThan(0);
 });
+
+describe('onlyTuningDiffers (finish review v2, M1)', () => {
+  it('is true for a ship and its tuned copy, false for different voyages or identical ships', async () => {
+    const { onlyTuningDiffers } = await import('../../src/domain/variant');
+    const a = fresh();
+    const b = tune(fresh(), 'design-engineer', { addendum: 'Cite one concrete defect per row.' });
+    expect(onlyTuningDiffers([a, b])).toBe(true);
+    expect(onlyTuningDiffers([a, fresh()])).toBe(false);
+    const c = fresh();
+    c.voyage = c.voyage.slice(0, -1);
+    expect(onlyTuningDiffers([a, c])).toBe(false);
+    expect(onlyTuningDiffers([a])).toBe(false);
+  });
+});

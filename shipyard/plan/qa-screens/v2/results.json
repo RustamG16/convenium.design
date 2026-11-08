@@ -1,4 +1,9 @@
 {
+ "forge@1440": {
+  "overflow": 0,
+  "axe": [],
+  "console": []
+ },
  "regatta-setup@1440": {
   "overflow": 0,
   "axe": [],
@@ -9,10 +14,10 @@
   "axe": [],
   "console": [
    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
-   "warning: [.WebGL-0x320c0338f800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-   "warning: [.WebGL-0x320c0338f800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-   "warning: [.WebGL-0x320c0338f800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-   "warning: [.WebGL-0x320c0338f800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+   "warning: [.WebGL-0x2e6c00fcb000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+   "warning: [.WebGL-0x2e6c00fcb000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+   "warning: [.WebGL-0x2e6c00fcb000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+   "warning: [.WebGL-0x2e6c00fcb000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
   ]
  },
  "regatta-board@1440": {
@@ -29,16 +34,12 @@
    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
   ]
  },
- "forge@1440": {
-  "overflow": 0,
-  "axe": [],
-  "console": [],
-  "note": "retaken alone: the harness screenshot failed with a capture protocol error"
- },
  "bridge-tuning@1440": {
   "overflow": 0,
   "axe": [],
-  "console": []
+  "console": [
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
  },
  "hangar@1440": {
   "overflow": 0,
@@ -46,6 +47,18 @@
   "console": [
    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
   ]
+ },
+ "hangar-fleet@1440": {
+  "overflow": 0,
+  "axe": [],
+  "console": [
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
+ },
+ "forge@1024": {
+  "overflow": 0,
+  "axe": [],
+  "console": []
  },
  "regatta-setup@1024": {
   "overflow": 0,
@@ -73,16 +86,12 @@
    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
   ]
  },
- "forge@1024": {
-  "overflow": 0,
-  "axe": [],
-  "console": [],
-  "note": "retaken alone: the harness screenshot failed with a capture protocol error"
- },
  "bridge-tuning@1024": {
   "overflow": 0,
   "axe": [],
-  "console": []
+  "console": [
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
  },
  "hangar@1024": {
   "overflow": 0,
@@ -90,6 +99,18 @@
   "console": [
    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
   ]
+ },
+ "hangar-fleet@1024": {
+  "overflow": 0,
+  "axe": [],
+  "console": [
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
+ },
+ "forge@390": {
+  "overflow": 0,
+  "axe": [],
+  "console": []
  },
  "regatta-setup@390": {
   "overflow": 0,
@@ -117,15 +138,12 @@
    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
   ]
  },
- "forge@390": {
-  "overflow": 0,
-  "axe": [],
-  "console": []
- },
  "bridge-tuning@390": {
   "overflow": 0,
   "axe": [],
-  "console": []
+  "console": [
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
  },
  "hangar@390": {
   "overflow": 0,
@@ -133,6 +151,18 @@
   "console": [
    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
   ]
+ },
+ "hangar-fleet@390": {
+  "overflow": 0,
+  "axe": [],
+  "console": [
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
+ },
+ "forge@360": {
+  "overflow": 0,
+  "axe": [],
+  "console": []
  },
  "regatta-setup@360": {
   "overflow": 0,
@@ -160,17 +190,21 @@
    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
   ]
  },
- "forge@360": {
-  "overflow": 0,
-  "axe": [],
-  "console": []
- },
  "bridge-tuning@360": {
   "overflow": 0,
   "axe": [],
-  "console": []
+  "console": [
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
  },
  "hangar@360": {
+  "overflow": 0,
+  "axe": [],
+  "console": [
+   "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+  ]
+ },
+ "hangar-fleet@360": {
   "overflow": 0,
   "axe": [],
   "console": [

@@ -13,5 +13,5 @@
   "gates": ["C"],
   "constraints": ["no intake round", "keep the desktop design"],
   "budget": { "tierPoints": 11 },
-  "fixtureProject": "landing-mini"
+  "fixtureProject": "mobile-mini"
 }

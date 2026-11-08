@@ -10,7 +10,8 @@
 import { z } from 'zod';
 import { CRITERIA, type CriterionId, type DryTrial } from './trial';
 
-const criterionSchema = z.object({ points: z.number(), max: z.number(), why: z.string() });
+/** `source` (live only): 'measured' by the dev server, or 'reported' by the run about itself (never counted) */
+const criterionSchema = z.object({ points: z.number(), max: z.number(), why: z.string(), source: z.enum(['measured', 'reported']).optional() });
 
 export const trialRecordSchema = z.strictObject({
   id: z.string().min(1).max(64),
@@ -26,6 +27,8 @@ export const trialRecordSchema = z.strictObject({
   shipHash: z.string(),
   /** live only: the independent critic's score, labelled Model-judged, shown beside the total and never added to it */
   modelJudged: z.number().min(0).max(100).optional(),
+  /** live only: the points the run claims for itself in its run.json (needs and gates); Model-reported, never counted or ranked */
+  reported: z.object({ points: z.number().min(0), max: z.number().min(0) }).optional(),
   /** live only: the measured run duration, shown as a fact after the run */
   durationMs: z.number().int().min(0).optional(),
   tokens: z.number().int().min(0).optional(),

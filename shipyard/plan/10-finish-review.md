@@ -201,3 +201,189 @@ All four of the 07-qa claims I disputed are now corrected:
 - **Motion:** the active orbit at 0.25 rps, the resting items staying still, and the sticky bar while scrolling. Stills cannot show any of these.
 - **The Playwright 98/0/12 and phone 1/1 results.** I was told not to run them.
 - **m6 on screen:** there is no recaptured Retired state.
+
+
+# 10 — Finish review v2 (independent critic, award-rubric)
+
+**What the critic checked** (HEAD b39b42a, read-only):
+
+- **Read:**
+  - PRODUCT § v2, `12-build-plan-v2.md`, PROGRESS T15–T25, and 07-qa § v2 with `results.json`;
+  - all 30 PNGs in `qa-screens/v2/`;
+  - the code: `domain/{trial,regatta}.ts`, `dev/trial.ts`, `scene/Arena.tsx`,
+    `features/regatta/RegattaPage.tsx`, `TuningCard.tsx`, `hangar/FleetRing.tsx`, `ShipNav.tsx` and
+    `ethics.test.ts`.
+- **Re-ran:** `npm run typecheck` (clean) and `npx vitest run` (307/307).
+- **Drove the dev server** with one-off Playwright scripts:
+  - dry regattas at 1440 and 1024, timing the reveal and measuring the winner line's position;
+  - a Forge edit up to Preview only;
+  - the Hangar, full page;
+  - the nav at 390;
+  - the 3D Bridge;
+  - the phone results;
+  - clone → tune → "Trial in the Regatta" → race, twice: an addendum-only variant, and the critic
+    moved to haiku.
+- **Did not:**
+  - call apply, start or rebuild;
+  - run the Playwright suites, `verify.py` or a production build.
+
+(Transcribed by the director from the critic's report. The text is shortened only where it repeated
+the tables.)
+
+## 1. Verdict: **ship with fixes**
+
+**What works.** v2 really is connected to the library:
+
+- A library change reaches the open UI with no reload.
+- A Forge edit previews as an exact one-line diff: `model: opus` → `model: sonnet`, with only a
+  preview call.
+- Variants and forks work, with undo.
+- The ranking ethics are enforced in code.
+
+**What is weak** is the centre of the request, "customise, then test and compare, as a game":
+
+- Dry trials cannot see agent tuning. An addendum-only variant ties its parent exactly.
+- Half the live "Verified" score is self-reported.
+- The race animation inverts the result: the ship with the shorter voyage crosses first, even when it
+  loses.
+
+None of this blocks a dev-only tool whose deployed build is read-only. M2 and M4 must be fixed before
+the first real live trial, because that trial seeds the only ranked leaderboard.
+
+## 2. Score: **75 / 100** (was 79; target 85)
+
+Design 29/40, usability 24/30, creativity 13/20, content 9/10.
+
+| Row | Score | vs 79 | Evidence | Remaining gap |
+|---|---|---|---|---|
+| Hierarchy and composition | 7 | −1 | The Forge rack and bench read cleanly. Regatta setup has one primary, with its reason beside it | After a 7.6 s reveal the winner line is below the fold: y=935 at 1440×900 and y=776 at 1024×768. The single-ship Hangar crops its hero hull (m1) |
+| Type, colour, material | 8 | 0 | The new surfaces keep the noir/cotton system. Truth chips appear everywhere | The arena reads as a debug view next to the lit Bridge |
+| Responsive intent | 7 | −1 | 0 px overflow on all 28 screens. The phone course stacks scores over lanes | At 390 the nav hides Logbook and Forge off-canvas with no cue (m2). At 360 the arena crops the third hull |
+| Simplicity | 8 | 0 | Forge is Preview → Apply. Results end with Tune · Edit · Run live for each ship | The Bridge's first viewport gains one more outlined button |
+| 3D against ArkhEthos | 7 | 0 | The arena moves on reveal events. ship-e is gone | Hulls overlap lanes, and some sail stern-first (m4). Three gold discs sit above the captain's head. No v2 capture of the 3D Bridge |
+| Gamification and ethics | 6 | −2 | Strong rules: Simulated never ranks, ties share a place, stale records never count, unranked rows are in name order | The race inverts the result (M3). Every post lights, not only the winner's. Dry scoring cannot see tuning (M1). Live "Verified" includes self-reported points (M2) |
+| Accessibility | 8 | 0 | axe 0 on all 28. The arena is `aria-hidden` and the course carries the numbers. The log has `role="log"`. The veil is a polite status | No keyboard walk of the v2 screens. Focus goes to an off-screen region with `preventScroll` |
+| Fidelity to DESIGN / plan 12 | 7 | −1 | Identity role at 22px. The fallbacks work | Plan 12 § 2 art direction is largely unbuilt. Each buoy takes 420 ms, against 0.6–1.2 s in the spec |
+| Content and CTA coherence | 9 | 0 | The live dialog is honest about cost, account, scratch folder and caps | "all 1 gates held". The permission-prompts line is misleading in headless mode (m9). One fixture serves three briefs (M4) |
+
+**Delivery risk: medium, edging high for live trials.**
+
+- No real live trial has run.
+- The Windows CLI lookup is likely to fail.
+- Frame rate is unmeasured.
+- The production check has not been re-run since T19.
+
+**Confidence:** high on M1–M3 and M5; medium on M4's spawn bug (inferred from `where` behaviour).
+
+## 3. v1 open items
+
+| # | Status |
+|---|---|
+| n1 | Fixed in code for 2+ ships; not on screen. The single-ship Hangar crops (m1) |
+| n2 | Closed by exclusion |
+| n3 | Partly fixed: the items spread across a front arc, but three gold discs sit in a row above the head |
+| n4 | Fixed in code; no failing-check capture |
+| n5 | Fixed in code; not captured |
+
+## 4. Findings
+
+### Majors
+
+**M1. Dry trials are blind to agent customisation.**
+
+- An addendum-only variant ties its parent at 89.3 in every criterion.
+- A critic moved from opus to haiku scores 89.0 against 89.3: the override reaches only economy.
+- *Fix:*
+  - when the entrants differ only in tuning, say so and drop "First, tied";
+  - add a Tuning-card line saying tier and addendum are judged only live;
+  - optionally, add a role-fit criterion.
+
+**M2. Live "Verified" includes self-reported numbers.**
+
+- Coverage (35) and gates (15) come from the run's own `run.json`, and the prompt names its keys.
+- Any non-empty gate value counts.
+- The whole result is Verified whenever a `run.json` exists, and only Verified results rank.
+- *Fix:*
+  - label the `run.json` criteria as reported by the run;
+  - keep Verified for what the server measures;
+  - rank on the measured part only.
+
+**M3. The race tells the wrong story, and the winner gets no moment.**
+
+- Each lane spreads its own buoys and advances one per beat, so the shorter voyage finishes first.
+- Every lane's post lights up.
+- *Fix:*
+  - drive the hull's x from the score, with every lane revealed over the same duration;
+  - light only the winner's post, with the word "Winner".
+
+**M4. Live trials are unproven and cannot exercise a crew.**
+
+- There is no subagent tool and no `--model`, so one session reads the plan's tiers as text.
+- All three briefs use `landing-mini`.
+- `claudeBin()` takes the first `where` line, which may be an extensionless shim, so the spawn may
+  fail (inferred, not run).
+- *Fix:*
+  - prefer `.exe`, then `.cmd`;
+  - say plainly that one session follows the plan;
+  - one fixture per brief;
+  - a real smoke trial once the owner approves.
+
+**M5. The payoff lands off-screen.** Focus moves to the results with `preventScroll`, and the winner
+line is below the fold.
+
+- *Fix:* scroll the results into view on finish, or put the winner sentence in the race head.
+
+### Minors
+
+- **m1.** The single-ship Hangar crops its hero: the 4.6-unit focus ring is wider than `FIT_SINGLE`
+  4.5.
+- **m2.** At 390 the phone nav hides Logbook and Forge with no cue. *Fix:* an edge fade.
+- **m3.** 07-qa's results claim is only partly supported:
+  - `regatta-results-1024.png` shows a blank arena;
+  - `regatta-results-360.png` is from before the fix;
+  - the tuning screens were taken with `?2d`.
+- **m4.** Hull length 1.7 crosses lanes. Some hulls sail stern-first. At the finish the gate
+  octahedron hides under the hull. *Fix:* a length of about 1.15, and a bow table.
+- **m5.** The reveal pace is off-spec. *Fix:* about 700 ms per beat.
+- **m6.** Plan 12 § 2 art direction is not built. *Fix:* build it, or amend § 2.
+- **m7.** "Trial in the Regatta" from a fork preselects only the fork. *Fix:* also preselect
+  `origin.from`.
+- **m8.** Promote carries only the tier. *Fix:* say "addenda stay on this ship".
+- **m9.** Copy:
+  - the "permission prompts" line is wrong in `-p` mode;
+  - "all 1 gates held".
+- **m10.** Live economy will nearly always score 0, because cache-read tokens are counted. *Fix:*
+  count input plus output only.
+- **m11.** The production check has not been re-run since T19, and the trial endpoint strings sit in
+  the bundle. *Fix:* re-run the check and extend it to those strings.
+- **m12.** 27 v1 PNGs are modified in the working tree but not committed.
+
+## 5. What is genuinely good
+
+- **The live library:** the stale banner works, the last good index is kept, and Rebuild never runs
+  on save.
+- **The Forge is safe and precise:**
+  - edits only allow-listed paths;
+  - refuses a file with uncommitted changes;
+  - checks hash preconditions before writing;
+  - rolls back to the exact bytes;
+  - shows an exact diff.
+- **The ranking ethics** are enforced in code.
+- **The live runner's guardrails:**
+  - a scratch folder outside the repo;
+  - a typed phrase to start;
+  - one run at a time;
+  - turn and wall-clock caps;
+  - no bypass flag;
+  - a tree kill on cancel.
+- **The results explain themselves,** with Tune and Edit links for each ship.
+- **Checks:** axe 0 and overflow 0 on all 28 screens; typecheck and 307/307 green.
+
+## 6. Not verifiable by the critic
+
+- a real live trial;
+- Rebuild and Forge Apply end to end;
+- frame rate;
+- the Hangar with two or more ships;
+- the Playwright, phone and fake-CLI results;
+- the production bundle.

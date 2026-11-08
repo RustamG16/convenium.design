@@ -17,6 +17,7 @@ import { compare, leaderboard, overall, recordFromDry, type Current, type TrialR
 import { displayHull, type Ship } from '../../domain/schema';
 import { libraryShips, LIBRARY_EPOCH } from '../../domain/ship';
 import { CRITERIA, shipHash, simulate, type Brief, type DryTrial, type TrialEvent } from '../../domain/trial';
+import { onlyTuningDiffers } from '../../domain/variant';
 import { useKb } from '../../kb/context';
 import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
 import type { ArenaLane } from '../../scene/Arena';
@@ -26,7 +27,9 @@ import { recordId, trials, useTrials } from './records';
 
 const MIN_SHIPS = 2;
 const MAX_SHIPS = 4;
-const STEP_MS = 420;
+/** Every lane is revealed over the same beats (finish review v2, M3); 0.65 s a beat (plan 12 § 2: 0.6–1.2 s). */
+const REVEAL_BEATS = 10;
+const STEP_MS = 650;
 const LANE_COLORS = ['var(--sw-1)', 'var(--sw-2)', 'var(--sw-3)', 'var(--sw-4)'];
 /** the same swatches as hex, for the 3D arena (tokens.css --sw-1..4) */
 const LANE_HEX = ['#d9a441', '#86c2a8', '#c79fdc', '#93aedb'];
@@ -117,32 +120,46 @@ function buoyLabel(e: TrialEvent): string {
   return 'Finish';
 }
 
-function Course({ runs, names, step }: { runs: DryTrial[]; names: Map<string, string>; step: number }) {
+/** The share of the track a fraction of 100 points reaches (the hull's and the buoys' `left`). */
+const along = (frac: number) => `calc(var(--s4) + 6px + (100% - 2 * var(--s4) - 12px) * ${Math.max(0, Math.min(1, frac))})`;
+
+/**
+ * The course is 100 points long. Every lane is revealed over the same beats and each ship sails as far
+ * as its score, so the order on the course is always the order of the scores; a ship's buoys (its
+ * stages and gates) are spread over the stretch it reaches.
+ */
+function Course({ runs, names, step, winners }: { runs: DryTrial[]; names: Map<string, string>; step: number; winners: string[] }) {
+  const progress = Math.min(1, step / REVEAL_BEATS);
+  const done = progress >= 1;
   return (
-    <ol className="rg-course" data-testid="rg-course" aria-label="The course: one lane per ship, one buoy per stage or gate">
+    <ol className="rg-course" data-testid="rg-course" aria-label="The course: 100 points long, one lane per ship, one buoy per stage or gate">
       {runs.map((r, i) => {
         const buoys = r.events.filter((e) => e.kind !== 'finish');
-        const passed = Math.min(step, buoys.length);
-        const done = passed >= buoys.length;
-        // the hull sits on the last buoy it passed (buoys are spread between the track's padding)
-        const frac = passed === 0 ? null : buoys.length > 1 ? (passed - 1) / (buoys.length - 1) : 1;
-        const left = frac === null ? '0px' : `calc(var(--s4) + 6px + (100% - 2 * var(--s4) - 12px) * ${frac})`;
+        const n = buoys.length;
+        const passed = Math.min(n, Math.floor(progress * n + 1e-9));
+        const reach = r.score.total / 100;
+        const won = done && winners.includes(r.ship);
         return (
-          <li key={r.ship} className="rg-lane" data-testid="rg-lane" data-ship={r.ship} data-done={done || undefined} style={{ ['--lane' as string]: LANE_COLORS[i % LANE_COLORS.length] } as CSSProperties}>
+          <li key={r.ship} className="rg-lane" data-testid="rg-lane" data-ship={r.ship} data-done={done || undefined} data-winner={won || undefined} style={{ ['--lane' as string]: LANE_COLORS[i % LANE_COLORS.length] } as CSSProperties}>
             <span className="rg-lane-name">{names.get(r.ship) ?? r.ship}</span>
             <div className="rg-track">
-              <ol className="rg-buoys" aria-label={`${names.get(r.ship)}: ${buoys.length} buoys`}>
+              <ol className="rg-buoys" aria-label={`${names.get(r.ship)}: ${n} buoys`}>
                 {buoys.map((e, j) => (
-                  <li key={j} className="rg-buoy" data-kind={buoyKind(e)} data-passed={j < passed || undefined} title={buoyLabel(e)}>
+                  <li key={j} className="rg-buoy" data-kind={buoyKind(e)} data-passed={j < passed || undefined} title={buoyLabel(e)} style={{ left: along((reach * (j + 1)) / Math.max(1, n)) }}>
                     <span className="sr-only">{buoyLabel(e)}</span>
                   </li>
                 ))}
               </ol>
-              <span className="rg-boat" style={{ left }} aria-hidden="true" />
+              <span className="rg-boat" style={{ left: along(reach * progress) }} aria-hidden="true" />
             </div>
             <span className="rg-finish" aria-live="polite">
               {done ? (
                 <>
+                  {won && (
+                    <span className="rg-winner-chip" data-testid="rg-lane-winner">
+                      {winners.length > 1 ? 'Winner, tied' : 'Winner'}
+                    </span>
+                  )}
                   <span className="num" data-testid="rg-lane-total">
                     {fmt(r.score.total)}
                   </span>
@@ -150,7 +167,7 @@ function Course({ runs, names, step }: { runs: DryTrial[]; names: Map<string, st
                 </>
               ) : (
                 <span className="muted">
-                  {passed} of {buoys.length}
+                  {passed} of {n}
                 </span>
               )}
             </span>
@@ -161,17 +178,18 @@ function Course({ runs, names, step }: { runs: DryTrial[]; names: Map<string, st
   );
 }
 
-function arenaLanes(runs: DryTrial[], entrants: Ship[], step: number): ArenaLane[] {
+function arenaLanes(runs: DryTrial[], entrants: Ship[], step: number, winners: string[]): ArenaLane[] {
+  const progress = Math.min(1, step / REVEAL_BEATS);
   return runs.map((r, i) => {
     const ship = entrants.find((s) => s.id === r.ship);
     const buoys = r.events.filter((e) => e.kind !== 'finish').map(buoyKind);
-    return { ship: r.ship, hull: displayHull(ship?.hull, r.ship), color: LANE_HEX[i % LANE_HEX.length], buoys, passed: Math.min(step, buoys.length) };
+    return { ship: r.ship, hull: displayHull(ship?.hull, r.ship), color: LANE_HEX[i % LANE_HEX.length], buoys, reach: r.score.total / 100, progress, winner: winners.includes(r.ship) };
   });
 }
 
 /* ---------------------------------------------------------------------------------------- results */
 
-function Results({ runs, names, brief, entrants }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief; entrants: Ship[] }) {
+function Results({ runs, names, brief, entrants, tuningOnly }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief; entrants: Ship[]; tuningOnly: boolean }) {
   const cmp = useMemo(() => compare(runs.map((r) => ({ ship: r.ship, total: r.score.total, criteria: r.score.criteria }))), [runs]);
   const winners = cmp.winners.map((w) => names.get(w) ?? w);
   return (
@@ -183,7 +201,11 @@ function Results({ runs, names, brief, entrants }: { runs: DryTrial[]; names: Ma
         <TruthLabel truth="Simulated" detail="a dry run of each ship's plan, not a live run" />
       </div>
       <p className="rg-winner" data-testid="rg-winner" data-tie={winners.length > 1 || undefined}>
-        {winners.length > 1 ? (
+        {tuningOnly ? (
+          <>
+            No winner: these ships differ only in a model tier or an addendum. A dry run counts a tier only as cost and cannot read an addendum, so only a live run can compare them.
+          </>
+        ) : winners.length > 1 ? (
           <>
             A tie at <strong className="num">{fmt(cmp.topTotal)}</strong>: {winners.join(' and ')} share first place.
           </>
@@ -227,9 +249,9 @@ function Results({ runs, names, brief, entrants }: { runs: DryTrial[]; names: Ma
             <tr className="rg-total">
               <th scope="row">Total / 100</th>
               {runs.map((r) => (
-                <td key={r.ship} data-best={cmp.winners.includes(r.ship) || undefined}>
+                <td key={r.ship} data-best={(!tuningOnly && cmp.winners.includes(r.ship)) || undefined}>
                   <span className="num">{fmt(r.score.total)}</span>
-                  {cmp.winners.includes(r.ship) && <span className="rg-best">{cmp.winners.length > 1 ? 'First, tied' : 'First'}</span>}
+                  {!tuningOnly && cmp.winners.includes(r.ship) && <span className="rg-best">{cmp.winners.length > 1 ? 'First, tied' : 'First'}</span>}
                 </td>
               ))}
             </tr>
@@ -394,11 +416,14 @@ export default function RegattaPage() {
   const [beat, setStep] = useState(0);
   const [arenaLost, setArenaLost] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLParagraphElement>(null);
   const names = useMemo(() => new Map(entrants.map((s) => [s.id, s.name])), [entrants]);
-  const longest = race ? Math.max(...race.runs.map((r) => r.events.length - 1)) : 0;
-  // the reveal: one buoy per beat; reduced motion shows the finish at once. Nothing here is random.
-  const step = reduced ? longest : beat;
-  const finished = race !== null && step >= longest;
+  // the reveal: the same beats for every lane; reduced motion shows the finish at once. Nothing here is random.
+  const step = reduced ? REVEAL_BEATS : beat;
+  const finished = race !== null && step >= REVEAL_BEATS;
+  const cmp = useMemo(() => (race ? compare(race.runs.map((r) => ({ ship: r.ship, total: r.score.total, criteria: r.score.criteria }))) : null), [race]);
+  const winners = cmp?.winners ?? [];
+  const tuningOnly = useMemo(() => (race ? onlyTuningDiffers(race.runs.map((r) => entrants.find((s) => s.id === r.ship)).filter((s): s is Ship => !!s)) : false), [race, entrants]);
 
   useEffect(() => {
     if (!race || finished) return;
@@ -406,8 +431,9 @@ export default function RegattaPage() {
     return () => window.clearTimeout(next);
   }, [race, beat, finished]);
 
+  // the result is announced where the race is, in the head row above the arena (finish review v2, M5)
   useEffect(() => {
-    if (finished) resultsRef.current?.focus({ preventScroll: true });
+    if (finished) headRef.current?.focus({ preventScroll: true });
   }, [finished]);
 
   const start = () => {
@@ -457,12 +483,32 @@ export default function RegattaPage() {
           ) : (
             <>
               <div className="row rg-race-head">
-                <p className="label">
-                  {race.brief.title} · {race.runs.length} ships <TruthLabel truth="Simulated" />
-                </p>
+                <div className="stack-sm">
+                  <p className="label">
+                    {race.brief.title} · {race.runs.length} ships <TruthLabel truth="Simulated" />
+                  </p>
+                  {finished && cmp && (
+                    <p ref={headRef} tabIndex={-1} className="rg-head-winner" data-testid="rg-head-winner" data-tuning-only={tuningOnly || undefined}>
+                      {tuningOnly ? (
+                        <>These ships differ only in tuning, which a dry run cannot judge. Run them live to compare.</>
+                      ) : winners.length > 1 ? (
+                        <>
+                          A tie at <strong className="num">{fmt(cmp.topTotal)}</strong>: {winners.map((w) => names.get(w) ?? w).join(' and ')}.
+                        </>
+                      ) : (
+                        <>
+                          <strong>{names.get(winners[0]) ?? winners[0]}</strong> wins with <strong className="num">{fmt(cmp.topTotal)}</strong> of 100.
+                        </>
+                      )}{' '}
+                      <button type="button" className="btn btn-text btn-sm" onClick={() => resultsRef.current?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })} data-testid="rg-to-results">
+                        Compare criterion by criterion
+                      </button>
+                    </p>
+                  )}
+                </div>
                 <div className="row" style={{ gap: 'var(--s2)' }}>
                   {!finished && (
-                    <button type="button" className="btn btn-quiet btn-sm" onClick={() => setStep(longest)} data-testid="rg-skip">
+                    <button type="button" className="btn btn-quiet btn-sm" onClick={() => setStep(REVEAL_BEATS)} data-testid="rg-skip">
                       Show the results now
                     </button>
                   )}
@@ -481,16 +527,16 @@ export default function RegattaPage() {
               </div>
               {show3d && (
                 <Suspense fallback={<div className="rg-arena rg-arena-loading" aria-hidden="true" />}>
-                  <Arena lanes={arenaLanes(race.runs, entrants, step)} onContextLost={() => setArenaLost(true)} />
+                  <Arena lanes={arenaLanes(race.runs, entrants, step, winners)} onContextLost={() => setArenaLost(true)} />
                 </Suspense>
               )}
-              <Course runs={race.runs} names={names} step={step} />
+              <Course runs={race.runs} names={names} step={step} winners={tuningOnly ? [] : winners} />
               <p className="rg-legend muted">
-                <span className="rg-key" data-kind="scores" /> stage that meets a need or makes a required artifact · <span className="rg-key" data-kind="plain" /> other stage · <span className="rg-key" data-kind="gate-req" /> gate the brief requires
+                The course is 100 points long: each ship sails as far as its score. <span className="rg-key" data-kind="scores" /> stage that meets a need or makes a required artifact · <span className="rg-key" data-kind="plain" /> other stage · <span className="rg-key" data-kind="gate-req" /> gate the brief requires
               </p>
               {finished && (
                 <div ref={resultsRef} tabIndex={-1} className="rg-results-focus">
-                  <Results runs={race.runs} names={names} brief={race.brief} entrants={entrants} />
+                  <Results runs={race.runs} names={names} brief={race.brief} entrants={entrants} tuningOnly={tuningOnly} />
                   <p className="muted sheet-line">
                     Saved as dry trial records.{' '}
                     <button type="button" className="btn btn-text btn-sm" onClick={() => setTab('board')}>

@@ -1,0 +1,4 @@
+body { width: 980px; margin: 0 auto; font: 14px Arial, sans-serif; }
+header { display: flex; justify-content: space-between; padding: 12px 0; }
+.tiny { font-size: 11px; padding: 2px 4px; }
+h1 { font-size: 48px; }

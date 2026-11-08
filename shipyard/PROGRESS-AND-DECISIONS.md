@@ -704,3 +704,45 @@ timeout path (20 minutes) is not exercised end to end; it shares the cancel path
   motion and with `?2d`, where the course shows;
 - `live-trial.spec.ts` and the hangar spec unaffected;
 - screenshots at 1440 and 390 show no console errors and no horizontal scroll.
+
+## T26: finish-review fix cycle (2026-11-08)
+
+The v2 finish review (`plan/10-finish-review.md`, HEAD `b39b42a`) scored **75 / 100**, below the
+v1 79 and the 85 target. Every finding and its status:
+
+| # | Finding | Status |
+|---|---|---|
+| M1 | Dry trials are blind to tuning | **Fixed.** `onlyTuningDiffers(ships)` (`domain/variant.ts`): when the entrants differ only in a tier or an addendum, the results say "No winner" and drop the First and Best marks. The Tuning card says a dry run counts the tier only as cost and cannot read an addendum; a live run judges both. No role-fit criterion was added: it would be a made-up number. |
+| M2 | Live "Verified" includes self-reported points | **Fixed.** The live Verified total is only what the dev server measures (artifacts 15, pre-flight 20, economy 10, clarity 5), scaled to 100. Coverage and gates from the run's own `run.json` are shown as **Model-reported** (a new truth label), out of 50, never counted or ranked. A result is Verified only when the run exits 0. A gate counts only on `approved`, `passed` or `pass`. |
+| M3 | The race inverts the result; every post lights | **Fixed.** The course is 100 points long and each hull sails as far as its score, every lane revealed over the same 10 beats. Only the winner's post and pennant light, and the 2D lane carries a "Winner" chip. Unit test: hull order equals score order. |
+| M4 | Live trials unproven; one fixture for three briefs; spawn shim | **Fixed in part.** `pickBin` prefers `.exe`, then `.cmd`. The dialog says one Claude Code session follows the plan, with tiers and addenda written into it rather than spawned. New fixtures `mobile-mini` and `fleet-mini` give each brief its own project. **Still open:** a real smoke trial, since there is no `claude` CLI on this machine. |
+| M5 | The payoff lands off-screen | **Fixed.** The winner sentence sits in the race head ("SS Full Run wins with 89.3 of 100") and takes focus on finish, with a "Compare criterion by criterion" button that scrolls to the results. |
+| m1 | The single-ship Hangar crops its hero | **Fixed.** `FIT_SINGLE` went from 4.5 to 5.8, with a unit test that one ship fits the 2 × 2.3 ring plus a margin. |
+| m2 | The phone nav hides tabs with no cue | **Fixed.** A fade at both ends of the phone nav. |
+| m3 | The QA claims were only partly supported | **Fixed.** Recaptured: Forge first (with a retry), a 3 s arena settle, the 3D Bridge (no `?2d`), and a new two-ship `hangar-fleet` shot. 32 screens. |
+| m4 | Hulls cross lanes and sail stern-first | **Fixed.** Hull length 1.15. The bow mapping was measured (the four lane hulls all need π/2). Buoys moved beside the hull's path. |
+| m5 | The reveal pace is off-spec | **Fixed.** `STEP_MS` is 650 (a 0.6 s tween). |
+| m6 | Plan 12 § 2 art direction not built | **Amended.** A new § 2a "As shipped" records what was built in its place (the 2D Forge, the 100-point course, the leaderboard table). |
+| m7 | A fork's Regatta link preselects only the fork | **Fixed.** It also preselects `origin.from`. |
+| m8 | Promote carries only the tier | **Fixed** in copy: "The addendum stays on this ship: Promote carries only the tier." |
+| m9 | Copy errors | **Fixed.** The singular reads "gate C held". The permission line now says tools outside the list are refused and nothing is bypassed. |
+| m10 | Cache reads zero the live economy score | **Fixed.** Tokens count input plus output only (unit test). |
+| m11 | Production check not re-run; endpoint strings in the bundle | **Fixed.** `prod-readonly.spec.ts` 2/2, now also asserting that no `__shipyard/(trial\|forge)` string is in `dist/assets/*.js` and that there is no live-run control in production. |
+| m12 | 27 v1 PNGs modified, uncommitted | **Left for the owner.** Restoring them with `git checkout` was refused by the session's permission check as an irreversible local change. They stay modified and out of this commit. |
+| n3 residue | Gold discs in a row above the captain's head | **Unchanged.** |
+
+**Not done:** a keyboard Tab walk on the v2 screens; a real live trial; a frame-rate measurement of
+the arena.
+
+**Verified:**
+
+- typecheck and lint clean;
+- vitest 312/312;
+- detector 0;
+- `test:plans` 4/4;
+- `verify.py` CLEAN;
+- full desktop Playwright 110 passed, 0 failed, 18 skipped;
+- phone 1/1;
+- fake-CLI live trials 4/4;
+- production preview 2/2;
+- QA v2 recapture: 32 screens, axe 0, overflow 0.

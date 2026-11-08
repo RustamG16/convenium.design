@@ -153,7 +153,7 @@ export function ShipNav({ ship, current, showNext = true }: { ship: Ship; curren
                 Replay the walk
               </button>
             )}
-            <Link className="btn btn-quiet" to={`/regatta?ships=${encodeURIComponent(ship.id)}`} data-testid="to-regatta">
+            <Link className="btn btn-quiet" to={`/regatta?ships=${[...new Set([ship.origin?.from, ship.id].filter((x): x is string => !!x))].map(encodeURIComponent).join(',')}`} data-testid="to-regatta">
               Trial in the Regatta
             </Link>
             <button type="button" className="btn btn-quiet" data-testid="fork-variant" onClick={fork}>

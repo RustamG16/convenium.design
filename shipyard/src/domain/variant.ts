@@ -80,3 +80,17 @@ export function variantName(name: string, taken: Iterable<string>): string {
   }
   return `${stem} variant`.slice(0, 48);
 }
+
+/**
+ * True when two or more ships have the same crew, loadouts and voyage and differ only in tuning (a
+ * model tier or an addendum). A dry run cannot tell such ships apart on quality — it reads a tier only
+ * as cost and never reads an addendum — so the Regatta says so instead of naming a winner (finish
+ * review v2, M1).
+ */
+export function onlyTuningDiffers(ships: readonly Ship[]): boolean {
+  if (ships.length < 2) return false;
+  const shape = (s: Ship) => JSON.stringify({ crew: s.crew.map((m) => [m.id, m.agent, m.loadout.map((l) => l.skill)]), voyage: s.voyage });
+  const tuning = (s: Ship) => JSON.stringify(s.crew.map((m) => m.override ?? null));
+  const first = shape(ships[0]);
+  return ships.every((s) => shape(s) === first) && new Set(ships.map(tuning)).size > 1;
+}

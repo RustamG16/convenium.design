@@ -63,6 +63,8 @@ test.describe('with the fake CLI', () => {
     await expect(result).toBeVisible({ timeout: 30_000 });
     await expect(result).toHaveAttribute('data-saved', 'true');
     await expect(result).toContainText('Verified');
+    // what the run says about itself is shown apart and never counted (review v2, M2)
+    await expect(page.getByTestId('rg-live-reported')).toContainText('Model-reported');
     await expect(page.getByTestId('rg-live-log')).toContainText('scratch folder');
     await page.getByTestId('rg-live-close').click();
 

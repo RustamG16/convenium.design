@@ -23,10 +23,14 @@ const race = (ships: string) => async (page: Page) => {
   await page.getByTestId('rg-start').click();
   await page.getByTestId('rg-skip').click();
   await page.getByTestId('rg-results').waitFor();
-  await page.waitForTimeout(900);
+  // let the arena's hulls load and settle on the finish (a blank arena at 1024 in the first pass, review m3)
+  await page.locator('[data-testid="rg-arena"] canvas').waitFor().catch(() => {});
+  await page.waitForTimeout(3000);
 };
 
 const SHOTS: Shot[] = [
+  // first: after the WebGL screens its capture failed with a protocol error twice (T25, T26)
+  { name: 'forge', go: async (p) => { await p.goto('/#/forge'); await p.waitForLoadState('networkidle'); } },
   { name: 'regatta-setup', go: async (p) => { await p.goto('/#/regatta?ships=ss-full-run'); await p.getByTestId('rg-start').waitFor(); } },
   { name: 'regatta-results', go: race('ss-full-run,ss-abridged,ss-mobile-retrofit') },
   {
@@ -45,9 +49,22 @@ const SHOTS: Shot[] = [
       await p.getByTestId('rg-live-estimate').or(p.getByTestId('rg-live-problems')).waitFor();
     },
   },
-  { name: 'forge', go: async (p) => { await p.goto('/#/forge'); await p.waitForLoadState('networkidle'); } },
-  { name: 'bridge-tuning', go: async (p) => { await p.goto('/#/ship/ss-full-run/bridge?2d'); await p.getByTestId('tuning-card').waitFor(); } },
-  { name: 'hangar', go: async (p) => { await p.goto('/#/'); await p.getByTestId('ship-card').first().waitFor(); await p.waitForTimeout(1200); } },
+  // the 3D Bridge, not ?2d (review m3)
+  { name: 'bridge-tuning', go: async (p) => { await p.goto('/#/ship/ss-full-run/bridge'); await p.getByTestId('tuning-card').waitFor(); await p.waitForTimeout(5000); } },
+  { name: 'hangar', go: async (p) => { await p.goto('/#/'); await p.getByTestId('ship-card').first().waitFor(); await p.waitForTimeout(2500); } },
+  {
+    // two ships in the fleet ring (n1 was only ever seen with one)
+    name: 'hangar-fleet',
+    go: async (p) => {
+      await p.goto('/#/ship/ss-full-run/bridge?member=engineer&2d');
+      await p.getByTestId('tune').click();
+      await p.getByTestId('clone-confirm').click();
+      await p.waitForURL(/ss-full-run-copy/);
+      await p.goto('/#/');
+      await p.getByTestId('ship-card').first().waitFor();
+      await p.waitForTimeout(3000);
+    },
+  },
 ];
 
 test.skip(!process.env.QA_V2, 'author QA only (QA_V2=1)');
@@ -68,7 +85,10 @@ test('v2 screens at four widths', async ({ browser }) => {
       const key = `${s.name}@${w}`;
       try {
         await s.go(page);
-        await page.screenshot({ path: `${DIR}/${s.name}-${w}.png` });
+        await page.screenshot({ path: `${DIR}/${s.name}-${w}.png` }).catch(async () => {
+          await page.waitForTimeout(1500);
+          await page.screenshot({ path: `${DIR}/${s.name}-${w}.png` });
+        });
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
         const a = await new AxeBuilder({ page: page as never }).analyze();
         const axe = a.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.slice(0, 3).map((n) => n.target.join(' ')) }));

@@ -55,12 +55,22 @@ export function estimate(input: EstimateInput): Estimate {
   return { id: randomUUID(), input, tokens: { low, high }, maxTurns: input.maxTurns, wallClockMs: WALL_CLOCK_MS, truth: 'Estimate', confirmPhrase: `run ${input.ship}` };
 }
 
+/**
+ * Pick the runnable entry from `where claude` output. On Windows an npm install lists an extensionless
+ * shell shim first, which `spawn` cannot start; prefer .exe, then .cmd/.bat (finish review v2, M4).
+ */
+export function pickBin(lines: string[], win: boolean): string | null {
+  const all = lines.map((l) => l.trim()).filter(Boolean);
+  if (!win) return all[0] ?? null;
+  return all.find((l) => /\.exe$/i.test(l)) ?? all.find((l) => /\.(cmd|bat)$/i.test(l)) ?? null;
+}
+
 /** The CLI to run, or null. `$CLAUDE_BIN` wins; else `claude` resolved on PATH. */
 export function claudeBin(): string | null {
   if (process.env.CLAUDE_BIN) return existsSync(process.env.CLAUDE_BIN) ? process.env.CLAUDE_BIN : null;
-  const r = spawnSync(process.platform === 'win32' ? 'where' : 'which', ['claude'], { encoding: 'utf8' });
-  const first = r.status === 0 ? r.stdout.split(/\r?\n/).find((l) => l.trim()) : undefined;
-  return first?.trim() ?? null;
+  const win = process.platform === 'win32';
+  const r = spawnSync(win ? 'where' : 'which', ['claude'], { encoding: 'utf8' });
+  return r.status === 0 ? pickBin(r.stdout.split(/\r?\n/), win) : null;
 }
 
 /**
@@ -104,12 +114,21 @@ export interface LiveBrief {
 }
 
 export interface LiveScore {
+  /** Verified: the measured criteria only, scaled to 100. The only number that rates or ranks. */
   total: number;
-  criteria: Record<string, { points: number; max: number; why: string }>;
+  /** what the run wrote about itself in run.json (coverage and gates): shown, never counted */
+  reported: { points: number; max: number };
+  criteria: Record<string, { points: number; max: number; why: string; source: 'measured' | 'reported' }>;
   facts: { runJson: boolean; planClean: boolean | null; artifactsFound: string[]; exitCode: number | null; tokens: number | null };
 }
 
-/** Score a finished scratch project from its own files. Pure apart from reading `dir`; unit-tested on a fixture. */
+/**
+ * Score a finished scratch project. Pure apart from reading `dir`; unit-tested on a fixture.
+ *
+ * Measured by the dev server (Verified): the required files present in .olympus/, verify.py --plan on
+ * the plan the run wrote, the tokens the CLI reported and the exit code. Reported by the run (never
+ * ranked, finish review v2 M2): coverage and gates, which come from the run's own run.json.
+ */
 export function scoreLive(dir: string, brief: LiveBrief, est: { high: number }, exitCode: number | null, tokens: number | null, planClean: boolean | null): LiveScore {
   const olympus = join(dir, '.olympus');
   let run: Record<string, unknown> | null = null;
@@ -122,22 +141,24 @@ export function scoreLive(dir: string, brief: LiveBrief, est: { high: number }, 
   const files = existsSync(olympus) ? readdirSync(olympus) : [];
   const found = brief.requiredArtifacts.map((a) => basename(a).replace(/ per site$/, '')).filter((a) => files.includes(a));
   const covered = brief.needs.filter((n) => (PHASE_KEYS[n.phase] ?? []).some((k) => (counts[k] ?? 0) > 0));
-  const gateDone = (g: string) => {
-    const v = run?.[`gate_${g.toLowerCase()}`];
-    return typeof v === 'string' && v !== 'pending' && v !== '';
-  };
+  // a gate counts only when the run says it was passed, not on any word
+  const gateDone = (g: string) => /^(approved|passed|pass)$/i.test(String(run?.[`gate_${g.toLowerCase()}`] ?? ''));
   const gates = brief.gates.filter(gateDone);
   const r1 = (n: number) => Math.round(n * 10) / 10;
   const criteria = {
-    coverage: { points: r1((35 * covered.length) / brief.needs.length), max: 35, why: `${covered.length} of ${brief.needs.length} needs have a phase that ran (run.json)` },
-    artifacts: { points: r1(brief.requiredArtifacts.length ? (15 * found.length) / brief.requiredArtifacts.length : 15), max: 15, why: `${found.length} of ${brief.requiredArtifacts.length} required files in .olympus/` },
-    gates: { points: r1(brief.gates.length ? (15 * gates.length) / brief.gates.length : 15), max: 15, why: `${gates.length} of ${brief.gates.length} gates recorded in run.json` },
-    preflight: { points: planClean ? 20 : 0, max: 20, why: planClean === null ? 'the run wrote no .olympus/00-run-plan.md' : planClean ? 'verify.py --plan CLEAN on the plan the run wrote' : 'verify.py --plan found problems' },
-    economy: { points: tokens === null ? 0 : tokens <= est.high ? 10 : Math.max(0, r1(10 - (10 * (tokens - est.high)) / est.high)), max: 10, why: tokens === null ? 'token use not reported' : `${tokens} tokens against an estimate of at most ${est.high}` },
-    clarity: { points: exitCode === 0 ? 5 : 0, max: 5, why: exitCode === 0 ? 'the run ended cleanly' : `the run ended with code ${exitCode}` },
+    coverage: { source: 'reported' as const, points: r1((35 * covered.length) / brief.needs.length), max: 35, why: `${covered.length} of ${brief.needs.length} needs have a phase the run says it ran (its run.json)` },
+    artifacts: { source: 'measured' as const, points: r1(brief.requiredArtifacts.length ? (15 * found.length) / brief.requiredArtifacts.length : 15), max: 15, why: `${found.length} of ${brief.requiredArtifacts.length} required files found in .olympus/` },
+    gates: { source: 'reported' as const, points: r1(brief.gates.length ? (15 * gates.length) / brief.gates.length : 15), max: 15, why: `${gates.length} of ${brief.gates.length} ${brief.gates.length === 1 ? 'gate' : 'gates'} the run says it passed (its run.json)` },
+    preflight: { source: 'measured' as const, points: planClean ? 20 : 0, max: 20, why: planClean === null ? 'the run wrote no .olympus/00-run-plan.md' : planClean ? 'verify.py --plan CLEAN on the plan the run wrote' : 'verify.py --plan found problems' },
+    economy: { source: 'measured' as const, points: tokens === null ? 0 : tokens <= est.high ? 10 : Math.max(0, r1(10 - (10 * (tokens - est.high)) / est.high)), max: 10, why: tokens === null ? 'token use not reported' : `${tokens} tokens against an estimate of at most ${est.high}` },
+    clarity: { source: 'measured' as const, points: exitCode === 0 ? 5 : 0, max: 5, why: exitCode === 0 ? 'the run ended cleanly' : `the run ended with code ${exitCode}` },
   };
-  const total = r1(Object.values(criteria).reduce((s, c) => s + c.points, 0));
-  return { total, criteria, facts: { runJson: !!run, planClean, artifactsFound: found, exitCode, tokens } };
+  const part = (src: 'measured' | 'reported') => Object.values(criteria).filter((c) => c.source === src);
+  const sum = (cs: { points: number; max: number }[]) => cs.reduce((a, c) => ({ points: a.points + c.points, max: a.max + c.max }), { points: 0, max: 0 });
+  const measured = sum(part('measured'));
+  const reported = sum(part('reported'));
+  const total = r1((100 * measured.points) / measured.max);
+  return { total, reported: { points: r1(reported.points), max: reported.max }, criteria, facts: { runJson: !!run, planClean, artifactsFound: found, exitCode, tokens } };
 }
 
 /** Sum the token usage the stream-json `result` message reports, when it reports it. */
@@ -146,7 +167,8 @@ export function tokensFrom(line: unknown): number | null {
   const o = line as { type?: string; usage?: Record<string, number> };
   if (o.type !== 'result' || !o.usage) return null;
   const u = o.usage;
-  return (u.input_tokens ?? 0) + (u.output_tokens ?? 0) + (u.cache_creation_input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0);
+  // input + output only: cache reads dominate a long run and would sink economy for every ship alike (finish review v2, m10)
+  return (u.input_tokens ?? 0) + (u.output_tokens ?? 0);
 }
 
 interface Live {
@@ -292,7 +314,7 @@ export function shipyardTrials(shipyardRoot: string): Plugin {
           }
           const score = brief ? scoreLive(dir, brief, est.tokens, code, tokens, planClean) : null;
           const durationMs = Date.now() - t.started;
-          t.result = { id, ship: est.input.ship, shipName: est.input.shipName, brief: est.input.brief, exitCode: code, durationMs, tokens, score, truth: score && score.facts.runJson ? 'Verified' : 'Unavailable', dir };
+          t.result = { id, ship: est.input.ship, shipName: est.input.shipName, brief: est.input.brief, exitCode: code, durationMs, tokens, score, truth: score && code === 0 ? 'Verified' : 'Unavailable', dir };
           writeFileSync(join(logDir, 'result.json'), `${JSON.stringify(t.result, null, 2)}\n`, 'utf8');
           t.done = true;
           send(t, logDir, { kind: 'finish', result: t.result });

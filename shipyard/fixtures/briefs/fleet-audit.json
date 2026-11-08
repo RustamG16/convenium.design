@@ -13,5 +13,5 @@
   "gates": ["0", "1", "2", "C"],
   "constraints": ["agents run in parallel worktrees", "one body per phase"],
   "budget": { "tierPoints": 14 },
-  "fixtureProject": "landing-mini"
+  "fixtureProject": "fleet-mini"
 }

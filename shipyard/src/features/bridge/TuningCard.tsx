@@ -95,6 +95,9 @@ export function TuningCard({ ship, member, readOnly, onLocked }: { ship: Ship; m
       ) : (
         <p className="muted sheet-line">No addendum.</p>
       )}
+      <p className="muted sheet-line" data-testid="tuning-judged">
+        A dry run in the Regatta counts the tier only as cost and cannot read an addendum; a live run judges both.{o?.addendum ? ' The addendum stays on this ship: Promote carries only the tier.' : ''}
+      </p>
       <div className="row tuning-actions">
         <button
           type="button"

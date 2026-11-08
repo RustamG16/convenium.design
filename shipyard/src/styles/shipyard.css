@@ -403,7 +403,8 @@
     min-width: 0;
     overflow-x: auto;
     scrollbar-width: none;
-    mask-image: linear-gradient(to left, transparent 0, #000 var(--s4));
+    /* a clear fade at both ends says there is more to scroll (finish review v2, m2) */
+    mask-image: linear-gradient(to right, transparent 0, #000 var(--s4), #000 calc(100% - 44px), transparent 100%);
   }
   .site-header nav::-webkit-scrollbar {
     display: none;

@@ -31,8 +31,10 @@
 .rg-lane-name::before { content: ''; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--lane); }
 .rg-track { position: relative; height: 44px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--lane) 8%, var(--surface));
   background-image: linear-gradient(90deg, var(--hairline) 50%, transparent 50%); background-size: 14px 1px; background-repeat: repeat-x; background-position: 0 50%; }
-.rg-buoys { list-style: none; margin: 0; padding: 0 var(--s4); height: 100%; display: flex; align-items: center; justify-content: space-between; }
-.rg-buoy { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--muted); background: var(--bg); opacity: 0.35; transition: opacity var(--t-panel) var(--ease), transform var(--t-panel) var(--ease); }
+.rg-buoys { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
+/* the 100-point finish line */
+.rg-track::after { content: ''; position: absolute; top: 8px; bottom: 8px; right: calc(var(--s4) + 5px); width: 2px; background: var(--cotton); opacity: 0.45; }
+.rg-buoy { position: absolute; top: 50%; margin: -6px 0 0 -6px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--muted); background: var(--bg); opacity: 0.35; transition: opacity var(--t-panel) var(--ease), transform var(--t-panel) var(--ease); }
 .rg-buoy[data-kind='scores'] { border-color: var(--lane); background: var(--lane); }
 .rg-buoy[data-kind='gate'], .rg-buoy[data-kind='gate-req'] { border-radius: 2px; transform: rotate(45deg); }
 .rg-buoy[data-kind='gate-req'] { border-color: var(--chili); background: var(--chili); }
@@ -101,3 +103,7 @@
   background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--sw-4) 14%, var(--bg)), var(--bg)); }
 .rg-arena canvas { width: 100% !important; height: 100% !important; }
 @media (max-width: 640px) { .rg-arena { height: 168px; } }
+.rg-head-winner { margin: 0; font-size: 18px; line-height: 1.4; outline: none; }
+.rg-head-winner:focus-visible { outline: 2px solid var(--cotton); outline-offset: 4px; border-radius: 2px; }
+.rg-winner-chip { display: inline-block; margin-right: var(--s2); padding: 0 var(--s2); border: 1px solid var(--cotton); border-radius: var(--r-pill); font-size: 11px; letter-spacing: var(--track-label); text-transform: uppercase; vertical-align: 3px; }
+.rg-finish { white-space: normal; }

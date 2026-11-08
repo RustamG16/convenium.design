@@ -24,8 +24,8 @@ const RING_RADIUS = 3.4;
 const HULL_LENGTH = 3.9;
 const RING_Y = -0.42;
 const LOOK_Y = -0.3;
-/** One ship: the hull and its focus ring plus a margin, so it is never cut off. */
-const FIT_SINGLE = 4.5;
+/** One ship: the focus ring (2 × 2.3 wide) plus a margin for perspective and the turning hull, so neither is cut off (finish review v2, m1). */
+const FIT_SINGLE = 5.8;
 /** Focus ring under the front hull: wider than half the hull, so a turning hull stays inside it. */
 const FOCUS_RING = [2.25, 2.3] as const;
 

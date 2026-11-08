@@ -33,6 +33,17 @@ cotton plus the word "Winner", never colour alone. **Motion** follows the existi
 240 and 700 ms. The arena runs at 0.6–1.2 s per buoy; under reduced motion it is a static board
 with no per-stage animation.
 
+### 2a. As shipped (amended 2026-11-08 after the v2 finish review, m6)
+
+The table above was the intent. Where the build differs, this is the contract now:
+
+| Surface | Shipped | Not built, and why |
+|---|---|---|
+| **Forge** | A 2D bench: a rack of agents and skills with pigment swatches, standard form controls (tier select, route list, phase), a unified diff in a monospaced block, and an apply log | The turntable workbench was cut under item 3 of the cut order (§ 8). The dial-and-plate controls, blueprint diff and ticker tape went with it. The 2D form is the accessible baseline the 3D bench would have sat on |
+| **Regatta** | A 3D arena above a 2D course. **The course is 100 points long: every lane is revealed over the same ten beats (0.65 s each) and each ship sails as far as its score.** So the order on the water is always the order of the scores. Buoys (stages and gates) are spread over the stretch a ship reaches. At the finish only the winner's post lights, with a pennant, and the course shows "Winner" in words | "One buoy per stage event" was replaced: it let the ship with the shorter voyage finish first even when it lost (review M3). There is no bow wave; the pennant is the one celebration |
+| **Leaderboard** | A table with place, ship, rating (n, date), the latest dry total in its own column, stale count and truth labels | The slate-and-chalk treatment: the table already carries every rule, and a chalk face would add a font the palette does not have |
+| **Dry dock, library banner** | As specified | — |
+
 ## 3. Screen and scene map
 
 | Route | Primary action (one per screen) | 3D | No-WebGL / reduced motion |
