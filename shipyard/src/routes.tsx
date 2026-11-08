@@ -22,6 +22,7 @@ const preflightPage = async () => ({ Component: (await import('./features/prefli
 const logbookPage = async () => ({ Component: (await import('./features/logbook/LogbookPage')).default });
 const armoryPage = async () => ({ Component: (await import('./features/armory/ArmoryPage')).default });
 const voyagePage = async () => ({ Component: (await import('./features/voyage/VoyagePage')).default });
+const regattaPage = async () => ({ Component: (await import('./features/regatta/RegattaPage')).default });
 const forgePage = async () => ({ Component: (await import('./features/forge/ForgePage')).default });
 const bridge = async () => ({ Component: (await import('./features/bridge/BridgePage')).default });
 
@@ -45,6 +46,7 @@ export const routes = [
       { path: 'armory', lazy: armoryPage },
       { path: 'lab', lazy: lab },
       { path: 'logbook', lazy: logbookPage },
+      { path: 'regatta', lazy: regattaPage },
       { path: 'forge', lazy: forgePage },
       { path: '*', element: <StubPage title="Not found" route="#/" task="n/a" note="No such screen." /> },
     ],

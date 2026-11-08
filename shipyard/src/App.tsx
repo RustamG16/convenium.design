@@ -45,6 +45,7 @@ export function App() {
             Hangar
           </NavLink>
           <NavLink to="/armory">Armory</NavLink>
+          <NavLink to="/regatta">Regatta</NavLink>
           <NavLink to="/logbook">Logbook</NavLink>
           {/* the Forge writes library/, so only the dev server lists it; the route still explains itself elsewhere */}
           {import.meta.env.DEV && <NavLink to="/forge">Forge</NavLink>}

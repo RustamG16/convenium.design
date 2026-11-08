@@ -577,3 +577,52 @@ table already derives a voyage (T17).
 
 **Not run:** a UI export of a tuned ship checked by `verify.py` (the export of overrides is
 unit-tested; `verify.py` does not read `model`).
+
+## T22: the Regatta (2026-11-08)
+
+- **`#/regatta`** (in the primary nav in every build). Two tabs.
+- **Race tab:**
+  - pick one of the three briefs (cards) and 2–4 ships (your own plus library templates);
+  - **Start the dry run**;
+  - the course is one lane per ship and one buoy per stage or gate, revealed one beat at a time.
+    A buoy is filled when its stage meets a need or makes a required artifact; a chili diamond
+    marks a gate the brief requires.
+  - The hull sits on the last buoy it passed. "Show the results now" skips the reveal; reduced
+    motion shows the finish at once.
+- **Results** (labelled Simulated):
+  - a winner sentence, or an explicit tie;
+  - a criterion × ship table with "Best" or "Best, tied" in words and each cell's reason;
+  - per ship, what it missed, with links to tune its crew or edit its voyage.
+- **Leaderboard tab:** Overall plus one board per brief.
+  - Place and rating come only from fresh Verified records (the mean of the last 3). The latest
+    dry score sits in its own Simulated column.
+  - A ship with no live run is listed as "unranked".
+  - Stale records are counted and flagged.
+  - The empty state explains that places need live runs.
+  - Trial records can be deleted with an inline confirm (they live outside the undoable ship store).
+- **Records:** dry records are deduplicated per (ship, brief, ship hash, KB hash), so re-running a
+  race replaces them rather than piling up.
+- **Elsewhere:**
+  - the ship menu gains **Trial in the Regatta**;
+  - `TruthLabel` gains Estimate and Model-judged;
+  - the header nav scrolls inside the header on phones (from T19), so five sections fit at 360.
+- **Ethics test v2:**
+  - ranking words are allowed only in the Regatta files;
+  - XP, levels, streaks, timers, expiry, loss wording, Elo and random rewards stay banned
+    everywhere;
+  - the Regatta domain may not read the store, the UI or a clock;
+  - unit checks: a Simulated-only ship is never placed, a stale record never counts, and ties share
+    a place.
+
+**Verified:**
+
+- typecheck and lint clean;
+- vitest 307/307;
+- `regatta.spec.ts` 3/3: a two-ship race, the winner "SS Mobile Retrofit … 93.6", a 7-row compare
+  table, an unranked board, dedupe, reduced motion, and the ship-menu entry;
+- simplicity and variant specs green, 22/22 for the three specs;
+- 1440 and 360 checked by eye; at 360 there is no horizontal scroll (the table scrolls in its own
+  region).
+
+**Not run:** a board with Verified records in a browser (that needs live trials, T23); the
+ranking logic is unit-tested.
