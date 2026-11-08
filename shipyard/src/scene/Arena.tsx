@@ -137,7 +137,8 @@ function Fit({ lanes }: { lanes: number }) {
     const half = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     // the lanes' depth is foreshortened by the elevation; the course length must fit the width
     const depth = lanes * LANE_GAP * Math.sin(ELEVATION) + 1.2;
-    const dist = Math.max(5, (COURSE + 0.8) / aspect / (2 * half), depth / (2 * half));
+    // + a hull length past each end, so a hull on the finish line is never cropped
+    const dist = Math.max(5, (COURSE + 2 * HULL_LENGTH) / aspect / (2 * half), depth / (2 * half));
     camera.position.set(0, dist * Math.sin(ELEVATION), dist * Math.cos(ELEVATION));
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();

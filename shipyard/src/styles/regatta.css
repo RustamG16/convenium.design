@@ -27,7 +27,8 @@
 .rg-course { list-style: none; margin: 0; padding: var(--s3); display: grid; gap: var(--s2); border: 1px solid var(--border); border-radius: var(--r-panel);
   background: linear-gradient(180deg, color-mix(in srgb, var(--sw-4) 10%, var(--bg)), var(--bg)); }
 .rg-lane { display: grid; grid-template-columns: minmax(110px, 180px) minmax(0, 1fr) 112px; align-items: center; gap: var(--s3); }
-.rg-lane-name { font-weight: 600; overflow-wrap: anywhere; border-left: 3px solid var(--lane); padding-left: var(--s2); }
+.rg-lane-name { font-weight: 600; overflow-wrap: anywhere; display: flex; align-items: baseline; gap: var(--s2); }
+.rg-lane-name::before { content: ''; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--lane); }
 .rg-track { position: relative; height: 44px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--lane) 8%, var(--surface));
   background-image: linear-gradient(90deg, var(--hairline) 50%, transparent 50%); background-size: 14px 1px; background-repeat: repeat-x; background-position: 0 50%; }
 .rg-buoys { list-style: none; margin: 0; padding: 0 var(--s4); height: 100%; display: flex; align-items: center; justify-content: space-between; }
@@ -99,4 +100,4 @@
 .rg-arena { position: relative; height: clamp(220px, 34svh, 380px); border: 1px solid var(--border); border-radius: var(--r-panel); overflow: hidden;
   background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--sw-4) 14%, var(--bg)), var(--bg)); }
 .rg-arena canvas { width: 100% !important; height: 100% !important; }
-@media (max-width: 640px) { .rg-arena { height: 200px; } }
+@media (max-width: 640px) { .rg-arena { height: 168px; } }

@@ -9,11 +9,15 @@
 .forge-rack ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
 .forge-rack-item {
   display: grid; gap: 2px; width: 100%; min-height: var(--hit); padding: var(--s2) var(--s3); text-align: left;
-  background: transparent; color: var(--text); border: 1px solid transparent; border-left: 3px solid var(--c, var(--border)); border-radius: var(--r-control); cursor: pointer;
+  background: transparent; color: var(--text); border: 1px solid transparent; border-radius: var(--r-control); cursor: pointer;
+  position: relative; padding-left: calc(var(--s3) + 16px);
 }
+/* the item's pigment as a small swatch, not a stripe */
+.forge-rack-item::before { content: ''; position: absolute; left: var(--s3); top: calc(var(--s2) + 0.5em); width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--border)); }
 .forge-rack-item:hover { background: var(--surface); }
 .forge-rack-item[aria-current] { background: var(--elevated); border-color: var(--border); border-left-color: var(--c, var(--cotton)); }
-.forge-rack-new { border-left-color: var(--chili); font-weight: 600; }
+.forge-rack-new { font-weight: 600; padding-left: var(--s3); }
+.forge-rack-new::before { content: none; }
 .forge-rack-title { font-weight: 600; overflow-wrap: anywhere; }
 .forge-rack-meta { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
 
@@ -45,7 +49,7 @@
 .forge-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); }
 .forge-hint { color: var(--muted); }
 .forge-problems { margin: 0; padding: var(--s3) var(--s4) var(--s3) var(--s6); border: 1px solid var(--cherry); border-radius: var(--r-control); background: color-mix(in srgb, var(--cherry) 10%, transparent); }
-.forge-warn { margin: 0; padding: var(--s3) var(--s4); border-left: 3px solid var(--chili); background: var(--surface); }
+.forge-warn { margin: 0; padding: var(--s3) var(--s4); border: 1px solid color-mix(in srgb, var(--chili) 60%, var(--border)); border-radius: var(--r-control); background: var(--surface); }
 
 .forge-preview, .forge-result { display: grid; gap: var(--s4); padding: var(--s5); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); min-width: 0; }
 .forge-result[data-ok="true"] { border-color: var(--cotton); margin-bottom: var(--s5); }

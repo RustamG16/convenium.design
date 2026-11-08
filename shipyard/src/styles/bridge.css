@@ -130,7 +130,7 @@ textarea.field { min-height: 88px; resize: vertical; }
 
 /* v2 variants: how this ship spawns the selected member */
 .tuning-card { padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); }
-.tuning-card[data-tuned] { border-left: 3px solid var(--chili); }
+.tuning-card[data-tuned] { border-color: color-mix(in srgb, var(--chili) 60%, var(--border)); }
 .tuning-head { justify-content: space-between; align-items: center; gap: var(--s2); flex-wrap: wrap; }
 .tuning-head .label { margin: 0; }
 .tuning-line { margin: 0; }
