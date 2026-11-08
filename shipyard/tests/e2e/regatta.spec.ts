@@ -112,8 +112,8 @@ test('a tuned copy against its parent: the dry run says it cannot judge tuning (
   await expect(page.getByTestId('rg-winner')).toContainText('No winner');
   await expect(page.getByTestId('rg-lane-winner')).toHaveCount(0);
   // nor in the arena: no post lights, no pennant (re-review v2, N1)
-  const arena = page.getByTestId('rg-arena');
-  if (await arena.count()) await expect(arena).toHaveAttribute('data-winners', '0');
+  // the suite's Chromium has WebGL (the arena test above relies on it), so the arena must be there to check
+  await expect(page.getByTestId('rg-arena')).toHaveAttribute('data-winners', '0');
 
   // a mixed race names the tuning-only pair instead of letting a tier's cost read as a win (re-review v2, n-a)
   await page.goto('/#/regatta?brief=landing-refresh&ships=ss-full-run,ss-full-run-copy,ss-abridged');
@@ -124,4 +124,9 @@ test('a tuned copy against its parent: the dry run says it cannot judge tuning (
   await expect(page.getByTestId('rg-head-winner')).not.toHaveAttribute('data-tuning-only', 'true');
   await expect(page.getByTestId('rg-head-twins')).toContainText('SS Full Run and SS Full Run copy differ only in tuning');
   await expect(page.getByTestId('rg-twins')).toBeVisible();
+  // the copy carries only an addendum, so it ties its parent at the top: no winner, no pennant (re-review 2, new-b)
+  await expect(page.getByTestId('rg-head-winner')).toHaveAttribute('data-no-winner', 'true');
+  await expect(page.getByTestId('rg-head-winner')).toContainText('No winner');
+  await expect(page.getByTestId('rg-arena')).toHaveAttribute('data-winners', '0');
+  await expect(page.getByTestId('rg-lane-winner')).toHaveCount(0);
 });

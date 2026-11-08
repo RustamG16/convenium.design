@@ -1,6 +1,17 @@
 /** v2 finish review M3: the race reads in score order — the course is 100 points long. */
 import { describe, expect, it } from 'vitest';
-import { buoyX, FINISH_X, hullScale, hullX, START_X } from '../../src/scene/Arena';
+import { arenaExtent, arenaZoom, buoyX, FINISH_X, hullScale, hullX, START_X } from '../../src/scene/Arena';
+
+describe('arena camera', () => {
+  it('fits the whole course at any stage aspect, whichever side binds', () => {
+    for (const px of [{ width: 1392, height: 300 }, { width: 340, height: 168 }, { width: 600, height: 600 }]) {
+      const z = arenaZoom(px, 4);
+      const e = arenaExtent(4);
+      expect(e.width * z).toBeLessThanOrEqual(px.width + 1e-6);
+      expect(e.height * z).toBeLessThanOrEqual(px.height + 1e-6);
+    }
+  });
+});
 
 describe('arena course', () => {
   it('puts a higher score further along at every moment of the reveal, and 100 points on the finish line', () => {
@@ -19,7 +30,9 @@ describe('arena course', () => {
     expect(hullScale(2, 0.5) * 2).toBeCloseTo(1.15);
     // wider than long: the beam caps it, so its wings stay inside the lane
     const s = hullScale(1, 2);
-    expect(s * 2).toBeLessThan(0.7);
+    // 0.9 wide: inside the 1.0 between its own buoys and the next lane's (buoys 0.5 to the side, lanes 1.2 apart)
+    expect(s * 2).toBeCloseTo(0.9);
+    expect(s * 2).toBeLessThan(1);
     expect(s * 1).toBeLessThan(1.15);
   });
 });

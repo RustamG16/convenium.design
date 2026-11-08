@@ -784,3 +784,34 @@ the estimate), and an arena frame-rate measurement.
 - keyboard walk 2/2;
 - production preview 2/2;
 - QA v2 recapture: 32 screens, axe 0, overflow 0.
+
+## T28: second re-review fix cycle (2026-11-08)
+
+The second re-review (`10-finish-review.md`, last section, HEAD `891ee5f`) scored **82 / 100**, up
+from 79. The critic put the remaining gap down to perception. Each item:
+
+| # | Finding | Status |
+|---|---|---|
+| n-e residue | Equal scores look unequal across lanes (perspective) | **Fixed.** The arena camera is **orthographic** at the same 40° elevation, so the same score sits at the same x on screen in every lane. Start and finish lines draw straight. `arenaZoom` fits the course at any stage aspect (unit test, three aspects). |
+| m4 residue | ship-c draws as a sliver | **Improved.** The beam allowance went from 0.66 to 0.9, with buoys moved to 0.5, so ship-c draws about 1.4× its old length. It is still the smallest hull: it is a flying wing (wider than long, measured), and a minimum length would push its wings into the next lane. |
+| new-a | Two copies share a name | **Fixed.** `copyName()`: "X copy", then "X copy 2", "X copy 3", used by the Bridge and the Armory clone (unit test). |
+| new-b | Twins tying at the top "share first place" | **Fixed.** When every winner belongs to one twin group, the head and the results say "No winner: … tie at 89.3, and they differ only in tuning". No pennant, no First marks, `data-winners` 0 (e2e: parent + addendum copy + SS Abridged). |
+| new-c | A run that only copies its plan scores 50 Verified | **Fixed.** Pre-flight and clarity are now scaled by the share of required files delivered, like economy. A run that delivers no required file scores 0 Verified (unit test). |
+| new-d | The arena e2e assert was conditional | **Fixed.** It is unconditional: the suite's Chromium has WebGL, which the arena test already relies on. |
+| Hangar hero below the fold at 1024/390; n3 | Optional | **Not changed.** |
+
+**Still not done:** a real live trial (no `claude` CLI here, and it needs the owner's go-ahead), and
+an arena frame-rate measurement. m12 (27 v1 PNGs) is still the owner's call.
+
+**Verified:**
+
+- typecheck and lint clean;
+- vitest 319/319;
+- detector 0;
+- `test:plans` 4/4;
+- `verify.py` CLEAN;
+- full desktop Playwright 112 passed, 0 failed, 18 skipped;
+- phone 1/1;
+- fake-CLI 4/4;
+- production preview 2/2;
+- QA v2 recapture: 32 screens, axe 0, overflow 0.

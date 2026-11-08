@@ -494,3 +494,96 @@ Design 31/40, usability 25/30, creativity 14/20, content 9/10.
 3. One owner-approved real smoke trial, after n-b is fixed. This is the largest remaining risk.
 4. A keyboard Tab walk of the Regatta, Forge and Tuning screens, and a scroll-aware nav fade.
 5. Optional but visible: the n3 discs, and an arena camera or score ticks so the lead reads at a glance.
+
+
+---
+
+# 10 — Finish review v2, second re-review after T27 (independent critic, award-rubric)
+
+**What the critic checked** (HEAD `891ee5f`, read-only)
+
+- **Read:** the T26 re-review in full and the v2 section; PROGRESS § T27; the 07-qa T27 section; `results.json` (32 entries, overflow 0, axe 0); the v2 PNGs (regatta-results, hangar, hangar-fleet, bridge-tuning); `git diff 717b8ce 891ee5f` for src, dev, tests and fixtures; the ship GLB headers.
+- **Re-ran:** `npm run typecheck` (clean) and `npx vitest run` (316/316, 29 files).
+- **Drove** the 5173 server at 1440 with swiftshader:
+  - cloned SS Full Run with the critic set to haiku, plus a second copy with an addendum only;
+  - six regattas: the copy against its parent; a mixed race in two orders; the addendum copy in a mixed race; three twins; a four-ship race, with a 2× zoom of the arena mid-race and at the finish;
+  - the phone nav at 390: at the start, mid-scroll and at the end, on direct load and after a click.
+- **Did not:** call apply, start or rebuild; run the Playwright suites (keyboard spec included) or the production preview; take a top-down arena capture.
+
+(Transcribed by the director from the critic's report.)
+
+## 1. Verdict: **ship with fixes**
+
+T27 fixes what it says it fixes:
+
+- In a tuning-only race the arena now shows `data-winners=0`, with no pennant and no lit post.
+- Mixed races name the twins in the race head and in the results.
+- The live score has a content floor.
+- The nav fade follows scroll.
+
+What keeps the score below 85 is perception rather than logic:
+
+- The arena still misreads at a glance: equal scores look unequal because of perspective, and ship-c draws as a thin sliver across its lane.
+- Two copies of the same ship carry the same name.
+
+## 2. Score: **82 / 100** (was 79; target 85)
+
+Design 32/40, usability 26/30, creativity 15/20, content 9/10.
+
+| Row | Score | Δ vs 79 | What works | What is weak |
+|---|---|---|---|---|
+| Hierarchy and composition | 8 | 0 | The twins note sits under the winner sentence and does not crowd it | `hangar-fleet-1440`: the two hulls overlap and the front bow runs past the ring. At 1024 and 390 the hero is below the fold |
+| Type, colour, material | 8 | 0 | System intact | The arena still reads as a debug view next to the Bridge |
+| Responsive intent | 9 | +1 | The nav fade follows scroll (measured below). 0 px overflow on all 32 | The arena is small at 390 |
+| Simplicity | 8 | 0 | No new controls | — |
+| 3D against ArkhEthos | 7 | 0 | Hulls stay in their lanes, buoys are clear, one post is lit | In the three-twins run, the 89.3 hull in the near lane sits about 85 px ahead of the 89.3 hull in the far lane. ship-c is beam-capped to about 0.23 long, a vertical sliver that still reads as sideways. n3 unchanged |
+| Gamification and ethics | 8 | +1 | N1 and n-a verified on screen. Stub files no longer score. Economy scales with delivery | Twins that tie at the top "share first place" under two pennants. A run that only copies its handed plan scores 50 Verified (new-c) |
+| Accessibility | 9 | +1 | A permanent keyboard spec checks a visible focus indicator at every stop and runs a race by keyboard alone. axe 0 | Not run by the critic |
+| Fidelity to DESIGN / plan 12 | 8 | 0 | — | — |
+| Content and CTA coherence | 9 | 0 | Accurate LiveTrial header. The prompt names the accepted gate values | Identical copy names make the twins note ambiguous (new-a) |
+
+**Delivery risk: medium.**
+
+- There has still been no real live trial.
+- `shellQuote` is correct for Node's `cmd /d /s /c` wrapping, but it has not been run against a real CLI.
+
+## 3. First re-review's findings
+
+| # | Status | Evidence |
+|---|---|---|
+| N1 | **Fixed** | `shownWinners` reaches the arena and the course. Tuning-only race: `data-winners=0`, `rg-lane-winner` 0, head "differ only in tuning". The e2e assert is wrapped in `if (await arena.count())`, so without WebGL it passes without checking anything (new-d) |
+| n-a | **Fixed, with a residue** | `tuningTwins`: "SS Full Run and SS Full Run copy differ only in tuning…" appears in both the head and the results. When the twins are the top pair, the page still says "A tie at 89.3 … share first place" and shows `data-winners=2` (new-b) |
+| n-b | Fixed (in code) | `shellQuote` plus a unit test. Not run |
+| n-c | **Mostly fixed** | `substantial()` requires at least 300 bytes, a heading and 2 body lines; economy is scaled by `share` (unit test). Residue: see new-c |
+| n-d | Fixed | `dev/trial.ts` prompt |
+| n-e | **Partly fixed** | Camera at 40°, lane gap 1.2. The lead in the 3-ship race is readable against the slanted finish line. Equal scores still look unequal across lanes |
+| n-f | Fixed at 1440 | Toast gone, page at the top. At 1024 and 390 the hero is not in view |
+| n-g | **Fixed** | Measured at 390. Home: start false, end true. Mid-scroll: both true. At the end, and on Forge: start true, end false. After an SPA click the state is still correct |
+| m4 residue | **Fixed in fact, not to the eye** | ship-c's GLB is 65534 (x) by 23170 (z) in quantised units, so "wider than long" is plausible. Capped by `hullScale`, it draws as a small sliver across its lane in `regatta-results-1440` and the four-ship zoom |
+| Stale header | Fixed | `LiveTrial.tsx:5-9` |
+| Keyboard walk | Done (spec; not run by the critic) | `keyboard-v2.spec.ts`: 4 surfaces, indicator check, Start → Skip → winner focus → results in view |
+
+## 4. New findings (all minor)
+
+- **new-a. Duplicate copy names.**
+  - Cause: `ShipNav.tsx:37` always names a clone `${ship.name} copy`.
+  - Effect: two copies of SS Full Run both read "SS Full Run copy" in the course, the table and the twins note. This is pre-existing but newly visible.
+  - *Fix:* run the name through `variantName`, or add a number ("copy 2").
+- **new-b. A tie between twins is presented as a shared win.**
+  - When the top group is exactly one twin group, "share first place" and two pennants contradict the note just under it.
+  - *Fix:* when every winner belongs to one twin group, give the head the twins wording and show no pennants.
+- **new-c. The Verified floor is still 50.**
+  - Pre-flight (20) and clarity (5) are 25 of the 50 measured points.
+  - The prompt asks the run to copy the plan it is handed, so a run that does only that scores 50 and ranks.
+  - *Fix:* pay pre-flight and clarity only when at least one artifact is substantial (scale them by `share`, like economy), or set a ranking floor.
+- **new-d. The arena e2e assert is conditional.** *Fix:* launch with swiftshader in `playwright.config.ts`, or assert the arena's presence before reading `data-winners`.
+
+## 5. Between this and 85+
+
+1. Make the arena read at a glance:
+   - a score tick at each hull on the finish line, or an orthographic or flatter camera, so equal scores look equal;
+   - a per-hull minimum length, so ship-c is not a sliver.
+2. Fix new-a and new-b, the two places where a twin race still miscommunicates.
+3. Fix new-c, so that a Verified score means work was done.
+4. One real smoke trial with the owner's approval. This remains the largest risk.
+5. Optional: the n3 discs, and keeping the Hangar hero in view at 1024.

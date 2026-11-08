@@ -33,9 +33,9 @@ const COURSE = 10;
 const LANE_GAP = 1.2;
 const HULL_LENGTH = 1.15;
 /** the widest a hull may be across its lane: clear of the buoys at BUOY_Z (re-review v2: wide-winged hulls read as sailing sideways) */
-const HULL_BEAM = 0.66;
+const HULL_BEAM = 0.9;
 /** buoys ride this far to one side of the hull's path */
-const BUOY_Z = 0.42;
+const BUOY_Z = 0.5;
 /** camera elevation: high enough that the lead reads across lanes at a glance (re-review v2, n-e), low enough to read the hulls */
 const ELEVATION = THREE.MathUtils.degToRad(40);
 const CHILI = '#d73b3e';
@@ -163,23 +163,39 @@ function Lane({ lane, z }: { lane: ArenaLane; z: number }) {
   );
 }
 
-/** Keeps the whole course in frame at any stage aspect. */
+/** Camera distance along the elevation ray; with an orthographic camera it sets no scale, only the fog's reach. */
+const CAMERA_DIST = 12;
+
+/**
+ * The visible size, in scene units, that must fit: the course plus a hull length past each end (a hull
+ * on the finish line is never cropped), and every lane's depth foreshortened by the elevation plus the
+ * posts' height.
+ */
+export function arenaExtent(lanes: number): { width: number; height: number } {
+  return { width: COURSE + 2 * HULL_LENGTH + 0.4, height: lanes * LANE_GAP * Math.sin(ELEVATION) + 1.4 };
+}
+
+/** Pixels per scene unit that keep the whole course in frame at any stage aspect. */
+export function arenaZoom(px: { width: number; height: number }, lanes: number): number {
+  const e = arenaExtent(lanes);
+  return Math.min(px.width / e.width, px.height / e.height);
+}
+
+/**
+ * Keeps the whole course in frame. The camera is orthographic, so there is no perspective: the same
+ * score sits at the same x on screen in every lane, and the lead reads at a glance (re-review 2, n-e).
+ */
 function Fit({ lanes }: { lanes: number }) {
-  const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
+  const camera = useThree((s) => s.camera) as THREE.OrthographicCamera;
   const size = useThree((s) => s.size);
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
-    const aspect = size.width / Math.max(1, size.height);
-    const half = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    // the lanes' depth is foreshortened by the elevation; the course length must fit the width
-    const depth = lanes * LANE_GAP * Math.sin(ELEVATION) + 1.2;
-    // + a hull length past each end, so a hull on the finish line is never cropped
-    const dist = Math.max(5, (COURSE + 2 * HULL_LENGTH) / aspect / (2 * half), depth / (2 * half));
-    camera.position.set(0, dist * Math.sin(ELEVATION), dist * Math.cos(ELEVATION));
-    camera.lookAt(0, 0, 0);
+    camera.zoom = arenaZoom(size, lanes);
+    camera.position.set(0, CAMERA_DIST * Math.sin(ELEVATION), CAMERA_DIST * Math.cos(ELEVATION));
+    camera.lookAt(0, 0.25, 0);
     camera.updateProjectionMatrix();
     invalidate();
-  }, [camera, size.width, size.height, lanes, invalidate]);
+  }, [camera, size, lanes, invalidate]);
   return null;
 }
 
@@ -189,7 +205,8 @@ export default function Arena({ lanes, onContextLost }: { lanes: ArenaLane[]; on
     <div className="rg-arena" data-testid="rg-arena" data-lanes={lanes.length} data-winners={lanes.filter((l) => l.winner).length} aria-hidden="true">
       <Canvas
         dpr={[1, 1.5]}
-        camera={{ position: [0, 6, 8], fov: 30, near: 0.1, far: 60 }}
+        orthographic
+        camera={{ position: [0, 7.7, 9.2], zoom: 80, near: 0.1, far: 80 }}
         gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
         onCreated={({ gl, scene, camera }) => {
           if (import.meta.env.DEV) (window as unknown as { __arena?: unknown }).__arena = { scene, camera };
@@ -205,7 +222,8 @@ export default function Arena({ lanes, onContextLost }: { lanes: ArenaLane[]; on
         </Environment>
         <hemisphereLight args={['#fff6ea', '#1b1717', 1.6]} />
         <directionalLight position={[3, 6, 4]} intensity={2.6} />
-        <fog attach="fog" args={['#1b1717', 14, 34]} />
+        {/* the course sits 8–16 units from the camera: the fog only softens the far water */}
+        <fog attach="fog" args={['#1b1717', 20, 40]} />
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
           <planeGeometry args={[80, 80]} />
           <meshStandardMaterial color={WATER} metalness={0.35} roughness={0.55} />

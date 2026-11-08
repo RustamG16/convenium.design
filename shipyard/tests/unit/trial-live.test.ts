@@ -60,12 +60,12 @@ describe('scoreLive', () => {
     expect(s.criteria.coverage.points).toBe(17.5);
     expect(s.criteria.artifacts.points).toBe(7.5);
     expect(s.criteria.gates.points).toBe(15);
-    expect(s.criteria.preflight.points).toBe(20);
-    // economy pays for the share of required files delivered: 1 of 2
+    // pre-flight, economy and clarity pay for the share of required files delivered: 1 of 2
+    expect(s.criteria.preflight.points).toBe(10);
     expect(s.criteria.economy.points).toBe(5);
-    expect(s.criteria.clarity.points).toBe(5);
-    // Verified = the measured criteria only (artifacts, pre-flight, economy, clarity: 37.5 of 50), scaled to 100
-    expect(s.total).toBe(75);
+    expect(s.criteria.clarity.points).toBe(2.5);
+    // Verified = the measured criteria only (artifacts, pre-flight, economy, clarity: 25 of 50), scaled to 100
+    expect(s.total).toBe(50);
     // what the run says about itself (coverage, gates) is kept apart and never counted
     expect(s.reported).toEqual({ points: 32.5, max: 50 });
     expect(s.criteria.coverage.source).toBe('reported');
@@ -80,6 +80,14 @@ describe('scoreLive', () => {
     const s = scoreLive(dir, brief, { high: 1000 }, 0, 10, true);
     expect(s.facts.artifactsFound).toEqual(['01-audit.md']);
     expect(s.criteria.economy.points).toBe(5);
+  });
+
+  it('a run that delivers no required file scores 0 Verified, whatever else went right', () => {
+    const empty = mkdtempSync(join(tmpdir(), 'shipyard-empty-'));
+    mkdirSync(join(empty, '.olympus'), { recursive: true });
+    const s = scoreLive(empty, brief, { high: 1000 }, 0, 10, true);
+    expect(s.total).toBe(0);
+    rmSync(empty, { recursive: true, force: true });
   });
 
   it('a gate counts only when the run says it passed, not on any word', () => {

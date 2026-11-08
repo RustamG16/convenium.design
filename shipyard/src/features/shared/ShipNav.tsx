@@ -17,7 +17,7 @@ import { uniqueShipId } from '../../store/store';
 import { useStoreState } from '../../store/context';
 import { fixNames, fixTarget } from '../preflight/fix';
 import { useNotify } from './notices';
-import { variantName } from '../../domain/variant';
+import { copyName, variantName } from '../../domain/variant';
 
 export type ShipScreen = 'bridge' | 'voyage' | 'preflight';
 
@@ -34,7 +34,7 @@ export function useCloneToEdit(ship: Ship | null, land: (newId: string) => strin
   const ask = useCallback(() => setOpen(true), []);
   const confirm = () => {
     if (!ship) return;
-    const name = `${ship.name} copy`;
+    const name = copyName(ship.name, stored.map((x) => x.name));
     const taken = [...stored.map((x) => x.id), ...idx.kb.workflows.ships.map((w) => w.id)];
     const newId = uniqueShipId(taken, name);
     dispatch({ type: 'ship/clone', source: ship, name });

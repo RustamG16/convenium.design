@@ -203,7 +203,8 @@ function TwinsNote({ twins, names, testId }: { twins: string[][]; names: Map<str
   );
 }
 
-function Results({ runs, names, brief, entrants, tuningOnly, twins }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief; entrants: Ship[]; tuningOnly: boolean; twins: string[][] }) {
+function Results({ runs, names, brief, entrants, tuningOnly, twinTie, twins }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief; entrants: Ship[]; tuningOnly: boolean; twinTie: boolean; twins: string[][] }) {
+  const noWinner = tuningOnly || twinTie;
   const cmp = useMemo(() => compare(runs.map((r) => ({ ship: r.ship, total: r.score.total, criteria: r.score.criteria }))), [runs]);
   const winners = cmp.winners.map((w) => names.get(w) ?? w);
   return (
@@ -218,6 +219,10 @@ function Results({ runs, names, brief, entrants, tuningOnly, twins }: { runs: Dr
         {tuningOnly ? (
           <>
             No winner: these ships differ only in a model tier or an addendum. A dry run counts a tier only as cost and cannot read an addendum, so only a live run can compare them.
+          </>
+        ) : twinTie ? (
+          <>
+            No winner: {winners.join(' and ')} tie at <strong className="num">{fmt(cmp.topTotal)}</strong>, and they differ only in tuning, which a dry run cannot judge.
           </>
         ) : winners.length > 1 ? (
           <>
@@ -264,9 +269,9 @@ function Results({ runs, names, brief, entrants, tuningOnly, twins }: { runs: Dr
             <tr className="rg-total">
               <th scope="row">Total / 100</th>
               {runs.map((r) => (
-                <td key={r.ship} data-best={(!tuningOnly && cmp.winners.includes(r.ship)) || undefined}>
+                <td key={r.ship} data-best={(!noWinner && cmp.winners.includes(r.ship)) || undefined}>
                   <span className="num">{fmt(r.score.total)}</span>
-                  {!tuningOnly && cmp.winners.includes(r.ship) && <span className="rg-best">{cmp.winners.length > 1 ? 'First, tied' : 'First'}</span>}
+                  {!noWinner && cmp.winners.includes(r.ship) && <span className="rg-best">{cmp.winners.length > 1 ? 'First, tied' : 'First'}</span>}
                 </td>
               ))}
             </tr>
@@ -441,8 +446,11 @@ export default function RegattaPage() {
   const raced = useMemo(() => (race ? race.runs.map((r) => entrants.find((s) => s.id === r.ship)).filter((s): s is Ship => !!s) : []), [race, entrants]);
   const tuningOnly = useMemo(() => onlyTuningDiffers(raced), [raced]);
   const twins = useMemo(() => (tuningOnly ? [] : tuningTwins(raced)), [raced, tuningOnly]);
-  // a tuning-only race has no winner anywhere: not in the copy, the 2D course or the arena (re-review v2, N1)
-  const shownWinners = tuningOnly ? [] : winners;
+  // twins that tie at the top have not been told apart either: no winner then (re-review 2, new-b)
+  const twinTie = !tuningOnly && winners.length > 1 && twins.some((g) => winners.every((w) => g.includes(w)));
+  // a race with no judgeable winner shows none anywhere: not in the copy, the 2D course or the arena (re-review v2, N1)
+  const noWinner = tuningOnly || twinTie;
+  const shownWinners = noWinner ? [] : winners;
 
   useEffect(() => {
     if (!race || finished) return;
@@ -507,9 +515,13 @@ export default function RegattaPage() {
                     {race.brief.title} · {race.runs.length} ships <TruthLabel truth="Simulated" />
                   </p>
                   {finished && cmp && (
-                    <p ref={headRef} tabIndex={-1} className="rg-head-winner" data-testid="rg-head-winner" data-tuning-only={tuningOnly || undefined}>
+                    <p ref={headRef} tabIndex={-1} className="rg-head-winner" data-testid="rg-head-winner" data-tuning-only={tuningOnly || undefined} data-no-winner={noWinner || undefined}>
                       {tuningOnly ? (
                         <>These ships differ only in tuning, which a dry run cannot judge. Run them live to compare.</>
+                      ) : twinTie ? (
+                        <>
+                          No winner: {winners.map((w) => names.get(w) ?? w).join(' and ')} tie at <strong className="num">{fmt(cmp.topTotal)}</strong>, and they differ only in tuning, which a dry run cannot judge.
+                        </>
                       ) : winners.length > 1 ? (
                         <>
                           A tie at <strong className="num">{fmt(cmp.topTotal)}</strong>: {winners.map((w) => names.get(w) ?? w).join(' and ')}.
@@ -556,7 +568,7 @@ export default function RegattaPage() {
               </p>
               {finished && (
                 <div ref={resultsRef} tabIndex={-1} className="rg-results-focus">
-                  <Results runs={race.runs} names={names} brief={race.brief} entrants={entrants} tuningOnly={tuningOnly} twins={twins} />
+                  <Results runs={race.runs} names={names} brief={race.brief} entrants={entrants} tuningOnly={tuningOnly} twinTie={twinTie} twins={twins} />
                   <p className="muted sheet-line">
                     Saved as dry trial records.{' '}
                     <button type="button" className="btn btn-text btn-sm" onClick={() => setTab('board')}>

@@ -5,7 +5,7 @@ import { preflight } from '../../src/domain/preflight';
 import { isStage, type Ship } from '../../src/domain/schema';
 import { defaultShip } from '../../src/domain/ship';
 import { shipHash, simulate } from '../../src/domain/trial';
-import { effectiveModel, isTuned, normalizeOverride, setOverride, variantName } from '../../src/domain/variant';
+import { copyName, effectiveModel, isTuned, normalizeOverride, setOverride, variantName } from '../../src/domain/variant';
 import { BRIEFS } from '../../src/domain/briefs';
 import { loadIndexFromDisk } from './helpers';
 
@@ -98,5 +98,13 @@ describe('onlyTuningDiffers (finish review v2, M1)', () => {
     c.voyage = c.voyage.slice(0, -1);
     expect(onlyTuningDiffers([a, c])).toBe(false);
     expect(onlyTuningDiffers([a])).toBe(false);
+  });
+});
+
+describe('copyName', () => {
+  it('numbers a second copy so two copies of one ship never share a name (re-review 2, new-a)', () => {
+    expect(copyName('SS Full Run', [])).toBe('SS Full Run copy');
+    expect(copyName('SS Full Run', ['SS Full Run copy'])).toBe('SS Full Run copy 2');
+    expect(copyName('SS Full Run', ['SS Full Run copy', 'SS Full Run copy 2'])).toBe('SS Full Run copy 3');
   });
 });

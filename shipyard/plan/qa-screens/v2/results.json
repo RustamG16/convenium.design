@@ -14,10 +14,10 @@
   "axe": [],
   "console": [
    "warning: THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.",
-   "warning: [.WebGL-0x544400426200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-   "warning: [.WebGL-0x544400426200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-   "warning: [.WebGL-0x544400426200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
-   "warning: [.WebGL-0x544400426200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+   "warning: [.WebGL-0xca402fe3200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+   "warning: [.WebGL-0xca402fe3200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+   "warning: [.WebGL-0xca402fe3200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+   "warning: [.WebGL-0xca402fe3200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
   ]
  },
  "regatta-board@1440": {

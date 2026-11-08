@@ -5,6 +5,7 @@
 // picked, the inspector with its compare strip. A library ship is a template; with no custom ship the
 // header offers to clone SS Full Run.
 import { useMemo } from 'react';
+import { copyName } from '../../domain/variant';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import '../../styles/ship.css';
 import type { Anchor } from '../../domain/schema';
@@ -35,7 +36,7 @@ export default function ArmoryPage() {
   };
   const cloneDefault = () => {
     if (!library) return;
-    const name = `${library.name} copy`;
+    const name = copyName(library.name, ships.map((x) => x.name));
     const id = uniqueShipId([...ships.map((s) => s.id), ...idx.kb.workflows.ships.map((w) => w.id)], name);
     dispatch({ type: 'ship/clone', source: library, name });
     pick({ ship: id, member: library.crew[0].id });
