@@ -20,6 +20,7 @@ import { CRITERIA, shipHash, simulate, type Brief, type DryTrial, type TrialEven
 import { useKb } from '../../kb/context';
 import { useReducedMotion } from '../../lib/preferences';
 import { useStoreState } from '../../store/context';
+import { LIVE_AVAILABLE, LiveTrialButton } from './LiveTrial';
 import { recordId, trials, useTrials } from './records';
 
 const MIN_SHIPS = 2;
@@ -158,7 +159,7 @@ function Course({ runs, names, step }: { runs: DryTrial[]; names: Map<string, st
 
 /* ---------------------------------------------------------------------------------------- results */
 
-function Results({ runs, names, brief }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief }) {
+function Results({ runs, names, brief, entrants }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief; entrants: Ship[] }) {
   const cmp = useMemo(() => compare(runs.map((r) => ({ ship: r.ship, total: r.score.total, criteria: r.score.criteria }))), [runs]);
   const winners = cmp.winners.map((w) => names.get(w) ?? w);
   return (
@@ -230,6 +231,15 @@ function Results({ runs, names, brief }: { runs: DryTrial[]; names: Map<string, 
             <li key={r.ship}>
               <strong>{names.get(r.ship)}:</strong> {lost.length ? `missing ${lost.join(', ')}.` : 'covers everything the brief asks for.'}{' '}
               <Link to={`/ship/${r.ship}/bridge`}>Tune its crew</Link> · <Link to={`/ship/${r.ship}/voyage`}>Edit its voyage</Link>
+              {LIVE_AVAILABLE && (() => {
+                const ship = entrants.find((x) => x.id === r.ship);
+                return ship ? (
+                  <>
+                    {' · '}
+                    <LiveTrialButton ship={ship} brief={brief} />
+                  </>
+                ) : null;
+              })()}
             </li>
           );
         })}
@@ -460,7 +470,7 @@ export default function RegattaPage() {
               </p>
               {finished && (
                 <div ref={resultsRef} tabIndex={-1} className="rg-results-focus">
-                  <Results runs={race.runs} names={names} brief={race.brief} />
+                  <Results runs={race.runs} names={names} brief={race.brief} entrants={entrants} />
                   <p className="muted sheet-line">
                     Saved as dry trial records.{' '}
                     <button type="button" className="btn btn-text btn-sm" onClick={() => setTab('board')}>

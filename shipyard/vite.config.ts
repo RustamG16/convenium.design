@@ -7,6 +7,7 @@ import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 import { shipyardForge } from './dev/forge.ts';
 import { shipyardLive } from './dev/live.ts';
+import { shipyardTrials } from './dev/trial.ts';
 import { describeIssues, shipSchema } from './src/domain/schema.ts';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -72,7 +73,7 @@ function shipyardDevSave(): Plugin {
 
 export default defineConfig({
   base: process.env.VITE_BASE || '/',
-  plugins: [react(), shipyardDevSave(), shipyardLive(root), shipyardForge(root)],
+  plugins: [react(), shipyardDevSave(), shipyardLive(root), shipyardForge(root), shipyardTrials(root)],
   server: { port: 5173, strictPort: true },
   preview: { port: 4173, strictPort: true },
   build: { sourcemap: false, target: 'es2022', chunkSizeWarningLimit: 1200 },

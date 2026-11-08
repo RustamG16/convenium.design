@@ -138,7 +138,8 @@ export function shipyardLive(shipyardRoot: string): Plugin {
 
       server.middlewares.use('/__shipyard/status', (req, res) => {
         if (req.method !== 'GET') return json(res, 405, { ok: false, error: 'GET only' });
-        return json(res, 200, { ok: true, stale, busy });
+        // `repo` lets the page export a run plan against this checkout when no folder is set yet
+        return json(res, 200, { ok: true, stale, busy, repo: repo.split('\\').join('/') });
       });
       server.middlewares.use('/__shipyard/rebuild', async (req, res) => {
         if (req.method !== 'POST') return json(res, 405, { ok: false, error: 'POST only' });

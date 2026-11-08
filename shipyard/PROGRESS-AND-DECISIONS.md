@@ -626,3 +626,53 @@ unit-tested; `verify.py` does not read `model`).
 
 **Not run:** a board with Verified records in a browser (that needs live trials, T23); the
 ranking logic is unit-tested.
+
+## T23: live trials (2026-11-08)
+
+- **Runner** (`dev/trial.ts`, wired into `vite.config.ts` as `shipyardTrials`, dev server only):
+  - estimate → typed confirmation (`run <ship>`) → start; one trial at a time;
+  - a scratch copy of the brief's fixture project (`fixtures/projects/landing-mini`) in the OS temp
+    folder, never the repo;
+  - `claude -p --output-format stream-json --verbose --max-turns N --allowedTools Read,Write,Edit,Glob,Grep`,
+    with the prompt on **stdin** (no shell quoting of a multi-line prompt), a 20-minute cap and no
+    permission-bypass flag (the fake refuses one);
+  - server-sent events, also logged to `shipyard/trials/<id>/` (now gitignored);
+  - cancel kills the process tree.
+- **Scoring:** from the run's own files. `run.json` gives coverage and gates, `.olympus/` files give
+  artifacts, `verify.py --plan` on the plan the run wrote gives pre-flight, the reported tokens give
+  economy, and the exit code gives clarity. The result is **Verified** only when a `run.json` exists;
+  otherwise it is Unavailable and nothing is saved.
+- **UI** (`src/features/regatta/LiveTrial.tsx`): **Run live…** per ship in the Regatta results, in
+  dev builds only. The dialog shows:
+  - the estimate: tokens low–high labelled Estimate, the turn cap, the time cap, the tools, the
+    scratch-folder note, and that the run uses the owner's Claude account;
+  - "CLI not found" when there is none;
+  - the typed phrase, then a log (`role="log"`) and Cancel;
+  - the result, with the scratch folder path.
+
+  A Verified finish is saved as a live trial record under the hashes the ship sailed with, and
+  places the ship on the leaderboard.
+- **`/__shipyard/status`** now returns `repo`, so a plan can be exported against this checkout when
+  no Convenium.Design folder is set.
+- **Fixed while testing:**
+  - `busy` reported a finished trial as still running, which blocked the next run;
+  - the phrase to type was upper-cased by the label style;
+  - long paths overflowed the dialog at 390.
+- **Windows note:** stopping `npm run dev` from a background task can leave the Vite `node.exe`
+  holding the port. End it with `taskkill /PID <pid> /T /F`.
+
+**Verified:**
+
+- typecheck and lint clean; vitest 307/307 (includes `trial-live.test.ts`);
+- `live-trial.spec.ts` 4/4 against a second dev server with `CLAUDE_BIN` set to
+  `tests/fixtures/fake-claude.mjs`:
+  - a complete run scored 94.2 with `verify.py --plan` CLEAN and placed SS Full Run first;
+  - cancel ended the run, and the fake's PID was gone afterwards;
+  - malformed output gave Unavailable and was not saved;
+  - the no-CLI path, on the normal dev server.
+- regatta, forge and live-kb specs green (9 passed, 3 skipped);
+- the dialog checked at 1440 and 390, with no horizontal scroll.
+
+**Not run:** a real live trial. There is no `claude` CLI on this machine's PATH, and a real run spends
+the owner's Claude usage, so it needs the CLI installed and the owner's go-ahead on the estimate. The
+timeout path (20 minutes) is not exercised end to end; it shares the cancel path's `killTree`.
