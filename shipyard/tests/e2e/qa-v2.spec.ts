@@ -62,6 +62,10 @@ const SHOTS: Shot[] = [
       await p.waitForURL(/ss-full-run-copy/);
       await p.goto('/#/');
       await p.getByTestId('ship-card').first().waitFor();
+      // the hero at the top of the page, not the first-ship toast over it (re-review v2, n-f)
+      const dismiss = p.getByTestId('toast-dismiss');
+      if (await dismiss.count()) await dismiss.click();
+      await p.evaluate(() => window.scrollTo(0, 0));
       await p.waitForTimeout(3000);
     },
   },

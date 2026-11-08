@@ -17,7 +17,7 @@ import { compare, leaderboard, overall, recordFromDry, type Current, type TrialR
 import { displayHull, type Ship } from '../../domain/schema';
 import { libraryShips, LIBRARY_EPOCH } from '../../domain/ship';
 import { CRITERIA, shipHash, simulate, type Brief, type DryTrial, type TrialEvent } from '../../domain/trial';
-import { onlyTuningDiffers } from '../../domain/variant';
+import { onlyTuningDiffers, tuningTwins } from '../../domain/variant';
 import { useKb } from '../../kb/context';
 import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
 import type { ArenaLane } from '../../scene/Arena';
@@ -189,7 +189,21 @@ function arenaLanes(runs: DryTrial[], entrants: Ship[], step: number, winners: s
 
 /* ---------------------------------------------------------------------------------------- results */
 
-function Results({ runs, names, brief, entrants, tuningOnly }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief; entrants: Ship[]; tuningOnly: boolean }) {
+/** Names the entrants that differ only in tuning inside a mixed race: their gap is a tier's cost, not a judgement. */
+function TwinsNote({ twins, names, testId }: { twins: string[][]; names: Map<string, string>; testId: string }) {
+  return (
+    <p className="muted prose-sm" data-testid={testId}>
+      {twins.map((g, i) => (
+        <span key={g.join()}>
+          {i > 0 && ' '}
+          {g.map((id) => names.get(id) ?? id).join(' and ')} differ only in tuning: the dry run cannot judge between them, so any gap between them is the tier&rsquo;s cost. Run them live to compare.
+        </span>
+      ))}
+    </p>
+  );
+}
+
+function Results({ runs, names, brief, entrants, tuningOnly, twins }: { runs: DryTrial[]; names: Map<string, string>; brief: Brief; entrants: Ship[]; tuningOnly: boolean; twins: string[][] }) {
   const cmp = useMemo(() => compare(runs.map((r) => ({ ship: r.ship, total: r.score.total, criteria: r.score.criteria }))), [runs]);
   const winners = cmp.winners.map((w) => names.get(w) ?? w);
   return (
@@ -215,6 +229,7 @@ function Results({ runs, names, brief, entrants, tuningOnly }: { runs: DryTrial[
           </>
         )}
       </p>
+      {twins.length > 0 && <TwinsNote twins={twins} names={names} testId="rg-twins" />}
       <div className="rg-table-wrap" tabIndex={0} role="region" aria-label="Score by criterion">
         <table className="rg-table" data-testid="rg-table">
           <thead>
@@ -423,7 +438,11 @@ export default function RegattaPage() {
   const finished = race !== null && step >= REVEAL_BEATS;
   const cmp = useMemo(() => (race ? compare(race.runs.map((r) => ({ ship: r.ship, total: r.score.total, criteria: r.score.criteria }))) : null), [race]);
   const winners = cmp?.winners ?? [];
-  const tuningOnly = useMemo(() => (race ? onlyTuningDiffers(race.runs.map((r) => entrants.find((s) => s.id === r.ship)).filter((s): s is Ship => !!s)) : false), [race, entrants]);
+  const raced = useMemo(() => (race ? race.runs.map((r) => entrants.find((s) => s.id === r.ship)).filter((s): s is Ship => !!s) : []), [race, entrants]);
+  const tuningOnly = useMemo(() => onlyTuningDiffers(raced), [raced]);
+  const twins = useMemo(() => (tuningOnly ? [] : tuningTwins(raced)), [raced, tuningOnly]);
+  // a tuning-only race has no winner anywhere: not in the copy, the 2D course or the arena (re-review v2, N1)
+  const shownWinners = tuningOnly ? [] : winners;
 
   useEffect(() => {
     if (!race || finished) return;
@@ -505,6 +524,7 @@ export default function RegattaPage() {
                       </button>
                     </p>
                   )}
+                  {finished && twins.length > 0 && <TwinsNote twins={twins} names={names} testId="rg-head-twins" />}
                 </div>
                 <div className="row" style={{ gap: 'var(--s2)' }}>
                   {!finished && (
@@ -527,16 +547,16 @@ export default function RegattaPage() {
               </div>
               {show3d && (
                 <Suspense fallback={<div className="rg-arena rg-arena-loading" aria-hidden="true" />}>
-                  <Arena lanes={arenaLanes(race.runs, entrants, step, winners)} onContextLost={() => setArenaLost(true)} />
+                  <Arena lanes={arenaLanes(race.runs, entrants, step, shownWinners)} onContextLost={() => setArenaLost(true)} />
                 </Suspense>
               )}
-              <Course runs={race.runs} names={names} step={step} winners={tuningOnly ? [] : winners} />
+              <Course runs={race.runs} names={names} step={step} winners={shownWinners} />
               <p className="rg-legend muted">
                 The course is 100 points long: each ship sails as far as its score. <span className="rg-key" data-kind="scores" /> stage that meets a need or makes a required artifact · <span className="rg-key" data-kind="plain" /> other stage · <span className="rg-key" data-kind="gate-req" /> gate the brief requires
               </p>
               {finished && (
                 <div ref={resultsRef} tabIndex={-1} className="rg-results-focus">
-                  <Results runs={race.runs} names={names} brief={race.brief} entrants={entrants} tuningOnly={tuningOnly} />
+                  <Results runs={race.runs} names={names} brief={race.brief} entrants={entrants} tuningOnly={tuningOnly} twins={twins} />
                   <p className="muted sheet-line">
                     Saved as dry trial records.{' '}
                     <button type="button" className="btn btn-text btn-sm" onClick={() => setTab('board')}>

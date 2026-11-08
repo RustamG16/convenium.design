@@ -33,7 +33,10 @@ if (mode === 'hang') {
 } else {
   mkdirSync('.olympus', { recursive: true });
   writeFileSync('.olympus/run.json', JSON.stringify({ phase_counts: { run_plan: 1, audit: 1, direction: 1, build: 1, qa: 1, finish: 1 }, gate_c: 'approved' }, null, 2));
-  for (const f of ['01-audit.md', '06-build-plan.md', '07-qa.md', '10-finish-review.md']) writeFileSync(`.olympus/${f}`, `# ${f}\n`);
+  // real content, not a stub heading: the scorer ignores files under its size and shape floor
+  const body = (f) => `# ${f}\n\nWritten by the fake CLI for the live-trial e2e. ${'This line stands in for a real section of the document. '.repeat(4)}\n\n- one finding with its evidence\n- one decision with its reason\n`;
+  if (mode === 'stubs') for (const f of ['01-audit.md', '06-build-plan.md', '07-qa.md', '10-finish-review.md']) writeFileSync(`.olympus/${f}`, `# ${f}\n`);
+  else for (const f of ['01-audit.md', '06-build-plan.md', '07-qa.md', '10-finish-review.md']) writeFileSync(`.olympus/${f}`, body(f));
   // as the kickoff asks: the exported plan becomes the run's own 00-run-plan.md
   if (existsSync('SHIP-PLAN.md')) writeFileSync('.olympus/00-run-plan.md', readFileSync('SHIP-PLAN.md', 'utf8'));
   say({ type: 'assistant', message: 'done' });

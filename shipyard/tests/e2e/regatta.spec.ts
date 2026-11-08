@@ -111,4 +111,17 @@ test('a tuned copy against its parent: the dry run says it cannot judge tuning (
   await expect(page.getByTestId('rg-head-winner')).toHaveAttribute('data-tuning-only', 'true');
   await expect(page.getByTestId('rg-winner')).toContainText('No winner');
   await expect(page.getByTestId('rg-lane-winner')).toHaveCount(0);
+  // nor in the arena: no post lights, no pennant (re-review v2, N1)
+  const arena = page.getByTestId('rg-arena');
+  if (await arena.count()) await expect(arena).toHaveAttribute('data-winners', '0');
+
+  // a mixed race names the tuning-only pair instead of letting a tier's cost read as a win (re-review v2, n-a)
+  await page.goto('/#/regatta?brief=landing-refresh&ships=ss-full-run,ss-full-run-copy,ss-abridged');
+  // a hash-only change keeps the finished race mounted: reload to get a fresh setup
+  await page.reload();
+  await page.getByTestId('rg-start').click();
+  await page.getByTestId('rg-skip').click();
+  await expect(page.getByTestId('rg-head-winner')).not.toHaveAttribute('data-tuning-only', 'true');
+  await expect(page.getByTestId('rg-head-twins')).toContainText('SS Full Run and SS Full Run copy differ only in tuning');
+  await expect(page.getByTestId('rg-twins')).toBeVisible();
 });

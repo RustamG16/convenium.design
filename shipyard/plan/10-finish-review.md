@@ -387,3 +387,110 @@ line is below the fold.
 - the Hangar with two or more ships;
 - the Playwright, phone and fake-CLI results;
 - the production bundle.
+
+
+---
+
+# 10 — Finish review v2, re-review after T26 (independent critic, award-rubric)
+
+**What the critic checked** (HEAD `717b8ce`, read-only):
+
+- **Read:**
+  - this file from line 206 onward;
+  - PROGRESS § T26, the 07-qa T26 section, `results.json` (32 entries, overflow 0, axe 0) and 12 § 2a;
+  - the v2 PNGs: regatta-results, hangar, hangar-fleet, bridge-tuning and forge;
+  - `git diff b39b42a 717b8ce` for src, dev, tests and fixtures.
+- **Re-ran:** `npm run typecheck` (clean) and `npx vitest run` (312/312, 29 files).
+- **Drove** the 5173 dev server with one-off Playwright scripts:
+  - 3-ship dry regattas at 1440 and 1024, timed, with mid-race and finish captures;
+  - a 4-ship regatta;
+  - clone, then critic tuned to haiku, then "Trial in the Regatta", then the race;
+  - the phone nav at 390, at the start and at the end of its scroll.
+- **Did not:**
+  - call apply, start or rebuild, or run the Playwright suites or the production preview;
+  - do a keyboard walk;
+  - run the mixed parent + variant + third-ship race to completion (the script stalled, so that finding is read from code).
+
+(Transcribed by the director from the critic's report.)
+
+## 1. Verdict: **ship with fixes**
+
+T26 is a real fix cycle:
+
+- The race now tells the truth: hull order equals score order, mid-race and at the finish.
+- The payoff is in view: the winner sentence sits at y=349 at 1440×900 and y=235 at 1024×768, and it takes focus.
+- The live Verified score is now measured only.
+
+One new defect undercuts the M1 fix: in a tuning-only race the 3D arena still crowns a winner.
+
+## 2. Score: **79 / 100** (was 75; target 85)
+
+Design 31/40, usability 25/30, creativity 14/20, content 9/10.
+
+| Row | Score | Δ vs 75 | What works | What is weak |
+|---|---|---|---|---|
+| Hierarchy and composition | 8 | +1 | The winner sentence is in the race head and the button scrolls the results to y=104. The single-ship Hangar shows its full ring | Results start at y=984 at 1440 (expected now that the head carries the result) |
+| Type, colour, material | 8 | 0 | The Winner chip, the lit post and the pennant stay in the system | The arena still reads like a debug view next to the Bridge |
+| Responsive intent | 8 | +1 | `regatta-results-360` shows all three hulls. 0 px overflow on all 32 | The nav fade is static: the active "HANGAR" is faded at scroll start and "FORGE" at scroll end |
+| Simplicity | 8 | 0 | One "Compare criterion by criterion" action | No change |
+| 3D against ArkhEthos | 7 | 0 | Hulls are 1.15 long, buoys are off the path, and only the winner's post is lit | ship-c and ship-d still sail sideways across lanes (`regatta-results-1440`, the critic's `arena-four`). Perspective puts the 65.7 hull level with the 89.3 hull on screen. n3 discs unchanged |
+| Gamification and ethics | 7 | +1 | Course reach comes from the score (`Arena.tsx` hullX, plus a unit test). Live Verified is measured only, a gate counts only on approved, passed or pass, and the copy says "No winner" | The arena's pennant contradicts "No winner" (N1). Mixed races still crown a tuning-only twin (n-a) |
+| Accessibility | 8 | 0 | Focus now lands on a visible head (`RegattaPage.tsx` headRef). axe 0 on all 32 | Still no keyboard walk |
+| Fidelity to DESIGN / plan 12 | 8 | +1 | § 2a "As shipped" is honest. 650 ms per beat; the measured reveal is 7.1–7.2 s | No change |
+| Content and CTA coherence | 9 | 0 | Live dialog copy is accurate. "gate C held" | `LiveTrial.tsx:5` header is stale ("left a run.json is saved as Verified") |
+
+**Delivery risk: medium.** Live trials have never run, and the `.cmd` path may fail on this machine (n-b).
+
+## 3. Previous findings
+
+| # | Status | Evidence |
+|---|---|---|
+| M1 | **Partly fixed** | The 2D head and table say "No winner", with no First marks (tuning-only run: 89.3 vs 89 at 1440). The arena still lights the parent's post and pennant (N1). Mixed races are not covered (n-a) |
+| M2 | Fixed (in code) | `dev/trial.ts` scoreLive: source measured or reported, total = measured scaled to 100. Verified only when exit code is 0. Gate regex |
+| M3 | Fixed | `hullX(reach, progress)`; `arena.test.ts`; mid-race capture is in score order; one post lit |
+| M4 | Partly fixed | `pickBin` prefers `.exe` then `.cmd`; dialog copy and fixtures are done. No smoke trial (disclosed). See n-b |
+| M5 | Fixed | `rg-head-winner` is focused and in view at both widths |
+| m1 | Fixed | `hangar-1440.png` |
+| m2 | Partly fixed | The fade exists but ignores scroll position (390 captures) |
+| m3 | Fixed | Arena drawn at 1024 and 360; 3D Bridge; 32 screens |
+| m4 | Partly fixed | Length and buoys fixed. `HEADING` π/2 is wrong for ship-c and ship-d |
+| m5 | Fixed | `STEP_MS` 650 |
+| m6 | Fixed (amended) | `12-build-plan-v2.md:36` |
+| m7 | Fixed | The URL became `ships=ss-full-run,ss-full-run-copy` |
+| m8 | Fixed | `TuningCard.tsx:98-100` |
+| m9 | Fixed | `domain/trial.ts:148`, `LiveTrial.tsx:261` |
+| m10 | Fixed | `tokensFrom` counts input + output (unit test) |
+| m11 | Fixed (not re-run by the critic) | `prod-readonly.spec.ts` checks the bundle strings |
+| m12 | Not fixed (owner's call) | 27 `M` in git status |
+| n3 | Not fixed | `bridge-tuning-1440.png` |
+
+## 4. New findings
+
+### Major
+
+**N1. In a tuning-only race the 3D arena celebrates a winner the copy says does not exist.**
+
+- `RegattaPage.tsx` passes the raw `winners` to `arenaLanes(...)`, while Course receives `tuningOnly ? [] : winners`.
+- The haiku-variant race shows a gold pennant and a lit post on SS Full Run directly under "These ships differ only in tuning".
+- With an addendum-only variant, both posts would light.
+- *Fix:* pass `tuningOnly ? [] : winners` to `arenaLanes`, and add an e2e assert that no lane is a winner in the arena state.
+
+### Minor
+
+- **n-a. Mixed races.** `onlyTuningDiffers` is all-or-nothing. Parent, tuned copy and a third ship gives "First, tied" or a 0.3-point "win" between the twins (read from code). *Fix:* detect tuning-only pairs and annotate them in the head and the table.
+- **n-b. A `.cmd` path with a space** (inferred, not run). `spawn(bin, …, { shell: true })` does not quote `bin`. With npm's default `C:\Users\<user>\AppData\Roaming\npm\claude.cmd`, cmd.exe splits the path at the space. *Fix:* quote `bin` when `shell` is true, or resolve the shim's `cli.js` and run it through the existing `script` branch.
+- **n-c. The measured live score rewards doing little.** Artifacts count by file presence only, and economy rewards fewer tokens. A run that writes stub files and a valid plan, then stops, nears 100. *Fix:*
+  - require a minimum size or headings per artifact;
+  - score economy only once artifacts are present.
+- **n-d. The prompt does not name the accepted gate values.** The run is not told to write `approved`, so its reported gates may read 0. *Fix:* name the values in the prompt.
+- **n-e. The arena lead is hard to read across lanes.** *Fix:* a flatter camera, or a score tick at each hull on the finish line.
+- **n-f. The `hangar-fleet-*` captures are weak.** They are scrolled, and the "Commission granted" toast covers the hero. *Fix:* recapture at scroll 0 with the toast dismissed.
+- **n-g. The nav mask is static.** *Fix:* toggle each end's fade from `scrollLeft`.
+
+## 5. To reach 85+
+
+1. N1, plus the ship-c and ship-d headings measured from above (each about +1).
+2. n-a pairwise tuning detection, and n-c minimum-content artifacts, so that "Verified" means quality and not file presence.
+3. One owner-approved real smoke trial, after n-b is fixed. This is the largest remaining risk.
+4. A keyboard Tab walk of the Regatta, Forge and Tuning screens, and a scroll-aware nav fade.
+5. Optional but visible: the n3 discs, and an arena camera or score ticks so the lead reads at a glance.

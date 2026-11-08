@@ -87,10 +87,21 @@ export function variantName(name: string, taken: Iterable<string>): string {
  * as cost and never reads an addendum — so the Regatta says so instead of naming a winner (finish
  * review v2, M1).
  */
+const shapeOf = (s: Ship) => JSON.stringify({ crew: s.crew.map((m) => [m.id, m.agent, m.loadout.map((l) => l.skill)]), voyage: s.voyage });
+const tuningOf = (s: Ship) => JSON.stringify(s.crew.map((m) => m.override ?? null));
+
 export function onlyTuningDiffers(ships: readonly Ship[]): boolean {
   if (ships.length < 2) return false;
-  const shape = (s: Ship) => JSON.stringify({ crew: s.crew.map((m) => [m.id, m.agent, m.loadout.map((l) => l.skill)]), voyage: s.voyage });
-  const tuning = (s: Ship) => JSON.stringify(s.crew.map((m) => m.override ?? null));
-  const first = shape(ships[0]);
-  return ships.every((s) => shape(s) === first) && new Set(ships.map(tuning)).size > 1;
+  const first = shapeOf(ships[0]);
+  return ships.every((s) => shapeOf(s) === first) && new Set(ships.map(tuningOf)).size > 1;
+}
+
+/**
+ * Groups of entrants (ids, in race order) that share crew, loadouts and voyage and differ only in
+ * tuning: a dry run cannot judge between them, so a mixed race names them (re-review v2, n-a).
+ */
+export function tuningTwins(ships: readonly Ship[]): string[][] {
+  const groups = new Map<string, Ship[]>();
+  for (const s of ships) groups.set(shapeOf(s), [...(groups.get(shapeOf(s)) ?? []), s]);
+  return [...groups.values()].filter((g) => g.length > 1 && new Set(g.map(tuningOf)).size > 1).map((g) => g.map((s) => s.id));
 }

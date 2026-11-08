@@ -746,3 +746,41 @@ the arena.
 - fake-CLI live trials 4/4;
 - production preview 2/2;
 - QA v2 recapture: 32 screens, axe 0, overflow 0.
+
+## T27: re-review fix cycle (2026-11-08)
+
+The critic's re-review of T26 (`plan/10-finish-review.md`, second v2 section, HEAD `717b8ce`) scored
+**79 / 100**, up from 75. Every new finding and its status:
+
+| # | Finding | Status |
+|---|---|---|
+| N1 | In a tuning-only race the arena still crowns a winner | **Fixed.** The page passes one list, `shownWinners` (empty when tuning-only), to the arena and to the 2D course. The arena exposes `data-winners`, and the tuned-copy e2e asserts it is 0. |
+| n-a | Mixed races crown a tuning-only twin | **Fixed.** `tuningTwins(ships)` (`domain/variant.ts`) finds entrants that share crew, loadouts and voyage and differ only in tuning. The race head and the results name them: "… differ only in tuning: the dry run cannot judge between them, so any gap between them is the tier's cost. Run them live to compare." Covered by e2e (parent + copy + SS Abridged). |
+| n-b | A `.cmd` path with a space breaks the spawn | **Fixed.** `shellQuote(bin)` quotes the path when cmd.exe runs it (unit test). Still not run against a real CLI. |
+| n-c | The measured score rewards stub files and stopping early | **Fixed.** An artifact counts only with real content: Markdown of at least 300 bytes with a heading and two body lines, or JSON that parses (`substantial()`). Economy is scaled by the share of required files delivered. Unit tests cover both; the fake CLI writes real bodies and keeps a `stubs` mode. |
+| n-d | The prompt does not name the accepted gate values | **Fixed.** The prompt says each gate is "approved", "passed" or "pass" only when actually passed, and that every required file needs a heading and real content. |
+| n-e | The arena lead is hard to read across lanes | **Fixed.** The camera is at 40° (was 32°), lanes are 1.2 apart (was 1.5), and the buoys sit 0.42 to the side. The four-ship race reads in score order on screen. A 46° camera was tried and rejected: it backed off so far the hulls shrank. |
+| m4 residue | ship-c and ship-d "sail sideways" | **Measured and fixed differently.** A top-down capture showed all four hulls already bow-first. ship-c and ship-d are wider across their wings than they are long, and the old scale (by the longest side) let the wings span the lanes. `hullScale(length, beam)` now fits each hull to 1.15 long or 0.66 wide, whichever is smaller (unit test). |
+| n-f | The `hangar-fleet` captures are scrolled, with a toast | **Fixed.** The harness dismisses the toast and scrolls to the top before capture. |
+| n-g | The nav fade is static | **Fixed.** `App.tsx` sets `data-more-start` and `data-more-end` from `scrollLeft`, so only an end with more to scroll fades. |
+| content | The `LiveTrial.tsx` header was stale | **Fixed.** It now describes what is measured and what is Model-reported. |
+| keyboard | No keyboard walk on v2 | **Done, as a permanent spec.** `tests/e2e/keyboard-v2.spec.ts` tabs through Regatta setup and results, the Forge, and the Bridge with its tuning card. Every stop must be visible with a visible focus indicator, and a race must start, skip and land on the winner sentence by keyboard alone. 2/2. |
+| n3 | Orbit items above the captain's head | **Unchanged.** They now form an arc, not the old clump. Moving them is a design call outside this cycle. |
+| m12 | 27 v1 PNGs modified, uncommitted | **Unchanged, the owner's call.** |
+
+**Still not done:** a real live trial (no `claude` CLI here; it also needs the owner's go-ahead on
+the estimate), and an arena frame-rate measurement.
+
+**Verified:**
+
+- typecheck and lint clean;
+- vitest 316/316;
+- detector 0;
+- `test:plans` 4/4;
+- `verify.py` CLEAN;
+- full desktop Playwright 112 passed, 0 failed, 18 skipped;
+- phone 1/1;
+- fake-CLI 4/4;
+- keyboard walk 2/2;
+- production preview 2/2;
+- QA v2 recapture: 32 screens, axe 0, overflow 0.

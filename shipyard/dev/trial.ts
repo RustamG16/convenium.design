@@ -77,6 +77,11 @@ export function claudeBin(): string | null {
  * The argv for one trial. Asserted by the unit test: no bypass flag ever appears. The prompt goes on
  * stdin (`claude -p` reads it there), so no shell ever has to quote a multi-line prompt.
  */
+/** cmd.exe splits an unquoted path at its spaces (C:\Users\First Last\...\claude.cmd); quote it when the shell runs it (re-review v2, n-b). */
+export function shellQuote(path: string): string {
+  return /^".*"$/.test(path) ? path : `"${path}"`;
+}
+
 export function trialArgs(maxTurns: number): string[] {
   return ['-p', '--output-format', 'stream-json', '--verbose', '--max-turns', String(maxTurns), '--allowedTools', ALLOWED_TOOLS.join(',')];
 }
@@ -129,6 +134,29 @@ export interface LiveScore {
  * the plan the run wrote, the tokens the CLI reported and the exit code. Reported by the run (never
  * ranked, finish review v2 M2): coverage and gates, which come from the run's own run.json.
  */
+/** Smallest file that counts as a required artifact: a stub heading is not a deliverable (re-review v2, n-c). */
+export const MIN_ARTIFACT_BYTES = 300;
+
+/** A required artifact counts when it has real content: a Markdown file of at least MIN_ARTIFACT_BYTES with a heading and body lines, or a JSON file that parses. */
+export function substantial(path: string): boolean {
+  let text: string;
+  try {
+    text = readFileSync(path, 'utf8');
+  } catch {
+    return false;
+  }
+  if (/\.json$/i.test(path)) {
+    try {
+      JSON.parse(text);
+      return text.trim().length > 2;
+    } catch {
+      return false;
+    }
+  }
+  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  return Buffer.byteLength(text, 'utf8') >= MIN_ARTIFACT_BYTES && lines.some((l) => l.startsWith('#')) && lines.filter((l) => !l.startsWith('#')).length >= 2;
+}
+
 export function scoreLive(dir: string, brief: LiveBrief, est: { high: number }, exitCode: number | null, tokens: number | null, planClean: boolean | null): LiveScore {
   const olympus = join(dir, '.olympus');
   let run: Record<string, unknown> | null = null;
@@ -139,7 +167,8 @@ export function scoreLive(dir: string, brief: LiveBrief, est: { high: number }, 
   }
   const counts = (run?.phase_counts ?? {}) as Record<string, number>;
   const files = existsSync(olympus) ? readdirSync(olympus) : [];
-  const found = brief.requiredArtifacts.map((a) => basename(a).replace(/ per site$/, '')).filter((a) => files.includes(a));
+  const found = brief.requiredArtifacts.map((a) => basename(a).replace(/ per site$/, '')).filter((a) => files.includes(a) && substantial(join(olympus, a)));
+  const share = brief.requiredArtifacts.length ? found.length / brief.requiredArtifacts.length : 1;
   const covered = brief.needs.filter((n) => (PHASE_KEYS[n.phase] ?? []).some((k) => (counts[k] ?? 0) > 0));
   // a gate counts only when the run says it was passed, not on any word
   const gateDone = (g: string) => /^(approved|passed|pass)$/i.test(String(run?.[`gate_${g.toLowerCase()}`] ?? ''));
@@ -147,10 +176,11 @@ export function scoreLive(dir: string, brief: LiveBrief, est: { high: number }, 
   const r1 = (n: number) => Math.round(n * 10) / 10;
   const criteria = {
     coverage: { source: 'reported' as const, points: r1((35 * covered.length) / brief.needs.length), max: 35, why: `${covered.length} of ${brief.needs.length} needs have a phase the run says it ran (its run.json)` },
-    artifacts: { source: 'measured' as const, points: r1(brief.requiredArtifacts.length ? (15 * found.length) / brief.requiredArtifacts.length : 15), max: 15, why: `${found.length} of ${brief.requiredArtifacts.length} required files found in .olympus/` },
+    artifacts: { source: 'measured' as const, points: r1(brief.requiredArtifacts.length ? (15 * found.length) / brief.requiredArtifacts.length : 15), max: 15, why: `${found.length} of ${brief.requiredArtifacts.length} required files in .olympus/ with real content (a heading, body lines, at least ${MIN_ARTIFACT_BYTES} bytes)` },
     gates: { source: 'reported' as const, points: r1(brief.gates.length ? (15 * gates.length) / brief.gates.length : 15), max: 15, why: `${gates.length} of ${brief.gates.length} ${brief.gates.length === 1 ? 'gate' : 'gates'} the run says it passed (its run.json)` },
     preflight: { source: 'measured' as const, points: planClean ? 20 : 0, max: 20, why: planClean === null ? 'the run wrote no .olympus/00-run-plan.md' : planClean ? 'verify.py --plan CLEAN on the plan the run wrote' : 'verify.py --plan found problems' },
-    economy: { source: 'measured' as const, points: tokens === null ? 0 : tokens <= est.high ? 10 : Math.max(0, r1(10 - (10 * (tokens - est.high)) / est.high)), max: 10, why: tokens === null ? 'token use not reported' : `${tokens} tokens against an estimate of at most ${est.high}` },
+    // economy pays only for the work the run left: a run that stops early cannot win on thrift (re-review v2, n-c)
+    economy: { source: 'measured' as const, points: tokens === null ? 0 : r1(share * (tokens <= est.high ? 10 : Math.max(0, 10 - (10 * (tokens - est.high)) / est.high))), max: 10, why: tokens === null ? 'token use not reported' : `${tokens} tokens against an estimate of at most ${est.high}, scaled by the share of required files delivered` },
     clarity: { source: 'measured' as const, points: exitCode === 0 ? 5 : 0, max: 5, why: exitCode === 0 ? 'the run ended cleanly' : `the run ended with code ${exitCode}` },
   };
   const part = (src: 'measured' | 'reported') => Object.values(criteria).filter((c) => c.source === src);
@@ -264,11 +294,12 @@ export function shipyardTrials(shipyardRoot: string): Plugin {
         trials.set(id, t);
         current = t;
 
-        const prompt = `${est.input.kickoff}\n\nThe ship's plan is in SHIP-PLAN.md in this folder. Work only inside this folder. Record the run in .olympus/run.json (phase_counts, gate_a/gate_b/gate_c) and write your own .olympus/00-run-plan.md.`;
+        const prompt = `${est.input.kickoff}\n\nThe ship's plan is in SHIP-PLAN.md in this folder. Work only inside this folder. Record the run in .olympus/run.json: phase_counts, and gate_a / gate_b / gate_c each set to "approved", "passed" or "pass" only when that gate was actually passed (any other value counts as not passed). Write your own .olympus/00-run-plan.md, and give every required file a heading and real content.`;
         const args = trialArgs(est.maxTurns);
         // a .mjs/.js CLAUDE_BIN (the e2e fake) runs under this Node; a .cmd shim needs the shell on Windows
         const script = /\.(mjs|cjs|js)$/i.test(bin);
-        const proc = spawn(script ? process.execPath : bin, script ? [bin, ...args] : args, { cwd: dir, windowsHide: true, detached: process.platform !== 'win32', shell: !script && process.platform === 'win32' && /\.(cmd|bat)$/i.test(bin), env: { ...process.env } });
+        const viaShell = !script && process.platform === 'win32' && /\.(cmd|bat)$/i.test(bin);
+        const proc = spawn(script ? process.execPath : viaShell ? shellQuote(bin) : bin, script ? [bin, ...args] : args, { cwd: dir, windowsHide: true, detached: process.platform !== 'win32', shell: viaShell, env: { ...process.env } });
         t.proc = proc;
         proc.stdin?.on('error', () => {
           /* a CLI that exits before reading its prompt reports through its exit code */

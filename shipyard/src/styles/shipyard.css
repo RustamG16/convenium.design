@@ -403,8 +403,16 @@
     min-width: 0;
     overflow-x: auto;
     scrollbar-width: none;
-    /* a clear fade at both ends says there is more to scroll (finish review v2, m2) */
-    mask-image: linear-gradient(to right, transparent 0, #000 var(--s4), #000 calc(100% - 44px), transparent 100%);
+    /* a fade at each end that has more to scroll says so (finish review v2, m2); App.tsx sets the attributes from scrollLeft (re-review n-g) */
+    --fade-start: 0px;
+    --fade-end: 0px;
+    mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-start), #000 calc(100% - var(--fade-end)), transparent 100%);
+  }
+  .site-header nav[data-more-start] {
+    --fade-start: var(--s5);
+  }
+  .site-header nav[data-more-end] {
+    --fade-end: 44px;
   }
   .site-header nav::-webkit-scrollbar {
     display: none;

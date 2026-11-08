@@ -2,8 +2,10 @@
  * v2 live trials, the client (dev server only; dev/trial.ts is the runner). One ship sails one brief
  * with headless Claude Code on a scratch copy of the brief's fixture project:
  *   estimate (labelled Estimate) → type "run <ship>" → Start → the run's own log → its score.
- * A finished run that left a run.json is saved as a Verified trial record; that is the only way a ship
- * gets a place on the leaderboard. The deployed build has no runner, so nothing here renders there.
+ * Only a run that exits cleanly is scored and saved as a Verified trial record, on what the dev server
+ * measures (files with real content, verify.py on its plan, tokens, how it ended); what the run's
+ * run.json says about itself is shown as Model-reported and never counted. A Verified record is the
+ * only way a ship gets a place on the leaderboard. The deployed build has no runner, so nothing here renders there.
  */
 import * as Dialog from '@radix-ui/react-dialog';
 import { useEffect, useId, useRef, useState } from 'react';

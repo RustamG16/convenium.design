@@ -30,10 +30,14 @@ export interface ArenaLane {
 }
 
 const COURSE = 10;
-const LANE_GAP = 1.5;
+const LANE_GAP = 1.2;
 const HULL_LENGTH = 1.15;
-/** camera elevation: low enough to read the hulls, high enough to see every lane */
-const ELEVATION = THREE.MathUtils.degToRad(32);
+/** the widest a hull may be across its lane: clear of the buoys at BUOY_Z (re-review v2: wide-winged hulls read as sailing sideways) */
+const HULL_BEAM = 0.66;
+/** buoys ride this far to one side of the hull's path */
+const BUOY_Z = 0.42;
+/** camera elevation: high enough that the lead reads across lanes at a glance (re-review v2, n-e), low enough to read the hulls */
+const ELEVATION = THREE.MathUtils.degToRad(40);
 const CHILI = '#d73b3e';
 const COTTON = '#edebdd';
 const MUTED = '#8a7f78';
@@ -47,6 +51,11 @@ const along = (frac: number) => START_X + (FINISH_X - START_X) * Math.max(0, Mat
 /** x of buoy j of n: spread evenly over the stretch the ship reaches. */
 export function buoyX(j: number, n: number, reach: number): number {
   return along((reach * (j + 1)) / Math.max(1, n));
+}
+
+/** One scale for a hull: as long as HULL_LENGTH, unless its beam would then cross into the buoys. */
+export function hullScale(length: number, beam: number): number {
+  return Math.min(HULL_LENGTH / (length || 1), HULL_BEAM / (beam || 1));
 }
 
 /** Where a hull sits: its score's share of the course, times the race's progress. */
@@ -76,15 +85,17 @@ function HullModel({ hull, color }: { hull: string; color: string }) {
     });
     clone.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(clone);
-    const size = box.getSize(new THREE.Vector3());
     clone.position.sub(box.getCenter(new THREE.Vector3()));
     const turn = new THREE.Group();
     turn.add(clone);
     // sail bow first down the lane
     turn.rotation.y = HEADING[hull] ?? 0;
+    turn.updateMatrixWorld(true);
+    // measured after the turn: x is the length down the course, z the beam across the lane
+    const size = new THREE.Box3().setFromObject(turn).getSize(new THREE.Vector3());
     const wrap = new THREE.Group();
     wrap.add(turn);
-    wrap.scale.setScalar(HULL_LENGTH / (Math.max(size.x, size.y, size.z) || 1));
+    wrap.scale.setScalar(hullScale(size.x, size.z));
     return wrap;
   }, [scene, color, hull]);
   useEffect(() => () => disposeMaterials(model), [model]);
@@ -129,7 +140,7 @@ function Lane({ lane, z }: { lane: ArenaLane; z: number }) {
         <meshBasicMaterial color={lane.color} transparent opacity={0.35} toneMapped={false} />
       </mesh>
       {/* buoys ride beside the hull's path, so a passing hull never hides one */}
-      <group position={[0, 0, -0.34]}>
+      <group position={[0, 0, -BUOY_Z]}>
         {lane.buoys.map((k, j) => (
           <Buoy key={j} kind={k} x={buoyX(j, n, lane.reach)} passed={j < passed} color={lane.color} />
         ))}
@@ -175,7 +186,7 @@ function Fit({ lanes }: { lanes: number }) {
 export default function Arena({ lanes, onContextLost }: { lanes: ArenaLane[]; onContextLost?: () => void }) {
   const z0 = -((lanes.length - 1) * LANE_GAP) / 2;
   return (
-    <div className="rg-arena" data-testid="rg-arena" data-lanes={lanes.length} aria-hidden="true">
+    <div className="rg-arena" data-testid="rg-arena" data-lanes={lanes.length} data-winners={lanes.filter((l) => l.winner).length} aria-hidden="true">
       <Canvas
         dpr={[1, 1.5]}
         camera={{ position: [0, 6, 8], fov: 30, near: 0.1, far: 60 }}

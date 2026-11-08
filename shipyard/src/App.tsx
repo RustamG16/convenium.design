@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 import { CommissionToast } from './features/logbook/CommissionToast';
 import { EquipProvider } from './features/armory/equip';
@@ -16,9 +16,28 @@ const BANNER_TEXT = {
 export function App() {
   const banner = usePersistBanner();
   const { pathname } = useLocation();
+  const navRef = useRef<HTMLElement>(null);
+  // a fade only at an end that has more to scroll, so the first and last tabs are never dimmed (re-review v2, n-g)
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const mark = () => {
+      const more = nav.scrollWidth - nav.clientWidth;
+      nav.toggleAttribute('data-more-start', nav.scrollLeft > 1);
+      nav.toggleAttribute('data-more-end', more - nav.scrollLeft > 1);
+    };
+    mark();
+    nav.addEventListener('scroll', mark, { passive: true });
+    window.addEventListener('resize', mark);
+    return () => {
+      nav.removeEventListener('scroll', mark);
+      window.removeEventListener('resize', mark);
+    };
+  }, []);
   // at phone widths the nav scrolls inside the header: keep the current section in view
   useEffect(() => {
     document.querySelector('.site-header nav a[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    navRef.current?.dispatchEvent(new Event('scroll'));
   }, [pathname]);
   // WCAG 2.4.11: a sheet's focus trap moves focus with preventScroll, which can leave the focused control below the fold. Bring it back clear of the sticky bars.
   useEffect(() => {
@@ -40,7 +59,7 @@ export function App() {
         <NavLink className="brand" to="/" end>
           Shipyard
         </NavLink>
-        <nav aria-label="Primary">
+        <nav aria-label="Primary" ref={navRef} data-testid="primary-nav">
           <NavLink to="/" end>
             Hangar
           </NavLink>
