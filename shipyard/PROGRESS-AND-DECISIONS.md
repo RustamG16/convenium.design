@@ -483,3 +483,52 @@ The working tree also holds unimported v2 drafts for T18–T23 (`dev/`, `domain/
 
 **Not run:** the Rebuild button end to end (the e2e drives the generator directly), and the
 error banner in a browser.
+
+## T19: the Forge (2026-11-08)
+
+- **`#/forge`** (dev server only; the nav lists it only under `import.meta.env.DEV`).
+  - Two Radix tabs, Agents and Skills. A rack on the left; the bench on the right.
+  - **Agent bench:** id, description, model tier, access, a route picker (search plus
+    checkboxes; it only offers skills the Forge would accept), phase, priority, activate-when, a
+    contract for new agents, and the crew card (name, title, pigment).
+  - **Skill bench:** id, category (from `/__shipyard/forge/catalog`), group, description, and a
+    SKILL.md body for new skills.
+  - Every change goes **Preview** (file list plus a coloured unified diff) → **Apply** (project.py
+    all + verify.py) → result (`git diff --stat` and the logs).
+  - Delete needs the id typed back.
+  - A success shows at page level, because the bench remounts when the live library swaps the new
+    KB in.
+- **The deployed build:** the route explains itself as read-only. The prod bundle carries no
+  `/__shipyard/forge` string.
+- **Bugs caught while building:**
+  - zod 4 refuses a `discriminatedUnion` with a repeated discriminator, so every request failed.
+    Now a plain `z.union`, with a parse test.
+  - `git diff --no-index` headers (and any warning) leaked temp paths into the diff. Now it
+    starts at the first hunk.
+  - An agent's own phase word (`measurement`) was dropped on save. Phase is now a free word, kept
+    as written.
+  - An agent edit overwrote the crew card's console phase. The crew phase is now set only on
+    create, and only to a pipeline phase.
+- **Phone:** the header nav scrolls inside the header below 768 px, so a fourth or fifth section
+  never makes the page scroll sideways. The current section scrolls into view.
+
+**Verified:**
+
+- typecheck and lint clean;
+- `forge.test.ts` 11/11, including a model-only edit changing exactly one line of one file;
+- `forge-rollback.test.ts` 1/1: a failing generator restores the exact bytes and removes the
+  created file, run on a throwaway repo;
+- `forge.spec.ts` 3/3:
+  - create a skill through the UI, apply, see "1 new skill" and the rack entry with no reload,
+    delete it, and the `git status` of library/ and every generated tree is identical afterwards;
+  - a taken id is refused by name;
+  - cross-origin gets a 403;
+- `prod-readonly.spec.ts` 1/1 against `vite preview`;
+- simplicity, motion and live-kb 36/36;
+- the 390 px layout checked by eye, with no horizontal scroll.
+
+**Not run:** creating an agent through the UI end to end (the plan is unit-tested), and the
+rollback through the real `verify.py`.
+
+**Deviation:** creating workflows from the Forge is cut (cut-order item 5). A workflow with no
+table already derives a voyage (T17).

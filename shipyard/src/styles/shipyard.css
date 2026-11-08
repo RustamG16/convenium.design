@@ -399,6 +399,17 @@
   }
   .site-header nav {
     gap: 0;
+    /* more sections than fit at 360: the nav scrolls inside the header, the page never does */
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to left, transparent 0, #000 var(--s4));
+  }
+  .site-header nav::-webkit-scrollbar {
+    display: none;
+  }
+  .site-header .brand {
+    flex: none;
   }
   .site-header nav a {
     padding: 0 var(--s2);

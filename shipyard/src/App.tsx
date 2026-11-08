@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet, useLocation } from 'react-router';
 import { CommissionToast } from './features/logbook/CommissionToast';
 import { EquipProvider } from './features/armory/equip';
 import { LibraryBanner } from './features/shared/LibraryBanner';
@@ -15,6 +15,11 @@ const BANNER_TEXT = {
 
 export function App() {
   const banner = usePersistBanner();
+  const { pathname } = useLocation();
+  // at phone widths the nav scrolls inside the header: keep the current section in view
+  useEffect(() => {
+    document.querySelector('.site-header nav a[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [pathname]);
   // WCAG 2.4.11: a sheet's focus trap moves focus with preventScroll, which can leave the focused control below the fold. Bring it back clear of the sticky bars.
   useEffect(() => {
     const onFocusIn = (e: FocusEvent) => {
@@ -41,6 +46,8 @@ export function App() {
           </NavLink>
           <NavLink to="/armory">Armory</NavLink>
           <NavLink to="/logbook">Logbook</NavLink>
+          {/* the Forge writes library/, so only the dev server lists it; the route still explains itself elsewhere */}
+          {import.meta.env.DEV && <NavLink to="/forge">Forge</NavLink>}
         </nav>
       </header>
       <LibraryBanner />
