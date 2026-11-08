@@ -446,3 +446,40 @@ still visible; it is T24.
 
 The working tree also holds unimported v2 drafts for T18–T23 (`dev/`, `domain/trial.ts`,
 `regatta.ts`, `LibraryBanner.tsx`), which this commit leaves out.
+
+## T18: live library (2026-11-08)
+
+- **Dev server (`dev/live.ts`, `apply: 'serve'`):**
+  - it watches `library/` and asks the generator itself whether the KB is stale
+    (`project.py shipyard --dry-run` reports "1 write"), then sends `shipyard:kb-stale`;
+  - it watches `public/data/knowledge-base.json` and sends `shipyard:kb` after 300 ms to settle;
+  - `POST /__shipyard/rebuild` runs `project.py all` then `verify.py`, one at a time;
+  - `GET /__shipyard/status` exists for pages opened after a change.
+  - It never regenerates on its own, so it cannot race Claude or the owner mid-edit. The KB file
+    is excluded from HMR.
+- **`KbProvider`:**
+  - it refetches with a version query and `no-store`;
+  - an unchanged `sourceHash` is a no-op;
+  - a file that fails validation never replaces the index: the last good library stays, and the
+    banner shows the error and its issues.
+  - `useKbLive()` gives stale, rebuilding, notice, rebuild and dismiss. In the deployed build
+    `import.meta.hot` is undefined, so it is disabled.
+- **`LibraryBanner`** (under the header; a polite status region):
+  - "Library changed · Rebuild";
+  - "Rebuilding…";
+  - "Library updated: 1 new skill" (from `diffKb`, auto-dismissed after 8 s);
+  - the error with its log.
+
+**Verified:**
+
+- typecheck and lint clean;
+- `live-kb.spec.ts` 2/2. A registry probe raised the stale banner; `project.py shipyard` brought
+  the card into the open Armory, the no-reload marker survived, and the KB bytes were identical
+  after the restore.
+- `simplicity` and `armory` specs 26/26 on a rerun. The first, cold run had 2 armory 3D failures,
+  recorded as a flake.
+- vitest 291/293. The 2 failures are the v1 ethics scans catching the uncommitted Regatta drafts;
+  T22 rewrites that test.
+
+**Not run:** the Rebuild button end to end (the e2e drives the generator directly), and the
+error banner in a browser.

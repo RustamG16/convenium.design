@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router';
 import { CommissionToast } from './features/logbook/CommissionToast';
 import { EquipProvider } from './features/armory/equip';
+import { LibraryBanner } from './features/shared/LibraryBanner';
 import { NoticeProvider } from './features/shared/notices';
 import { KbGate } from './kb/context';
 import { usePersistBanner } from './store/context';
@@ -42,6 +43,7 @@ export function App() {
           <NavLink to="/logbook">Logbook</NavLink>
         </nav>
       </header>
+      <LibraryBanner />
       {banner && (
         <p className="banner" role="status" data-testid="persist-banner">
           {BANNER_TEXT[banner]}

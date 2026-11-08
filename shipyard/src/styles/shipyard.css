@@ -52,6 +52,35 @@
   font-size: var(--stat);
 }
 
+/* v2 live library: the signal lamp under the header (dev server only) */
+.library-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  margin: 0;
+  padding: var(--s2) var(--s5);
+  background: var(--elevated);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--stat);
+}
+.library-banner .btn { min-height: 36px; padding: 0 var(--s3); font-size: 13px; }
+.library-lamp {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--chili);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--chili) 25%, transparent);
+}
+.library-banner[data-state='updated'] .library-lamp { background: var(--cotton); box-shadow: none; }
+.library-banner[data-state='error'] .library-lamp { background: var(--cherry); }
+.library-banner[data-state='rebuilding'] .library-lamp { animation: library-pulse 1.2s var(--ease) infinite alternate; }
+@keyframes library-pulse { to { opacity: 0.3; } }
+@media (prefers-reduced-motion: reduce) { .library-banner[data-state='rebuilding'] .library-lamp { animation: none; } }
+.library-log { flex-basis: 100%; }
+.library-log pre { max-height: 14rem; overflow: auto; margin: var(--s2) 0 0; padding: var(--s3); background: var(--bg); border-radius: var(--r-control); font-size: 12px; white-space: pre-wrap; }
+
 .page {
   max-width: var(--content);
   margin: 0 auto;

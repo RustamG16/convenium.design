@@ -21,10 +21,12 @@ export function parseKb(raw: unknown): KnowledgeBase {
 }
 
 /** Fetch the generated knowledge base from the app's own files and validate it. */
-export async function loadKb(signal?: AbortSignal): Promise<KnowledgeBase> {
+export async function loadKb(signal?: AbortSignal, version?: string | number): Promise<KnowledgeBase> {
   let res: Response;
   try {
-    res = await fetch(withBase('data/knowledge-base.json'), { signal });
+    // a live reload passes a version so neither the browser nor the dev server hands back the old file
+    const url = withBase('data/knowledge-base.json') + (version === undefined ? '' : `?v=${encodeURIComponent(String(version))}`);
+    res = await fetch(url, { signal, cache: version === undefined ? 'default' : 'no-store' });
   } catch (cause) {
     if (signal?.aborted) throw cause;
     throw new KbError('The knowledge base could not be loaded (network).');
