@@ -200,39 +200,60 @@ export const ORBIT_RADIUS = 0.4;
 export const ORBIT_LIFT = 0.2;
 
 /**
- * Orbit slots: artifacts circling a point above the head, 0.25 revolutions per second. The ring turns
- * the positions only; each artifact is counter-rotated so its face keeps toward the viewer (the old
- * tilt turned with the ring and showed a flat disc edge-on half the time, which read as a saucer).
+ * Orbit slots (DESIGN.md motion contract, finish review M3): the orbiters rest at fixed places round a
+ * point above the head; only the one active artifact orbits, at 0.25 revolutions per second, on a path
+ * a little wider and higher than the resting ones so it never passes through them. Each artifact keeps
+ * its face toward the viewer (a flat disc seen edge-on read as a saucer).
  */
+export const ACTIVE_ORBIT_WIDEN = 1.2;
+export const ACTIVE_ORBIT_LIFT = 0.06;
+
 export function OrbitArtifacts({ member, heightM, animate }: { member: SceneMember; heightM: number; animate: boolean }) {
-  const ring = useRef<THREE.Group>(null);
+  const pivots = useRef<(THREE.Group | null)[]>([]);
   const facing = useRef<(THREE.Group | null)[]>([]);
   const orbiters = member.loadout.filter((a) => a.anchor === 'orbit');
   const fresh = useFresh(orbiters.map((a) => `${a.index}-${a.skill}`));
   const angle = useRef(0);
+  const phaseOf = (i: number) => (orbiters[i].index / Math.max(2, orbiters.length)) * Math.PI * 2 + Math.PI / 2;
   useFrame((_, dt) => {
     if (animate) angle.current += ACTIVE_RPS * Math.PI * 2 * dt;
-    if (ring.current) ring.current.rotation.y = angle.current;
-    // keeps toward the viewer within +-0.8 rad: enough turn that the mesh reads as an object, never edge-on
-    for (const f of facing.current) if (f) f.rotation.y = -angle.current + (animate ? 0.8 * Math.sin(angle.current * 2) : 0.5);
+    orbiters.forEach((a, i) => {
+      const moving = a.skill === member.active && animate;
+      const turn = moving ? angle.current : 0;
+      const p = pivots.current[i];
+      if (p) p.rotation.y = -phaseOf(i) + turn;
+      const f = facing.current[i];
+      // keeps toward the viewer: cancels the pivot's turn, plus a small fixed angle so the mesh reads as an object
+      if (f) f.rotation.y = phaseOf(i) - turn + 0.5;
+    });
   });
   if (orbiters.length === 0) return null;
   return (
-    <group ref={ring} position={[0, heightM + ORBIT_LIFT, 0]} name="orbit-ring">
+    <group position={[0, heightM + ORBIT_LIFT, 0]} name="orbit-ring" userData={{ moving: orbiters.filter((a) => a.skill === member.active).map((a) => a.skill) }}>
       {orbiters.map((a, i) => {
-        const r = (a.slot.radius ?? 0.45) * (ORBIT_RADIUS / 0.45);
-        const phase = (a.index / Math.max(2, orbiters.length)) * Math.PI * 2 + Math.PI / 2;
+        const active = a.skill === member.active;
+        const r = (a.slot.radius ?? 0.45) * (ORBIT_RADIUS / 0.45) * (active ? ACTIVE_ORBIT_WIDEN : 1);
         return (
-          <group key={`${a.index}-${a.skill}`} position={[Math.cos(phase) * r, 0, Math.sin(phase) * r]}>
-            <group
-              ref={(g) => {
-                facing.current[i] = g;
-              }}
-            >
-              <group rotation={[0.5, 0, 0]}>
-                <Arrival fresh={fresh.has(`${a.index}-${a.skill}`)} skill={a.skill}>
-                  <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose="floating" animate={animate} active={a.skill === member.active} />
-                </Arrival>
+          <group
+            key={`${a.index}-${a.skill}`}
+            position={[0, active ? ACTIVE_ORBIT_LIFT : 0, 0]}
+            rotation={[0, -phaseOf(i), 0]}
+            ref={(g) => {
+              pivots.current[i] = g;
+            }}
+          >
+            <group position={[r, 0, 0]}>
+              <group
+                rotation={[0, phaseOf(i) + 0.5, 0]}
+                ref={(g) => {
+                  facing.current[i] = g;
+                }}
+              >
+                <group rotation={[0.5, 0, 0]}>
+                  <Arrival fresh={fresh.has(`${a.index}-${a.skill}`)} skill={a.skill}>
+                    <ArtifactMesh family={a.family} pigment={a.pigment} skill={a.skill} pose="floating" animate={animate} active={active} />
+                  </Arrival>
+                </group>
               </group>
             </group>
           </group>

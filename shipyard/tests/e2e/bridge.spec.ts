@@ -236,10 +236,11 @@ test('required state: an artifact whose skill left the library is a greyed Retir
   await expect(list).toContainText('Retired');
   await expect(list).toContainText('skill-that-left-the-registry');
   await expect(page.locator('.socket[data-retired]')).toHaveCount(1);
-  await expect(page.getByTestId('rack-count')).toContainText('9 of 9');
+  // the retired one is counted apart, not as worn (finish review m6)
+  await expect(page.getByTestId('rack-count')).toHaveText('8 of 9 sockets worn · 1 retired');
   await list.getByTestId('retired-remove').click();
   await expect(list).toHaveCount(0);
-  await expect(page.getByTestId('rack-count')).toContainText('8 of 9');
+  await expect(page.getByTestId('rack-count')).toHaveText('8 of 9 sockets worn');
   await page.getByTestId('notice-undo').click();
   await expect(page.getByTestId('retired-list')).toContainText('skill-that-left-the-registry');
 });

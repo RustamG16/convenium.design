@@ -132,10 +132,13 @@ export function ExportPanel({ ship, report }: Props) {
       )}
 
       <div className="export-primary">
-        <button type="button" className={`btn ${blocked ? 'btn-quiet' : 'btn-primary'}`} disabled={blocked || needPath} aria-describedby={blocked ? 'export-blocked' : `${pathId}-help`} onClick={copyKickoff} data-testid="copy-kickoff">
+        {/* filled only when it can be pressed: a blocker or a missing path hands the primary to the next goal (finish review M1) */}
+        <button type="button" className={`btn ${blocked || needPath ? 'btn-quiet' : 'btn-primary'}`} disabled={blocked || needPath} aria-describedby={blocked ? 'export-blocked' : `${pathId}-enable`} onClick={copyKickoff} data-testid="copy-kickoff">
           Copy kickoff prompt
         </button>
-        <p className="prose-sm">The one thing a session needs: paste it and the session runs your plan.</p>
+        <p className="prose-sm" id={`${pathId}-enable`} data-testid="copy-kickoff-why">
+          {!blocked && needPath ? 'Enter the folder path above to enable.' : 'The one thing a session needs: paste it and the session runs your plan.'}
+        </p>
       </div>
       <fieldset className="export-files" data-testid="export-files">
         <legend className="label">Files</legend>

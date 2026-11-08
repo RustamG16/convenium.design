@@ -16,7 +16,7 @@ import type { Anchor } from '../../domain/schema';
 import { isLibraryShip } from '../../domain/ship';
 import { skillCount } from '../../kb/artifacts';
 import { useKb } from '../../kb/context';
-import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
+import { force2d, hasWebGL, useMinWidth, useReducedMotion } from '../../lib/preferences';
 import { sceneCrew } from '../../scene/crew';
 import { layoutFor } from '../../scene/stations';
 import type { AnchorScreen } from '../../scene/Turntable';
@@ -39,6 +39,7 @@ export default function BridgePage() {
   const { codex, ships: stored } = useStoreState();
   const [params, setParams] = useSearchParams();
   const reduced = useReducedMotion();
+  const wide = useMinWidth(1200);
   const [sceneFailed, setSceneFailed] = useState(false);
   const [editing, setEditing] = useState(false);
   const [recruiting, setRecruiting] = useState(false);
@@ -83,6 +84,23 @@ export default function BridgePage() {
   const raw = ship.crew.find((m) => m.id === member.id)!;
   const webgl = hasWebGL() && !force2d() && !sceneFailed;
   const agent = idx.agent.get(member.agent);
+  // At >= 1200 the crew sits under the identity card, where the middle column was empty; below 1200 it stays under the figure (finish review m3).
+  const crewBlock = (
+    <>
+      <CrewRail crew={crew} activeId={member.id} onSelect={select} />
+      <button type="button" className="btn btn-quiet" onClick={() => (readOnly ? clone.ask() : setRecruiting(true))} disabled={!readOnly && ship.crew.length >= MAX_CREW} data-testid="recruit" aria-describedby={ship.crew.length >= MAX_CREW ? 'crew-full' : undefined}>
+        Recruit
+      </button>
+      {ship.crew.length >= MAX_CREW && (
+        <p id="crew-full" className="muted sheet-line">
+          A ship carries at most {MAX_CREW} crew.
+        </p>
+      )}
+      <p className="muted sheet-line" data-testid="codex-line">
+        Codex <span className="num">{codex.length}</span> of <span className="num">{skillCount(idx.kb)}</span> skills inspected <TruthLabel truth="Simulated" />
+      </p>
+    </>
+  );
 
   return (
     <main id="main" className="page ship-page" data-testid="crew-profile" data-ship={ship.id} data-webgl={webgl || undefined} data-readonly={readOnly || undefined}>
@@ -110,18 +128,7 @@ export default function BridgePage() {
           ) : (
             <Portrait member={member} />
           )}
-          <CrewRail crew={crew} activeId={member.id} onSelect={select} />
-          <button type="button" className="btn btn-quiet" onClick={() => (readOnly ? clone.ask() : setRecruiting(true))} disabled={!readOnly && ship.crew.length >= MAX_CREW} data-testid="recruit" aria-describedby={ship.crew.length >= MAX_CREW ? 'crew-full' : undefined}>
-            Recruit
-          </button>
-          {ship.crew.length >= MAX_CREW && (
-            <p id="crew-full" className="muted sheet-line">
-              A ship carries at most {MAX_CREW} crew.
-            </p>
-          )}
-          <p className="muted sheet-line" data-testid="codex-line">
-            Codex <span className="num">{codex.length}</span> of <span className="num">{skillCount(idx.kb)}</span> skills inspected <TruthLabel truth="Simulated" />
-          </p>
+          {!wide && crewBlock}
         </aside>
         <div className="ship-profile-main stack">
           {armoryOpen && !readOnly ? (
@@ -134,6 +141,7 @@ export default function BridgePage() {
             <IdentityCard member={member} evidence={`KB ${idx.kb.sourceHash.slice(0, 8)}`} access={agent?.access} model={agent?.model} />
           )}
           {!readOnly && !editing && !armoryOpen && <DismissButton ship={ship} member={member} />}
+          {wide && <div className="ship-crew-block stack-sm">{crewBlock}</div>}
           <details className="eco-disclosure" data-testid="eco-disclosure" open={ecoOpen} onToggle={(e) => setEcoOpen((e.currentTarget as HTMLDetailsElement).open)}>
             <summary className="btn btn-quiet btn-sm">Crew ecosystem</summary>
             {ecoOpen && (

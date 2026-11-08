@@ -25,9 +25,15 @@ const WIDTHS = process.env.QA_WIDTHS?.split(',').map(Number);
 /** The required states run one width per invocation (QA_STATE_WIDTH=1440 or 360): reusing one page across both widths stalled the harness (T13). */
 const STATE_SIZES: [number, number][] = ([[1440, 900], [360, 740]] as [number, number][]).filter(([w]) => !process.env.QA_STATE_WIDTH || String(w) === process.env.QA_STATE_WIDTH);
 
-function record(key: string, value: unknown) {
+function record(key: string, value: unknown, merge = false) {
   mkdirSync(DIR, { recursive: true });
   const all = existsSync(RESULTS) ? JSON.parse(readFileSync(RESULTS, 'utf8')) : {};
+  // a QA_ONLY rerun replaces only the screens it took (finish review recapture)
+  if (merge && all[key] && typeof value === 'object' && value) {
+    const old = all[key] as Record<string, Record<string, unknown>>;
+    const next = value as Record<string, Record<string, unknown>>;
+    for (const k of Object.keys(next)) next[k] = { ...(old[k] ?? {}), ...next[k] };
+  }
   all[key] = value;
   writeFileSync(RESULTS, JSON.stringify(all, null, 1));
 }
@@ -75,6 +81,8 @@ async function settle(page: Page, name: string) {
   if (/bridge|board|hangar|armory-custom/.test(name)) {
     await page.locator('canvas').first().waitFor({ timeout: 20_000 }).catch(() => undefined);
     if (/bridge/.test(name)) await page.locator('[data-testid="turntable"][data-ready="true"]').waitFor({ timeout: 60_000 }).catch(() => undefined);
+    // the boarding veil lifts when the corridor's models are in (finish review: the black captures were taken mid-load)
+    if (/board/.test(name)) await page.locator('[data-testid="scene-loading"][data-done]').waitFor({ state: 'attached', timeout: 30_000 }).catch(() => undefined);
     await page.waitForTimeout(/board/.test(name) ? 4500 : 3000);
   } else await page.waitForTimeout(1200);
 }
@@ -117,7 +125,7 @@ test.describe('qa run', () => {
   for (const [w, h] of SIZES) {
     if (WIDTHS && !WIDTHS.includes(w)) continue;
 
-    test(`shots ${w}`, async ({ page }) => {
+    test(`shots ${w}`, async ({ page, browser }) => {
       test.skip(!RUN.includes('shots'));
       mkdirSync(DIR, { recursive: true });
       await page.setViewportSize({ width: w, height: h });
@@ -144,6 +152,17 @@ test.describe('qa run', () => {
       for (const s of screens) {
         if (only && !only.includes(s.name)) continue;
         at(s.name);
+        if (s.name === 'armory-noship') {
+          // a no-ship state needs storage with no custom ship: the seeded page has three, so this one gets its own empty context (finish review)
+          const ctx = await browser.newContext({ viewport: { width: w, height: h } });
+          const fresh = await ctx.newPage();
+          await fresh.goto(`${test.info().project.use.baseURL ?? ''}/#${s.hash}`);
+          await settle(fresh, s.name);
+          await fresh.screenshot({ path: `${DIR}/${s.name}-${w}.png` });
+          out[s.name] = { axe: await axe(fresh), overflow: await fresh.evaluate(() => document.documentElement.scrollWidth - window.innerWidth) } as never;
+          await ctx.close();
+          continue;
+        }
         await page.goto(`/#${s.hash}`);
         await page.reload();
         await settle(page, s.name);
@@ -151,7 +170,7 @@ test.describe('qa run', () => {
         await page.screenshot({ path: `${DIR}/${s.name}-${w}.png` });
         out[s.name] = { axe: await axe(page), overflow: await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth) } as never;
       }
-      record(`shots-${w}`, { axe: Object.fromEntries(Object.entries(out).map(([k, v]) => [k, v.axe])), overflow: Object.fromEntries(Object.entries(out).map(([k, v]) => [k, v.overflow])), console: log });
+      record(`shots-${w}`, { axe: Object.fromEntries(Object.entries(out).map(([k, v]) => [k, v.axe])), overflow: Object.fromEntries(Object.entries(out).map(([k, v]) => [k, v.overflow])), console: log }, Boolean(only));
     });
 
     test(`focus ${w}`, async ({ page }) => {

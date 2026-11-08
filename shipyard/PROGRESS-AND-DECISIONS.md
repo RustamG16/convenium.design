@@ -297,3 +297,32 @@ New e2e: `tests/e2e/simplicity.spec.ts` (one primary per screen on seven screens
 - Foreground frame rate on the real GPU: no foreground browser was available.
 - One blank Hangar canvas in the hidden pane under GPU load: seen once, not reproduced.
 - Bridge orbit artifacts are large beside the head: left for the critic.
+
+## T14 — finish review and fix cycle 2 (2026-11-08)
+
+**Review:** an independent critic (opus, read-only, award-rubric) wrote
+`plan/10-finish-review.md`. Score 71/100, **ship with fixes**: no blocker, 5 majors, 7 minors, and
+4 claims in 07-qa that its own captures did not support. **Fix cycles used: 2 of 2** (T13 author QA
+was cycle 1; this was cycle 2). The director fixed everything in this session (owner's rule:
+one session builds).
+
+**Decisions**
+- **Orbit (M3).** Orbiters rest; only the active artifact orbits, on a path 1.2× wider and 0.06 m
+  higher, so it never crosses the others. A rim only on active. Floating scale 1.1. This is the
+  DESIGN.md motion contract as written ("the one active artifact orbits; others rest").
+- **Hangar (M4).** The fit width depends on the fleet size. The critic's "blurred green column"
+  was not a framing problem. ship-e is a rigged `SkinnedMesh`, and `scene.clone()` left it bound
+  to the uncloned skeleton. It is now a `SkeletonUtils` clone, measured after a full matrix
+  refresh. The kit flyer is upright by design.
+- **Boarding cold load.** Measured headless: black until about 3 s, corridor by about 4.5 s. Not a
+  broken scene, but nothing told the user it was loading. A loading veil with progress now covers
+  only the stage, lifts when the loader goes idle, and never stays up past 20 s. The harness waits
+  for it.
+- **Pre-flight (M1).** A disabled button is never the primary. With no folder path, entering it is
+  the next goal.
+- **Armory (M5)**, **phones (M2)** and **m1–m7** as listed in `07-qa.md` § 13.
+- **QA harness.** The no-ship capture runs in an empty browser context; QA_ONLY reruns merge into
+  `results.json` instead of overwriting it.
+
+**Gates:** in `07-qa.md` § 12 (cycle 2). A re-review by the same critic is recorded at the end of
+`10-finish-review.md`.

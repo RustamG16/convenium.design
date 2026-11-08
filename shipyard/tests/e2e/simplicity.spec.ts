@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { REPO } from './journey';
 
 /**
  * T11, the simplicity pass (plan/simplicity-brief.md): one filled primary per screen, one ship sub-nav,
@@ -23,8 +24,19 @@ test.describe('one primary per screen', () => {
       await page.goto(`/#/ship/ss-full-run/${screen}`);
       await expect(page.getByTestId('ship-subnav')).toBeVisible();
       await expect(primaries(page)).toHaveCount(1);
-      if (screen === 'preflight') await expect(page.getByTestId('copy-kickoff')).toHaveClass(/btn-primary/);
-      else await expect(page.getByTestId('clone-to-edit')).toHaveClass(/btn-primary/);
+      // no folder path yet: entering it is the one primary (finish review M1); with it, Copy kickoff prompt is
+      if (screen === 'preflight') {
+        await expect(page.getByTestId('goal-export')).toHaveClass(/btn-primary/);
+        await expect(page.getByTestId('goal-export')).toHaveText('Enter the folder path');
+        await expect(page.getByTestId('copy-kickoff')).not.toHaveClass(/btn-primary/);
+        await expect(page.getByTestId('copy-kickoff-why')).toHaveText('Enter the folder path above to enable.');
+        await page.getByTestId('goal-export').click();
+        await expect(page.getByTestId('design-path')).toBeFocused();
+        await page.getByTestId('design-path').fill(REPO);
+        await expect(primaries(page)).toHaveCount(1);
+        await expect(page.getByTestId('copy-kickoff')).toHaveClass(/btn-primary/);
+        await expect(page.getByTestId('goal-export')).toHaveText('Export');
+      } else await expect(page.getByTestId('clone-to-edit')).toHaveClass(/btn-primary/);
     });
   }
 
@@ -40,6 +52,8 @@ test.describe('one primary per screen', () => {
     await expect(primaries(page)).toHaveCount(1);
     await expect(page.getByTestId('add-stage')).toHaveClass(/btn-primary/);
     await page.getByTestId('to-preflight').click();
+    await expect(primaries(page)).toHaveCount(1);
+    await page.getByTestId('design-path').fill(REPO);
     await expect(primaries(page)).toHaveCount(1);
     await expect(page.getByTestId('copy-kickoff')).toHaveClass(/btn-primary/);
     // the files are a quiet group
@@ -259,6 +273,7 @@ test('Bridge: the turntable card is large and a slot says what to choose', async
 test('Pre-flight: Copy kickoff prompt is the primary; the downloads and Save sit in a quiet Files group', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/ship/ss-full-run/preflight');
+  await page.getByTestId('design-path').fill(REPO);
   await expect(page.getByTestId('copy-kickoff')).toHaveClass(/btn-primary/);
   const files = page.getByTestId('export-files');
   await expect(files.getByTestId('download-ship')).toBeVisible();

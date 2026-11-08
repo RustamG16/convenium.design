@@ -11,6 +11,7 @@ import { isGate, isStage, type VoyageItem } from '../../domain/schema';
 import { isLibraryShip, LIBRARY_EPOCH, libraryShips } from '../../domain/ship';
 import { newGate, newStage } from '../../domain/voyage';
 import { useKb } from '../../kb/context';
+import { TruthLabel } from '../../components/TruthLabel';
 import { useMinWidth } from '../../lib/preferences';
 import { FamilyGlyph } from '../../scene/artifacts/glyphs';
 import { isFamilyId } from '../../scene/artifacts/familyIds';
@@ -156,7 +157,7 @@ export default function VoyagePage() {
       <header className="ship-head">
         <p className="label">{ship.name} · voyage</p>
         <h1 className="page-title ship-page-title">Voyage planner</h1>
-        <p className="muted sheet-line">{ship.voyage.filter(isStage).length} stages · {ship.voyage.filter(isGate).length} gates · trail {ship.trail ?? 'abridged'}</p>
+        <p className="muted sheet-line">{ship.voyage.filter(isStage).length} stages · {ship.voyage.filter(isGate).length} gates · trail {ship.trail ?? 'abridged'} <TruthLabel truth="Verified" detail="counted from the ship" /></p>
       </header>
       <ShipNav ship={ship} current="voyage" />
       {readOnly && <TemplateLine ship={ship} onClone={clone.ask} />}

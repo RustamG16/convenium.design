@@ -9,6 +9,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import gsap from 'gsap';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { withBase } from '../../lib/baseUrl';
 import { disposeMaterials } from '../../scene/common';
 
@@ -23,12 +24,27 @@ const RING_RADIUS = 3.4;
 const HULL_LENGTH = 3.9;
 const RING_Y = -0.42;
 const LOOK_Y = -0.3;
-const FIT_WIDTH = 4.5; // scene units that must stay in frame: the ring plus a margin, so it is never cut off
+/** One ship: the hull and its focus ring plus a margin, so it is never cut off. */
+const FIT_SINGLE = 4.5;
+/** Focus ring under the front hull: wider than half the hull, so a turning hull stays inside it. */
+const FOCUS_RING = [2.25, 2.3] as const;
+
+/**
+ * Width in scene units that must stay in frame (finish review M4). One ship: FIT_SINGLE. More: every
+ * hull's widest sideways reach on the ring, plus a hull length, so neighbours are whole, not clipped.
+ */
+export function fitWidth(n: number): number {
+  if (n <= 1) return FIT_SINGLE;
+  let reach = 0;
+  for (let i = 0; i < n; i++) reach = Math.max(reach, Math.abs(Math.sin((i / n) * Math.PI * 2)) * RING_RADIUS);
+  return Math.max(FIT_SINGLE, 2 * reach + HULL_LENGTH);
+}
 
 function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment: string; spin: boolean; focused: boolean; onPick: () => void }) {
   const { scene } = useGLTF(withBase(`/media/ships/${hull}.glb`));
   const model = useMemo(() => {
-    const clone = scene.clone(true);
+    // ship-e is a rigged SkinnedMesh: a plain clone stays bound to the original's bones, so it is a SkeletonUtils clone (finish review M4)
+    const clone = SkeletonUtils.clone(scene);
     clone.traverse((o) => {
       const mesh = o as THREE.Mesh;
       if (mesh.isMesh) {
@@ -36,6 +52,8 @@ function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment:
         mesh.material = new THREE.MeshStandardMaterial({ map: src.map ?? null, color: '#A79B92', metalness: 0.6, roughness: 0.45, emissive: '#1A1412' });
       }
     });
+    // the bones' world matrices feed the skinned bounds: refresh the whole tree before measuring
+    clone.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(clone);
     const size = box.getSize(new THREE.Vector3());
     const longest = Math.max(size.x, size.y, size.z) || 1;
@@ -64,7 +82,7 @@ function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment:
       </group>
       {focused && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, RING_Y, 0]}>
-          <ringGeometry args={[1.97, 2.02, 96]} />
+          <ringGeometry args={[FOCUS_RING[0], FOCUS_RING[1], 96]} />
           <meshBasicMaterial color={pigment} toneMapped={false} />
         </mesh>
       )}
@@ -73,19 +91,19 @@ function Hull({ hull, pigment, spin, focused, onPick }: { hull: string; pigment:
 }
 
 /** Keeps the ring and hull centred and fully in frame at any stage aspect: the camera backs off only as far as it must. */
-function Fit() {
+function Fit({ width }: { width: number }) {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const size = useThree((s) => s.size);
   const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
     const aspect = size.width / Math.max(1, size.height);
     const half = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    const dist = Math.max(4.6, FIT_WIDTH / aspect / (2 * half));
+    const dist = Math.max(4.6, width / aspect / (2 * half));
     camera.position.set(0, 1.25 * (dist / 6.4), dist);
     camera.lookAt(0, LOOK_Y, 0);
     camera.updateProjectionMatrix();
     invalidate();
-  }, [camera, size.width, size.height, invalidate]);
+  }, [camera, size.width, size.height, width, invalidate]);
   return null;
 }
 
@@ -148,7 +166,7 @@ export default function FleetRing({ ships, focusId, reduced, onPick, onContextLo
         </Environment>
         <hemisphereLight args={['#fff6ea', '#2a2320', 2]} />
         <directionalLight position={[2, 4, 3]} intensity={3} />
-        <Fit />
+        <Fit width={fitWidth(ships.length)} />
         <Ring ships={ships} focusId={focusId} reduced={reduced} onPick={onPick} />
       </Canvas>
     </div>

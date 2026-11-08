@@ -187,12 +187,12 @@ export function DismissButton({ ship, member }: { ship: Ship; member: SceneMembe
   const owned = stagesOwnedBy(ship, member.id);
   const [armed, setArmed] = useState(false);
   if (ship.crew.length <= 1) return <p className="muted sheet-line">A ship keeps at least one crew member.</p>;
-  if (!armed) return <button type="button" className="btn btn-quiet" onClick={() => setArmed(true)} data-testid="dismiss">Dismiss {member.name}</button>;
+  if (!armed) return <button type="button" className="btn btn-text ship-dismiss" onClick={() => setArmed(true)} data-testid="dismiss">Dismiss {member.name}</button>;
   return (
     <div className="stack-sm" data-testid="dismiss-confirm">
       <p className="sheet-line">{member.name}&rsquo;s artifacts go to the hold.{owned > 0 ? ` ${owned} stage${owned === 1 ? '' : 's'} will need a new member; pre-flight names them.` : ''} You can undo this.</p>
       <div className="row" style={{ gap: 'var(--s2)' }}>
-        <button type="button" className="btn btn-primary" data-testid="dismiss-yes" onClick={() => { dispatch({ type: 'crew/dismiss', shipId: ship.id, member: member.id }); notify(`${member.name} dismissed.`, { undo: true }); }}>Dismiss</button>
+        <button type="button" className="btn btn-quiet" data-testid="dismiss-yes" onClick={() => { dispatch({ type: 'crew/dismiss', shipId: ship.id, member: member.id }); notify(`${member.name} dismissed.`, { undo: true }); }}>Dismiss</button>
         <button type="button" className="btn btn-quiet" onClick={() => setArmed(false)}>Keep</button>
       </div>
     </div>

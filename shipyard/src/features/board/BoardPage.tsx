@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import { Navigate, useNavigate, useParams } from 'react-router';
 import '../../styles/ship.css';
 import * as THREE from 'three';
+import { useProgress } from '@react-three/drei';
 import { Icon } from '../../components/Icons';
 import { SkewBadge } from '../../components/SkewBadge';
 import { TruthLabel } from '../../components/TruthLabel';
@@ -31,6 +32,35 @@ import { createWalkMap } from '../../scene/walk';
 import { useDispatch } from '../../store/context';
 import { useShip } from '../shared/useShip';
 import { PHASE_LABEL, pipelineOf } from './pipeline';
+
+/** Longest the loading veil stays up: past this the scene shows whatever it has, never a stuck veil. */
+const LOADING_MAX_MS = 20_000;
+
+/**
+ * Cold load (finish review): the corridor's GLBs take a few seconds, and the stage was plain black
+ * meanwhile. The veil names what is coming with a progress line, and lifts once the loader has started
+ * and gone idle, or after LOADING_MAX_MS. It covers only the stage: the card, Skip and the rail work at once.
+ */
+function LoadingVeil({ name }: { name: string }) {
+  const { active, progress, total } = useProgress();
+  const [timedOut, setTimedOut] = useState(false);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setTimedOut(true), LOADING_MAX_MS);
+    return () => window.clearTimeout(t);
+  }, []);
+  // remembered during render (React's pattern for state derived from a changing input), not in an effect
+  if (active && !seen) setSeen(true);
+  const done = timedOut || (seen && !active) || (total > 0 && !active && progress >= 100);
+  return (
+    <p className="ship-loading" data-testid="scene-loading" data-done={done || undefined} aria-hidden="true" style={{ ['--p' as string]: String(Math.min(1, progress / 100)) } as CSSProperties}>
+      <span className="label">Boarding {name}</span>
+      <span className="ship-loading-bar">
+        <span />
+      </span>
+    </p>
+  );
+}
 
 /** How often the card checks where you are (ms); the walk itself runs every frame in the scene. */
 const ZONE_POLL_MS = 120;
@@ -178,6 +208,7 @@ export function BoardTour({ ship, reduced, quality, lite, sound, onSound, onSkip
   return (
     <div className="ship-intro" data-testid="ship-intro" data-waypoint={wp?.id ?? 'bridge'}>
       <div className="ship-intro-stage" ref={stage} data-look={lockable ? 'capture' : 'drag'}>
+        <LoadingVeil name={ship.name} />
         <ShipScene crew={crew} layout={layout} walker={walker} reduced={reduced} quality={quality} activeMember={member?.id ?? null} welcome={last} lite={lite} screens={screens} talking={talkingHere} bubble={bubble} found={found} waypoint={index ?? stop} sound={sound} onPick={pick} onInspect={inspect} onContextLost={onContextLost} />
         {lockable &&
           (captured ? (

@@ -351,7 +351,14 @@ export function LoadoutRack({ idx, ship, member, active, readOnly, focusSkill, o
         <TruthLabel truth="Verified" detail={`KB ${idx.kb.sourceHash.slice(0, 8)}`} />
       </header>
       <p className="muted sheet-line" data-testid="rack-count">
-        <span className="num">{worn}</span> of <span className="num">{capacity}</span> sockets worn
+        {/* a retired artifact holds its socket but does no work, so it is counted apart (finish review m6) */}
+        <span className="num">{worn - retired.length}</span> of <span className="num">{capacity}</span> sockets worn
+        {retired.length > 0 && (
+          <>
+            {' '}
+            · <span className="num">{retired.length}</span> retired
+          </>
+        )}
       </p>
       {retired.length > 0 && (
         // DESIGN.md required state: an artifact whose skill left the registry is a greyed "Retired" chip, kept until removed.

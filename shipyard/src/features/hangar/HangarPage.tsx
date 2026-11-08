@@ -112,7 +112,7 @@ function ShipCard({ ship, focused, onFocusShip, show3d }: { ship: Ship; focused:
         </p>
       </div>
       <p className="stat">
-        {ship.crew.length} crew · {stages} stages · {gates} gates · {lastExport ? `last export ${lastExport.at.slice(0, 10)}` : 'not exported yet'}
+        {ship.crew.length} crew · {stages} stages · {gates} gates · {lastExport ? `last export ${lastExport.at.slice(0, 10)}` : 'not exported yet'} <TruthLabel truth="Verified" detail="counted from the ship" />
       </p>
       {renaming ? (
         <form

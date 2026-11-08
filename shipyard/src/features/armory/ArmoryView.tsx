@@ -5,7 +5,7 @@
 // full-screen and the grid is two columns.
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tabs from '@radix-ui/react-tabs';
-import { useDeferredValue, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Member, Ship } from '../../domain/schema';
 import { useKb } from '../../kb/context';
 import { useMinWidth } from '../../lib/preferences';
@@ -54,6 +54,11 @@ export function ArmoryView({ variant, ship, member, initialSkill = null, onClose
   const inlineInspector = variant === 'page' && wide;
   const page = variant === 'page';
   const hasAside = inlineInspector && Boolean(skill || sidePanel);
+  const aside = useRef<HTMLElement>(null);
+  // a new pick opens at the top of the column, where its inspector is
+  useEffect(() => {
+    aside.current?.scrollTo?.({ top: 0 });
+  }, [selected]);
   const searchField = (
       <label className="field-row" key="search">
         <span className="label">Search</span>
@@ -138,9 +143,10 @@ export function ArmoryView({ variant, ship, member, initialSkill = null, onClose
           <div className="armory-grid-col">
             <div className="armory-main">{!(page && wide) && searchField}{artifacts}</div>
             {hasAside && (
-              <aside className="armory-inspector" aria-label="Loadout and inspector">
-                {sidePanel}
+              <aside ref={aside} className="armory-inspector" aria-label="Loadout and inspector">
+                {/* the picked card's inspector comes first, so Equip sits where you browse (finish review M5); the loadout follows */}
                 {inspector}
+                {sidePanel}
               </aside>
             )}
           </div>

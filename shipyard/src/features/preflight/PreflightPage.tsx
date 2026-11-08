@@ -12,6 +12,8 @@ import { largeSeen, markLargeSeen, playLarge } from '../../lib/feel';
 import { gsap, useGSAP } from '../../lib/gsap';
 import { easeDefault, isReducedMotion, MOTION, recordMotion } from '../../lib/motion';
 import { useKb } from '../../kb/context';
+import { isAbsolutePath } from '../../domain/export';
+import { useStoreState } from '../../store/context';
 import { ShipNav } from '../shared/ShipNav';
 import { useShip } from '../shared/useShip';
 import { ExportPanel } from './ExportPanel';
@@ -81,11 +83,19 @@ function focusExport() {
   panel?.focus({ preventScroll: true });
 }
 
+/** The clean ship's one missing input (finish review M1): the folder path the run plan and the prompt need. */
+function focusPath() {
+  const input = document.querySelector<HTMLInputElement>('[data-testid="design-path"]');
+  input?.scrollIntoView({ block: 'center' });
+  input?.focus({ preventScroll: true });
+}
+
 export default function PreflightPage() {
   const { id = '' } = useParams();
   const idx = useKb();
   const ship = useShip(id);
   const [onlyProblems, setOnlyProblems] = useState(false);
+  const needPath = !isAbsolutePath(useStoreState().ui.designPath);
   const report = useMemo(() => (ship ? preflight(idx, ship) : null), [idx, ship]);
   const root = useRef<HTMLElement>(null);
   const swept = useRef<string | null>(null);
@@ -205,8 +215,9 @@ export default function PreflightPage() {
             <p className="cleared" data-testid="cleared">
               Cleared for departure
             </p>
-            <button type="button" className="btn btn-quiet" onClick={focusExport} data-testid="goal-export">
-              Export
+            {/* clean but no folder path: entering it is the next goal and the screen's one primary; with it, Copy kickoff prompt is */}
+            <button type="button" className={`btn ${needPath ? 'btn-primary' : 'btn-quiet'}`} onClick={needPath ? focusPath : focusExport} data-testid="goal-export" data-need={needPath ? 'path' : undefined}>
+              {needPath ? 'Enter the folder path' : 'Export'}
             </button>
           </div>
         )}
@@ -226,7 +237,8 @@ export default function PreflightPage() {
               <p className="stat" data-testid="hull-counts">
                 {report.blockers} {report.blockers === 1 ? 'blocker' : 'blockers'} · {report.warnings} {report.warnings === 1 ? 'warning' : 'warnings'}
               </p>
-              {report.blockers > 0 && <p className="prose-sm">A blocker holds the ring at 99.</p>}
+              {/* only when the cap is what the ring shows: beside 93 the line read as a contradiction (finish review m5) */}
+              {report.blockers > 0 && report.applicable > 0 && Math.round((100 * report.passed) / report.applicable) >= 100 && <p className="prose-sm">A blocker holds the ring at 99.</p>}
             </div>
           </div>
           <HullDiagram checks={report.checks} />
@@ -240,6 +252,7 @@ export default function PreflightPage() {
             <div className="seg" role="group" aria-label="Which checks to show">
               <button type="button" aria-pressed={!onlyProblems} onClick={() => setOnlyProblems(false)}>
                 All {report.checks.length}
+                {report.checks.length > report.applicable && <span> ({report.checks.length - report.applicable} n.a.)</span>}
               </button>
               <button type="button" aria-pressed={onlyProblems} onClick={() => setOnlyProblems(true)} data-testid="only-problems">
                 Needs attention {report.blockers + report.warnings}

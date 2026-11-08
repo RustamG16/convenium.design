@@ -307,6 +307,52 @@
   right: var(--s3);
   min-height: 44px;
   z-index: 3;
+  /* the corridor's lit walls pass behind it: a dark backing keeps it readable on any frame (finish review) */
+  padding-inline: var(--s3);
+  border-radius: var(--r-control, 8px);
+  background: rgba(27, 23, 23, 0.84);
+  backdrop-filter: blur(14px);
+}
+/* Cold load: the stage says what is coming until the corridor's models are in (finish review, black captures). */
+.ship-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--s2);
+  margin: 0;
+  background: var(--bg, #141010);
+  color: var(--muted);
+  transition: opacity 320ms ease-out;
+}
+.ship-loading:not([data-done]) ~ .ship-look-hint {
+  visibility: hidden;
+}
+.ship-loading[data-done] {
+  opacity: 0;
+  pointer-events: none;
+}
+.ship-loading-bar {
+  width: 160px;
+  height: 2px;
+  background: color-mix(in srgb, var(--cotton) 14%, transparent);
+  overflow: hidden;
+}
+.ship-loading-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--cotton);
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+  transition: transform 200ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ship-loading,
+  .ship-loading-bar > span {
+    transition: none;
+  }
 }
 /* Progress rail: nine >= 44px targets; the title shows on hover and focus. */
 .ship-waypoints {
@@ -584,6 +630,13 @@
 .ship-wp-actions {
   gap: var(--s2);
   flex-wrap: wrap;
+  /* the walk's primary stays on screen when Talk makes the card scroll (finish review M2) */
+  position: sticky;
+  bottom: calc(-1 * var(--s5));
+  margin-bottom: calc(-1 * var(--s5));
+  padding-block: var(--s3) var(--s5);
+  background: linear-gradient(to bottom, transparent, rgba(27, 23, 23, 0.96) var(--s3));
+  z-index: 1;
 }
 .ship-wp-card .ship-inspected {
   margin: 0;
@@ -775,12 +828,18 @@
   .ship-wp-card {
     left: var(--s2);
     right: var(--s2);
-    bottom: calc(var(--s2) + var(--tabbar-h, 72px));
-    max-height: 55vh;
+    /* no tab bar on the walk, so nothing to clear but the safe area (finish review M2) */
+    bottom: calc(var(--s2) + env(safe-area-inset-bottom, 0px));
+    max-height: 60svh;
     overflow: auto;
     width: auto;
     gap: var(--s2);
     padding: var(--s3);
+  }
+  .ship-wp-actions {
+    bottom: calc(-1 * var(--s3));
+    margin-bottom: calc(-1 * var(--s3));
+    padding-block: var(--s2) var(--s3);
   }
   .ship-wp-quote p,
   .ship-wp-lead {

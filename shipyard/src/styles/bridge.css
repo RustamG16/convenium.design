@@ -117,3 +117,8 @@ textarea.field { min-height: 88px; resize: vertical; }
 .retired-list li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); font-size: 13px; color: var(--muted); }
 .retired-list code { color: var(--cotton); overflow-wrap: anywhere; }
 .retired-chip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 var(--s2); border: 1px dotted var(--muted); border-radius: var(--r-pill); font-size: var(--label); font-weight: 600; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--muted); }
+
+/* Finish review m7: Dismiss is a text action at its own width, not a full-width outline. m3: the crew under the identity card at >= 1200. */
+.ship-dismiss { justify-self: start; padding-inline: 0; }
+.ship-crew-block { padding-top: var(--s3); border-top: 1px solid var(--border); }
+.ship-crew-block > .btn { justify-self: start; }

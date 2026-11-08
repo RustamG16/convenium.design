@@ -244,7 +244,7 @@ export default function LogbookPage() {
                     {ship?.name ?? id}
                   </h3>
                   <span className="stat">
-                    {ship ? ship.class : 'ship removed'} · {exports.length} {exports.length === 1 ? 'export' : 'exports'} · {verifies.length} {verifies.length === 1 ? 'result' : 'results'} · {runs.length} {runs.length === 1 ? 'run' : 'runs'}
+                    {ship ? ship.class : 'ship removed'} · {exports.length} {exports.length === 1 ? 'export' : 'exports'} · {verifies.length} {verifies.length === 1 ? 'result' : 'results'} · {runs.length} {runs.length === 1 ? 'run' : 'runs'} <TruthLabel truth="Verified" detail="counted from your logbook" />
                   </span>
                   {ship && (
                     <Link className="btn btn-quiet" to={`/ship/${id}/preflight`}>

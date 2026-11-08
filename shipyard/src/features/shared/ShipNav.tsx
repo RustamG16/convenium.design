@@ -83,7 +83,7 @@ function ReadyRing({ percent }: { percent: number }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <circle cx="12" cy="12" r={r} fill="none" stroke="var(--border)" strokeWidth="3" />
-      <circle cx="12" cy="12" r={r} fill="none" stroke="var(--cotton)" strokeWidth="3" strokeLinecap="round" strokeDasharray={`${c} ${c}`} strokeDashoffset={c * (1 - percent / 100)} transform="rotate(-90 12 12)" />
+      <circle cx="12" cy="12" r={r} fill="none" stroke="var(--cotton)" strokeWidth="3" strokeLinecap="butt" strokeDasharray={`${c} ${c}`} strokeDashoffset={c * (1 - percent / 100)} transform="rotate(-90 12 12)" />
     </svg>
   );
 }
@@ -98,7 +98,7 @@ export function ShipNav({ ship, current, showNext = true }: { ship: Ship; curren
   const finding = next?.findings.find((f) => f.severity === next.status) ?? next?.findings[0];
   const fix = next && finding ? fixTarget(ship.id, next, finding, (id) => ship.crew.find((m) => m.id === id)?.character.name ?? id) : null;
   const nextTo = report.applicable === 0 ? `${base}/bridge` : (fix?.to ?? `${base}/preflight`);
-  const nextLabel = report.applicable === 0 ? 'Add a crew member' : next ? `Next: ${next.id}` : 'Ready to export';
+  const nextLabel = report.applicable === 0 ? 'Add a crew member' : next ? (fix?.label ?? 'Open Pre-flight') : 'Ready to export'; // the fix in words, not a check code (finish review m2)
   const items: { id: ShipScreen; label: string; testid?: string }[] = [
     { id: 'bridge', label: 'Bridge', testid: 'to-bridge' },
     { id: 'voyage', label: 'Voyage', testid: 'to-voyage' },
@@ -126,7 +126,7 @@ export function ShipNav({ ship, current, showNext = true }: { ship: Ship; curren
           <span className="sr-only"> checks pass</span> <TruthLabel truth="Verified" />
         </p>
         {showNext && (
-          <Link className="btn btn-quiet ship-next" to={nextTo} data-testid="ship-next" title={next ? next.reason : undefined}>
+          <Link className="btn btn-quiet ship-next" to={nextTo} data-testid="ship-next" title={next ? `${next.id}: ${next.reason}` : undefined} data-check={next?.id}>
             {nextLabel}
           </Link>
         )}
