@@ -5,6 +5,7 @@
 // of the app shows the change without a reload. The deployed build is read-only and says so.
 import * as Tabs from '@radix-ui/react-tabs';
 import { useEffect, useId, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import { useSearchParams } from 'react-router';
 import '../../styles/forge.css';
 import { useKb } from '../../kb/context';
 import type { KbAgent, KbCrew } from '../../kb/schema';
@@ -221,12 +222,13 @@ function RoutePicker({ value, onChange }: { value: string[]; onChange: (v: strin
   );
 }
 
-function AgentBench({ selected, onSelect, onApplied }: { selected: string; onSelect: (id: string) => void; onApplied: (o: ApplyOutcome) => void }) {
+function AgentBench({ selected, onSelect, onApplied, presetModel }: { selected: string; onSelect: (id: string) => void; onApplied: (o: ApplyOutcome) => void; presetModel?: AgentPayload['model'] }) {
   const idx = useKb();
   const crewByAgent = useMemo(() => new Map(idx.kb.crew.map((c) => [c.role.agent, c])), [idx]);
   const isNew = selected === NEW;
   const source = isNew ? null : idx.agent.get(selected) ?? null;
-  const [form, setForm] = useState<AgentPayload>(() => (source ? agentFrom(source, crewByAgent.get(source.id)) : blankAgent()));
+  // a variant's "Promote to library" arrives with the tier it was tuned to (v2)
+  const [form, setForm] = useState<AgentPayload>(() => (source ? { ...agentFrom(source, crewByAgent.get(source.id)), ...(presetModel ? { model: presetModel } : {}) } : blankAgent()));
   const waiting = !isNew && !source;
   const [confirm, setConfirm] = useState('');
   const [mode, setMode] = useState<'edit' | 'delete'>('edit');
@@ -487,8 +489,11 @@ function Rack({ label, items, selected, onSelect, newLabel, testid }: { label: s
 
 export default function ForgePage() {
   const idx = useKb();
+  const [params] = useSearchParams();
+  const promoted = params.get('agent');
+  const promotedModel = MODELS.find((m) => m === params.get('model'));
   const [tab, setTab] = useState('agents');
-  const [agent, setAgent] = useState(NEW);
+  const [agent, setAgent] = useState(promoted && idx.agent.has(promoted) ? promoted : NEW);
   const [skill, setSkill] = useState(NEW);
   const [outcome, setOutcome] = useState<ApplyOutcome | null>(null);
   const crewByAgent = useMemo(() => new Map(idx.kb.crew.map((c) => [c.role.agent, c])), [idx]);
@@ -520,7 +525,7 @@ export default function ForgePage() {
           <Tabs.Content value="agents" className="forge-layout">
             <Rack label="Agents" items={agentItems} selected={agent} onSelect={setAgent} newLabel="New agent" testid="forge-agent-rack" />
             <div className="forge-bench">
-              <AgentBench key={`${agent}:${idx.kb.sourceHash}`} selected={agent} onSelect={setAgent} onApplied={setOutcome} />
+              <AgentBench key={`${agent}:${idx.kb.sourceHash}`} selected={agent} onSelect={setAgent} onApplied={setOutcome} presetModel={agent === promoted && !outcome ? promotedModel : undefined} />
             </div>
           </Tabs.Content>
           <Tabs.Content value="skills" className="forge-layout">

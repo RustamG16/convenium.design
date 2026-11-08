@@ -1,6 +1,6 @@
 /**
  * Pre-flight: the real rules of the Convenium.Design activation protocol as hull checks
- * (06 section 8, PF-01..PF-15). Pure: `preflight(idx, ship)` reads a ship and the knowledge base
+ * (06 section 8, PF-01..PF-15; v2 adds PF-16 for variant tuning). Pure: `preflight(idx, ship)` reads a ship and the knowledge base
  * and returns a report; nothing is stored, timed, ranked or randomised.
  *
  * A library workflow converted through its table must come out clean (no block, no warn): a false
@@ -10,6 +10,7 @@
 import type { KbIndex } from '../kb/artifacts';
 import type { KbAgent } from '../kb/schema';
 import { equipNotes } from './loadout';
+import { addendumProblems, effectiveModel, type Tier } from './variant';
 import { isGate, isStage, type Member, type Ship, type Stage } from './schema';
 
 export type Severity = 'block' | 'warn' | 'info';
@@ -70,6 +71,8 @@ interface Ctx {
   stages: Stage[];
   agentOf: (memberId: string) => KbAgent | undefined;
   member: (memberId: string) => Member | undefined;
+  /** the tier this ship spawns the member at: its variant override, else the agent file (v2) */
+  modelOf: (memberId: string) => Tier;
 }
 
 function makeCtx(idx: KbIndex, ship: Ship): Ctx {
@@ -83,6 +86,10 @@ function makeCtx(idx: KbIndex, ship: Ship): Ctx {
     agentOf: (id) => {
       const m = member(id);
       return m ? idx.agent.get(m.agent) : undefined;
+    },
+    modelOf: (id) => {
+      const m = member(id);
+      return m ? effectiveModel(idx, m) : 'inherit';
     },
   };
 }
@@ -276,16 +283,16 @@ const RULES: Rule[] = [
     title: "The critic's model tier is at least the builder's",
     group: 'crew',
     severity: 'warn',
-    run: ({ stages, agentOf, member }) => {
-      const builders = stages.filter((s) => s.phase === 'build').map((s) => agentOf(s.member)).filter((a): a is KbAgent => !!a);
+    run: ({ stages, agentOf, member, modelOf }) => {
+      const builders = stages.filter((s) => s.phase === 'build' && agentOf(s.member)).map((s) => modelOf(s.member));
       const critics = stages.filter((s) => s.phase === 'verify' && agentOf(s.member)?.id === 'independent-critic');
       if (builders.length === 0 || critics.length === 0) return { na: 'No builder or no critic stage.' };
-      const tiers = builders.filter((a) => known(a.model)).map((a) => TIER[a.model]);
+      const tiers = builders.filter(known).map((m) => TIER[m]);
       if (tiers.length === 0) return { na: 'Every builder inherits the session model.' };
       const top = Math.max(...tiers);
       return critics.flatMap((s): Finding[] => {
-        const a = agentOf(s.member)!;
-        return known(a.model) && TIER[a.model] < top ? [{ severity: 'warn', reason: `${member(s.member)?.character.name ?? s.member} scores at ${a.model}, below the builder's tier.`, fix: stageFix(s) }] : [];
+        const m = modelOf(s.member);
+        return known(m) && TIER[m] < top ? [{ severity: 'warn', reason: `${member(s.member)?.character.name ?? s.member} scores at ${m}, below the builder's tier.`, fix: stageFix(s) }] : [];
       });
     },
   },
@@ -294,12 +301,12 @@ const RULES: Rule[] = [
     title: 'No plan is written by a reader-tier agent',
     group: 'crew',
     severity: 'warn',
-    run: ({ stages, agentOf }) => {
+    run: ({ stages, agentOf, modelOf }) => {
       const plans = stages.filter((s) => s.outputs.some((o) => WRITE_PLANS.test(basename(o))));
       if (plans.length === 0) return { na: 'No stage writes a plan.' };
       return plans.flatMap((s): Finding[] => {
         const a = agentOf(s.member);
-        return a?.model === 'haiku' ? [{ severity: 'warn', reason: `Stage ${s.id} writes a plan with ${a.id}, a reader-tier (haiku) agent; plans are written at planner tier.`, fix: stageFix(s) }] : [];
+        return a && modelOf(s.member) === 'haiku' ? [{ severity: 'warn', reason: `Stage ${s.id} writes a plan with ${a.id} at haiku, a reader tier; plans are written at planner tier.`, fix: stageFix(s) }] : [];
       });
     },
   },
@@ -336,6 +343,20 @@ const RULES: Rule[] = [
     severity: 'warn',
     run: ({ ship, idx }) =>
       ship.kbHash === idx.kb.sourceHash ? [] : [{ severity: 'warn', reason: 'The library changed since this ship was saved. Re-check its skills and stages.', fix: { kind: 'ship' } }],
+  },
+  {
+    id: 'PF-16',
+    title: 'Variant tuning stays inside the run plan',
+    group: 'crew',
+    severity: 'warn',
+    run: ({ ship, idx, stages, member }) => {
+      const tuned = ship.crew.filter((m) => m.override);
+      if (tuned.length === 0) return { na: 'No crew member is tuned on this ship.' };
+      return tuned.flatMap((m): Finding[] => {
+        const opened = new Set(stages.filter((s) => member(s.member)?.id === m.id).map((s) => s.activeSkill).filter((x): x is string => !!x));
+        return addendumProblems(idx, m, opened).map((p) => ({ severity: 'warn', reason: `${m.character.name}: ${p}.`, fix: { kind: 'member', id: m.id } as Fix }));
+      });
+    },
   },
 ];
 

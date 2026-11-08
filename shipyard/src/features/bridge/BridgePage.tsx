@@ -28,6 +28,7 @@ import { useShip } from '../shared/useShip';
 import { LoadoutRack } from './LoadoutRack';
 import { RecruitDialog } from './RecruitDialog';
 import { CrewRail, DismissButton, IdentityCard, IdentityEditor } from './ShipCards';
+import { TuningCard } from './TuningCard';
 
 const Turntable = lazy(() => import('../../scene/Turntable').then((m) => ({ default: m.Turntable })));
 const EcosystemMap = lazy(() => import('./EcosystemMap'));
@@ -138,7 +139,10 @@ export default function BridgePage() {
           ) : editing && !readOnly ? (
             <IdentityEditor key={member.id} ship={ship} member={member} onDone={() => setEditing(false)} />
           ) : (
-            <IdentityCard member={member} evidence={`KB ${idx.kb.sourceHash.slice(0, 8)}`} access={agent?.access} model={agent?.model} />
+            <>
+              <IdentityCard member={member} evidence={`KB ${idx.kb.sourceHash.slice(0, 8)}`} access={agent?.access} model={agent?.model} />
+              <TuningCard key={member.id} ship={ship} member={raw} readOnly={readOnly} onLocked={clone.ask} />
+            </>
           )}
           {!readOnly && !editing && !armoryOpen && <DismissButton ship={ship} member={member} />}
           {wide && <div className="ship-crew-block stack-sm">{crewBlock}</div>}

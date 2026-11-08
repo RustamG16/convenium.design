@@ -1,0 +1,17 @@
+{
+  "schema": "shipyard.brief.v1",
+  "id": "mobile-retrofit",
+  "title": "Mobile retrofit of a built site",
+  "summary": "A desktop-first site is too long and too slow on phones. Rebuild the phone experience: screen budgets, a thumb-zone bar, safe areas, cheap motion. Not a redesign.",
+  "needs": [
+    { "id": "measure", "label": "Measure every route at phone widths", "phase": "diagnose", "skills": ["mobile-app-shell", "ux-evidence-audit"] },
+    { "id": "plan", "label": "A retrofit plan with per-page budgets", "phase": "prepare", "skills": ["mobile-app-shell", "olympus-design-director"] },
+    { "id": "build", "label": "Phone shell and page fixes", "phase": "build", "skills": ["mobile-app-shell", "better-interface", "gsap-performance"] },
+    { "id": "qa", "label": "Two-pass verification on phones", "phase": "verify", "skills": ["visual-qa"] }
+  ],
+  "requiredArtifacts": ["00-run-plan.md", "06-build-plan.md", "07-qa.md"],
+  "gates": ["C"],
+  "constraints": ["no intake round", "keep the desktop design"],
+  "budget": { "tierPoints": 11 },
+  "fixtureProject": "landing-mini"
+}

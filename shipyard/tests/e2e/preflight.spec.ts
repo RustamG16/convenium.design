@@ -70,14 +70,14 @@ test.describe('acceptance 5: the UI export passes the real verify.py', () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('/#/ship/ss-full-run/preflight');
 
-    // The screen: next goal is the clean state, the ring is full, five hull panels, fifteen checks.
+    // The screen: next goal is the clean state, the ring is full, five hull panels, sixteen checks (v2 adds PF-16).
     await expect(page.getByRole('heading', { level: 1, name: 'Pre-flight' })).toBeVisible();
     await expect(page.getByTestId('hull-ring')).toHaveAttribute('aria-label', /Hull integrity 100 percent, 14 of 14 checks passed/);
     await expect(page.getByTestId('cleared')).toHaveText('Cleared for departure');
     await expect(page.getByTestId('next-goal')).toHaveAttribute('data-goal', 'export');
     await expect(page.getByTestId('goal-export')).toBeVisible();
     await expect(page.locator('[data-panel]')).toHaveCount(5);
-    await expect(page.getByTestId('check-row')).toHaveCount(15);
+    await expect(page.getByTestId('check-row')).toHaveCount(16);
     await expect(page.locator('[data-check="PF-06"]')).toContainText('n.a.');
     await expect(page.locator('[data-check="PF-01"]')).toContainText('Pass');
     await expect(page.getByTestId('preflight-live')).toContainText('Hull integrity 100 percent');

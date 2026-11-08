@@ -1,0 +1,24 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`simulate > golden scores (pinned KB): the specialist ship wins its own brief 1`] = `
+{
+  "fleet-audit": {
+    "ss-abridged": 50.4,
+    "ss-full-run": 47.4,
+    "ss-mobile-fleet": 98,
+    "ss-mobile-retrofit": 75.6,
+  },
+  "landing-refresh": {
+    "ss-abridged": 78.5,
+    "ss-full-run": 89.3,
+    "ss-mobile-fleet": 65.7,
+    "ss-mobile-retrofit": 74.7,
+  },
+  "mobile-retrofit": {
+    "ss-abridged": 77.1,
+    "ss-full-run": 79.9,
+    "ss-mobile-fleet": 88,
+    "ss-mobile-retrofit": 93.6,
+  },
+}
+`;

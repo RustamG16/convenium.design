@@ -1,0 +1,19 @@
+{
+  "schema": "shipyard.brief.v1",
+  "id": "landing-refresh",
+  "title": "Landing page refresh",
+  "summary": "A small studio wants its one-page site refreshed: clearer offer, stronger hero, motion that helps, verified on phones. Brand exists; no new identity work.",
+  "needs": [
+    { "id": "audit", "label": "Evidence audit of the current page", "phase": "diagnose", "skills": ["ux-evidence-audit", "reference-deconstruction"] },
+    { "id": "direction", "label": "One clear design direction", "phase": "direct", "skills": ["concept-studio", "impeccable", "ui-ux"] },
+    { "id": "copy", "label": "Offer and hero copy", "phase": "prepare", "skills": ["copywriting", "copy-editing"] },
+    { "id": "build", "label": "Build the page with purposeful motion", "phase": "build", "skills": ["gsap-core", "gsap-scrolltrigger", "awwwards-web-design", "emil-design-eng", "impeccable"] },
+    { "id": "qa", "label": "Visual QA at four widths", "phase": "verify", "skills": ["visual-qa"] },
+    { "id": "review", "label": "Independent finish review", "phase": "verify", "skills": ["award-rubric", "visual-qa"] }
+  ],
+  "requiredArtifacts": ["00-run-plan.md", "01-audit.md", "06-build-plan.md", "07-qa.md", "10-finish-review.md"],
+  "gates": ["C"],
+  "constraints": ["no paid media", "phones first"],
+  "budget": { "tierPoints": 16 },
+  "fixtureProject": "landing-mini"
+}

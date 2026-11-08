@@ -36,8 +36,8 @@ describe('the four library workflows pass pre-flight clean (a false positive is 
     expect(status('ss-full-run', 'PF-08')).toBe('pass');
   });
 
-  it('fifteen rules, PF-01 .. PF-15', () => {
-    expect(preflight(idx, fresh()).checks.map((c) => c.id)).toEqual(Array.from({ length: 15 }, (_, i) => `PF-${String(i + 1).padStart(2, '0')}`));
+  it('sixteen rules, PF-01 .. PF-16 (v2 adds PF-16)', () => {
+    expect(preflight(idx, fresh()).checks.map((c) => c.id)).toEqual(Array.from({ length: 16 }, (_, i) => `PF-${String(i + 1).padStart(2, '0')}`));
   });
 });
 

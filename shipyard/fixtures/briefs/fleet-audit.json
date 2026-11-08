@@ -1,0 +1,17 @@
+{
+  "schema": "shipyard.brief.v1",
+  "id": "fleet-audit",
+  "title": "Fleet audit of five sites",
+  "summary": "Five client sites need the same phone baseline measured, one shared shell ported, and each site brought to budget in parallel waves, with one critic per wave.",
+  "needs": [
+    { "id": "measure", "label": "One measurement pass over every site", "phase": "diagnose", "skills": ["mobile-app-shell"] },
+    { "id": "shell", "label": "Build the shell once on the reference site", "phase": "build", "skills": ["mobile-app-shell", "better-interface"] },
+    { "id": "fleet", "label": "Port to every site in parallel", "phase": "build", "skills": ["mobile-app-shell"] },
+    { "id": "review", "label": "One critic per wave", "phase": "verify", "skills": ["visual-qa", "award-rubric"] }
+  ],
+  "requiredArtifacts": ["00-run-plan.md", "fleet.json", "02-results.md", "03-finish-review.md"],
+  "gates": ["0", "1", "2", "C"],
+  "constraints": ["agents run in parallel worktrees", "one body per phase"],
+  "budget": { "tierPoints": 14 },
+  "fixtureProject": "landing-mini"
+}

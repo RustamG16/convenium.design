@@ -14,7 +14,8 @@ import { blankShip, cloneShip, libraryShip, LIBRARY_EPOCH } from '../domain/ship
 import { dismiss, editCharacter, recruit, seat, type CharacterPatch, type RecruitInput } from '../domain/crew';
 import { addItem, applyTemplate, deleteItem, duplicateItem, editItem, moveItem, type GatePatch, type StagePatch } from '../domain/voyage';
 import { equip, fromHold, move, sanitizeShip, toHold, unequip, type EquipOptions } from '../domain/loadout';
-import type { Anchor, LogEntry, Ship, VoyageItem } from '../domain/schema';
+import type { Anchor, LogEntry, MemberOverride, Ship, VoyageItem } from '../domain/schema';
+import { setOverride } from '../domain/variant';
 import { grantCommissions } from './outcomes';
 
 export const STATE_VERSION = 1 as const;
@@ -54,6 +55,7 @@ export type Action =
   | { type: 'ship/replace'; ship: Ship }
   | { type: 'ship/create'; name: string }
   | { type: 'ship/clone'; source: Ship; name: string }
+  | { type: 'crew/override'; shipId: string; member: string; override: MemberOverride | null }
   | { type: 'loadout/equip'; shipId: string; member: string; skill: string; opts?: EquipOptions }
   | { type: 'loadout/unequip'; shipId: string; member: string; skill: string }
   | { type: 'loadout/move'; shipId: string; member: string; skill: string; anchor: Anchor; opts?: Omit<EquipOptions, 'anchor'> }
@@ -212,6 +214,8 @@ function applyAction(state: StoreState, action: Action, at: string, env?: Env): 
       return edit(state, action.shipId, (s) => (env ? okShip(recruit(env.idx, s, action.input)) : null), at);
     case 'crew/edit':
       return edit(state, action.shipId, (s) => okShip(editCharacter(s, action.member, action.patch)), at);
+    case 'crew/override':
+      return edit(state, action.shipId, (s) => (env ? okShip(setOverride(env.idx, s, action.member, action.override)) : null), at);
     case 'crew/dismiss':
       return edit(state, action.shipId, (s) => okShip(dismiss(s, action.member)), at);
     case 'crew/station':

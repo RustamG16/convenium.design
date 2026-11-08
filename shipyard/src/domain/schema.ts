@@ -46,12 +46,19 @@ export const characterSchema = z.object({
   glyph: z.string().max(4).optional(),
 });
 
+/** v2 variant: how this ship spawns the member, without touching the library (domain/variant.ts). */
+export const memberOverrideSchema = z.strictObject({
+  model: z.enum(['opus', 'sonnet', 'haiku']).optional(),
+  addendum: z.string().max(600).optional(),
+});
+
 export const memberSchema = z.strictObject({
   id: z.string().regex(/^[a-z][a-z0-9-]{1,31}$/),
   agent: agentId,
   character: characterSchema,
   station: z.number().int().min(1).max(8),
   loadout: z.array(loadoutEntrySchema).max(9),
+  override: memberOverrideSchema.optional(),
 });
 
 export const stageSchema = z.strictObject({
@@ -145,6 +152,7 @@ export type Phase = (typeof PHASE_IDS)[number];
 export type LoadoutEntry = z.infer<typeof loadoutEntrySchema>;
 export type Character = z.infer<typeof characterSchema>;
 export type Member = z.infer<typeof memberSchema>;
+export type MemberOverride = z.infer<typeof memberOverrideSchema>;
 export type Stage = z.infer<typeof stageSchema>;
 export type Gate = z.infer<typeof gateSchema>;
 export type VoyageItem = Stage | Gate;

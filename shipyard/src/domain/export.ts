@@ -11,6 +11,7 @@ import type { KbIndex } from '../kb/artifacts';
 import { preflight, type PreflightReport } from './preflight';
 import { isGate, isStage, type Member, type Ship, type Stage } from './schema';
 import { shipSchema } from './schema';
+import { effectiveModel } from './variant';
 
 export class ExportError extends Error {
   constructor(message: string) {
@@ -80,7 +81,8 @@ export function buildRunPlan(idx: KbIndex, ship: Ship, conveniumDesign: string):
       agent: runPlanAgent(member.agent),
       skill: stage.activeSkill,
       skill_path: skillPath,
-      model: agent.model,
+      // a variant's tier override is what this ship spawns at (v2); the library agent file is unchanged
+      model: effectiveModel(idx, member),
       inputs: stage.inputs ?? [],
       outputs: stage.outputs,
       stop: stage.stop,
@@ -99,13 +101,22 @@ export function buildRunPlan(idx: KbIndex, ship: Ship, conveniumDesign: string):
 
 const escapeCell = (s: string) => s.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 
+/** The crew table's tuning cell: "spawns at opus (library: sonnet)", "addendum in the kickoff", or a dash. */
+function tuning(idx: KbIndex, m: Member): string {
+  const parts: string[] = [];
+  const lib = idx.agent.get(m.agent)?.model;
+  if (m.override?.model) parts.push(`spawns at ${m.override.model} (library: ${lib ?? 'unknown'})`);
+  if (m.override?.addendum) parts.push('addendum in the kickoff prompt');
+  return parts.join('; ') || '—';
+}
+
 /** `00-run-plan.md`: the template's prose header, one fenced json block, then the cosmetic crew table. */
 export function renderRunPlan(idx: KbIndex, ship: Ship, conveniumDesign: string, now: string): string {
   const plan = buildRunPlan(idx, ship, conveniumDesign);
   const rows = ship.crew
     .slice()
     .sort((a, b) => a.station - b.station)
-    .map((m) => `| ${escapeCell(m.character.name)} | ${m.agent} | ${m.station} | ${m.loadout.length} |`);
+    .map((m) => `| ${escapeCell(m.character.name)} | ${m.agent} | ${m.station} | ${m.loadout.length} | ${escapeCell(tuning(idx, m))} |`);
   return [
     `# 00 — Run plan: ${ship.name} (the activation plan)`,
     '',
@@ -128,8 +139,8 @@ export function renderRunPlan(idx: KbIndex, ship: Ship, conveniumDesign: string,
     '',
     'Cosmetic: the character is a name and a face; the agent is what runs. Ignored by `verify.py`.',
     '',
-    '| Character | Agent | Station | Artifacts worn |',
-    '|---|---|---|---|',
+    '| Character | Agent | Station | Artifacts worn | Tuning on this ship |',
+    '|---|---|---|---|---|',
     ...rows,
     '',
   ].join('\n');
@@ -172,6 +183,11 @@ export function renderKickoffPrompt(ship: Ship, conveniumDesign: string): string
     lines.push('', 'Available on request (equipped but not opened by any stage; never pre-loaded; add a phase to the run plan and re-check it before using one):');
     for (const { member, skills } of extra) lines.push(`- ${member.character.name} (${member.agent}): ${skills.join(', ')}`);
     if (hold.length > 0) lines.push(`- In the ship's hold: ${hold.join(', ')}`);
+  }
+  const tuned = ship.crew.filter((m) => m.override?.addendum);
+  if (tuned.length > 0) {
+    lines.push('', "This ship's tuning (a variant): when you spawn one of these agents, quote its addendum after the phase row, word for word. It never adds an agent, a skill body or a phase:");
+    for (const m of tuned) lines.push(`- ${m.character.name} (${m.agent}): ${m.override!.addendum!.replace(/\s*\n\s*/g, ' ')}`);
   }
   lines.push('', 'Nothing in this prompt runs an agent by itself; the run plan is the only roster.');
   return `${lines.join('\n')}\n`;

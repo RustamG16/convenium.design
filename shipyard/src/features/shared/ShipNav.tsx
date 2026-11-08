@@ -16,6 +16,8 @@ import { useDispatch } from '../../store/context';
 import { uniqueShipId } from '../../store/store';
 import { useStoreState } from '../../store/context';
 import { fixNames, fixTarget } from '../preflight/fix';
+import { useNotify } from './notices';
+import { variantName } from '../../domain/variant';
 
 export type ShipScreen = 'bridge' | 'voyage' | 'preflight';
 
@@ -93,6 +95,17 @@ export function ShipNav({ ship, current, showNext = true }: { ship: Ship; curren
   const navigate = useNavigate();
   const report = useMemo(() => preflight(idx, ship), [idx, ship]);
   const base = `/ship/${ship.id}`;
+  const dispatch = useDispatch();
+  const notify = useNotify();
+  const { ships: stored } = useStoreState();
+  // v2: a variant is a copy to tune and then trial against this ship in the Regatta
+  const fork = () => {
+    const name = variantName(ship.name, stored.map((s) => s.name));
+    const newId = uniqueShipId([...stored.map((x) => x.id), ...idx.kb.workflows.ships.map((w) => w.id)], name);
+    dispatch({ type: 'ship/clone', source: ship, name });
+    notify(`Forked ${name}. Tune a member on its Bridge, then trial both in the Regatta.`, { undo: true });
+    navigate(`/ship/${newId}/bridge`);
+  };
   const webgl = hasWebGL() && !force2d();
   const next = report.next;
   const finding = next?.findings.find((f) => f.severity === next.status) ?? next?.findings[0];
@@ -140,6 +153,9 @@ export function ShipNav({ ship, current, showNext = true }: { ship: Ship; curren
                 Replay the walk
               </button>
             )}
+            <button type="button" className="btn btn-quiet" data-testid="fork-variant" onClick={fork}>
+              Fork as a variant
+            </button>
             <Link className="btn btn-quiet" to="/logbook">
               Logbook
             </Link>

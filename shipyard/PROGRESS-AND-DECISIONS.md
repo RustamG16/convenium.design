@@ -532,3 +532,48 @@ rollback through the real `verify.py`.
 
 **Deviation:** creating workflows from the Forge is cut (cut-order item 5). A workflow with no
 table already derives a voyage (T17).
+
+## T20–T21: variants and dry trials (2026-11-08)
+
+- **Variants (`domain/variant.ts`):**
+  - A crew member may carry `override {model?, addendum?}` for this ship only. The library is
+    never touched.
+  - The exported run plan writes the tuned tier into that agent's phases.
+  - The crew table gets a "Tuning on this ship" column.
+  - The kickoff quotes each addendum, word for word, for that agent's phases.
+  - Overrides normalise: a model equal to the library's and an empty addendum drop out, and
+    "no change" is refused, so undo stays one step.
+- **Pre-flight uses the effective tier:** PF-11 (critic ≥ builder) and PF-12 (no haiku plan
+  writer) read the override.
+- **New PF-16:** warns when an addendum would widen the run beyond the run plan (spawn,
+  subagent, delegate, skip gates…), or names a skill that none of that member's stages opens.
+- **Bridge:** a "Tuning on this ship" card under the identity card.
+  - Tune: spawn tier and addendum, undoable from the toast.
+  - Reset to library.
+  - **Promote to the library…** (dev only) opens the Forge on that agent with the tuned tier
+    pre-set. The Forge is the only path into `library/`.
+  - A template asks to be cloned first.
+- **Ship menu → Fork as a variant:** clones the ship as "<name> B" (then C…) and opens its
+  Bridge.
+- **Dry trials (`domain/trial.ts`, `fixtures/briefs/*.json`):**
+  - three briefs: landing refresh, mobile retrofit, fleet audit;
+  - a pure, deterministic simulation with the 100-point rubric, labelled Simulated;
+  - golden scores are pinned in a snapshot;
+  - the ship hash and the economy criterion include the overrides, so a variant is a different
+    entrant.
+- **Deviation:** the planned `override.skill` is dropped. The skill a stage opens is already per
+  ship (the stage's active skill), and a second place to set it would conflict.
+
+**Verified:**
+
+- typecheck and lint clean;
+- vitest 300/302. The 2 failures are the v1 ethics scans on the uncommitted Regatta drafts,
+  rewritten in T22.
+- `variant.test.ts` 6/6;
+- `npm run test:plans`: every library ship is pre-flight clean and `verify.py --plan` CLEAN;
+- `variant.spec.ts` 1/1: tune on a clone, undo, fork B, and promote opens the Forge pre-set;
+- the bridge and preflight specs 28/28, after updating the expected count from 15 checks to 16.
+- In the browser: a promote preview diff changes exactly the `model:` line. It was not applied.
+
+**Not run:** a UI export of a tuned ship checked by `verify.py` (the export of overrides is
+unit-tested; `verify.py` does not read `model`).

@@ -127,3 +127,12 @@ textarea.field { min-height: 88px; resize: vertical; }
 .ship-dismiss { justify-self: start; padding-inline: 0; }
 .ship-crew-block { padding-top: var(--s3); border-top: 1px solid var(--border); }
 .ship-crew-block > .btn { justify-self: start; }
+
+/* v2 variants: how this ship spawns the selected member */
+.tuning-card { padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-panel); background: var(--surface); }
+.tuning-card[data-tuned] { border-left: 3px solid var(--chili); }
+.tuning-head { justify-content: space-between; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+.tuning-head .label { margin: 0; }
+.tuning-line { margin: 0; }
+.tuning-addendum { margin: 0; padding: var(--s2) var(--s3); border-left: 2px solid var(--border); color: var(--text); font-style: italic; white-space: pre-wrap; }
+.tuning-actions { gap: var(--s2); flex-wrap: wrap; }
