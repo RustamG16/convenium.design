@@ -676,3 +676,31 @@ ranking logic is unit-tested.
 **Not run:** a real live trial. There is no `claude` CLI on this machine's PATH, and a real run spends
 the owner's Claude usage, so it needs the CLI installed and the owner's go-ahead on the estimate. The
 timeout path (20 minutes) is not exercised end to end; it shares the cancel path's `killTree`.
+
+## T24: the 3D arena (2026-11-08)
+
+- **`src/scene/Arena.tsx`**, lazy-loaded above the Regatta's 2D course:
+  - water, one lane per ship, one buoy per stage or gate (scoring buoys in the lane colour,
+    required gates as chili octahedra), start and finish lines;
+  - each ship sails its class hull: the same CC0 hulls and `displayHull` as the fleet ring, faintly
+    tinted in its lane colour;
+  - a hull moves (a 0.4 s GSAP tween) only when the race's reveal step passes a buoy: the same
+    deterministic events as the 2D course, never chance;
+  - a finish lights the lane's post, the only celebration.
+- **Fallbacks:** the canvas is decorative (`aria-hidden`) and the 2D course carries every number.
+  Without WebGL, with `?2d`, after a lost context, or under reduced motion, the arena is not
+  rendered, and the course is the static board.
+- **Asset ledger complete** (`05-asset-manifest.md § v2`): 0 credits spent. A1/A1′ were closed by
+  T17, A3 was built procedurally, A2 (one rigged recruit body) waits for the owner's yes, and A4 was
+  not requested.
+- **Cut, per the build plan's cut order (item 3):** the 3D Forge workbench. The 2D Forge stays.
+- **Known:** bow direction differs between the CC0 hull files, so some hulls sail stern-first. This
+  is cosmetic and recorded for QA.
+
+**Verified:**
+
+- typecheck and lint clean; vitest 307/307;
+- `regatta.spec.ts` 4/4: the arena is present with 2 lanes and `aria-hidden`; absent under reduced
+  motion and with `?2d`, where the course shows;
+- `live-trial.spec.ts` and the hangar spec unaffected;
+- screenshots at 1440 and 390 show no console errors and no horizontal scroll.

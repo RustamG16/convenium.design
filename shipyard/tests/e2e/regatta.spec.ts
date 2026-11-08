@@ -53,7 +53,28 @@ test('reduced motion shows the finish at once', async ({ browser }) => {
   await page.getByTestId('rg-start').click();
   await expect(page.getByTestId('rg-results')).toBeVisible({ timeout: 2_000 });
   await expect(page.getByTestId('rg-skip')).toHaveCount(0);
+  // no 3D arena under reduced motion: the 2D course is the static board
+  await expect(page.getByTestId('rg-arena')).toHaveCount(0);
+  await expect(page.getByTestId('rg-lane')).toHaveCount(2);
   await ctx.close();
+});
+
+test('the 3D arena pictures the course, and ?2d leaves only the course', async ({ page }) => {
+  await page.goto('/#/regatta?brief=landing-refresh&ships=ss-full-run,ss-abridged');
+  await page.getByTestId('rg-start').click();
+  const arena = page.getByTestId('rg-arena');
+  await expect(arena).toHaveAttribute('data-lanes', '2');
+  await expect(arena).toHaveAttribute('aria-hidden', 'true');
+  await expect(arena.locator('canvas')).toBeVisible();
+  await page.getByTestId('rg-skip').click();
+  await expect(page.getByTestId('rg-results')).toBeVisible();
+
+  // a hash-only change keeps the race on screen: reload so ?2d is read on a fresh page
+  await page.goto('/#/regatta?brief=landing-refresh&ships=ss-full-run,ss-abridged&2d');
+  await page.reload();
+  await page.getByTestId('rg-start').click();
+  await expect(page.getByTestId('rg-lane')).toHaveCount(2);
+  await expect(page.getByTestId('rg-arena')).toHaveCount(0);
 });
 
 test('a ship can be sent to the Regatta from its menu', async ({ page }) => {

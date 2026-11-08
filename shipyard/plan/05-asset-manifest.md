@@ -204,10 +204,10 @@ generated must also:
 
 | # | Asset | Why | Model and params | Quote | Status |
 |---|---|---|---|---|---|
-| A1 | Hull replacing `ships/ship-e.glb` (critic n2) | ship-e is an upright rigged figure, not a hull | `tripo_3d`, text, `face_limit` 10000 | **5 credits** | Not approved. First try the CC0 kit and hulls already in the repo (free) |
-| A1′ | the same, alternative | Use if Tripo's hull reads badly | `meshy_v6_text_to_3d`, `mode` full, lowpoly, 8000 polys | **25 credits** | Not approved |
-| A2 | One neutral rigged recruit body (`fleet-measurer`, Forge-created agents; pigment-tinted) | Recruits are a capsule stand-in today | `meshy_v6_text_to_3d`, `mode` full, a-pose, `enable_rigging`, 1.7 m, 20k polys | **25 credits** | Not approved. Prototype against the existing clips before approving any more bodies |
-| A3 | Arena environment (course, buoys, harbour) | The Regatta scene | Remote Blender scene builder (3D Jutsu) from its curated catalog | **No get_cost quote available** for scene-builder runs | Not approved. Will ask before creating the project; the procedural R3F fallback costs nothing |
+| A1 | Hull replacing `ships/ship-e.glb` (critic n2) | ship-e is an upright rigged figure, not a hull | `tripo_3d`, text, `face_limit` 10000 | **5 credits** | **Closed, not needed (T17):** ship-e is no longer displayed; every ship shows one of the CC0 hulls a–d. 0 credits |
+| A1′ | the same, alternative | Use if Tripo's hull reads badly | `meshy_v6_text_to_3d`, `mode` full, lowpoly, 8000 polys | **25 credits** | **Closed, not needed** (with A1) |
+| A2 | One neutral rigged recruit body (`fleet-measurer`, Forge-created agents; pigment-tinted) | Recruits are a capsule stand-in today | `meshy_v6_text_to_3d`, `mode` full, a-pose, `enable_rigging`, 1.7 m, 20k polys | **25 credits** | **Open, waiting for the owner's yes.** Recruits keep the capsule stand-in until then. Prototype against the existing clips before approving any more bodies |
+| A3 | Arena environment (course, buoys, harbour) | The Regatta scene | Remote Blender scene builder (3D Jutsu) from its curated catalog | **No get_cost quote available** for scene-builder runs | **Built procedurally instead (T24):** `src/scene/Arena.tsx` (water, lanes, buoys, finish posts, the CC0 hulls). 0 credits. A scene-builder harbour stays optional and needs its own yes |
 | A4 | Per-agent bodies | Only on a separate request | `meshy_v6_text_to_3d` rigged | 25 credits each (A2 rate) | Not requested |
 
 **Excluded:**
@@ -215,3 +215,6 @@ generated must also:
 - Seedance video and Spline, as decided in `PRODUCT.md § v2`.
 - The procedural fallbacks: the arena buoys and course, and the existing capsule stand-in. These
   ship whatever the answers are, so v2 is complete with **0 credits** spent.
+
+**Ledger at T24 (2026-11-08):** 0 credits spent in v2. A1 and A1′ were closed at no cost, and A3 was
+built procedurally. A2 is the one open item and waits for the owner's yes. A4 has not been requested.

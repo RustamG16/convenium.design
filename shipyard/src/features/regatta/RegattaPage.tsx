@@ -7,18 +7,19 @@
 // - a record whose ship or library changed since is stale: listed, flagged, not counted;
 // - ties are ties; nothing here rewards clicks, visits or time.
 import * as Tabs from '@radix-ui/react-tabs';
-import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { lazy, Suspense, useEffect, useId, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import '../../styles/ship.css';
 import '../../styles/regatta.css';
 import { TruthLabel } from '../../components/TruthLabel';
 import { BRIEFS } from '../../domain/briefs';
 import { compare, leaderboard, overall, recordFromDry, type Current, type TrialRecord } from '../../domain/regatta';
-import type { Ship } from '../../domain/schema';
+import { displayHull, type Ship } from '../../domain/schema';
 import { libraryShips, LIBRARY_EPOCH } from '../../domain/ship';
 import { CRITERIA, shipHash, simulate, type Brief, type DryTrial, type TrialEvent } from '../../domain/trial';
 import { useKb } from '../../kb/context';
-import { useReducedMotion } from '../../lib/preferences';
+import { force2d, hasWebGL, useReducedMotion } from '../../lib/preferences';
+import type { ArenaLane } from '../../scene/Arena';
 import { useStoreState } from '../../store/context';
 import { LIVE_AVAILABLE, LiveTrialButton } from './LiveTrial';
 import { recordId, trials, useTrials } from './records';
@@ -27,6 +28,9 @@ const MIN_SHIPS = 2;
 const MAX_SHIPS = 4;
 const STEP_MS = 420;
 const LANE_COLORS = ['var(--sw-1)', 'var(--sw-2)', 'var(--sw-3)', 'var(--sw-4)'];
+/** the same swatches as hex, for the 3D arena (tokens.css --sw-1..4) */
+const LANE_HEX = ['#d9a441', '#86c2a8', '#c79fdc', '#93aedb'];
+const Arena = lazy(() => import('../../scene/Arena'));
 
 /** Every ship the owner can enter: their own, then the library's templates they have not replaced. */
 function useEntrants(): Ship[] {
@@ -155,6 +159,14 @@ function Course({ runs, names, step }: { runs: DryTrial[]; names: Map<string, st
       })}
     </ol>
   );
+}
+
+function arenaLanes(runs: DryTrial[], entrants: Ship[], step: number): ArenaLane[] {
+  return runs.map((r, i) => {
+    const ship = entrants.find((s) => s.id === r.ship);
+    const buoys = r.events.filter((e) => e.kind !== 'finish').map(buoyKind);
+    return { ship: r.ship, hull: displayHull(ship?.hull, r.ship), color: LANE_HEX[i % LANE_HEX.length], buoys, passed: Math.min(step, buoys.length) };
+  });
 }
 
 /* ---------------------------------------------------------------------------------------- results */
@@ -380,6 +392,7 @@ export default function RegattaPage() {
   const [chosen, setChosen] = useState<string[]>(() => (params.get('ships') ?? '').split(',').filter((id) => entrants.some((s) => s.id === id)).slice(0, MAX_SHIPS));
   const [race, setRace] = useState<{ runs: DryTrial[]; brief: Brief } | null>(null);
   const [beat, setStep] = useState(0);
+  const [arenaLost, setArenaLost] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const names = useMemo(() => new Map(entrants.map((s) => [s.id, s.name])), [entrants]);
   const longest = race ? Math.max(...race.runs.map((r) => r.events.length - 1)) : 0;
@@ -411,6 +424,8 @@ export default function RegattaPage() {
     setRace({ runs, brief: b });
   };
 
+  // the arena is a picture of the course; without WebGL, with ?2d or under reduced motion the course alone is the board
+  const show3d = !reduced && !arenaLost && hasWebGL() && !force2d();
   const canStart = !!brief && chosen.length >= MIN_SHIPS && chosen.length <= MAX_SHIPS;
   return (
     <main id="main" className="page regatta" data-testid="regatta">
@@ -464,6 +479,11 @@ export default function RegattaPage() {
                   </button>
                 </div>
               </div>
+              {show3d && (
+                <Suspense fallback={<div className="rg-arena rg-arena-loading" aria-hidden="true" />}>
+                  <Arena lanes={arenaLanes(race.runs, entrants, step)} onContextLost={() => setArenaLost(true)} />
+                </Suspense>
+              )}
               <Course runs={race.runs} names={names} step={step} />
               <p className="rg-legend muted">
                 <span className="rg-key" data-kind="scores" /> stage that meets a need or makes a required artifact · <span className="rg-key" data-kind="plain" /> other stage · <span className="rg-key" data-kind="gate-req" /> gate the brief requires

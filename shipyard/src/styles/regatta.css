@@ -94,3 +94,9 @@
 .rg-live-dialog code { overflow-wrap: anywhere; }
 /* the phrase to type is shown exactly as it must be typed, whatever the label's case */
 .rg-live-dialog .label code { text-transform: none; letter-spacing: 0; font-size: 13px; }
+
+/* the 3D arena: a picture of the course above it (decorative; the course carries the numbers) */
+.rg-arena { position: relative; height: clamp(220px, 34svh, 380px); border: 1px solid var(--border); border-radius: var(--r-panel); overflow: hidden;
+  background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--sw-4) 14%, var(--bg)), var(--bg)); }
+.rg-arena canvas { width: 100% !important; height: 100% !important; }
+@media (max-width: 640px) { .rg-arena { height: 200px; } }
