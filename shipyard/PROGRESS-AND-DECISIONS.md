@@ -846,3 +846,29 @@ an arena frame-rate measurement. m12 is still the owner's call.
 
 The fake-CLI live suite was not re-run in this cycle: T29 did not touch `dev/trial.ts` or the live
 dialog.
+
+## Critic target met (2026-11-08)
+
+The fourth re-review after T29 (`10-finish-review.md`, last section, HEAD `3a68bd7`) scored **85 /
+100**, meeting the target:
+
+| Review | Score |
+|---|---|
+| v2 finish review | 75 |
+| After T26 | 79 |
+| After T27 | 82 |
+| After T28 | 84 |
+| After T29 | 85 |
+
+**Open minors, not started:**
+
+- new-h: finish gems overlap hulls on screen at 28°;
+- new-i: ship-d reads nose-up;
+- new-j: no-winner copy repeats, plus list joins and apostrophes;
+- new-k: twins compared by pre-flight points rather than by their failing-check sets;
+- a loading aspect-ratio nit.
+
+**Still open for the owner:**
+
+- one real live smoke trial, which needs the `claude` CLI and an approved estimate;
+- the 27 modified v1 PNGs (m12).

@@ -670,3 +670,78 @@ Design 33/40, usability 27/30, creativity 15/20, content 9/10.
    - fix new-e.
 3. One owner-approved real smoke trial. This remains the largest risk.
 4. Optional: n3 discs, the Hangar fleet overlap, the hero at 1024.
+
+
+---
+
+# 10 — Finish review v2, fourth re-review after T29 (independent critic, award-rubric)
+
+**What the critic checked** (HEAD `3a68bd7`, read-only)
+
+- **Read:** the 84 re-review in full; PROGRESS § T29; the 07-qa T29 section; `results.json` (32 entries, axe 0, overflow 0); the v2 PNGs (regatta-results at 1440 and 390, bridge-tuning-1440); `git diff ec69d96 3a68bd7 -- src tests`.
+- **Re-ran:** `npm run typecheck` (clean) and `npx vitest run` (320/320, 29 files).
+- **Drove** the 5173 server with swiftshader:
+  - a four-ship race at 1440, 1024 and 390, plus a 2× zoom of the finish and a 1440×640 viewport;
+  - a haiku-critic clone and an addendum-only clone;
+  - eight races: haiku copy vs parent (1440 and 390); haiku copy mixed with SS Abridged, in both orders; addendum copy vs parent; addendum copy mixed; three twins; three twins plus SS Abridged at 1024.
+  - No console errors. 0 px overflow in every race.
+- **Did not:** call apply, start or rebuild; run any Playwright suite, the production preview or the keyboard spec; measure frame rate.
+
+(Transcribed by the director from the critic's report.)
+
+## 1. Verdict: **ship with fixes**
+
+T29 fixes the one wording that still misled (new-f), and the arena now fills its stage. In every twin case the critic drove, the copy is accurate and names the failing check. What is left is on-screen polish in the arena and copy repetition.
+
+## 2. Score: **85 / 100** (was 84; target 85, met)
+
+Design 34/40, usability 27/30, creativity 15/20, content 9/10.
+
+| Row | Score | Δ vs 84 | What works | What is weak |
+|---|---|---|---|---|
+| Hierarchy and composition | 8 | 0 | The arena is no longer a strip in an empty box | Hangar fleet overlap; hero below the fold at 1024 and 390 (disclosed) |
+| Type, colour, material | 8 | 0 | Hulls are about twice the size, so their texture now shows | Still a diagram that repeats the 2D course below it |
+| Responsive intent | 9 | 0 | Stage takes the course's proportions (1392×462 at 1440, 976×324 at 1024). At 640 px tall, the 60svh cap holds | At 390 the course is about 70 px tall inside 168 px; hulls are about 15 px |
+| Simplicity | 8 | 0 | No new controls | — |
+| 3D against ArkhEthos | 9 | +1 | Course is about 80% of the width. Lead reads at once. 89.3 and 89 line up. No pennant in tuning-only races | Finish gems still meet hulls on screen (new-h). ship-c, and now visibly ship-d, read as crossing their lanes (new-i) |
+| Gamification and ethics | 9 | 0 | Tuning-only races: `data-winners=0`. Addendum tie: "No winner". The haiku copy is named with the check it fails, in both orders | Edge case in the twins logic (new-k) |
+| Accessibility | 9 | 0 | axe 0; keyboard spec in place | Not run by the critic |
+| Fidelity to DESIGN / plan 12 | 8 | 0 | — | — |
+| Content and CTA coherence | 9 | 0 | Pre-flight cell reads "14 of 15 checks pass · fails: …" | Repetition and typography (new-j) |
+
+**Delivery risk: medium.** There has still been no real live trial.
+
+## 3. Status of the 84 review's findings
+
+| # | Status | Evidence |
+|---|---|---|
+| new-f | **Fixed** | Head, twins note and results all say: "SS Full Run copy fails 'The critic's model tier is at least the builder's'. Any other gap is the tier's cost." The addendum copy keeps "Any gap … tier's cost", which is right because both score 89.3. TuningCard is reworded. There is a new e2e test |
+| new-e | **Fixed in plan view, not on screen** | Beam 0.8 with buoys at 0.62 clears in plan, and the unit test checks that. At 28°, though, the 0.62 side offset projects only about 0.29 units up the screen. In the 2× zoom the red gem sits on ship-c's top, ship-d's fin crosses its gem, and the lead hull's crossbar touches its gem |
+| new-g | **Fixed** | `variant.ts:81` |
+| Arena presence | **Fixed** | `arenaExtent` with LEAD_IN/RUN_OUT, `CENTER_X`, an aspect-ratio stage; the course uses about 80% of the width at 1440 and 1024, against 43–52% before |
+
+## 4. New findings (minor)
+
+- **new-h. Finish gems overlap hulls in screen space.**
+  - The test checks plan-view clearance only.
+  - *Fix:* move the last gem off the hull's x by spreading buoys over `reach*(j+0.5)/n`. Or lower the gems so they sit at water level. Then judge it from a 2× capture, not from the unit test.
+- **new-i. ship-d (SS Mobile Fleet) reads nose-up at 28°**, as ship-c does. Two of the four library hulls do not read as sailing down their lanes.
+  - *Fix:* a yaw/pitch correction per model in `displayHull`.
+- **new-j. Copy repetition in tuning-only races.**
+  - The head sentence, two lines at 18 px, is restated in the results, and the twins note appears twice word for word.
+  - "SS Full Run and SS Full Run copy and SS Full Run copy 2" needs a proper list join.
+  - Apostrophes are mixed: ’ in the app's copy, ' in check titles.
+  - *Fix:* shorten the results line to "No winner." plus the note; add a list helper; normalise apostrophes when titles are shown.
+- **new-k. `twinsSentences` compares pre-flight points only.**
+  - It lists every check the lower twin fails, including checks the higher twin also fails.
+  - Twins with equal points but different failing checks get "any gap is cost".
+  - No library ship can trigger this today.
+  - *Fix:* show the difference between the two twins' failing-check sets.
+- **Nit.** `.rg-arena-loading` uses a fixed `aspect-ratio: 3.3`, but the real ratio runs from about 3.0 to 4.4, so the layout shifts slightly when the arena chunk arrives.
+
+## 5. Beyond 85
+
+1. new-h and new-i: make the arena clean at 2× (+1).
+2. new-j: one statement of the no-winner sentence per page (+0.5).
+3. One real smoke trial, approved by the owner. This is still the largest risk and the main thing keeping delivery risk at medium.
+4. Optional: n3 discs, the Hangar fleet overlap, the hero at 1024.
