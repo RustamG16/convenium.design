@@ -326,3 +326,11 @@ one session builds).
 
 **Gates:** in `07-qa.md` § 12 (cycle 2). A re-review by the same critic is recorded at the end of
 `10-finish-review.md`.
+
+**Re-review (2 of 2), same critic, against `dc1cbbb`:** **ship**, 79/100. All majors are fixed.
+Open, and out of the fix-cycle budget, so they go to the owner at Gate C:
+- n1: hangar hulls small with more than one ship;
+- n2: ship-e reads as a creature;
+- n3: orbit items stack at the turntable angle;
+- n4: two fix labels still show ids;
+- n5: loading-veil edge cases (a possible 20 s veil; no screen-reader status).
