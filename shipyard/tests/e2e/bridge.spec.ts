@@ -2,6 +2,18 @@ import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+// v3: the Bridge shows the crew render by default; these tests drive the 3D turntable, so the viewer's choice is preset to 3D
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.setItem('convenium.shipyard.ui.bridgeView', '3d');
+    } catch {
+      /* storage blocked: the URL's view=3d still applies */
+    }
+  });
+});
+
+
 /**
  * T6: the Bridge. Template banner and Clone to edit, edit mode, recruit, dismiss, undo, the anchor
  * diagram, and acceptance 2 (an equip made through the UI is on the 3D body and in the DOM anchor
@@ -42,7 +54,8 @@ async function cloneFrom(page: Page, member: string) {
 
 test('acceptance 1: cleared storage shows exactly one ship; its bridge is a read-only template', async ({ page }) => {
   await page.goto('/#/');
-  await expect(page.getByTestId('ship-card')).toHaveCount(1);
+  // v3: the Hangar lists every library ship as a template; storage holds no ship of the user's yet
+  await expect(page.locator('[data-testid="ship-card"]:not(:has([data-testid="template-lock"]))')).toHaveCount(0);
   await page.goto('/#/ship/ss-full-run/bridge?member=captain');
   await expect(page.getByTestId('template-banner')).toContainText(/template/i);
   await expect(page.getByTestId('crew-profile')).toHaveAttribute('data-readonly', 'true');
@@ -60,7 +73,7 @@ test('seven bodies: the face stays clear of the head artifact (screenshots, look
   const errors = watch(page);
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const m of MEMBERS) {
-    await page.goto(`/#/ship/ss-full-run/bridge?member=${m}`);
+    await page.goto(`/#/ship/ss-full-run/bridge?member=${m}&view=3d`);
     const t = page.getByTestId('turntable');
     await expect(t).toHaveAttribute('data-member', m);
     await expect(t).toHaveAttribute('data-ready', 'true', { timeout: 60_000 });
@@ -72,7 +85,7 @@ test('seven bodies: the face stays clear of the head artifact (screenshots, look
 
 test('turntable loading state: the sheet fills the card first, then fades; the card never changes size', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/#/ship/ss-full-run/bridge?member=critic');
+  await page.goto('/#/ship/ss-full-run/bridge?member=critic&view=3d');
   const t = page.getByTestId('turntable');
   await expect(t).toBeVisible();
   const before = await t.boundingBox();
@@ -115,7 +128,7 @@ test('acceptance 2 without WebGL (?2d): the anchor diagram carries the equip', a
   await cloneFrom(page, 'strategist');
   await page.goto('/#/ship/ss-full-run-copy/bridge?member=strategist&2d');
   await page.reload();
-  await expect(page.getByTestId('portrait')).toBeVisible();
+  await expect(page.getByTestId('crew-stage')).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
   await page.getByTestId('equip-skill').click();
   await page.getByTestId('picker-search').fill('gsap-core');

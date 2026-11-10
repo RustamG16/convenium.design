@@ -1,0 +1,380 @@
+/* v3 Space Regatta Arcade (plan/13-build-plan-v3.md). Loaded last in main.tsx. Rules that must beat the
+   lazily loaded page sheets are prefixed with #root (portaled dialogs: body > [role=dialog]). */
+:root {
+  --ar-ground: #0b0809;
+  --ar-panel: rgba(22, 15, 16, 0.86);
+  --ar-panel-2: rgba(30, 20, 21, 0.92);
+  --ar-rim: rgba(229, 57, 61, 0.42);
+  --ar-rim-soft: rgba(237, 235, 221, 0.12);
+  --ar-neon: #ff3b3f;
+  --ar-red: #d7262b;
+  --ar-red-deep: #8e0d10;
+  --ar-glow: 0 0 18px rgba(255, 59, 63, 0.55);
+  --ar-gold: #e8b04a;
+  --ar-ready: #8fddb0;
+  --ar-warn: #f4b740;
+  --ar-info: #a9c8ff;
+  --ar-cut: 14px;
+  --ar-skew: 12px;
+  --font-arcade: 'Archivo Variable', 'Archivo', 'Arial Narrow', Arial, sans-serif;
+  --font-serif: var(--font-ui); /* Newsreader retires from arcade surfaces */
+  --header-h: 62px;
+  --surface: rgba(30, 20, 21, 0.9);
+  --elevated: #261a1b;
+  --border: #4a2f30;
+}
+@media (max-width: 767px) {
+  :root { --header-h: 60px; }
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 78% -10%, rgba(173, 32, 86, 0.22), transparent 60%),
+    radial-gradient(900px 500px at 10% 30%, rgba(40, 120, 140, 0.1), transparent 60%),
+    radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.55), transparent 1px),
+    radial-gradient(1px 1px at 70% 60%, rgba(255, 255, 255, 0.4), transparent 1px),
+    radial-gradient(1.5px 1.5px at 40% 80%, rgba(255, 255, 255, 0.35), transparent 2px),
+    radial-gradient(1px 1px at 85% 20%, rgba(255, 255, 255, 0.5), transparent 1px),
+    var(--ar-ground);
+  background-size: auto, auto, 240px 240px, 310px 310px, 420px 420px, 190px 190px, auto;
+  background-attachment: fixed;
+}
+
+/* the arcade voice: heavy condensed italic caps */
+.ar-voice,
+#root .display,
+#root .page-title,
+#root .section-head,
+#root .section-title,
+#root .card-title,
+#root .label,
+#root .tab,
+#root .btn,
+#root .pill,
+#root .truth,
+#root .lock,
+#root .class-badge {
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-stretch: 82%;
+  font-variation-settings: normal;
+}
+#root .display,
+#root .page-title,
+#root .section-head,
+#root .section-title {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+}
+#root .card-title { font-weight: 800; text-transform: uppercase; font-size: calc(var(--title) + 2px); letter-spacing: 0.01em; }
+#root .label { font-weight: 700; letter-spacing: 0.06em; }
+#root .lede,
+#root .prose { font-family: var(--font-ui); font-size: 17px; }
+
+/* ── header ─────────────────────────────────────────── */
+#root .site-header {
+  min-height: var(--header-h);
+  padding: 0 clamp(16px, 3vw, 44px);
+  background: linear-gradient(180deg, rgba(14, 9, 10, 0.97), rgba(14, 9, 10, 0.9));
+  border-bottom: 1px solid rgba(229, 57, 61, 0.28);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6), 0 10px 30px -18px rgba(255, 59, 63, 0.5);
+  backdrop-filter: blur(6px);
+}
+#root .site-header .brand { display: inline-flex; align-items: center; gap: 12px; letter-spacing: 0; }
+.brand-mark { width: 52px; height: 28px; flex: none; filter: drop-shadow(0 0 8px rgba(255, 59, 63, 0.55)); }
+.brand-words { display: grid; line-height: 1; font-family: var(--font-arcade); font-style: italic; text-transform: uppercase; }
+.brand-words small { font-size: 10px; font-weight: 600; letter-spacing: 0.42em; color: var(--cotton); opacity: 0.85; }
+.brand-words strong { font-size: 25px; font-weight: 900; font-stretch: 86%; letter-spacing: 0.01em; color: var(--cotton); }
+/* five sections (six with the Forge) may not fit a tablet header: the nav scrolls inside it, the page never does */
+#root .site-header nav { gap: clamp(2px, 1vw, 14px); min-width: 0; overflow-x: auto; scrollbar-width: none; }
+#root .site-header nav a {
+  position: relative;
+  min-height: 44px;
+  padding: 0 clamp(12px, 1.5vw, 22px);
+  border-radius: 0;
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-stretch: 86%;
+  font-size: clamp(15px, 1.35vw, 19px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: rgba(237, 235, 221, 0.86);
+  white-space: nowrap;
+  background: transparent;
+  clip-path: polygon(var(--ar-skew) 0, 100% 0, calc(100% - var(--ar-skew)) 100%, 0 100%);
+}
+#root .site-header nav a:hover { color: #fff; background: rgba(255, 59, 63, 0.12); }
+#root .site-header nav a[aria-current='page'] {
+  color: #fff;
+  background: linear-gradient(180deg, #ee3237, var(--ar-red) 60%, #a5151a);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+@media (max-width: 767px) {
+  .brand-mark { width: 38px; height: 22px; }
+  .brand-words strong { font-size: 19px; }
+  .brand-words small { font-size: 8px; }
+  #root .site-header nav a { font-size: 15px; padding: 0 14px; }
+}
+
+/* ── chrome: chamfered panels ───────────────────────── */
+.ar-panel,
+#root .card,
+#root .ship-card,
+#root .state-panel {
+  position: relative;
+  background: linear-gradient(180deg, var(--ar-panel-2), var(--ar-panel));
+  border: 0;
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px var(--ar-rim);
+  clip-path: polygon(var(--ar-cut) 0, 100% 0, 100% calc(100% - var(--ar-cut)), calc(100% - var(--ar-cut)) 100%, 0 100%, 0 var(--ar-cut));
+}
+.ar-panel[data-hot],
+#root .ship-card[data-focused] {
+  box-shadow: inset 0 0 0 2px var(--ar-neon), inset 0 0 26px rgba(255, 59, 63, 0.35);
+}
+/* ── buttons: parallelograms ────────────────────────── */
+#root .btn,
+body > [role='dialog'] .btn,
+body > div > [role='dialog'] .btn,
+#root .pill {
+  border: 0;
+  border-radius: 0;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  padding: 0 26px;
+  clip-path: polygon(var(--ar-skew) 0, 100% 0, calc(100% - var(--ar-skew)) 100%, 0 100%);
+}
+#root .btn-primary,
+body [role='dialog'] .btn-primary {
+  color: #fff;
+  background: linear-gradient(180deg, #f03a3f, var(--ar-red) 55%, #a1151a);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+#root .btn-primary:hover:not(:disabled),
+body [role='dialog'] .btn-primary:hover:not(:disabled) { background: linear-gradient(180deg, #ff5357, #e3282d 55%, #b0171c); color: #fff; }
+#root .btn-quiet,
+#root .pill,
+body [role='dialog'] .btn-quiet {
+  color: var(--cotton);
+  background: linear-gradient(180deg, rgba(60, 40, 41, 0.75), rgba(28, 19, 20, 0.85));
+  box-shadow: inset 0 0 0 1px rgba(237, 235, 221, 0.22);
+}
+#root .btn-quiet:hover:not(:disabled),
+#root .pill:hover { background: linear-gradient(180deg, rgba(110, 36, 38, 0.8), rgba(48, 20, 21, 0.9)); box-shadow: inset 0 0 0 1px var(--ar-neon); }
+#root .btn-sm { font-size: 13px; padding: 0 18px; }
+#root .btn-text { clip-path: none; background: transparent; box-shadow: none; padding: 0 6px; color: var(--cotton); }
+.ar-cta {
+  min-height: 64px !important;
+  padding: 0 38px !important;
+  font-size: clamp(20px, 2vw, 32px) !important;
+  font-weight: 900 !important;
+  --ar-skew: 22px;
+  filter: drop-shadow(0 0 16px rgba(255, 59, 63, 0.55));
+}
+.ar-cta-arrows { margin-left: 18px; font-style: normal; letter-spacing: -0.1em; }
+
+/* ── tabs: parallelograms ───────────────────────────── */
+#root .tabs { border-bottom: 0; gap: 6px; flex: 0 1 auto; }
+#root .tab {
+  min-height: 46px;
+  padding: 0 30px;
+  border: 0;
+  font-size: 19px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: rgba(237, 235, 221, 0.62);
+  background: linear-gradient(180deg, rgba(48, 32, 33, 0.7), rgba(22, 15, 16, 0.8));
+  clip-path: polygon(var(--ar-skew) 0, 100% 0, calc(100% - var(--ar-skew)) 100%, 0 100%);
+}
+#root .tab[data-state='active'] { color: #fff; background: linear-gradient(180deg, #f03a3f, var(--ar-red) 60%, #a5151a); }
+
+/* ── truth labels, chips, fields ────────────────────── */
+#root .truth {
+  padding: 2px 12px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ar-ready);
+  background: rgba(10, 8, 9, 0.5);
+}
+#root .truth[data-truth='Simulated'] { color: rgba(237, 235, 221, 0.82); }
+#root .truth[data-truth='Estimate'],
+#root .truth[data-truth='Model-judged'] { color: var(--ar-info); }
+#root .chip { border-color: rgba(237, 235, 221, 0.2); background: rgba(10, 8, 9, 0.45); }
+#root .field,
+body [role='dialog'] .field {
+  background: rgba(8, 6, 7, 0.75);
+  border: 1px solid rgba(237, 235, 221, 0.22);
+  border-radius: 4px;
+}
+#root .field:focus { border-color: var(--ar-neon); box-shadow: 0 0 0 1px var(--ar-neon), var(--ar-glow); outline: none; }
+#root .choice { border-radius: 999px; border-color: rgba(237, 235, 221, 0.22); background: rgba(10, 8, 9, 0.5); }
+#root .choice:has(input:checked) { border-color: var(--ar-neon); box-shadow: 0 0 12px rgba(255, 59, 63, 0.4); }
+#root .choice input,
+#root .menu-radio input { accent-color: var(--ar-neon); }
+
+body [role='dialog'].dialog,
+body .dialog {
+  background: linear-gradient(180deg, #24181a, #150e0f);
+  border: 1px solid var(--ar-rim);
+  border-radius: 0;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), var(--ar-glow);
+}
+
+/* ── reusable arcade bits ───────────────────────────── */
+.ar-wordmark {
+  margin: 0;
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-weight: 900;
+  font-stretch: 84%;
+  line-height: 0.86;
+  text-transform: uppercase;
+  color: #f4efe2;
+  background: linear-gradient(180deg, #fffaf0 30%, #d9d2c2 70%, #f6efe0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 0 rgba(120, 10, 12, 0.85)) drop-shadow(0 10px 22px rgba(0, 0, 0, 0.7));
+}
+.ar-caps {
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-weight: 700;
+  font-stretch: 86%;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.ar-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 16px;
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 15px;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(180deg, #f03a3f, var(--ar-red) 60%, #a1151a);
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+.ar-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-weight: 900;
+  font-stretch: 84%;
+  font-size: 26px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.ar-head::before {
+  content: '';
+  width: 22px;
+  height: 18px;
+  flex: none;
+  background: linear-gradient(90deg, var(--ar-neon) 0 7px, transparent 7px 11px, var(--ar-neon) 11px 18px, transparent 18px);
+  transform: skewX(-20deg);
+}
+.ar-head[data-plain]::before { display: none; }
+.ar-checkers {
+  display: inline-block;
+  width: 1.1em;
+  height: 0.62em;
+  background: conic-gradient(#1a1212 25%, #f3ede0 0 50%, #1a1212 0 75%, #f3ede0 0) 0 0 / 0.155em 0.155em;
+  transform: skewX(-18deg) rotate(-6deg);
+  -webkit-mask: linear-gradient(90deg, #000 55%, transparent);
+  mask: linear-gradient(90deg, #000 55%, transparent);
+  vertical-align: 0.42em;
+  margin-left: 0.08em;
+}
+.ar-checkers[data-red] { background-image: conic-gradient(#3a0a0b 25%, var(--ar-neon) 0 50%, #3a0a0b 0 75%, var(--ar-neon) 0); }
+
+/* page ground: arcade pages run edge to edge, each band carries its own gutter */
+#root .page { max-width: 1600px; }
+#root .page.ar-full { max-width: none; padding: 0 0 var(--s7); }
+.ar-band { max-width: 1600px; margin: 0 auto; padding-inline: clamp(16px, 3vw, 44px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ar-ticker-track { animation: none !important; }
+}
+
+/* ---- ship sub-nav, ready pill and template line (every ship page; reference bridge-space-arcade.png) ---- */
+#root .ship-subnav { border: 0; margin: 0 0 var(--s3); padding: 0; }
+#root .ship-subnav-links ul { gap: 6px; }
+#root .ship-subnav-link {
+  min-height: 46px;
+  padding: 0 34px;
+  border: 0;
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-weight: 800;
+  font-stretch: 82%;
+  font-size: 19px;
+  color: var(--muted);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.01));
+  clip-path: polygon(var(--ar-skew) 0, 100% 0, calc(100% - var(--ar-skew)) 100%, 0 100%);
+}
+#root .ship-subnav-link[aria-current='page'] {
+  color: #fff;
+  background: linear-gradient(180deg, #ff4b4f, var(--ar-red));
+  box-shadow: 0 0 22px rgb(255 59 63 / 0.45);
+}
+#root .ready-pill {
+  min-height: 46px;
+  border-radius: 0;
+  border: 1px solid var(--ar-rim);
+  background: rgb(14 10 11 / 0.72);
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 18px;
+  text-transform: uppercase;
+  clip-path: polygon(var(--ar-skew) 0, 100% 0, calc(100% - var(--ar-skew)) 100%, 0 100%);
+  padding-inline: 24px;
+}
+#root .template-line {
+  border: 1px solid var(--ar-rim);
+  border-radius: 0;
+  background: linear-gradient(90deg, rgb(20 13 14 / 0.9), rgb(14 10 11 / 0.6));
+  padding: 6px 6px 6px 18px;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-stretch: 86%;
+  letter-spacing: 0.02em;
+}
+#root .template-line::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  flex: none;
+  background: linear-gradient(115deg, transparent 30%, var(--ar-neon) 30% 46%, transparent 46% 58%, var(--cotton) 58% 74%, transparent 74%);
+}
+#root .template-line > :first-child { margin-right: auto; }
+#root .template-line .btn-primary,
+#root .template-line .btn {
+  background: var(--cotton);
+  color: #160d0e;
+  min-height: 38px;
+}
+
+@media (max-width: 767px) {
+  #root .ship-subnav-link { min-height: 40px; padding: 0 16px; font-size: 15px; white-space: nowrap; }
+  #root .ready-pill { min-height: 40px; font-size: 15px; padding-inline: 16px; }
+  #root .template-line { font-size: 13px; }
+}
+@media (max-width: 767px) {
+  /* a tab row never widens the page: smaller parallelograms, and the row scrolls if it still does not fit */
+  #root .tabs { max-width: 100%; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  #root .tab { flex: none; padding: 0 18px; font-size: 15px; }
+}

@@ -2,6 +2,18 @@ import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+// v3: the Bridge shows the crew render by default; these tests drive the 3D turntable, so the viewer's choice is preset to 3D
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.setItem('convenium.shipyard.ui.bridgeView', '3d');
+    } catch {
+      /* storage blocked: the URL's view=3d still applies */
+    }
+  });
+});
+
+
 /**
  * T7: the Armory. Filters, the virtualised grid, search, the inspector (one small canvas, only while
  * open), Charts and Modules, and equip from the Armory to a member in every input mode: mouse drag,
@@ -176,7 +188,7 @@ test('touch: a 300 ms hold picks the card up and a drop on a socket equips; a qu
 test('the bridge drawer: drag a card onto the 3D body; the nearest free anchor is ringed; the body wears it', async ({ page }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/#/ship/ss-full-run/bridge?member=strategist');
+  await page.goto('/#/ship/ss-full-run/bridge?member=strategist&view=3d');
   await page.getByTestId('clone-to-edit').click();
   await page.getByTestId('clone-confirm').click();
   await expect(page.getByTestId('turntable')).toHaveAttribute('data-ready', 'true', { timeout: 60_000 });

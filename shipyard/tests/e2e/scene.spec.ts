@@ -2,6 +2,18 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { existsSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+// v3: the Bridge shows the crew render by default; these tests drive the 3D turntable, so the viewer's choice is preset to 3D
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.setItem('convenium.shipyard.ui.bridgeView', '3d');
+    } catch {
+      /* storage blocked: the URL's view=3d still applies */
+    }
+  });
+});
+
+
 /**
  * T4: the ported 3D scene on SS Full Run, run on software WebGL (SwiftShader). One project at a time.
  * Every screenshot lands in plan/qa-screens/ and is looked at before commit; the assertions here
@@ -117,11 +129,11 @@ test('bridge ?2d: the DOM profile with the design sheet and glyphs, no canvas', 
   const p = watch(page);
   await page.setViewportSize({ width: 1440, height: 900 });
   await openBridge(page, 'captain', '&2d');
-  await expect(page.getByTestId('portrait')).toBeVisible();
+  await expect(page.getByTestId('crew-stage')).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
   await expect(page.locator('[data-testid="loadout-rack"] svg.glyph').first()).toBeVisible();
   await expect(page.getByTestId('replay-walk')).toHaveCount(0);
-  await expect(page.getByTestId('portrait').locator('img')).toHaveJSProperty('complete', true);
+  await expect(page.getByTestId('crew-stage').locator('img')).toHaveJSProperty('complete', true);
   await page.screenshot({ path: resolve(SHOTS, 't4-bridge-2d-1440.png') });
   expect(p.glb).toEqual([]);
   expect(p.errors).toEqual([]);
@@ -138,7 +150,7 @@ test('no WebGL: the board route falls through to the DOM bridge, no canvas, no G
   });
   await page.goto('/#/ship/ss-full-run/board');
   await expect(page).toHaveURL(/#\/ship\/ss-full-run\/bridge/);
-  await expect(page.getByTestId('portrait')).toBeVisible();
+  await expect(page.getByTestId('crew-stage')).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
   await expect(page.getByTestId('replay-walk')).toHaveCount(0);
   expect(p.glb).toEqual([]);
@@ -166,7 +178,7 @@ test('a lost WebGL context drops the bridge to the DOM profile', async ({ page }
   await openBridge(page, 'captain');
   await expect.poll(async () => (await turntableScene(page)) !== null, { timeout: 60_000 }).toBe(true);
   await page.evaluate(() => (window as unknown as { __turntable: SceneHook }).__turntable.gl.getContext().getExtension('WEBGL_lose_context')?.loseContext());
-  await expect(page.getByTestId('portrait')).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByTestId('crew-stage')).toBeVisible({ timeout: 20_000 });
   await expect(page.locator('canvas')).toHaveCount(0);
 });
 

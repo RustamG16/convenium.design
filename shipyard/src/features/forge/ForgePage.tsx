@@ -7,6 +7,8 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { useEffect, useId, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { useSearchParams } from 'react-router';
 import '../../styles/forge.css';
+import { TruthLabel } from '../../components/TruthLabel';
+import { arcadeMedia, crewArt } from '../../lib/arcadeArt';
 import { useKb } from '../../kb/context';
 import type { KbAgent, KbCrew } from '../../kb/schema';
 import { apply, categories, FORGE_AVAILABLE, ForgeProblem, MODELS, PHASES, preview, type AgentPayload, type ApplyOutcome, type ForgeRequest, type Preview, type SkillPayload } from './forgeApi';
@@ -14,28 +16,36 @@ import { apply, categories, FORGE_AVAILABLE, ForgeProblem, MODELS, PHASES, previ
 const NEW = '__new__';
 const SLUG = /^[a-z][a-z0-9-]{1,47}$/;
 
-type Bench = { step: 'edit' } | { step: 'previewing' } | { step: 'preview'; preview: Preview } | { step: 'applying'; preview: Preview } | { step: 'done'; outcome: ApplyOutcome };
+type Bench = { step: 'edit' } | { step: 'previewing' } | { step: 'preview'; preview: Preview; key: string } | { step: 'applying'; preview: Preview; key: string } | { step: 'done'; outcome: ApplyOutcome };
 
-/** Preview → apply, shared by both tabs. `request` is null while the form is not ready to send. */
-function Workbench({ request, problems: formProblems, onApplied, children }: { request: ForgeRequest | null; problems: string[]; onApplied: (o: ApplyOutcome) => void; children: ReactNode }) {
+/**
+ * Preview → apply, shared by both tabs (v3 layout, reference forge-space-arcade.png): the optional lead
+ * column (the draft on its pedestal), the form, and the diff column side by side. A preview is tied to the
+ * request it was rendered from; editing the form after it makes it stale and asks for a fresh preview.
+ */
+function Workbench({ request, problems: formProblems, onApplied, lead, title, sub, mode, children }: { request: ForgeRequest | null; problems: string[]; onApplied: (o: ApplyOutcome) => void; lead?: ReactNode; title: string; sub: string; mode?: ReactNode; children: ReactNode }) {
   const [bench, setBench] = useState<Bench>({ step: 'edit' });
   const [problems, setProblems] = useState<string[]>([]);
   const busy = bench.step === 'previewing' || bench.step === 'applying';
+  const reqKey = request ? JSON.stringify(request) : '';
+  const stale = bench.step === 'preview' && bench.key !== reqKey;
+  const shown = stale ? null : bench.step === 'preview' || bench.step === 'applying' ? bench.preview : null;
 
   const doPreview = async () => {
     if (!request) return;
+    const key = reqKey;
     setProblems([]);
     setBench({ step: 'previewing' });
     try {
-      setBench({ step: 'preview', preview: await preview(request) });
+      setBench({ step: 'preview', preview: await preview(request), key });
     } catch (e) {
       setProblems(e instanceof ForgeProblem ? e.problems : [String(e)]);
       setBench({ step: 'edit' });
     }
   };
-  const doApply = async (p: Preview) => {
+  const doApply = async (p: Preview, key: string) => {
     setProblems([]);
-    setBench({ step: 'applying', preview: p });
+    setBench({ step: 'applying', preview: p, key });
     try {
       const outcome = await apply(p.token);
       // success is shown by the page (this bench remounts when the new library arrives); a rollback stays here
@@ -45,54 +55,87 @@ function Workbench({ request, problems: formProblems, onApplied, children }: { r
       } else setBench({ step: 'done', outcome });
     } catch (e) {
       setProblems(e instanceof ForgeProblem ? e.problems : [String(e)]);
-      setBench({ step: 'preview', preview: p });
+      setBench({ step: 'preview', preview: p, key });
     }
   };
-
-  if (bench.step === 'done') return <Outcome outcome={bench.outcome} onClose={() => setBench({ step: 'edit' })} />;
-
-  if (bench.step === 'preview' || bench.step === 'applying') {
-    const p = bench.preview;
-    return (
-      <section className="forge-preview" data-testid="forge-preview">
-        <h3 className="forge-step-title">The change, exactly</h3>
-        <ul className="forge-files">
-          {p.files.map((f) => (
-            <li key={f.path} data-action={f.action}>
-              <span className="forge-action">{f.action}</span> <code>{f.path}</code>
-            </li>
-          ))}
-        </ul>
-        {p.dirty.length > 0 && (
-          <p className="forge-warn" role="alert">
-            {p.dirty.join(', ')} {p.dirty.length === 1 ? 'has' : 'have'} uncommitted edits that are not the Forge’s. Apply will refuse until they are committed or discarded.
-          </p>
-        )}
-        <DiffView diff={p.diff} />
-        <Problems problems={problems} />
-        <div className="forge-actions">
-          <button type="button" className="btn btn-primary" disabled={busy} onClick={() => doApply(p)} data-testid="forge-apply">
-            {bench.step === 'applying' ? 'Applying: project.py all, then verify.py…' : 'Apply to library/'}
-          </button>
-          <button type="button" className="btn btn-quiet" disabled={busy} onClick={() => setBench({ step: 'edit' })}>
-            Edit again
-          </button>
-        </div>
-      </section>
-    );
-  }
 
   const all = [...formProblems, ...problems];
   return (
     <>
-      {children}
-      <Problems problems={all} />
-      <div className="forge-actions">
-        <button type="button" className="btn btn-primary" disabled={!request || busy} onClick={doPreview} data-testid="forge-preview-btn">
-          {bench.step === 'previewing' ? 'Rendering the diff…' : 'Preview the change'}
-        </button>
-        <span className="prose-sm forge-hint">Nothing is written until you apply.</span>
-      </div>
+      {lead && <div className="fg-lead">{lead}</div>}
+      <section className="fg-panel fg-form-col" aria-labelledby="fg-form-h">
+        <header className="fg-panel-head">
+          <span className="fg-plus" aria-hidden="true">
+            +
+          </span>
+          <div>
+            <h2 id="fg-form-h" className="fg-panel-title">
+              {title}
+            </h2>
+            <p className="fg-panel-sub">{sub}</p>
+          </div>
+          {mode}
+        </header>
+        <fieldset className="fg-fieldset" disabled={bench.step === 'applying'}>
+          {children}
+        </fieldset>
+        <Problems problems={all} />
+      </section>
+      <section className="fg-panel fg-diff-col" aria-labelledby="fg-diff-h">
+        <header className="fg-panel-head">
+          <span className="fg-code" aria-hidden="true">
+            &lt;/&gt;
+          </span>
+          <h2 id="fg-diff-h" className="fg-panel-title">
+            Diff preview
+          </h2>
+        </header>
+        {bench.step === 'done' ? (
+          <Outcome outcome={bench.outcome} onClose={() => setBench({ step: 'edit' })} />
+        ) : shown ? (
+          <div className="forge-preview" data-testid="forge-preview">
+            <p className="fg-panel-sub">Changes to be applied to the library.</p>
+            <ul className="forge-files">
+              {shown.files.map((f) => (
+                <li key={f.path} data-action={f.action}>
+                  <span className="forge-action">{f.action}</span> <code>{f.path}</code>
+                </li>
+              ))}
+            </ul>
+            {shown.dirty.length > 0 && (
+              <p className="forge-warn" role="alert">
+                {shown.dirty.join(', ')} {shown.dirty.length === 1 ? 'has' : 'have'} uncommitted edits that are not the Forge’s. Apply will refuse until they are committed or discarded.
+              </p>
+            )}
+            <DiffView diff={shown.diff} />
+            <div className="fg-diff-actions">
+              <button type="button" className="btn btn-primary ar-cta fg-apply" disabled={busy} onClick={() => bench.step === 'preview' && doApply(shown, bench.key)} data-testid="forge-apply">
+                {bench.step === 'applying' ? 'Applying: project.py all, then verify.py…' : 'Apply to library'}
+                {bench.step !== 'applying' && (
+                  <span className="ar-cta-arrows" aria-hidden="true">
+                    »
+                  </span>
+                )}
+              </button>
+              <button type="button" className="btn btn-text btn-sm" disabled={busy} onClick={() => setBench({ step: 'edit' })}>
+                Discard the preview
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="fg-diff-empty">
+            <p className="fg-panel-sub">{stale ? 'The form changed since the last preview. Render it again to see the exact change.' : 'The exact files and lines this change writes appear here. Nothing is written until you apply.'}</p>
+            <div className="fg-diff-ghost" aria-hidden="true">
+              {Array.from({ length: 9 }, (_, i) => (
+                <span key={i} style={{ ['--w' as string]: `${[62, 48, 74, 40, 66, 52, 80, 36, 58][i]}%` } as CSSProperties} />
+              ))}
+            </div>
+            <button type="button" className="btn btn-primary ar-cta fg-apply" disabled={!request || busy} onClick={doPreview} data-testid="forge-preview-btn">
+              {bench.step === 'previewing' ? 'Rendering the diff…' : 'Preview the change'}
+            </button>
+          </div>
+        )}
+      </section>
     </>
   );
 }
@@ -129,22 +172,41 @@ function Problems({ problems }: { problems: string[] }) {
   );
 }
 
+/** The unified diff with a line-number gutter and the additions and deletions counted under it. */
 function DiffView({ diff }: { diff: string }) {
-  const lines = diff.split('\n');
+  const lines = diff.replace(/\n$/, '').split('\n');
+  let adds = 0;
+  let dels = 0;
+  const rows = lines.map((l) => {
+    const kind = l.startsWith('+++') || l.startsWith('---') || l.startsWith('diff ') || l.startsWith('index ') || l.startsWith('new file') || l.startsWith('deleted file') ? 'file' : l.startsWith('@@') ? 'hunk' : l.startsWith('+') ? 'add' : l.startsWith('-') ? 'del' : 'ctx';
+    if (kind === 'add') adds++;
+    if (kind === 'del') dels++;
+    return { l, kind };
+  });
   return (
-    <div className="forge-diff-wrap">
-      <pre className="forge-diff" data-testid="forge-diff" tabIndex={0} aria-label="Unified diff of the change">
-        {lines.map((l, i) => {
-          const kind = l.startsWith('+++') || l.startsWith('---') ? 'file' : l.startsWith('@@') ? 'hunk' : l.startsWith('+') ? 'add' : l.startsWith('-') ? 'del' : 'ctx';
-          return (
+    <>
+      <div className="forge-diff-wrap">
+        <pre className="forge-diff" data-testid="forge-diff" tabIndex={0} aria-label="Unified diff of the change">
+          {rows.map(({ l, kind }, i) => (
             <span key={i} className="forge-line" data-kind={kind}>
+              <span className="forge-ln" aria-hidden="true">
+                {i + 1}
+              </span>
               {l || ' '}
               {'\n'}
             </span>
-          );
-        })}
-      </pre>
-    </div>
+          ))}
+        </pre>
+      </div>
+      <p className="fg-diff-count" data-testid="forge-diff-count">
+        <span data-kind="add">
+          <span aria-hidden="true" className="fg-sq" /> + Additions (<span className="num">{adds}</span>)
+        </span>
+        <span data-kind="del">
+          <span aria-hidden="true" className="fg-sq" /> − Deletions (<span className="num">{dels}</span>)
+        </span>
+      </p>
+    </>
   );
 }
 
@@ -193,19 +255,25 @@ function RoutePicker({ value, onChange }: { value: string[]; onChange: (v: strin
     return routable.filter((s) => !n || s.id.includes(n) || s.name.toLowerCase().includes(n) || s.group.toLowerCase().includes(n)).slice(0, 60);
   }, [routable, q]);
   const toggle = (id: string) => onChange(value.includes(id) ? value.filter((v) => v !== id) : [...value, id]);
+  const [open, setOpen] = useState(false);
   return (
     <div className="forge-routes">
-      {value.length > 0 && (
-        <ul className="chips" aria-label="Chosen routes">
-          {value.map((r) => (
-            <li key={r}>
-              <button type="button" className="chip forge-chip" onClick={() => toggle(r)} aria-label={`Remove route ${r}`}>
-                {r} <span aria-hidden="true">×</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className="chips fg-chips" aria-label="Chosen routes">
+        {value.map((r) => (
+          <li key={r}>
+            <button type="button" className="chip forge-chip" onClick={() => toggle(r)} aria-label={`Remove route ${r}`}>
+              {r} <span aria-hidden="true">×</span>
+            </button>
+          </li>
+        ))}
+        <li>
+          <button type="button" className="chip fg-add" aria-expanded={open} onClick={() => setOpen((v) => !v)} data-testid="forge-add-route">
+            {open ? 'Done' : '+ Add route'}
+          </button>
+        </li>
+      </ul>
+      {open && (
+        <>
       <input className="field" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${routable.length} routable skills`} aria-label="Search skills to route" data-testid="forge-route-search" />
       <div className="forge-route-list" role="group" aria-label="Routable skills">
         {shown.map((s) => (
@@ -218,6 +286,83 @@ function RoutePicker({ value, onChange }: { value: string[]; onChange: (v: strin
         ))}
         {shown.length === 0 && <p className="prose-sm">No routable skill matches.</p>}
       </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/** Pills for a single choice (the reference's radio pills); a real radio group underneath. */
+function Pills<T extends string>({ label, name, options, value, onChange, render }: { label: string; name: string; options: readonly T[]; value: T; onChange: (v: T) => void; render?: (v: T) => string }) {
+  return (
+    <div className="field-row fg-row">
+      <span className="forge-label" id={`${name}-l`}>
+        {label}
+      </span>
+      <div className="fg-pills" role="radiogroup" aria-labelledby={`${name}-l`}>
+        {options.map((o) => (
+          <label key={o} className="fg-pill" data-checked={value === o || undefined}>
+            <input type="radio" name={name} checked={value === o} onChange={() => onChange(o)} />
+            <span aria-hidden="true" className="fg-dot" />
+            {render ? render(o) : o}
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const TIER_RANK: Record<string, number> = { haiku: 1, sonnet: 2, opus: 3 };
+
+/** The draft on the pedestal and its stats, read straight from the form (not yet in the library). */
+function AgentPreview({ form, isNew }: { form: AgentPayload; isNew: boolean }) {
+  const idx = useKb();
+  const art = crewArt(form.id) ?? (form.crew.id ? crewArt(form.crew.id) : null);
+  const widest = Math.max(1, ...idx.kb.agents.map((a) => a.routes.length), form.routes.length);
+  const rows = [
+    { id: 'routes', label: 'Routes', value: form.routes.length, max: widest, shown: String(form.routes.length), tint: '#45d39a' },
+    { id: 'priority', label: 'Priority', value: form.phase ? 100 - (form.priority ?? 50) : 0, max: 100, shown: form.phase ? String(form.priority ?? 50) : '–', tint: '#ff3b3f' },
+    { id: 'tier', label: 'Model tier', value: TIER_RANK[form.model] ?? 0, max: 3, shown: form.model, tint: '#f4b740' },
+    { id: 'access', label: 'Access', value: form.access === 'write' ? 2 : 1, max: 2, shown: form.access === 'write' ? 'write' : 'read', tint: '#5aa8ff' },
+  ];
+  return (
+    <div className="fg-preview" data-testid="forge-agent-preview" style={{ ['--c' as string]: form.crew.pigment } as CSSProperties}>
+      <div className="br-stage fg-stage">
+        {art ? (
+          <img className="br-figure" src={art.stage} alt={`${form.crew.name || form.id}, the draft`} />
+        ) : (
+          <svg className="fg-standin" viewBox="0 0 120 220" role="img" aria-label="A stand-in silhouette for a new crew member">
+            <circle cx="60" cy="34" r="22" />
+            <path d="M24 92c0-18 16-30 36-30s36 12 36 30v62H82l-4 62H42l-4-62H24z" />
+            <text x="60" y="44" textAnchor="middle">
+              {form.crew.glyph || form.crew.name.slice(0, 1) || '?'}
+            </text>
+          </svg>
+        )}
+        <span className="br-pedestal" aria-hidden="true" />
+        <p className="fg-stage-cap">{isNew ? 'New crew member' : form.crew.name || form.id}</p>
+      </div>
+      <section className="fg-stats" aria-labelledby="fg-stats-h">
+        <h3 id="fg-stats-h" className="fg-stats-h">
+          Crew stats
+        </h3>
+        <dl>
+          {rows.map((r) => (
+            <div key={r.id} className="fg-stat">
+              <dt>{r.label}</dt>
+              <dd>
+                <span className="br-meter" aria-hidden="true" style={{ ['--t' as string]: r.tint } as CSSProperties}>
+                  {Array.from({ length: 8 }, (_, i) => (
+                    <span key={i} data-on={i < Math.round((r.value / r.max) * 8) || undefined} />
+                  ))}
+                </span>
+                <span className="num">{r.shown}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <TruthLabel truth="User-reported" detail="this draft, not yet in the library" />
+      </section>
     </div>
   );
 }
@@ -253,19 +398,18 @@ function AgentBench({ selected, onSelect, onApplied, presetModel }: { selected: 
         : { kind: 'agent', op: isNew ? 'create' : 'update', payload: { ...form, priority: form.phase ? form.priority ?? 50 : null } };
 
   return (
-    <Workbench request={request} problems={mode === 'edit' && form.id ? problems : []} onApplied={(o) => {
+    <Workbench
+      request={request}
+      problems={mode === 'edit' && form.id ? problems : []}
+      onApplied={(o) => {
         onApplied(o);
         onSelect(mode === 'delete' ? NEW : form.id);
-      }}>
-      <div className="forge-bench-head">
-        <span className="forge-swatch" style={{ ['--c' as string]: form.crew.pigment } as CSSProperties} aria-hidden="true">
-          {form.crew.glyph || form.crew.name.slice(0, 1) || '+'}
-        </span>
-        <div>
-          <h3 className="forge-step-title">{isNew ? 'New agent' : form.crew.name || form.id}</h3>
-          <p className="prose-sm">{isNew ? 'Writes library/agents/<id>.md and one crew member at the next free station.' : `library/agents/${form.id}.md · the hand-written body is kept`}</p>
-        </div>
-        {!isNew && (
+      }}
+      lead={<AgentPreview form={form} isNew={isNew} />}
+      title={isNew ? 'New agent' : form.crew.name || form.id}
+      sub={isNew ? 'Writes library/agents/<id>.md and one crew member at the next free station.' : `library/agents/${form.id}.md · the hand-written body is kept`}
+      mode={
+        !isNew && (
           <div className="choice-row forge-mode" role="radiogroup" aria-label="What to do">
             <label className="choice">
               <input type="radio" name="agent-mode" checked={mode === 'edit'} onChange={() => setMode('edit')} /> Edit
@@ -274,8 +418,9 @@ function AgentBench({ selected, onSelect, onApplied, presetModel }: { selected: 
               <input type="radio" name="agent-mode" checked={mode === 'delete'} onChange={() => setMode('delete')} data-testid="forge-mode-delete" /> Delete
             </label>
           </div>
-        )}
-      </div>
+        )
+      }
+    >
 
       {mode === 'delete' && source ? (
         <Field label={`Type ${source.id} to delete it`} hint="Refused while a library workflow still crews it.">
@@ -291,26 +436,8 @@ function AgentBench({ selected, onSelect, onApplied, presetModel }: { selected: 
             <Field label="Description" hint="when to use it, in one or two sentences">
               {(id) => <textarea id={id} className="field" value={form.description} onChange={(e) => set('description', e.target.value)} data-testid="forge-agent-description" />}
             </Field>
-            <div className="field-row">
-              <span className="forge-label">Model tier</span>
-              <div className="choice-row" role="radiogroup" aria-label="Model tier">
-                {MODELS.map((m) => (
-                  <label key={m} className="choice">
-                    <input type="radio" name="agent-model" checked={form.model === m} onChange={() => set('model', m)} /> {m}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div className="field-row">
-              <span className="forge-label">Access</span>
-              <div className="choice-row" role="radiogroup" aria-label="Access">
-                {(['read-only', 'write'] as const).map((a) => (
-                  <label key={a} className="choice">
-                    <input type="radio" name="agent-access" checked={form.access === a} onChange={() => set('access', a)} /> {a}
-                  </label>
-                ))}
-              </div>
-            </div>
+            <Pills label="Model tier" name="agent-model" options={MODELS} value={form.model} onChange={(m) => set('model', m)} />
+            <Pills label="Access" name="agent-access" options={['read-only', 'write'] as const} value={form.access} onChange={(a) => set('access', a)} />
           </fieldset>
 
           <fieldset className="forge-set">
@@ -319,23 +446,29 @@ function AgentBench({ selected, onSelect, onApplied, presetModel }: { selected: 
               <span className="forge-label">Skills it opens ({form.routes.length})</span>
               <RoutePicker value={form.routes} onChange={(v) => set('routes', v)} />
             </div>
-            <div className="forge-two">
-              <Field label="Phase">
-                {(id) => (
-                  <select id={id} className="field" value={form.phase ?? ''} onChange={(e) => set('phase', e.target.value || null)}>
-                    <option value="">unphased</option>
-                    {[...PHASES, ...(form.phase && !(PHASES as readonly string[]).includes(form.phase) ? [form.phase] : [])].map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </Field>
-              <Field label="Priority" hint="lower runs first">
-                {(id) => <input id={id} className="field" type="number" min={0} max={99} disabled={!form.phase} value={form.phase ? form.priority ?? 50 : ''} onChange={(e) => set('priority', e.target.value === '' ? null : Math.max(0, Math.min(99, Number(e.target.value))))} />}
-              </Field>
-            </div>
+            <Pills
+              label="Phase"
+              name="agent-phase"
+              options={['', ...PHASES, ...(form.phase && !(PHASES as readonly string[]).includes(form.phase) ? [form.phase] : [])]}
+              value={form.phase ?? ''}
+              onChange={(v) => set('phase', v || null)}
+              render={(v) => v || 'unphased'}
+            />
+            <Field label="Priority" hint={form.phase ? 'lower runs first' : 'set a phase first'}>
+              {(id) => (
+                <div className="fg-range">
+                  <input id={id} type="range" min={0} max={99} disabled={!form.phase} value={form.phase ? form.priority ?? 50 : 50} onChange={(e) => set('priority', Number(e.target.value))} style={{ ['--v' as string]: `${((form.phase ? form.priority ?? 50 : 50) / 99) * 100}%` } as CSSProperties} />
+                  <output htmlFor={id} className="fg-range-out num">
+                    {form.phase ? form.priority ?? 50 : '–'}
+                  </output>
+                  <span className="fg-range-scale" aria-hidden="true">
+                    <span>First</span>
+                    <span>Normal</span>
+                    <span>Last</span>
+                  </span>
+                </div>
+              )}
+            </Field>
             <Field label="Activate when" hint="the condition in the brief that calls it">
               {(id) => <input id={id} className="field" value={form.activateWhen} onChange={(e) => set('activateWhen', e.target.value)} />}
             </Field>
@@ -396,19 +529,17 @@ function SkillBench({ selected, onSelect, onApplied }: { selected: string; onSel
     mode === 'delete' ? (source && confirm === source.id ? { kind: 'skill', op: 'delete', payload: { id: source.id, confirm } } : null) : problems.length ? null : { kind: 'skill', op: isNew ? 'create' : 'update', payload: form };
 
   return (
-    <Workbench request={request} problems={mode === 'edit' && form.id ? problems : []} onApplied={(o) => {
+    <Workbench
+      request={request}
+      problems={mode === 'edit' && form.id ? problems : []}
+      onApplied={(o) => {
         onApplied(o);
         onSelect(mode === 'delete' ? NEW : form.id);
-      }}>
-      <div className="forge-bench-head">
-        <span className="forge-swatch forge-swatch-skill" aria-hidden="true">
-          ◇
-        </span>
-        <div>
-          <h3 className="forge-step-title">{isNew ? 'New skill' : form.id}</h3>
-          <p className="prose-sm">{isNew ? 'Adds a registry record (unrouted, not enabled) and a SKILL.md scaffold. Route it from an agent to put it to work.' : `${source?.skillPath ?? ''} · registry record and SKILL.md description`}</p>
-        </div>
-        {!isNew && (
+      }}
+      title={isNew ? 'New skill' : form.id}
+      sub={isNew ? 'Adds a registry record (unrouted, not enabled) and a SKILL.md scaffold. Route it from an agent to put it to work.' : `${source?.skillPath ?? ''} · registry record and SKILL.md description`}
+      mode={
+        !isNew && (
           <div className="choice-row forge-mode" role="radiogroup" aria-label="What to do">
             <label className="choice">
               <input type="radio" name="skill-mode" checked={mode === 'edit'} onChange={() => setMode('edit')} /> Edit
@@ -417,8 +548,9 @@ function SkillBench({ selected, onSelect, onApplied }: { selected: string; onSel
               <input type="radio" name="skill-mode" checked={mode === 'delete'} onChange={() => setMode('delete')} data-testid="forge-mode-delete" /> Delete
             </label>
           </div>
-        )}
-      </div>
+        )
+      }
+    >
       {mode === 'delete' && source ? (
         <Field label={`Type ${source.id} to delete it`} hint="Refused while an agent routes it or a workflow lists it.">
           {(id) => <input id={id} className="field" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" data-testid="forge-confirm" />}
@@ -487,6 +619,23 @@ function Rack({ label, items, selected, onSelect, newLabel, testid }: { label: s
   );
 }
 
+const TAB_ICON: Record<string, string> = {
+  agents: 'M12 3a5 5 0 0 0-5 5v2h10V8a5 5 0 0 0-5-5zM5 12h14v2a7 7 0 0 1-14 0zM9 8h.01M15 8h.01',
+  skills: 'M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM12 2v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1',
+  workflows: 'M10 3h4v4h-4zM3 17h4v4H3zm7 0h4v4h-4zm7 0h4v4h-4zM12 7v5M5 17v-3h14v3M12 12v5',
+};
+
+function TabLabel({ id, label, n }: { id: string; label: string; n: number }) {
+  return (
+    <>
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d={TAB_ICON[id]} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
+      </svg>
+      {label} · <span className="num">{n}</span>
+    </>
+  );
+}
+
 export default function ForgePage() {
   const idx = useKb();
   const [params] = useSearchParams();
@@ -499,43 +648,67 @@ export default function ForgePage() {
   const crewByAgent = useMemo(() => new Map(idx.kb.crew.map((c) => [c.role.agent, c])), [idx]);
   const agentItems = useMemo(() => idx.kb.agents.map((a) => ({ id: a.id, title: crewByAgent.get(a.id)?.name ?? a.id, meta: `${a.id} · ${a.model} · ${a.access}`, pigment: crewByAgent.get(a.id)?.pigment })), [idx, crewByAgent]);
   const skillItems = useMemo(() => [...idx.kb.skills].sort((a, b) => a.id.localeCompare(b.id)).map((s) => ({ id: s.id, title: s.id, meta: `${s.group} · ${s.phase}` })), [idx]);
+  const workflows = idx.kb.workflows.ships;
 
   return (
-    <main id="main" className="page forge" data-testid="forge">
-      <header>
-        <h1 className="page-title">Forge</h1>
-        <p className="lede">Make and change the library’s agents and skills. Every change is shown as a diff first, checked by verify.py, and left uncommitted for you to review.</p>
-      </header>
-      {!FORGE_AVAILABLE ? (
-        <div className="state-panel" data-testid="forge-readonly">
-          <h2>Read-only here</h2>
-          <p>The Forge writes into library/ and runs the generator, so it works only on the dev server: run <code>npm run dev</code> in shipyard/ and open it there. This deployed copy never writes anything.</p>
-        </div>
-      ) : (
-        <Tabs.Root value={tab} onValueChange={setTab}>
-          {outcome && <Outcome outcome={outcome} onClose={() => setOutcome(null)} />}
-          <Tabs.List className="tabs forge-tabs" aria-label="Forge sections">
-            <Tabs.Trigger className="tab" value="agents" data-testid="forge-tab-agents">
-              Agents · {idx.kb.agents.length}
-            </Tabs.Trigger>
-            <Tabs.Trigger className="tab" value="skills" data-testid="forge-tab-skills">
-              Skills · {idx.kb.skills.length}
-            </Tabs.Trigger>
-          </Tabs.List>
-          <Tabs.Content value="agents" className="forge-layout">
-            <Rack label="Agents" items={agentItems} selected={agent} onSelect={setAgent} newLabel="New agent" testid="forge-agent-rack" />
-            <div className="forge-bench">
-              <AgentBench key={`${agent}:${idx.kb.sourceHash}`} selected={agent} onSelect={setAgent} onApplied={setOutcome} presetModel={agent === promoted && !outcome ? promotedModel : undefined} />
-            </div>
-          </Tabs.Content>
-          <Tabs.Content value="skills" className="forge-layout">
-            <Rack label="Skills" items={skillItems} selected={skill} onSelect={setSkill} newLabel="New skill" testid="forge-skill-rack" />
-            <div className="forge-bench">
-              <SkillBench key={`${skill}:${idx.kb.sourceHash}`} selected={skill} onSelect={setSkill} onApplied={setOutcome} />
-            </div>
-          </Tabs.Content>
-        </Tabs.Root>
-      )}
+    <main id="main" className="page ar-full forge fg" data-testid="forge" style={{ ['--plate' as string]: `url(${arcadeMedia('plate-dock.webp')})` } as CSSProperties}>
+      <div className="ar-band">
+        <header className="fg-head">
+          <h1 className="ar-wordmark fg-word">
+            Forge<span className="fg-slash" aria-hidden="true">//</span>
+          </h1>
+          <p className="lede fg-lede">Make and change the library’s agents and skills. Every change is shown as a diff first, checked by verify.py, and left uncommitted for you to review.</p>
+        </header>
+        {!FORGE_AVAILABLE ? (
+          <div className="state-panel" data-testid="forge-readonly">
+            <h2>Read-only here</h2>
+            <p>The Forge writes into library/ and runs the generator, so it works only on the dev server: run <code>npm run dev</code> in shipyard/ and open it there. This deployed copy never writes anything.</p>
+          </div>
+        ) : (
+          <Tabs.Root value={tab} onValueChange={setTab}>
+            {outcome && <Outcome outcome={outcome} onClose={() => setOutcome(null)} />}
+            <Tabs.List className="tabs forge-tabs fg-tabs" aria-label="Forge sections">
+              <Tabs.Trigger className="tab" value="agents" data-testid="forge-tab-agents">
+                <TabLabel id="agents" label="Agents" n={idx.kb.agents.length} />
+              </Tabs.Trigger>
+              <Tabs.Trigger className="tab" value="skills" data-testid="forge-tab-skills">
+                <TabLabel id="skills" label="Skills" n={idx.kb.skills.length} />
+              </Tabs.Trigger>
+              <Tabs.Trigger className="tab" value="workflows" data-testid="forge-tab-workflows">
+                <TabLabel id="workflows" label="Workflows" n={workflows.length} />
+              </Tabs.Trigger>
+            </Tabs.List>
+            <Tabs.Content value="agents" className="forge-layout">
+              <Rack label="Agents" items={agentItems} selected={agent} onSelect={setAgent} newLabel="New agent" testid="forge-agent-rack" />
+              <div className="forge-bench" data-lead="">
+                <AgentBench key={`${agent}:${idx.kb.sourceHash}`} selected={agent} onSelect={setAgent} onApplied={setOutcome} presetModel={agent === promoted && !outcome ? promotedModel : undefined} />
+              </div>
+            </Tabs.Content>
+            <Tabs.Content value="skills" className="forge-layout">
+              <Rack label="Skills" items={skillItems} selected={skill} onSelect={setSkill} newLabel="New skill" testid="forge-skill-rack" />
+              <div className="forge-bench">
+                <SkillBench key={`${skill}:${idx.kb.sourceHash}`} selected={skill} onSelect={setSkill} onApplied={setOutcome} />
+              </div>
+            </Tabs.Content>
+            <Tabs.Content value="workflows" className="fg-workflows" data-testid="forge-workflows">
+              <p className="fg-panel-sub">
+                The Forge does not write workflows. A library workflow changes in <code>library/registry/workflows.json</code>; a ship you build in the Hangar is yours to fork and race without touching the library.
+              </p>
+              <ul className="fg-wf-list">
+                {workflows.map((w) => (
+                  <li key={w.id} className="fg-panel fg-wf">
+                    <h3 className="fg-panel-title">{w.name}</h3>
+                    <p className="fg-panel-sub">
+                      <code>{w.id}</code> · {w.class} · <span className="num">{w.stages.length}</span> stages
+                    </p>
+                    <p className="prose-sm">{w.summary}</p>
+                  </li>
+                ))}
+              </ul>
+            </Tabs.Content>
+          </Tabs.Root>
+        )}
+      </div>
     </main>
   );
 }

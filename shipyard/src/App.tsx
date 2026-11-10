@@ -56,8 +56,16 @@ export function App() {
         Skip to content
       </a>
       <header className="site-header">
-        <NavLink className="brand" to="/" end>
-          Shipyard
+        <NavLink className="brand" to="/" end aria-label="Convenium Shipyard, the hangar">
+          <svg className="brand-mark" viewBox="0 0 52 28" aria-hidden="true" focusable="false">
+            <path d="M14 0h10L10 28H0z" fill="#ff3b3f" />
+            <path d="M30 0h10L26 28H16z" fill="#d7262b" />
+            <path d="M44 4h8l-12 24h-8z" fill="#a5151a" />
+          </svg>
+          <span className="brand-words" aria-hidden="true">
+            <small>Convenium</small>
+            <strong>Shipyard</strong>
+          </span>
         </NavLink>
         <nav aria-label="Primary" ref={navRef} data-testid="primary-nav">
           <NavLink to="/" end>

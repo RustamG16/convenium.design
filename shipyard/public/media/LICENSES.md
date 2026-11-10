@@ -85,6 +85,37 @@ CC0 1.0 — Quaternius ship hulls (ArkhEthos PROGRESS 2026-10-18; the exact Quat
 - `ships/ship-d.glb` (149300 bytes)
 - `ships/ship-e.glb` (116528 bytes)
 
+## `arcade/`
+
+Owner-generated (Higgsfield GPT Image, the owner's account, v3 redesign round 2026-11-09); owner-owned, not CC0. Derived by `shipyard/scripts/import-arcade-art.py` from `shipyard/plan/concepts-v3/space/` (plates resized, ships and crew trimmed, crew cards cropped from `crew/lineup-21x9.png`, the engineer cut from the lineup with a feathered mask, the thruster GIF re-encoded as animated WebP). 26 files, 2569316 bytes.
+
+- `arcade/card-analyst.webp` (45340 bytes)
+- `arcade/card-captain.webp` (40676 bytes)
+- `arcade/card-critic.webp` (38236 bytes)
+- `arcade/card-engineer.webp` (43236 bytes)
+- `arcade/card-gauge.webp` (33332 bytes)
+- `arcade/card-metrics.webp` (35428 bytes)
+- `arcade/card-producer.webp` (45706 bytes)
+- `arcade/card-strategist.webp` (35818 bytes)
+- `arcade/crew-analyst.webp` (136860 bytes)
+- `arcade/crew-captain.webp` (110096 bytes)
+- `arcade/crew-critic.webp` (91688 bytes)
+- `arcade/crew-engineer.webp` (101514 bytes)
+- `arcade/crew-gauge.webp` (137022 bytes)
+- `arcade/crew-metrics.webp` (69376 bytes)
+- `arcade/crew-producer.webp` (151242 bytes)
+- `arcade/crew-strategist.webp` (103160 bytes)
+- `arcade/laurel.webp` (38064 bytes)
+- `arcade/plate-bridge.webp` (394270 bytes)
+- `arcade/plate-dock.webp` (235166 bytes)
+- `arcade/plate-race.webp` (195304 bytes)
+- `arcade/ship-ss-abridged.webp` (99810 bytes)
+- `arcade/ship-ss-full-run.webp` (80496 bytes)
+- `arcade/ship-ss-mobile-fleet.webp` (82796 bytes)
+- `arcade/ship-ss-mobile-retrofit.webp` (62758 bytes)
+- `arcade/ship-ss-site-pass.webp` (92150 bytes)
+- `arcade/thruster.webp` (69772 bytes)
+
 ## Provenance
 
 Imported from a read-only snapshot of ArkhEthos revision `4de85a8`, not the owner's current checkout (`4db3cf3`, whose crew GLBs are meshopt-recompressed and do not match the manifest). Re-verified 2026-11-04: 55 files, 12,410,762 bytes, bytes and sha256 match `plan/05-asset-manifest.md`.

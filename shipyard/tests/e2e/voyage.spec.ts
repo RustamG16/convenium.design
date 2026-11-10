@@ -4,6 +4,10 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
+// v3 (reference hangar-space-arcade.png): the Hangar lists every library ship as a template card, then the user's own ships
+const LIB = (JSON.parse(readFileSync(resolve('public/data/knowledge-base.json'), 'utf8')) as { workflows: { ships: unknown[] } }).workflows.ships.length;
+const MINE = '[data-testid="ship-card"]:not(:has([data-testid="template-lock"]))';
+
 /**
  * T8: the hangar, the Commission dialog, the voyage planner, and acceptance 4 end to end: a ship is
  * commissioned by cloning SS Full Run through the dialog, renamed, recruited, equipped, its voyage
@@ -43,42 +47,37 @@ async function commissionClone(page: Page, name: string) {
   await expect(page.getByTestId('crew-profile')).not.toHaveAttribute('data-readonly', 'true');
 }
 
-test('hangar: exactly one card by default, the other library workflows only inside the dialog', async ({ page }) => {
+test('hangar: every library ship is a template card, and the commission dialog offers each as a clone source', async ({ page }) => {
   test.setTimeout(120_000);
   const errors = watch(page);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/');
-  await expect(page.getByTestId('ship-card')).toHaveCount(1);
-  await expect(page.getByTestId('ship-card')).toContainText('SS Full Run');
-  await expect(page.getByTestId('fleet-ring')).toHaveAttribute('data-count', '1');
-  await page.waitForTimeout(3000);
+  await expect(page.getByTestId('ship-card')).toHaveCount(LIB);
+  await expect(page.locator(MINE)).toHaveCount(0);
+  await expect(page.getByTestId('ship-card').first()).toContainText('SS Full Run');
+  await page.waitForTimeout(1500);
   await page.screenshot({ path: resolve(SHOTS, 't8-hangar-1440.png') });
   await page.getByTestId('commission').click();
   await page.getByTestId('mode-clone').check();
   const options = await page.getByTestId('clone-source').locator('option').allTextContents();
-  expect(options.length).toBe(4);
+  expect(options.length).toBe(LIB);
   expect(options.join(' ')).toMatch(/SS Full Run/);
   expect(options.join(' ')).toMatch(/Abridged/);
   await page.screenshot({ path: resolve(SHOTS, 't8-commission-1440.png') });
   expect(errors).toEqual([]);
 });
 
-test('hangar: the fleet ring shows a hull per ship and falls back to silhouettes with ?2d', async ({ page }) => {
+test('hangar: a commissioned ship joins the fleet row after the library ships, with its own art', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await commissionClone(page, 'Second hull');
   await page.goto('/#/');
-  await expect(page.getByTestId('ship-card')).toHaveCount(2);
-  await expect(page.getByTestId('fleet-ring')).toHaveAttribute('data-count', '2');
-  await expect.poll(() => page.evaluate(() => {
-    const s = (window as unknown as { __fleet?: { scene: { traverse(f: (o: { isMesh?: boolean }) => void): void } } }).__fleet?.scene;
-    let n = 0;
-    s?.traverse((o) => { if (o.isMesh) n++; });
-    return n;
-  }), { timeout: 30_000 }).toBeGreaterThan(1);
-  await page.goto('/#/?2d');
-  await page.reload();
-  await expect(page.getByTestId('fleet-ring')).toHaveCount(0);
-  await expect(page.locator('svg.hull').first()).toBeVisible();
+  await expect(page.getByTestId('ship-card')).toHaveCount(LIB + 1);
+  const mine = page.locator(MINE);
+  await expect(mine).toHaveCount(1);
+  await expect(mine).toContainText('Second hull');
+  await expect(mine.getByTestId('drydock-label')).toBeVisible();
+  await expect(mine.locator('img').first()).toHaveJSProperty('complete', true);
+  await expect(page.getByTestId('fleet-count')).toHaveText(`${LIB + 1} ships`);
 });
 
 test('commission: blank ship, import ship.json (valid, then invalid with its problem list), rename, reset, delete with undo', async ({ page }) => {
@@ -102,7 +101,7 @@ test('commission: blank ship, import ship.json (valid, then invalid with its pro
   await page.getByTestId('commission-confirm').click();
   await expect(page).toHaveURL(/ship\/blank-barge-2\/bridge/);
   await page.goto('/#/');
-  await expect(page.getByTestId('ship-card')).toHaveCount(3);
+  await expect(page.locator(MINE)).toHaveCount(2);
   // rename
   const card = page.locator('[data-ship="blank-barge"]');
   await card.getByTestId('rename').click();
@@ -111,9 +110,9 @@ test('commission: blank ship, import ship.json (valid, then invalid with its pro
   await expect(card).toContainText('Renamed Barge');
   // delete, then undo with Ctrl+Z
   await card.getByTestId('delete-ship').click();
-  await expect(page.getByTestId('ship-card')).toHaveCount(2);
+  await expect(page.locator(MINE)).toHaveCount(1);
   await page.keyboard.press('Control+z');
-  await expect(page.getByTestId('ship-card')).toHaveCount(3);
+  await expect(page.locator(MINE)).toHaveCount(2);
 });
 
 test('voyage planner: add, edit, reorder (drag and Alt+Arrow), duplicate, delete with undo, template, live run-plan row, the Fix link', async ({ page }) => {
@@ -185,10 +184,10 @@ test('acceptance 4 and the chain: commission, rename, recruit, equip, edit the v
   // library/ is compared before and after, so an owner's uncommitted library edits do not fail the chain
   const libraryBefore = spawnSync('git', ['status', '--porcelain', '--', 'library'], { cwd: REPO, encoding: 'utf8' }).stdout;
   await page.setViewportSize({ width: 1440, height: 900 });
-  // acceptance 1 first: cleared storage is exactly one ship, seven crew
+  // acceptance 1 first: cleared storage holds no ship of the user's; the flagship template has seven crew
   await page.goto('/#/');
-  await expect(page.getByTestId('ship-card')).toHaveCount(1);
-  await expect(page.getByTestId('crew-chips').getByRole('listitem')).toHaveCount(7);
+  await expect(page.locator(MINE)).toHaveCount(0);
+  await expect(page.locator('[data-ship="ss-full-run"]').getByTestId('card-crew')).toHaveText('7');
   expect((await stored(page))?.commissions ?? {}).toEqual({});
 
   // 1. commission by cloning SS Full Run through the dialog

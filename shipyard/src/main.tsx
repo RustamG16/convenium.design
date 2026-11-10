@@ -1,4 +1,5 @@
 import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/archivo/wdth-italic.css';
 import '@fontsource-variable/inter/index.css';
 import '@fontsource-variable/newsreader/index.css';
 import './styles/tokens.css';
@@ -7,6 +8,7 @@ import './styles/shipyard.css';
 import './styles/bridge.css';
 import './styles/armory.css';
 import './styles/motion.css';
+import './styles/arcade.css';
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

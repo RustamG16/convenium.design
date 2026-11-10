@@ -218,3 +218,77 @@ generated must also:
 
 **Ledger at T24 (2026-11-08):** 0 credits spent in v2. A1 and A1′ were closed at no cost, and A3 was
 built procedurally. A2 is the one open item and waits for the owner's yes. A4 has not been requested.
+
+---
+
+## v3 redesign round (2026-11-09): concepts and decorations, **owner budget 160 credits**
+
+**Approval:** the owner authorised a 160-credit budget for this round in chat on 2026-11-09
+("Use 160 credits for generation. first generate images with re-design using chatgpt 2.6 and also
+make multiple concepts and decorations"). This is a written budget approval for this round only,
+not standing approval for later assets.
+
+**Model:** Higgsfield `gpt_image_2_6` throughout. Quotes were taken with `get_cost: true` before
+the first submission:
+
+| Item | Price |
+|---|---|
+| 16:9 or 21:9 at 2K, quality high | 2.75 credits |
+| 1:1 or 21:9 transparent PNG at 1K, quality high | 1.5 credits |
+| Animated GIF, 512 px, 16 frames, transparent | 1.5 credits |
+
+**References:** the current v2 screens (`qa-screens/v2/hangar-1440.png`, `regatta-results-1440.png`, `bridge-tuning-1440.png`, `forge-1440.png`) were uploaded as `image_references`.
+
+**Files:** everything is in `plan/concepts-v3/`, about 130 MB of raw PNGs, not committed. Nothing is in `public/` yet. A chosen subset gets compressed to WebP and imported only after the owner picks a direction.
+
+| Group | Files | Count | Credits |
+|---|---|---|---|
+| Screen concepts: 4 directions (A Night Harbor, B Chart Room, C Regatta Arcade, D Shipwright Atelier) × 4 screens (Hangar, Regatta, Bridge, Forge) | `{screen}-{A..D}-{slug}.png`, plus `contact-sheet.jpg` and `direction-*.jpg` | 16 | 44.00 |
+| Transparent decorations | `decor/`: pennant, laurel, compass-rose, lantern, buoy, finish-flags, wax-seal, crest, signal-bunting, brass-divider, rope-corner | 11 | 16.50 |
+| Animated GIFs (transparent loops) | `decor/`: pennant-wave, lantern-flicker, buoy-bob, sparks, compass-swing | 5 | 7.50 |
+| Background plates, 21:9 2K, no UI | `decor/bg-{harbor,regatta-bay,bridge,forge}-21x9.png` | 4 | 11.00 |
+| **Total** | | **36** | **79.00** |
+
+The balance went from 439.17 to 360.17 (checked with `balance`), which matches the 79.00 tallied above.
+
+- **Submission failures cost nothing.** Some submissions failed with Higgsfield 503 "busy" or 429 rate-limit errors; no job was created, and the same prompts were resubmitted.
+- **Still on hand:** **81.00 credits** of the 160-credit budget, held for a refinement round once the owner has picked a direction.
+- **Licensing:** owner-generated, Higgsfield, 2026-11-09. Each file that ships gets a row in `LICENSES.md` when it is imported.
+
+### v3 round 2 (2026-11-09): Regatta Arcade, moved into space
+
+**Owner direction:** use Regatta Arcade, but in space ("it meant to be a spaceship not a regular ship"), with a more alien crew in the spirit of a ragtag space-outlaw ensemble. The characters are original: they are drawn from the existing `library/registry/crew.json` species descriptions and copy no franchise character.
+
+The owner also said not to regenerate objects that already exist in `D:/Projects/ArkhEthos`. That checkout was surveyed read-only mid-round:
+
+- `public/media/ships/ship-a`…`d` are already spaceships (Quaternius "Ultimate Spaceships", CC0); the water was Shipyard's procedural arena, not the models.
+- `public/media/crew/` already holds a character sheet and a rigged GLB for 7 of the 8 crew.
+
+From that point, crew and ship generation stopped. The Wren Tollak render was rate-limited and **not** resubmitted. The 3D bodies and hulls stay the ArkhEthos GLBs. The 2D renders already made serve only as card and portrait art in the new style. Only Tally Gauge (`fleet-measurer`) has no ArkhEthos body; that is item A2 above, still open.
+
+| Group | Files (`plan/concepts-v3/space/`) | Count | Credits |
+|---|---|---|---|
+| Crew lineup, 21:9 2K, the reference for everything after it | `crew/lineup-21x9.png` | 1 | 2.75 |
+| Crew portraits, transparent 1K (made before the ArkhEthos note) | `crew/{captain,strategist,analyst,critic,producer,metrics,gauge}-*.png` | 7 | 10.50 |
+| Spaceship card art, transparent 16:9 1K (made before the ArkhEthos note) | `ships/ss-*.png` | 5 | 7.50 |
+| Space background plates, 21:9 2K | `decor/bg-{orbital-dock,race-circuit,bridge}-21x9.png` | 3 | 8.25 |
+| Space Arcade screens, 2K, with the round-1 Arcade concepts as layout references | `{hangar,regatta,bridge,forge}-space-arcade.png`, `space-arcade-screens.jpg` | 4 | 11.00 |
+| Space-only animated GIFs (nothing like them in ArkhEthos) | `decor/{holo-gate,thruster,beacon-ping,warp-tunnel}.gif` | 4 | 6.00 |
+| **Round 2 total** | | **24** | **46.00** |
+
+The balance went from 360.17 to 314.17, which matches. **Both rounds: 125.00 of the 160-credit budget; 35.00 not spent.**
+
+**Note for the build:** the Bridge concept shows invented role text ("The harmonic synthesist", shuffled role labels). The built Bridge keeps the knowledge base's real names, roles and copy; the concepts set only the art direction.
+
+### v3 build (2026-11-09): what the app ships from this round
+
+No new generation: the build uses only files already paid for above. `scripts/import-arcade-art.py` writes 26 WebP files (2569316 bytes) into `public/media/arcade/`, listed in `public/media/LICENSES.md § arcade/`:
+
+- `plate-dock`, `plate-race`, `plate-bridge`: the three background plates, 2400 wide (Hangar and Forge, Regatta, Bridge);
+- `ship-<id>`: the five spaceship cards, trimmed, 960 wide (Hangar fleet cards, Regatta lanes and results);
+- `crew-<id>`: seven crew cutouts, 768 tall, plus `crew-engineer` (Wren Tollak) cut from the lineup, because the Wren render was never made (Bridge and Forge pedestal);
+- `card-<id>`: eight 360×480 portrait crops from the lineup (Bridge crew strip);
+- `laurel` and `thruster` (Regatta winner and lane plumes).
+
+The four Space Arcade screens stay in `plan/concepts-v3/space/` as the references the built UI is checked against (`plan/qa-screens/v3-*.png`). They are not shipped. Tally Gauge still has no 3D body (item A2); the Bridge shows the 2D cutout by default and the 3D turntable only on request (`?view=3d`).
+

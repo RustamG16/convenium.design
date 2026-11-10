@@ -69,3 +69,223 @@
 .forge-line[data-kind="file"] { color: var(--muted); font-weight: 600; }
 .forge-pre { margin: 0; padding: var(--s3); max-height: 18rem; overflow: auto; background: var(--bg); border-radius: var(--r-control); font: 12px/1.5 ui-monospace, monospace; white-space: pre-wrap; }
 .forge-log summary { cursor: pointer; min-height: var(--hit); display: flex; align-items: center; }
+
+/* ---------- v3 Forge (plan 13 § Forge; reference concepts-v3/space/forge-space-arcade.png) ---------- */
+#root .fg { position: relative; isolation: isolate; }
+#root .fg::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 520px;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgb(11 8 9 / 0.35), var(--ar-ground) 96%),
+    linear-gradient(90deg, var(--ar-ground) 0%, rgb(11 8 9 / 0.55) 45%, rgb(11 8 9 / 0.25) 100%),
+    var(--plate) center 30% / cover no-repeat;
+  pointer-events: none;
+}
+#root .fg .ar-band { padding-top: var(--s5); }
+#root .fg-head { display: flex; align-items: center; gap: var(--s5); flex-wrap: wrap; margin: 0 0 var(--s4); }
+#root .fg-word { margin: 0; font-size: clamp(56px, 6vw, 96px); line-height: 0.9; display: inline-flex; align-items: baseline; gap: 0.18em; }
+#root .fg-slash { color: var(--ar-neon); -webkit-text-fill-color: var(--ar-neon); text-shadow: 0 0 18px rgb(255 59 63 / 0.6); }
+#root .fg-lede { margin: 0; max-width: 46ch; padding-left: var(--s5); border-left: 2px solid var(--ar-neon); font-size: clamp(15px, 1.2vw, 19px); color: var(--cotton); }
+
+#root .fg-tabs { margin: 0 0 var(--s4); gap: var(--s2); border: 0; }
+#root .fg-tabs .tab { display: inline-flex; align-items: center; flex-direction: row; min-height: 54px; padding: 0 34px; gap: 12px; font-size: clamp(16px, 1.4vw, 22px); }
+
+#root .fg .forge-layout {
+  grid-template-columns: minmax(200px, 250px) minmax(0, 1fr);
+  gap: var(--s4);
+}
+#root .fg .forge-bench {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 1fr);
+  gap: var(--s4);
+  align-items: start;
+}
+#root .fg .forge-bench[data-lead] { grid-template-columns: minmax(220px, 0.78fr) minmax(0, 1.15fr) minmax(300px, 1fr); }
+
+/* rack */
+#root .fg .forge-rack { gap: var(--s3); padding-right: 0; }
+#root .fg .forge-rack-new {
+  min-height: 52px;
+  justify-content: start;
+  align-content: center;
+  padding: 0 22px;
+  border: 1.5px solid var(--ar-gold);
+  border-radius: 0;
+  color: var(--cotton);
+  background: linear-gradient(180deg, rgb(232 176 74 / 0.18), rgb(232 176 74 / 0.04));
+  box-shadow: 0 0 18px rgb(232 176 74 / 0.25);
+  clip-path: polygon(var(--ar-skew) 0, 100% 0, calc(100% - var(--ar-skew)) 100%, 0 100%);
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-weight: 900;
+  font-stretch: 80%;
+  text-transform: uppercase;
+  font-size: 20px;
+}
+#root .fg .forge-rack-new[aria-current] { background: linear-gradient(180deg, rgb(232 176 74 / 0.35), rgb(232 176 74 / 0.1)); }
+#root .fg .forge-rack-item:not(.forge-rack-new) { border-radius: 0; padding-left: calc(var(--s3) + 20px); }
+#root .fg .forge-rack-item::before { width: 11px; height: 11px; top: calc(var(--s2) + 0.45em); box-shadow: 0 0 8px var(--c, transparent); }
+#root .fg .forge-rack-item[aria-current]:not(.forge-rack-new) { background: rgb(255 59 63 / 0.1); border-color: var(--ar-rim); border-left: 3px solid var(--ar-neon); }
+#root .fg .forge-rack-title { font-family: var(--font-arcade); font-style: italic; font-weight: 800; font-stretch: 82%; text-transform: uppercase; font-size: 17px; letter-spacing: 0.01em; }
+
+/* panels */
+#root .fg-panel {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  gap: var(--s3);
+  padding: var(--s4);
+  border: 1px solid var(--ar-rim);
+  background: linear-gradient(180deg, rgb(26 16 17 / 0.92), rgb(14 10 11 / 0.92));
+  clip-path: polygon(var(--ar-cut) 0, 100% 0, 100% calc(100% - var(--ar-cut)), calc(100% - var(--ar-cut)) 100%, 0 100%, 0 var(--ar-cut));
+}
+#root .fg-panel-head { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; padding-bottom: var(--s3); border-bottom: 1px solid var(--ar-rim); }
+#root .fg-panel-head > div { flex: 1 1 200px; min-width: 0; }
+#root .fg-panel-title { margin: 0; font-family: var(--font-arcade); font-style: italic; font-weight: 900; font-stretch: 78%; text-transform: uppercase; font-size: clamp(24px, 2.2vw, 36px); line-height: 1; color: var(--cotton); }
+#root .fg-panel-sub { margin: 4px 0 0; color: var(--muted); font-size: 13.5px; }
+#root .fg-plus, #root .fg-code {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  color: var(--ar-neon);
+  font-family: var(--font-arcade);
+  font-weight: 900;
+  font-size: 26px;
+}
+#root .fg-plus { border: 2px solid var(--ar-neon); clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); box-shadow: inset 0 0 14px rgb(255 59 63 / 0.4); }
+#root .fg-code { width: auto; font-size: 24px; }
+#root .fg-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+#root .fg .forge-form { gap: var(--s3); }
+#root .fg .forge-set { border-radius: 0; border-color: var(--ar-rim); background: rgb(11 8 9 / 0.45); padding: var(--s3) var(--s4) var(--s4); gap: var(--s3); }
+#root .fg .forge-set legend { font-family: var(--font-arcade); font-style: italic; font-weight: 800; color: var(--ar-neon); }
+#root .fg .forge-label { font-family: var(--font-arcade); font-style: italic; font-weight: 800; font-stretch: 84%; text-transform: uppercase; font-size: 15px; }
+#root .fg .forge-label-hint { font-family: var(--font-ui); font-style: normal; font-weight: 400; text-transform: none; font-size: 12.5px; }
+#root .fg .field { border-radius: 0; }
+
+/* pills */
+#root .fg-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+#root .fg-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 16px 0 10px;
+  border: 1px solid var(--ar-rim);
+  border-radius: 999px;
+  background: rgb(11 8 9 / 0.6);
+  cursor: pointer;
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-weight: 700;
+  font-stretch: 86%;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+#root .fg-pill input { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; }
+#root .fg-pill:has(input:focus-visible) { outline: 2px solid var(--cotton); outline-offset: 2px; }
+#root .fg-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgb(255 255 255 / 0.25); background: rgb(0 0 0 / 0.4); }
+#root .fg-pill[data-checked] { border-color: var(--ar-neon); background: rgb(255 59 63 / 0.16); box-shadow: 0 0 14px rgb(255 59 63 / 0.35); }
+#root .fg-pill[data-checked] .fg-dot { border-color: #fff; background: radial-gradient(circle, #fff 0 35%, var(--ar-neon) 36%); }
+
+/* routes */
+#root .fg-chips { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+#root .fg .forge-chip { border: 1px solid #45d39a; color: #8fe8bd; background: rgb(69 211 154 / 0.1); border-radius: 999px; }
+#root .fg .fg-add { border: 1px solid var(--ar-rim); border-radius: 999px; background: transparent; color: var(--cotton); cursor: pointer; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12.5px; }
+#root .fg .forge-route-list { border-radius: 0; max-height: 220px; }
+
+/* priority slider */
+#root .fg-range { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px var(--s3); }
+#root .fg-range input[type="range"] {
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--ar-neon) 0 var(--v), rgb(255 255 255 / 0.12) var(--v));
+  margin: 0;
+}
+#root .fg-range input[type="range"]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgb(255 59 63 / 0.5), 0 0 14px rgb(255 59 63 / 0.8); }
+#root .fg-range input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 0; box-shadow: 0 0 0 4px rgb(255 59 63 / 0.5); }
+#root .fg-range input[type="range"]:disabled { opacity: 0.4; }
+#root .fg-range-out { min-width: 3ch; padding: 6px 12px; border: 1px solid var(--ar-rim); text-align: center; font-size: 18px; }
+#root .fg-range-scale { grid-column: 1; display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+
+/* lead: the draft on the pedestal */
+#root .fg-preview { display: grid; gap: var(--s3); }
+#root .fg-stage { height: clamp(360px, 30vw, 480px); }
+#root .fg-standin { position: absolute; z-index: 2; left: 22%; bottom: 13%; width: 56%; height: 74%; }
+#root .fg-standin circle, #root .fg-standin path { fill: color-mix(in oklab, var(--c, #888) 30%, #1a1012); stroke: var(--c, #888); stroke-width: 2; }
+#root .fg-standin text { fill: var(--cotton); font: 900 26px var(--font-arcade); }
+#root .fg-stage-cap {
+  position: absolute;
+  z-index: 3;
+  left: 6%;
+  right: 6%;
+  bottom: 0;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-arcade);
+  font-style: italic;
+  font-weight: 700;
+  font-stretch: 84%;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--cotton);
+}
+#root .fg-stats { padding: var(--s3) var(--s4); border: 1px solid var(--ar-rim); background: rgb(14 10 11 / 0.88); clip-path: polygon(var(--ar-cut) 0, 100% 0, 100% calc(100% - var(--ar-cut)), calc(100% - var(--ar-cut)) 100%, 0 100%, 0 var(--ar-cut)); }
+#root .fg-stats-h { margin: 0 0 var(--s2); font-family: var(--font-arcade); font-style: italic; font-weight: 900; font-stretch: 80%; text-transform: uppercase; font-size: 19px; }
+#root .fg-stats dl { margin: 0 0 var(--s2); display: grid; gap: 8px; }
+#root .fg-stat { display: grid; grid-template-columns: 6.6em minmax(0, 1fr); align-items: center; gap: var(--s2); }
+#root .fg-stat dt { font-family: var(--font-arcade); font-style: italic; font-weight: 700; font-stretch: 84%; text-transform: uppercase; font-size: 13px; }
+#root .fg-stat dd { margin: 0; display: flex; align-items: center; gap: 8px; }
+#root .fg-stat .br-meter { flex: 1; min-width: 40px; display: inline-grid; grid-template-columns: repeat(8, 1fr); gap: 2px; height: 11px; transform: skewX(-18deg); }
+#root .fg-stat .br-meter > span { background: rgb(255 255 255 / 0.08); }
+#root .fg-stat .br-meter > span[data-on] { background: var(--t); box-shadow: 0 0 6px color-mix(in oklab, var(--t) 70%, transparent); }
+#root .fg-stat .num { min-width: 3.4ch; text-align: right; font-size: 14px; }
+
+/* diff column */
+#root .fg-diff-col { align-content: start; }
+#root .fg .forge-preview { display: grid; gap: var(--s3); padding: 0; border: 0; background: none; }
+#root .fg .forge-diff-wrap { border-radius: 0; border-color: var(--ar-rim); background: rgb(7 5 6 / 0.85); }
+#root .fg .forge-diff { max-height: 46svh; font-size: 12px; }
+#root .fg .forge-line { padding-left: 0; }
+#root .forge-ln { display: inline-block; width: 3.4ch; margin-right: 1.4ch; padding-right: 0.6ch; text-align: right; color: var(--muted); border-right: 1px solid var(--ar-rim); user-select: none; }
+#root .fg .forge-line[data-kind="add"] { background: rgb(69 211 154 / 0.12); color: #9ff0c6; }
+#root .fg .forge-line[data-kind="del"] { background: rgb(255 59 63 / 0.16); color: #ff9a9c; }
+#root .fg-diff-count { display: flex; justify-content: space-between; gap: var(--s3); flex-wrap: wrap; margin: 0; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; }
+#root .fg-diff-count > span { display: inline-flex; align-items: center; gap: 8px; }
+#root .fg-sq { width: 12px; height: 12px; background: #45d39a; }
+#root .fg-diff-count [data-kind="del"] .fg-sq { background: var(--ar-neon); }
+#root .fg-diff-actions { display: grid; gap: var(--s2); justify-items: stretch; }
+#root .fg-diff-actions .btn-text { justify-self: center; }
+#root .btn.ar-cta.fg-apply { width: 100%; justify-content: center; white-space: nowrap; font-size: clamp(16px, 1.35vw, 24px) !important; padding: 0 26px !important; }
+#root .fg-diff-empty { display: grid; gap: var(--s3); }
+#root .fg-diff-ghost { display: grid; gap: 9px; padding: var(--s3); border: 1px dashed var(--ar-rim); background: rgb(7 5 6 / 0.6); }
+#root .fg-diff-ghost > span { height: 9px; width: var(--w); background: rgb(255 255 255 / 0.06); }
+#root .fg .forge-result { border-radius: 0; background: rgb(14 10 11 / 0.9); border-color: var(--ar-rim); }
+#root .fg .forge-result[data-ok="true"] { border-color: #45d39a; }
+
+/* workflows tab */
+#root .fg-workflows { display: grid; gap: var(--s3); }
+#root .fg-wf-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--s3); }
+#root .fg-wf .fg-panel-title { font-size: 24px; }
+#root .fg-wf .prose-sm { margin: 0; }
+
+@media (max-width: 1359px) {
+  #root .fg .forge-bench[data-lead] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  #root .fg .forge-bench[data-lead] .fg-lead { grid-column: 1 / -1; }
+  #root .fg .fg-preview { grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1fr); align-items: end; }
+}
+@media (max-width: 1023px) {
+  #root .fg .forge-bench, #root .fg .forge-bench[data-lead] { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 860px) {
+  #root .fg .forge-layout { grid-template-columns: minmax(0, 1fr); }
+  #root .fg .fg-preview { grid-template-columns: minmax(0, 1fr); }
+  #root .fg-lede { padding-left: var(--s3); }
+}

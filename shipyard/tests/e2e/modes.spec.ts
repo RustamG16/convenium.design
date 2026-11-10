@@ -1,6 +1,18 @@
 import { expect, test } from '@playwright/test';
 import { byClick, byKeyboard, journey } from './journey';
 
+// v3: the Bridge shows the crew render by default; these tests drive the 3D turntable, so the viewer's choice is preset to 3D
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.setItem('convenium.shipyard.ui.bridgeView', '3d');
+    } catch {
+      /* storage blocked: the URL's view=3d still applies */
+    }
+  });
+});
+
+
 /**
  * Acceptance 7 on the desktop project: keyboard only, reduced motion, and no WebGL each complete the
  * journey (commission, equip, plan, pre-flight, export). The 360 px phone is `phone.spec.ts`
@@ -17,7 +29,7 @@ test('reduced motion: the journey completes and the 3D turntable is still there,
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   await journey(page, byClick, 'Calm Run');
-  await page.goto('/#/ship/calm-run/bridge?member=strategist');
+  await page.goto('/#/ship/calm-run/bridge?member=strategist&view=3d');
   await expect(page.getByTestId('turntable')).toHaveAttribute('data-ready', 'true', { timeout: 60_000 });
   await ctx.close();
 });

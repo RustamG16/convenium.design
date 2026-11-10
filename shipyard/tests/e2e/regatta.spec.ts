@@ -58,28 +58,23 @@ test('reduced motion shows the finish at once', async ({ browser }) => {
   await page.getByTestId('rg-start').click();
   await expect(page.getByTestId('rg-results')).toBeVisible({ timeout: 2_000 });
   await expect(page.getByTestId('rg-skip')).toHaveCount(0);
-  // no 3D arena under reduced motion: the 2D course is the static board
-  await expect(page.getByTestId('rg-arena')).toHaveCount(0);
+  // v3: the arena is DOM; under reduced motion it stays, still, showing the finish
+  await expect(page.getByTestId('rg-arena')).toHaveAttribute('data-still', 'true');
   await expect(page.getByTestId('rg-lane')).toHaveCount(2);
   await ctx.close();
 });
 
-test('the 3D arena pictures the course, and ?2d leaves only the course', async ({ page }) => {
+test('the arena pictures the course in the DOM: lanes, buoys and the finish gate, with no canvas', async ({ page }) => {
+  // v3 (reference regatta-space-arcade.png): the course is drawn as DOM lanes over the race plate, readable by assistive tech
   await page.goto('/#/regatta?brief=landing-refresh&ships=ss-full-run,ss-abridged');
   await page.getByTestId('rg-start').click();
   const arena = page.getByTestId('rg-arena');
   await expect(arena).toHaveAttribute('data-lanes', '2');
-  await expect(arena).toHaveAttribute('aria-hidden', 'true');
-  await expect(arena.locator('canvas')).toBeVisible();
+  await expect(arena).not.toHaveAttribute('aria-hidden', 'true');
+  await expect(arena.locator('canvas')).toHaveCount(0);
+  await expect(page.getByTestId('rg-lane')).toHaveCount(2);
   await page.getByTestId('rg-skip').click();
   await expect(page.getByTestId('rg-results')).toBeVisible();
-
-  // a hash-only change keeps the race on screen: reload so ?2d is read on a fresh page
-  await page.goto('/#/regatta?brief=landing-refresh&ships=ss-full-run,ss-abridged&2d');
-  await page.reload();
-  await page.getByTestId('rg-start').click();
-  await expect(page.getByTestId('rg-lane')).toHaveCount(2);
-  await expect(page.getByTestId('rg-arena')).toHaveCount(0);
 });
 
 test('a ship can be sent to the Regatta from its menu', async ({ page }) => {
@@ -112,7 +107,6 @@ test('a tuned copy against its parent: the dry run says it cannot judge tuning (
   await expect(page.getByTestId('rg-winner')).toContainText('No winner');
   await expect(page.getByTestId('rg-lane-winner')).toHaveCount(0);
   // nor in the arena: no post lights, no pennant (re-review v2, N1)
-  // the suite's Chromium has WebGL (the arena test above relies on it), so the arena must be there to check
   await expect(page.getByTestId('rg-arena')).toHaveAttribute('data-winners', '0');
 
   // a mixed race names the tuning-only pair instead of letting a tier's cost read as a win (re-review v2, n-a)
