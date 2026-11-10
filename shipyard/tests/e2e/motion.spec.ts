@@ -1,5 +1,17 @@
 import { expect, test, type Page } from '@playwright/test';
 
+// v3: the Bridge shows the crew render by default; these tests drive the 3D turntable, so the viewer's choice is preset to 3D
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.setItem('convenium.shipyard.ui.bridgeView', '3d');
+    } catch {
+      /* storage blocked: the URL's view=3d still applies */
+    }
+  });
+});
+
+
 /**
  * T10: every row of DESIGN.md > Motion contract, under normal and reduced motion. CSS rows are
  * asserted by computed style, JS rows by the dev-only `window.__motion` records (the duration, ease
@@ -321,7 +333,7 @@ test.describe('pre-flight motion', () => {
       await page.getByTestId('socket-unequip').click();
       await page.goto('/#/');
       // in-app navigation keeps the undo stack
-      await page.getByRole('region', { name: 'Drydock' }).getByTestId('open-preflight').click();
+      await page.locator('[data-testid="ship-card"]:not(:has([data-testid="template-lock"]))').getByTestId('open-preflight').click();
       await expect(page.getByTestId('next-goal')).not.toHaveAttribute('data-goal', 'export');
       const before = Number(await page.locator('.ring-num').first().getAttribute('data-value'));
       expect(before).toBeLessThan(100);

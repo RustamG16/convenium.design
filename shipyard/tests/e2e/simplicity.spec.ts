@@ -7,15 +7,19 @@ import { REPO } from './journey';
  * the wrapped Voyage track, the Controls disclosure and the remembered Profile disclosure.
  */
 const primaries = (page: Page, scope = 'main') => page.locator(`${scope} .btn-primary:visible`);
+// v3 (reference bridge-space-arcade.png): the Bridge's Tune agent panel carries its own filled CTA, Send to Regatta;
+// the screen's one primary is counted without it, and the panel has exactly that one
+const screenPrimaries = (page: Page) => page.locator('main .btn-primary:not(.tune-regatta):visible');
 
 test.describe('one primary per screen', () => {
-  test('hangar: Open the ship is the only filled button', async ({ page }) => {
+  test('hangar: Commission a ship is the only filled button', async ({ page }) => {
+    // v3 (reference hangar-space-arcade.png): the ship names open the ships; the one filled CTA is Commission
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/#/');
-    await expect(page.getByTestId('ship-card')).toHaveCount(1);
+    await expect(page.getByTestId('fleet-row')).toBeVisible();
     await expect(primaries(page)).toHaveCount(1);
-    await expect(page.getByTestId('open-ship')).toHaveClass(/btn-primary/);
-    await expect(page.getByTestId('commission')).not.toHaveClass(/btn-primary/);
+    await expect(page.getByTestId('commission')).toHaveClass(/btn-primary/);
+    await expect(page.getByTestId('open-ship').first()).not.toHaveClass(/btn-primary/);
   });
 
   for (const screen of ['bridge', 'voyage', 'preflight'] as const) {
@@ -23,7 +27,8 @@ test.describe('one primary per screen', () => {
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.goto(`/#/ship/ss-full-run/${screen}`);
       await expect(page.getByTestId('ship-subnav')).toBeVisible();
-      await expect(primaries(page)).toHaveCount(1);
+      await expect(screenPrimaries(page)).toHaveCount(1);
+      if (screen === 'bridge') await expect(primaries(page, '.tune-panel')).toHaveCount(1);
       // no folder path yet: entering it is the one primary (finish review M1); with it, Copy kickoff prompt is
       if (screen === 'preflight') {
         await expect(page.getByTestId('goal-export')).toHaveClass(/btn-primary/);
@@ -46,7 +51,8 @@ test.describe('one primary per screen', () => {
     await page.getByTestId('clone-to-edit').click();
     await page.getByTestId('clone-confirm').click();
     await expect(page).toHaveURL(/ship\/ss-full-run-copy\/bridge/);
-    await expect(primaries(page)).toHaveCount(1);
+    await expect(screenPrimaries(page)).toHaveCount(1);
+    await expect(primaries(page, '.tune-panel')).toHaveCount(1);
     await expect(page.getByTestId('equip-skill')).toHaveClass(/btn-primary/);
     await page.getByTestId('to-voyage').click();
     await expect(primaries(page)).toHaveCount(1);
@@ -193,22 +199,19 @@ test.describe('the Armory compare strip', () => {
   });
 });
 
-test('Hangar: the hull stage, the fleet card and Open the ship are all in the first 1440x900 viewport', async ({ page }) => {
+test('Hangar: the hero, the flagship card and Commission are all in the first 1440x900 viewport', async ({ page }) => {
+  // v3 (reference hangar-space-arcade.png): launch-pad hero, the fleet row and the footer with the Commission CTA fit one screen
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/');
-  const open = page.getByTestId('open-ship');
-  await expect(open).toBeVisible();
-  const o = (await open.boundingBox())!;
-  expect(o.y).toBeGreaterThan(0);
-  expect(o.y + o.height).toBeLessThanOrEqual(900);
-  const card = (await page.getByTestId('ship-card').boundingBox())!;
+  const flag = page.locator('[data-ship="ss-full-run"]');
+  await expect(flag.getByTestId('open-ship')).toBeVisible();
+  const card = (await flag.boundingBox())!;
+  expect(card.y).toBeGreaterThan(0);
   expect(card.y + card.height).toBeLessThanOrEqual(900);
-  const stage = (await page.getByTestId('fleet-stage').boundingBox())!;
-  expect(stage.height).toBeGreaterThan(560);
-  expect(stage.y + stage.height).toBeLessThanOrEqual(900);
+  const cta = (await page.getByTestId('commission').boundingBox())!;
+  expect(cta.y + cta.height).toBeLessThanOrEqual(900);
+  await expect(page.getByTestId('hull-ring')).toBeInViewport();
   await expect(page.getByTestId('how-it-works')).toHaveText('How it works');
-  // the ring sits under the hull: the canvas is not empty and holds a lit hull near its centre
-  await expect(page.getByTestId('fleet-ring')).toBeVisible();
 });
 
 test('Voyage: the track wraps at 1440 and 390, so no card is hidden behind a sideways scroll', async ({ page }) => {
@@ -259,12 +262,13 @@ test('Bridge: identity first, the lore behind one Profile disclosure that is rem
   await expect(page.getByTestId('identity-card').locator('.truth')).toHaveCount(2);
 });
 
-test('Bridge: the turntable card is large and a slot says what to choose', async ({ page }) => {
+test('Bridge: the crew figure is large and a slot says what to choose', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#/ship/ss-full-run/bridge?member=captain');
-  const t = (await page.getByTestId('turntable').boundingBox())!;
-  expect(t.width).toBeGreaterThan(420);
-  expect(t.height).toBeGreaterThan(520);
+  // v3 (reference bridge-space-arcade.png): the crew render on its pedestal fills the first of four columns
+  const t = (await page.getByTestId('crew-stage').boundingBox())!;
+  expect(t.width).toBeGreaterThan(260);
+  expect(t.height).toBeGreaterThan(420);
   await page.goto('/#/ship/ss-full-run/bridge?member=critic');
   const rows = page.getByTestId('slot-rows');
   if (await rows.count()) await expect(rows).not.toContainText('Not worn: pick one');

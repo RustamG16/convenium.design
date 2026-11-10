@@ -23,27 +23,33 @@ function trackConsole(page: import('@playwright/test').Page) {
   return problems;
 }
 
-test('Hangar shows exactly one ship, SS Full Run, read from the knowledge base', async ({ page }) => {
+test('Hangar shows every library ship as a template, the flagship first, read from the knowledge base', async ({ page }) => {
   const problems = trackConsole(page);
   await page.goto('/');
 
   await expect(page.getByRole('heading', { level: 1, name: 'Shipyard' })).toBeVisible();
+  // v3 (reference hangar-space-arcade.png): the fleet row carries every library ship, each a read-only template.
   const cards = page.getByTestId('ship-card');
-  await expect(cards).toHaveCount(1);
-  await expect(cards.first()).toContainText(flagship.name);
-  await expect(cards.first()).toContainText(flagship.summary);
-  await expect(page.getByTestId('template-lock')).toContainText('Template');
+  const libraryShips = page.locator('[data-testid="ship-card"]:has([data-testid="template-lock"])');
+  await expect(libraryShips.first()).toBeVisible();
+  const n = await cards.count();
+  expect(n).toBeGreaterThanOrEqual(1);
+  await expect(page.getByTestId('fleet-count')).toHaveText(`${n} ship${n === 1 ? '' : 's'}`);
+  const flag = page.locator(`[data-testid="ship-card"][data-ship="${flagship.id}"]`);
+  await expect(flag).toHaveCount(1);
+  await expect(cards.first()).toHaveAttribute('data-ship', flagship.id);
+  await expect(flag).toHaveAttribute('data-flagship', 'true');
+  await expect(flag).toContainText(flagship.name);
+  await expect(flag.getByTestId('template-lock')).toContainText('Template');
 
   // Seven crew: crew.json minus gauge.
   expect(defaultCrew).toHaveLength(7);
-  const chips = page.getByTestId('crew-chips').getByRole('listitem');
-  await expect(chips).toHaveCount(7);
-  for (const c of defaultCrew) await expect(page.getByTestId('crew-chips')).toContainText(c.name);
-  await expect(page.getByTestId('crew-chips')).not.toContainText(kb.crew.find((c) => c.id === 'gauge')!.name);
+  await expect(flag.getByTestId('card-crew')).toHaveText('7');
 
   // Hull integrity is computed by pre-flight on the converted ship; the default ship is clean.
   await expect(page.getByTestId('hull-ring')).toHaveAttribute('aria-label', /Hull integrity 100 percent, 14 of 14 checks passed/);
-  await expect(cards.first()).toContainText('Pre-flight is clean');
+  await expect(flag.getByTestId('open-preflight')).toContainText('Ready');
+  await expect(page.getByTestId('hg-foot')).toContainText('Pre-flight is clean');
 
   // The count is read from the KB, never hard-coded.
   await expect(page.getByTestId('skill-count')).toHaveText(String(kb.skills.length));
@@ -85,7 +91,9 @@ test('malformed saved state falls back to defaults with a banner', async ({ page
   });
   await page.goto('/');
   await expect(page.getByTestId('persist-banner')).toContainText('could not be read');
-  await expect(page.getByTestId('ship-card')).toHaveCount(1);
+  // defaults: the library templates only, no ship of the user's
+  await expect(page.locator('[data-testid="ship-card"]:not(:has([data-testid="template-lock"]))')).toHaveCount(0);
+  await expect(page.locator('[data-ship="ss-full-run"]')).toHaveCount(1);
 });
 
 test('dev save validates, refuses a bad ship and writes a good one', async ({ request }) => {

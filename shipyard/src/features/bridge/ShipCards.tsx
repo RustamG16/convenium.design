@@ -12,25 +12,33 @@ import { useNotify } from '../shared/notices';
 import { SkewBadge } from '../../components/SkewBadge';
 import { TruthLabel } from '../../components/TruthLabel';
 import type { SceneMember } from '../../scene/crew';
+import { crewArt } from '../../lib/arcadeArt';
 
+/** v3: the crew as portrait cards (reference bridge-space-arcade.png), the active one rimmed hot. */
 export function CrewRail({ crew, activeId, onSelect }: { crew: readonly SceneMember[]; activeId: string | null; onSelect: (id: string) => void }) {
   return (
     <nav className="ship-rail" aria-label="Crew">
       <ol className="ship-rail-list">
-        {crew.map((m) => (
-          <li key={m.id}>
-            <button type="button" className="ship-rail-item" data-active={m.id === activeId || undefined} aria-current={m.id === activeId ? 'true' : undefined} onClick={() => onSelect(m.id)} style={{ ['--c' as string]: m.pigment } as CSSProperties} data-testid={`crew-${m.id}`}>
-              <span className="ship-rail-station num" aria-hidden="true">
-                {m.station}
-              </span>
-              <span className="ship-rail-name">{m.name}</span>
-              <span className="ship-rail-role muted">{m.role.title}</span>
-              <span className="ship-rail-count num" aria-label={`${m.loadout.length} artifacts`}>
-                {m.loadout.length}
-              </span>
-            </button>
-          </li>
-        ))}
+        {crew.map((m) => {
+          const art = crewArt(m.agent) ?? crewArt(m.id);
+          return (
+            <li key={m.id}>
+              <button type="button" className="ship-rail-item" data-active={m.id === activeId || undefined} aria-current={m.id === activeId ? 'true' : undefined} onClick={() => onSelect(m.id)} style={{ ['--c' as string]: m.pigment } as CSSProperties} data-testid={`crew-${m.id}`}>
+                {art ? <img className="ship-rail-art" src={art.card} alt="" loading="lazy" /> : <span className="ship-rail-art ship-rail-glyph" aria-hidden="true">{m.glyph || m.name.slice(0, 1)}</span>}
+                <span className="ship-rail-station num" aria-hidden="true">
+                  {m.station}
+                </span>
+                <span className="ship-rail-count num" aria-label={`${m.loadout.length} artifacts`}>
+                  {m.loadout.length}
+                </span>
+                <span className="ship-rail-text">
+                  <span className="ship-rail-name">{m.name}</span>
+                  <span className="ship-rail-role">{m.role.title}</span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );
