@@ -1,4 +1,0 @@
-interface:
-  display_name: "Emil Design Engineering"
-  short_description: "Polish components and purposeful motion"
-  default_prompt: "Use $emil-design-engineering to refine the selected interface interactions and motion details."

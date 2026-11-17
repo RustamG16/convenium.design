@@ -21,7 +21,7 @@ routing decision, one per phase.
 - **Skills** load from `.claude/skills/<id>/`. Invoke a skill with the **Skill tool**, not a
   `$name` token. Where `AGENTS.md` or an agent file writes `$reference-deconstruction`, that
   means "use the `reference-deconstruction` skill".
-- **Agents** are in `.claude/agents/<name>.md` (7: `design-director`, `brand-strategist` + 5 specialists). A
+- **Agents** are in `.claude/agents/<name>.md` (8: `design-director`, `brand-strategist` + 6 specialists). A
   read-only specialist has no Write/Edit in its `tools:` list — respect that boundary.
 - **`impeccable` is projected here as a full body**, including its `scripts/` and
   `reference/` playbooks — run `node .claude/skills/impeccable/scripts/context.mjs` at the
@@ -78,11 +78,9 @@ routing decision, one per phase.
 
 ## Do not
 
-- Edit anything under `.claude/`, `.agents/skills/`, `.codex/agents/`, `ship/data/` or
-  `shipyard/public/data/` — they are generated from `library/` and overwritten.
+- Edit anything under `.claude/`, `.agents/skills/`, `.codex/agents/`, `ship/data/` — they are generated from `library/` and overwritten.
 - Write project evidence into this repo. It goes in `<website-project>/.olympus/`.
 - Touch `evidence/`, `handoffs/`, `public/media/`, or any `.olympus/`.
-- Read or route from `unused/` — it is retired material, indexed in `unused/README.md`.
 
 ## For humans
 

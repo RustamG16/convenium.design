@@ -1,6 +1,6 @@
 # Vendored skill versions
 
-These upstream skill folders are copied into `.agents/skills/` so `system1` remains portable when attached without running an installer.
+These upstream skill folders are copied into `.agents/skills/` so `convenium-design` remains portable when attached without running an installer.
 
 | Package | Source | Commit |
 |---|---|---|

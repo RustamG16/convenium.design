@@ -150,7 +150,8 @@ Recorded so the next pass starts from decisions, not rediscovery.
   top-level ones. Dedupe against upstream, not by hand.
 - **Phase vocabulary.** Registry and agents use the registry's phase names; `run.json` keeps
   its own trail vocabulary. Unify only with a migration for `run.json`.
-- **V3 harvest.** `unused/v3-apollo/` holds a WCAG contrast checker (`lib/contrast.mjs`), a
-  token schema and an eval harness worth folding in as a regression suite.
-- **Studio.** Retired 2026-10-26 to `unused/convenium-design-studio/` (with its redesign
-  plans in `unused/New_upgradePlan/`); the 2D ship console (`ship/`) replaced it.
+- **V3 harvest.** The retired V3 Apollo (WCAG contrast checker `lib/contrast.mjs`, a token
+  schema and an eval harness) was moved out of this repo to private storage; fold it in as a
+  regression suite if wanted.
+- **Studio.** Retired 2026-10-26 and removed from this repo (recoverable from git history); the
+  2D ship console (`ship/`) replaced it. `folio/` and `shipyard/` now live in their own repos.

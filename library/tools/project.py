@@ -355,6 +355,9 @@ def build_shipyard(dry):
     The second consumer of the registry after the 2D console. Deterministic (no timestamps), so
     a rebuild with unchanged sources writes nothing; `sourceHash` lets verify.py prove freshness.
     """
+    if not os.path.isdir(os.path.join(ROOT, "shipyard")):
+        print("  shipyard/ not present in this repo (split into its own repo) - skipped")
+        return True
     reg_dir = os.path.join(LIB, "registry")
     load = lambda n: json.load(open(os.path.join(reg_dir, n), encoding="utf-8"))
     arts, crew, workflows, slots = load("artifacts.json"), load("crew.json"), load("workflows.json"), load("slots.json")

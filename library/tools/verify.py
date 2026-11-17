@@ -67,8 +67,11 @@ REQUIRED_FILES = [
     "library/registry/ROUTING-DIGEST.md", "library/tools/project.py", "library/tools/verify.py",
     "library/registry/crew.json", "library/registry/workflows.json",
     "ship/index.html", "ship/style.css", "ship/ship.js", "ship/data/ship-data.js",
-    "library/registry/artifacts.json", "shipyard/public/data/knowledge-base.json",
+    "library/registry/artifacts.json",
 ]
+# shipyard/ was split into its own repo; its knowledge base is only required where the folder exists
+if os.path.isdir(os.path.join(ROOT, "shipyard")):
+    REQUIRED_FILES.append("shipyard/public/data/knowledge-base.json")
 LINE_CAPS = {"library/registry/ROUTING-DIGEST.md": 200, "CLAUDE.md": 120, "PROMPT.md": 120}
 PROJECT_CONTEXT = ["PRD.md", "ARCHITECTURE.md", "ARCHITECTURE-ESSENTIALS.md", "AGENTS.md",
                    "CODEX.md", "PROGRESS-AND-DECISIONS.md"]

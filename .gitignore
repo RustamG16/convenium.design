@@ -6,7 +6,6 @@ node_modules/
 !.env.example
 tmp/
 *.log
-unused/convenium-design-studio/data/*.jsonl
 
 # test_projects/* are device-specific, each an independent git repo with its
 # own origin (or none yet) — never tracked or pushed as part of Convenium.Design.

@@ -84,8 +84,8 @@ paths. It must report `verify clean` before you trust the clone.
 /plugin install convenium-design@convenium-design
 ```
 
-The plugin carries every Convenium.Design skill and agent, namespaced (`apollo:gsap-core`,
-`apollo:design-director`), so nothing collides with skills you have installed personally.
+The plugin carries every Convenium.Design skill and agent, namespaced (`convenium-design:gsap-core`,
+`convenium-design:design-director`), so nothing collides with skills you have installed personally.
 Without the plugin, start Claude Code with `claude --add-dir <this folder>` instead.
 
 ### Attach a project (both hosts)
@@ -116,7 +116,6 @@ your browser while the library stays the source of truth. See `ship/README.md`.
 | `config/MCP-SETUP.md` | Optional external MCP connections and their activation rules. |
 | `test_projects/` | Device-specific test/demo projects. **Gitignored** — each one is its own independent git repo, never tracked or pushed as part of Convenium.Design. |
 | `scripts/` | Thin PowerShell wrappers around `library/tools/verify.py`, kept for existing habits. |
-| `unused/` | Retired plans, skills and experiments, kept instead of deleted. Nothing reads it; see `unused/README.md`. |
 
 The skill library also vendors the requested
 [Impeccable](https://github.com/pbakaus/impeccable) package and
